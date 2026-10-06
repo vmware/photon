@@ -1,0 +1,36 @@
+From 4e4cb686eb672444ec86645e9ad6453733eab33a Mon Sep 17 00:00:00 2001
+From: Chen Ridong <chenridong@huawei.com>
+Date: Fri, 22 Aug 2025 07:07:15 +0000
+Subject: [PATCH 05/22] cgroup/psi: Set of->priv to NULL upon file release
+
+[ Upstream commit 94a4acfec14615e971eb2c9e1fa6c992c85ff6c6 ]
+
+Setting of->priv to NULL when the file is released enables earlier bug
+detection. This allows potential bugs to manifest as NULL pointer
+dereferences rather than use-after-free errors[1], which are generally more
+difficult to diagnose.
+
+[1] https://lore.kernel.org/cgroups/38ef3ff9-b380-44f0-9315-8b3714b0948d@huaweicloud.com/T/#m8a3b3f88f0ff3da5925d342e90043394f8b2091b
+Signed-off-by: Chen Ridong <chenridong@huawei.com>
+Signed-off-by: Tejun Heo <tj@kernel.org>
+[Srinidhi: cherry picked from commit 94a4acfec14615e971eb2c9e1fa6c992c85ff6c6 for linux v6.12.y]
+Signed-off-by: Srinidhi Rao <srinidhi.rao@broadcom.com>
+---
+ kernel/cgroup/cgroup.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/kernel/cgroup/cgroup.c b/kernel/cgroup/cgroup.c
+index db00ce43df44..d4ea7dfada9f 100644
+--- a/kernel/cgroup/cgroup.c
++++ b/kernel/cgroup/cgroup.c
+@@ -4162,6 +4162,7 @@ static void cgroup_file_release(struct kernfs_open_file *of)
+ 		cft->release(of);
+ 	put_cgroup_ns(ctx->ns);
+ 	kfree(ctx);
++	of->priv = NULL;
+ }
+ 
+ static ssize_t cgroup_file_write(struct kernfs_open_file *of, char *buf,
+-- 
+2.53.0
+

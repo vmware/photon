@@ -1,0 +1,47 @@
+From 15eddcfdfe7249e19ec89ba5dd939a5c48b59760 Mon Sep 17 00:00:00 2001
+From: Ronak Doshi <ronak.doshi@broadcom.com>
+Date: Fri, 4 Oct 2024 10:43:03 -0700
+Subject: [PATCH] vmxnet3: support higher link speeds from vmxnet3 v9
+
+commit 0458cbedfe35a2762fc82ddf38e004cc886b9ed4 upstream
+
+Until now, vmxnet3 was default reporting 10Gbps as link speed.
+Vmxnet3 v9 adds support for user to configure higher link speeds.
+User can configure the link speed via VMs advanced parameters options
+in VCenter. This speed is reported in gbps by hypervisor.
+
+This patch adds support for vmxnet3 to report higher link speeds and
+converts it to mbps as expected by Linux stack.
+
+Signed-off-by: Ronak Doshi <ronak.doshi@broadcom.com>
+Acked-by: Guolin Yang <guolin.yang@broadcom.com>
+Reviewed-by: Simon Horman <horms@kernel.org>
+Link: https://patch.msgid.link/20241004174303.5370-1-ronak.doshi@broadcom.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Ajay Kaher <ajay.kaher@broadcom.com>
+---
+ drivers/net/vmxnet3/vmxnet3_drv.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
+index e1e472b3a..287b7c20c 100644
+--- a/drivers/net/vmxnet3/vmxnet3_drv.c
++++ b/drivers/net/vmxnet3/vmxnet3_drv.c
+@@ -201,6 +201,14 @@ vmxnet3_check_link(struct vmxnet3_adapter *adapter, bool affectTxQueue)
+ 
+ 	adapter->link_speed = ret >> 16;
+ 	if (ret & 1) { /* Link is up. */
++		/*
++		 * From vmxnet3 v9, the hypervisor reports the speed in Gbps.
++		 * Convert the speed to Mbps before rporting it to the kernel.
++		 * Max link speed supported is 10000G.
++		 */
++		if (VMXNET3_VERSION_GE_9(adapter) &&
++		    adapter->link_speed < 10000)
++			adapter->link_speed = adapter->link_speed * 1000;
+ 		netdev_info(adapter->netdev, "NIC Link is Up %d Mbps\n",
+ 			    adapter->link_speed);
+ 		netif_carrier_on(adapter->netdev);
+-- 
+2.39.4
+

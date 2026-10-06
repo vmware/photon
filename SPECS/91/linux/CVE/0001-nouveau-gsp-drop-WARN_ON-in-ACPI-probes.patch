@@ -1,0 +1,66 @@
+From 214b6bde0e941a34ba877cf2f26f85d62fb5d598 Mon Sep 17 00:00:00 2001
+From: Dave Airlie <airlied@redhat.com>
+Date: Thu, 21 Nov 2024 11:46:01 +1000
+Subject: nouveau/gsp: drop WARN_ON in ACPI probes
+
+commit 9478c166c46934160135e197b049b5a05753f2ad upstream.
+
+These WARN_ONs seem to trigger a lot, and we don't seem to have a
+plan to fix them, so just drop them, as they are most likely
+harmless.
+
+Cc: stable@vger.kernel.org
+Fixes: 176fdcbddfd2 ("drm/nouveau/gsp/r535: add support for booting GSP-RM")
+Signed-off-by: Dave Airlie <airlied@redhat.com>
+Link: https://patch.msgid.link/20241121014601.229391-1-airlied@gmail.com
+Signed-off-by: Danilo Krummrich <dakr@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[Shivani: Backported for CVE-2026-43485. Modified to apply on 6.12.y.
+ This code still lives in nvkm/subdev/gsp/r535.c in the 6.12.y series
+ (upstream later split it out into nvkm/subdev/gsp/rm/r535/gsp.c), so
+ the fix is applied there instead. ]
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
+---
+ drivers/gpu/drm/nouveau/nvkm/subdev/gsp/r535.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/gpu/drm/nouveau/nvkm/subdev/gsp/r535.c b/drivers/gpu/drm/nouveau/nvkm/subdev/gsp/r535.c
+index 3ad4f6e9a..d1633f50e 100644
+--- a/drivers/gpu/drm/nouveau/nvkm/subdev/gsp/r535.c
++++ b/drivers/gpu/drm/nouveau/nvkm/subdev/gsp/r535.c
+@@ -1469,8 +1469,8 @@ r535_gsp_acpi_caps(acpi_handle handle, CAPS_METHOD_DATA *caps)
+ 	if (!obj)
+ 		goto done;
+ 
+-	if (WARN_ON(obj->type != ACPI_TYPE_BUFFER) ||
+-	    WARN_ON(obj->buffer.length != 4))
++	if (obj->type != ACPI_TYPE_BUFFER ||
++	    obj->buffer.length != 4)
+ 		goto done;
+ 
+ 	caps->status = 0;
+@@ -1505,8 +1505,8 @@ r535_gsp_acpi_jt(acpi_handle handle, JT_METHOD_DATA *jt)
+ 	if (!obj)
+ 		goto done;
+ 
+-	if (WARN_ON(obj->type != ACPI_TYPE_BUFFER) ||
+-	    WARN_ON(obj->buffer.length != 4))
++	if (obj->type != ACPI_TYPE_BUFFER ||
++	    obj->buffer.length != 4)
+ 		goto done;
+ 
+ 	jt->status = 0;
+@@ -1593,8 +1593,8 @@ r535_gsp_acpi_dod(acpi_handle handle, DOD_METHOD_DATA *dod)
+ 
+ 	_DOD = output.pointer;
+ 
+-	if (WARN_ON(_DOD->type != ACPI_TYPE_PACKAGE) ||
+-	    WARN_ON(_DOD->package.count > ARRAY_SIZE(dod->acpiIdList)))
++	if (_DOD->type != ACPI_TYPE_PACKAGE ||
++	    _DOD->package.count > ARRAY_SIZE(dod->acpiIdList))
+ 		return;
+ 
+ 	for (int i = 0; i < _DOD->package.count; i++) {
+-- 
+2.53.0
+

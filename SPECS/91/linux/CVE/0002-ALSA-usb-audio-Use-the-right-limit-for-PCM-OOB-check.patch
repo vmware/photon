@@ -1,0 +1,41 @@
+From 70b4db7d258118a7464f039112a74ddb49a95b06 Mon Sep 17 00:00:00 2001
+From: Takashi Iwai <tiwai@suse.de>
+Date: Wed, 21 Jan 2026 09:20:20 +0100
+Subject: ALSA: usb-audio: Use the right limit for PCM OOB check
+
+commit 70b4db7d258118a7464f039112a74ddb49a95b06 upstream.
+
+The recent fix commit for addressing the OOB access of PCM URB data
+buffer caused a regression on Behringer UMC2020HD device, resulting in
+choppy sound.  The fix used ep->max_urb_frames for the upper limit
+check, and this is no right value to be referred.
+
+Use the actual buffer size (ctx->buffer_size) as the upper limit
+instead, which also avoids the regression on the device above.
+
+Fixes: ef5749ef8b30 ("ALSA: usb-audio: Prevent excessive number of frames")
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=220997
+Link: https://patch.msgid.link/20260121082025.718748-1-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+[Shivani: Backported for CVE-2026-23208. Modified to apply on 6.12.y ]
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
+---
+ sound/usb/pcm.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/sound/usb/pcm.c b/sound/usb/pcm.c
+index 3a4666e3b..5aadd1221 100644
+--- a/sound/usb/pcm.c
++++ b/sound/usb/pcm.c
+@@ -1505,7 +1505,8 @@ static int prepare_playback_urb(struct snd_usb_substream *subs,
+
+ 	for (i = 0; i < ctx->packets; i++) {
+ 		counts = snd_usb_endpoint_next_packet_size(ep, ctx, i, avail);
+-		if (counts < 0 || frames + counts >= ep->max_urb_frames)
++		if (counts < 0 ||
++		    (frames + counts) * stride > ctx->buffer_size)
+ 			break;
+ 		/* set up descriptor */
+ 		urb->iso_frame_desc[i].offset = frames * stride;
+--
+2.53.0

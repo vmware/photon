@@ -1,0 +1,57 @@
+From e75ed75456bca7d5002845da506229e3546e9fa4 Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <akaher@vmware.com>
+Date: Mon, 31 Jul 2023 13:15:23 +0530
+Subject: [PATCH] x86/boot: unconditional preserve CR4.MCE
+
+CR4.MCE should be preserved unconditional.
+
+As per commit 77a512e35db7, CONFIG_INTEL_TDX_GUEST selects CONFIG_X86_MCE only
+to preserve CR4.MCE while enabling CR4.PAE. Preserving CR4.MCE should be unconditional
+and CONFIG_INTEL_TDX_GUEST should not select CONFIG_X86_MCE.
+
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
+Signed-off-by: Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com>
+
+[Srinidhi Rao<srinidhi.rao@broadcom.com> Ported this patch to v6.12.y]
+Signed-off-by: srinidhira0 <srinidhi.rao@broadcom.com>
+---
+ arch/x86/Kconfig          | 1 -
+ arch/x86/kernel/head_64.S | 2 --
+ 2 files changed, 3 deletions(-)
+
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 15425c9bdc2b..78898c95d60e 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -897,7 +897,6 @@ config INTEL_TDX_GUEST
+ 	depends on PARAVIRT
+ 	select ARCH_HAS_CC_PLATFORM
+ 	select X86_MEM_ENCRYPT
+-	select X86_MCE
+ 	select UNACCEPTED_MEMORY
+ 	help
+ 	  Support running as a guest under Intel TDX.  Without this support,
+diff --git a/arch/x86/kernel/head_64.S b/arch/x86/kernel/head_64.S
+index 16752b8dfa89..8d6ce33b9953 100644
+--- a/arch/x86/kernel/head_64.S
++++ b/arch/x86/kernel/head_64.S
+@@ -199,7 +199,6 @@ SYM_INNER_LABEL(common_startup_64, SYM_L_LOCAL)
+ 	 *  there will be no global TLB entries after the execution."
+ 	 */
+ 	movl	$(X86_CR4_PAE | X86_CR4_LA57), %edx
+-#ifdef CONFIG_X86_MCE
+ 	/*
+ 	 * Preserve CR4.MCE if the kernel will enable #MC support.
+ 	 * Clearing MCE may fault in some environments (that also force #MC
+@@ -208,7 +207,6 @@ SYM_INNER_LABEL(common_startup_64, SYM_L_LOCAL)
+ 	 * here.
+ 	 */
+ 	orl	$X86_CR4_MCE, %edx
+-#endif
+ 	movq	%cr4, %rcx
+ 	andl	%edx, %ecx
+ 
+-- 
+2.39.4
+

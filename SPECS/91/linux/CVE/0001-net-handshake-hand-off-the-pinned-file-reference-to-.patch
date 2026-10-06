@@ -1,0 +1,140 @@
+From f4251190e58b209999c1ba9e6d2976136a1be055 Mon Sep 17 00:00:00 2001
+From: Chuck Lever <chuck.lever@oracle.com>
+Date: Mon, 25 May 2026 12:51:19 -0400
+Subject: [PATCH] net/handshake: hand off the pinned file reference to
+ accept_doit
+
+[Upstream commit f4251190e58b209999c1ba9e6d2976136a1be055 ]
+
+handshake_req_next() removes the request from the per-net pending list
+and drops hn_lock before handshake_nl_accept_doit() reads
+req->hr_sk->sk_socket and dereferences sock->file (in get_file() and
+fd_install()).  In that window a consumer running tls_handshake_cancel()
+followed by sockfd_put() or __fput_sync() releases sock->file.
+sock_release() then runs sock_orphan(), zeroing sk_socket, and frees the
+struct socket.  The accept-side code either reads NULL through sk_socket
+or chases freed memory.
+
+Retarget the accept-side dereferences at req->hr_file, which was pinned
+at submit time.  Hand off an additional file reference inside
+handshake_req_next(), under hn_lock, so the accept side operates on a
+reference that no concurrent handshake_req_cancel() can revoke.
+fd_install() consumes that handed-off reference; on any error path the
+caller must fput() it explicitly.
+
+Update handshake_req_cancel_test2 and _test3 to simulate the fd_install()
+consumption with an fput() so the kunit file-count assertions stay balanced.
+
+Note: In 6.12.y handshake_nl_accept_doit() uses get_unused_fd_flags() +
+fd_install() rather than FD_PREPARE()/fd_publish().  The fix is adapted
+accordingly: drop the sock->file indirection, use req->hr_file directly,
+and add explicit fput() on each error path that bypasses fd_install().
+
+Fixes: 3b3009ea8abb ("net/handshake: Create a NETLINK service for handling handshake requests")
+Reported-by: Chris Mason <clm@meta.com>
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Reviewed-by: Hannes Reinecke <hare@kernel.org>
+Signed-off-by: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
+---
+ net/handshake/handshake-test.c |  8 ++++++++
+ net/handshake/netlink.c        |  7 +++----
+ net/handshake/request.c        | 22 +++++++++++++++++++++-
+ 3 files changed, 32 insertions(+), 5 deletions(-)
+
+diff --git a/net/handshake/handshake-test.c b/net/handshake/handshake-test.c
+--- a/net/handshake/handshake-test.c
++++ b/net/handshake/handshake-test.c
+@@ -375,6 +375,10 @@
+ 	/* Pretend to accept this request */
+ 	next = handshake_req_next(hn, HANDSHAKE_HANDLER_CLASS_TLSHD);
+ 	KUNIT_ASSERT_PTR_EQ(test, req, next);
++	/* Simulate fd_install() consuming the file reference handed
++	 * off by handshake_req_next(); see handshake_nl_accept_doit().
++	 */
++	fput(filp);
+
+ 	/* Act */
+ 	result = handshake_req_cancel(sock->sk);
+@@ -417,6 +421,10 @@
+ 	/* Pretend to accept this request */
+ 	next = handshake_req_next(hn, HANDSHAKE_HANDLER_CLASS_TLSHD);
+ 	KUNIT_ASSERT_PTR_EQ(test, req, next);
++	/* Simulate fd_install() consuming the file reference handed
++	 * off by handshake_req_next(); see handshake_nl_accept_doit().
++	 */
++	fput(filp);
+
+ 	/* Pretend to complete this request */
+ 	handshake_complete(next, -ETIMEDOUT, NULL);
+diff --git a/net/handshake/netlink.c b/net/handshake/netlink.c
+--- a/net/handshake/netlink.c
++++ b/net/handshake/netlink.c
+@@ -92,7 +92,6 @@
+ 	struct net *net = sock_net(skb->sk);
+ 	struct handshake_net *hn = handshake_pernet(net);
+ 	struct handshake_req *req = NULL;
+-	struct socket *sock;
+ 	int class, fd, err;
+
+ 	err = -EOPNOTSUPP;
+@@ -109,20 +108,21 @@
+ 	if (!req)
+ 		goto out_status;
+
+-	sock = req->hr_sk->sk_socket;
+ 	fd = get_unused_fd_flags(O_CLOEXEC);
+ 	if (fd < 0) {
+ 		err = fd;
++		fput(req->hr_file); /* drop ref from handshake_req_next() */
+ 		goto out_complete;
+ 	}
+
+ 	err = req->hr_proto->hp_accept(req, info, fd);
+ 	if (err) {
+ 		put_unused_fd(fd);
++		fput(req->hr_file); /* drop ref from handshake_req_next() */
+ 		goto out_complete;
+ 	}
+
+-	fd_install(fd, get_file(sock->file));
++	fd_install(fd, req->hr_file);
+
+ 	trace_handshake_cmd_accept(net, req, req->hr_sk, fd);
+ 	return 0;
+diff --git a/net/handshake/request.c b/net/handshake/request.c
+--- a/net/handshake/request.c
++++ b/net/handshake/request.c
+@@ -181,6 +181,17 @@
+ 	return ret;
+ }
+
++/**
++ * handshake_req_next - Return the next queued handshake request
++ * @hn: per-net handshake state
++ * @class: handler class to match
++ *
++ * On a non-NULL return, the caller owns an extra reference
++ * on @req->hr_file.  FD_PREPARE() consumes it on success; on
++ * the error path the caller must fput() it.
++ *
++ * Return: pointer to a removed handshake_req, or NULL.
++ */
+ struct handshake_req *handshake_req_next(struct handshake_net *hn, int class)
+ {
+ 	struct handshake_req *req, *pos;
+@@ -191,6 +202,13 @@
+ 		if (pos->hr_proto->hp_handler_class != class)
+ 			continue;
+ 		__remove_pending_locked(hn, pos);
++		/* Hand off a file reference to the accept side under
++		 * hn_lock.  A concurrent handshake_req_cancel() can drop
++		 * hr_file before accept reaches fd_install(); this extra
++		 * reference keeps the file alive until fd_install() takes
++		 * ownership.
++		 */
++		get_file(pos->hr_file);
+ 		req = pos;
+ 		break;
+ 	}
+--
+2.39.0

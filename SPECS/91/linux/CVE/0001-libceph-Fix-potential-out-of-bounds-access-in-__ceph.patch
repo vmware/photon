@@ -1,0 +1,52 @@
+From 74ecd2c5d8bbf70e6dfbf2cdf2398c6652a8f9fc Mon Sep 17 00:00:00 2001
+From: Raphael Zimmer <raphael.zimmer@tu-ilmenau.de>
+Date: Tue, 28 Apr 2026 14:15:46 +0200
+Subject: [PATCH] libceph: Fix potential out-of-bounds access in
+ __ceph_x_decrypt()
+
+[ Upstream commit 821365487aa58d06bda65c676ba215d506ba9768 ]
+
+In __ceph_x_decrypt(), a part of the buffer p is interpreted as a
+ceph_x_encrypt_header, and the magic field of this struct is accessed.
+This happens without any guarantee that the buffer is large enough to
+hold this struct. The function parameter ciphertext_len represents the
+length of the ciphertext to decrypt and is guaranteed to be at most the
+remaining size of the allocated buffer p. However, this value is not
+necessarily greater than sizeof(ceph_x_encrypt_header). E.g., a message
+frame of type FRAME_TAG_AUTH_REPLY_MORE, that is just as long to hold
+the ciphertext at its end with a ciphertext_len of 8 or less, can
+trigger an out-of-bounds memory access when accessing hdr->magic.
+
+This patch fixes the issue by adding a check to ensure that the
+decrypted plaintext in the buffer is large enough to represent at least
+the ceph_x_encrypt_header.
+
+Cc: stable@vger.kernel.org
+Signed-off-by: Raphael Zimmer <raphael.zimmer@tu-ilmenau.de>
+Reviewed-by: Ilya Dryomov <idryomov@gmail.com>
+Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
+[Srinidhi: back-ported this CVE fix to v6.12.y]
+Signed-off-by: Srinidhi Rao <srinidhi.rao@broadcom.com>
+---
+ net/ceph/auth_x.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/net/ceph/auth_x.c b/net/ceph/auth_x.c
+index c83559f015e4..f805a813308f 100644
+--- a/net/ceph/auth_x.c
++++ b/net/ceph/auth_x.c
+@@ -86,6 +86,11 @@ static int __ceph_x_decrypt(struct ceph_crypto_key *secret, void *p,
+ 	if (ret)
+ 		return ret;
+ 
++	if (plaintext_len < sizeof(*hdr)) {
++		pr_err("%s plaintext too small %d\n", __func__, plaintext_len);
++		return -EINVAL;
++	}
++
+ 	if (le64_to_cpu(hdr->magic) != CEPHX_ENC_MAGIC) {
+ 		pr_err("%s bad magic\n", __func__);
+ 		return -EINVAL;
+-- 
+2.53.0
+

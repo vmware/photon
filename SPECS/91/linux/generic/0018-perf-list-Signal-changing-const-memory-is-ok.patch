@@ -1,0 +1,31 @@
+From 5d384844ab266357702a3e4d9b9aabc1109ae948 Mon Sep 17 00:00:00 2001
+From: Arnaldo Carvalho de Melo <acme@redhat.com>
+Date: Tue, 20 Jan 2026 18:26:44 -0300
+Subject: [PATCH 18/19] perf list: Signal changing const memory is ok
+
+In this case its a temp list that is created just for listing events and
+will be deleted at the end, so just cast it to get rid of the compiler
+warning.
+
+Reviewed-by: Ian Rogers <irogers@google.com>
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+---
+ tools/perf/util/print-events.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tools/perf/util/print-events.c b/tools/perf/util/print-events.c
+index 850c7acfc..a5d9a6ccc 100644
+--- a/tools/perf/util/print-events.c
++++ b/tools/perf/util/print-events.c
+@@ -191,7 +191,7 @@ void print_sdt_events(const struct print_callbacks *print_cb, void *print_state)
+ 
+ 	strlist__for_each_entry(sdt_name, sdtlist) {
+ 		bool show_detail = false;
+-		char *bid = strchr(sdt_name->s, '@');
++		char *bid = (char *)strchr(sdt_name->s, '@');
+ 		char *evt_name = NULL;
+ 
+ 		if (bid)
+-- 
+2.43.7
+

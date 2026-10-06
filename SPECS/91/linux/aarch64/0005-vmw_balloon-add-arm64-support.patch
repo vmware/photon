@@ -1,0 +1,122 @@
+From 75d887c2fc2dd7b44e8259d5ce0b8d5e3b7c83ea Mon Sep 17 00:00:00 2001
+From: Cyprien Laplace <claplace@vmware.com>
+Date: Sat, 30 Nov 2019 11:20:24 -0500
+Subject: [PATCH 5/6] vmw_balloon: add arm64 support
+
+Use the HVC 0x86 to trigger vmballoon I/O port interface with its backdoor
+ABI.
+
+Disable driver if 16KB or 64KB pages are selected as the VMware hypervisor
+assumes 4KB pages at the moment.
+
+Signed-off-by: Cyprien Laplace <claplace@vmware.com>
+Reviewed-by: Nadav Amit <namit@vmware.com>
+---
+ drivers/misc/Kconfig       |  3 +-
+ drivers/misc/vmw_balloon.c | 57 ++++++++++++++++++++++++++++++++------
+ 2 files changed, 50 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
+index fafa8b0d8..695149f04 100644
+--- a/drivers/misc/Kconfig
++++ b/drivers/misc/Kconfig
+@@ -363,7 +363,8 @@ config DS1682
+ 
+ config VMWARE_BALLOON
+ 	tristate "VMware Balloon Driver"
+-	depends on VMWARE_VMCI && X86 && HYPERVISOR_GUEST
++	depends on VMWARE_VMCI && (X86 || ARM64) && HYPERVISOR_GUEST
++	depends on !ARM64_16K_PAGES && !ARM64_64K_PAGES && !CPU_BIG_ENDIAN
+ 	select MEMORY_BALLOON
+ 	help
+ 	  This is VMware physical memory management driver which acts
+diff --git a/drivers/misc/vmw_balloon.c b/drivers/misc/vmw_balloon.c
+index bd5a9ad56..cb709eb17 100644
+--- a/drivers/misc/vmw_balloon.c
++++ b/drivers/misc/vmw_balloon.c
+@@ -34,7 +34,9 @@
+ #include <linux/balloon_compaction.h>
+ #include <linux/vmw_vmci_defs.h>
+ #include <linux/vmw_vmci_api.h>
+-#include <asm/hypervisor.h>
++#include <linux/hypervisor.h>
++
++#include <asm/vmware.h>
+ 
+ MODULE_AUTHOR("VMware, Inc.");
+ MODULE_DESCRIPTION("VMware Memory Control (Balloon) Driver");
+@@ -458,19 +460,17 @@ static inline void vmballoon_stats_page_add(struct vmballoon *b,
+ 		atomic64_add(val, &b->stats->page_stat[stat][size]);
+ }
+ 
++#if defined CONFIG_X86
+ static inline unsigned long
+-__vmballoon_cmd(struct vmballoon *b, unsigned long cmd, unsigned long arg1,
+-		unsigned long arg2, unsigned long *result)
++__vmballoon_call(unsigned long cmd, unsigned long arg1, unsigned long arg2,
++		 unsigned long *dummy1, unsigned long *result)
+ {
+-	unsigned long status, dummy1, dummy2, dummy3, local_result;
+-
+-	vmballoon_stats_op_inc(b, cmd, VMW_BALLOON_OP_STAT);
+-
++	unsigned long status, dummy2, dummy3;
+ 	asm volatile ("inl %%dx" :
+ 		"=a"(status),
+-		"=c"(dummy1),
++		"=c"(*dummy1),
+ 		"=d"(dummy2),
+-		"=b"(local_result),
++		"=b"(*result),
+ 		"=S"(dummy3) :
+ 		"0"(VMW_BALLOON_HV_MAGIC),
+ 		"1"(cmd),
+@@ -478,6 +478,45 @@ __vmballoon_cmd(struct vmballoon *b, unsigned long cmd, unsigned long arg1,
+ 		"3"(arg1),
+ 		"4"(arg2) :
+ 		"memory");
++	return status;
++}
++#elif defined CONFIG_ARM64
++static inline unsigned long
++__vmballoon_call(unsigned long cmd, unsigned long arg1, unsigned long arg2,
++		 unsigned long *dummy1, unsigned long *result)
++{
++	register u64 x0 asm("x0") = VMW_BALLOON_HV_MAGIC;
++	register u64 x1 asm("x1") = arg1;
++	register u32 w2 asm("w2") = cmd;
++	register u32 w3 asm("w3") = VMW_BALLOON_HV_PORT;
++	register u32 w4 asm("w4") = arg2;
++	register u32 w7 asm("w7") = X86_IO_W7_WITH |
++				    X86_IO_W7_DIR |
++				    2 << X86_IO_W7_SIZE_SHIFT;
++	asm volatile ("hvc %6" :
++		"+r"(x0),
++		"+r"(x1),
++		"+r"(w2),
++		"+r"(w3) :
++		"r" (w4),
++		"r" (w7),
++		"i" (X86_IO_MAGIC) :
++		"memory");
++	*dummy1 = w2;
++	*result = x1;
++	return x0;
++}
++#endif
++
++static inline unsigned long
++__vmballoon_cmd(struct vmballoon *b, unsigned long cmd, unsigned long arg1,
++		unsigned long arg2, unsigned long *result)
++{
++	unsigned long status, dummy1, local_result;
++
++	vmballoon_stats_op_inc(b, cmd, VMW_BALLOON_OP_STAT);
++
++	status = __vmballoon_call(cmd, arg1, arg2, &dummy1, &local_result);
+ 
+ 	/* update the result if needed */
+ 	if (result)
+-- 
+2.28.0
+

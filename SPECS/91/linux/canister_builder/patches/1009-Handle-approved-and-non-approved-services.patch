@@ -1,0 +1,350 @@
+From a3ef2e1284f656c62ba14c589464855430e2fed6 Mon Sep 17 00:00:00 2001
+From: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+Date: Fri, 11 Jul 2025 04:20:16 -0500
+Subject: [PATCH] Handle approved and non-approved services
+
+- Add XTS error log when XTS duplicate test fails
+- Remove fips_allowed flag for the following non-approved algorithms
+        cbcmac(aes) outside of ccm context
+        ghash-generic outside of gcm context
+        rfc4309(ccm(aes))
+        rfc3686(ctr(aes)))
+
+Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+[ Brennan : Modified to totally block external IVs instead of only print warning ]
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+[Ankit: Removed all approved/non-approved log indicators]
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ arch/x86/crypto/aesni-intel_glue.c | 21 +++++++++++++++++++--
+ crypto/aes_generic.c               |  1 +
+ crypto/cbc.c                       |  1 +
+ crypto/drbg.c                      |  1 +
+ crypto/ecc.c                       |  1 +
+ crypto/gcm.c                       | 19 +++++++++++++++++++
+ crypto/ghash-generic.c             |  1 +
+ crypto/seqiv.c                     |  5 +++++
+ crypto/sha256_generic.c            |  1 +
+ crypto/sha3_generic.c              |  1 +
+ crypto/sha512_generic.c            |  1 +
+ crypto/testmgr.c                   | 12 +++++-------
+ crypto/xts.c                       |  5 +++--
+ 13 files changed, 59 insertions(+), 11 deletions(-)
+
+diff --git a/arch/x86/crypto/aesni-intel_glue.c b/arch/x86/crypto/aesni-intel_glue.c
+index e47e1d10a..cbed67a0d 100644
+--- a/arch/x86/crypto/aesni-intel_glue.c
++++ b/arch/x86/crypto/aesni-intel_glue.c
+@@ -36,6 +36,7 @@
+ #include <linux/workqueue.h>
+ #include <linux/spinlock.h>
+ #include <crypto/gf128mul.h>
++#include <linux/fips.h>
+ 
+ void fcw_kernel_fpu_begin(void);
+ void fcw_kernel_fpu_end(void);
+@@ -56,6 +57,9 @@ extern bool fcw_boot_cpu_has(unsigned long bit);
+ extern bool fcw_x86_match_cpu_zmm_exclusion_list(void);
+ extern bool fcw_x86_match_cpu_aesni_cpu_id(void);
+ 
++int __init aesni_init(void);
++void __exit aesni_exit(void);
++
+ #define AESNI_ALIGN	16
+ #define AESNI_ALIGN_ATTR __attribute__ ((__aligned__(AESNI_ALIGN)))
+ #define AES_BLOCK_MASK	(~(AES_BLOCK_SIZE - 1))
+@@ -507,8 +511,10 @@ static int xts_setkey_aesni(struct crypto_skcipher *tfm, const u8 *key,
+ 	int err;
+ 
+ 	err = xts_verify_key(tfm, key, keylen);
+-	if (err)
++	if (err) {
++		fcw_printk(KERN_ERR "XTS verify duplicate key test failed\n");
+ 		return err;
++	}
+ 
+ 	keylen /= 2;
+ 
+@@ -1378,6 +1384,16 @@ gcm_crypt(struct aead_request *req, int flags)
+ 		le_ctr[3] = get_unaligned_be32(req->iv + 0);
+ 	}
+ 
++	if (fips_enabled && flags & FLAG_ENC) {
++		if (!aead_request_is_internal_iv(req)) {
++			fcw_printk(KERN_ERR "alg: (%s) (%s) Encryption with external IV is not"
++					" approved in FIPS mode\n",
++					crypto_tfm_alg_driver_name(req->base.tfm),
++					crypto_tfm_alg_name(req->base.tfm));
++			return -EINVAL;
++		}
++	}
++
+ 	/* Begin walking through the plaintext or ciphertext. */
+ 	if (flags & FLAG_ENC)
+ 		err = skcipher_walk_aead_encrypt(&walk, req, false);
+@@ -1568,6 +1584,7 @@ static int __init register_avx_algs(void)
+ 					 aes_gcm_simdalgs_aesni_avx);
+ 	if (err)
+ 		return err;
++
+ #if defined(CONFIG_AS_VAES) && defined(CONFIG_AS_VPCLMULQDQ)
+ 	if (!fcw_boot_cpu_has(X86_FEATURE_AVX2) ||
+ 	    !fcw_boot_cpu_has(X86_FEATURE_VAES) ||
+@@ -1614,6 +1631,7 @@ static int __init register_avx_algs(void)
+ 					 aes_gcm_simdalgs_vaes_avx10_512);
+ 	if (err)
+ 		return err;
++
+ #endif /* CONFIG_AS_VAES && CONFIG_AS_VPCLMULQDQ */
+ 	return 0;
+ }
+@@ -1691,7 +1709,6 @@ int __init aesni_init(void)
+ 	if (err)
+ 		goto unregister_skciphers;
+ 
+-
+ #ifdef CONFIG_X86_64
+ 	if (fcw_boot_cpu_has(X86_FEATURE_AVX))
+ 		err = simd_register_skciphers_compat(&aesni_xctr, 1,
+diff --git a/crypto/aes_generic.c b/crypto/aes_generic.c
+index d26cc2af0..1834d7ef2 100644
+--- a/crypto/aes_generic.c
++++ b/crypto/aes_generic.c
+@@ -54,6 +54,7 @@
+ #include <linux/errno.h>
+ #include <asm/byteorder.h>
+ #include <linux/unaligned.h>
++#include "fips_canister_wrapper.h"
+ 
+ static inline u8 byte(const u32 x, const unsigned n)
+ {
+diff --git a/crypto/cbc.c b/crypto/cbc.c
+index 581990a12..5b0fa6fba 100644
+--- a/crypto/cbc.c
++++ b/crypto/cbc.c
+@@ -10,6 +10,7 @@
+ #include <linux/init.h>
+ #include <linux/kernel.h>
+ #include <linux/log2.h>
++#include "fips_canister_wrapper.h"
+ 
+ static int crypto_cbc_encrypt_segment(struct crypto_lskcipher *tfm,
+ 				      const u8 *src, u8 *dst, unsigned nbytes,
+diff --git a/crypto/drbg.c b/crypto/drbg.c
+index 1ed3e3873..7ac35c710 100644
+--- a/crypto/drbg.c
++++ b/crypto/drbg.c
+@@ -101,6 +101,7 @@
+ #include <crypto/internal/cipher.h>
+ #include <linux/kernel.h>
+ #include <linux/jiffies.h>
++#include <linux/fips.h>
+ #include "fips_canister_wrapper.h"
+ 
+ /***************************************************************
+diff --git a/crypto/ecc.c b/crypto/ecc.c
+index 774f7e816..4358c9b2a 100644
+--- a/crypto/ecc.c
++++ b/crypto/ecc.c
+@@ -32,6 +32,7 @@
+ #include <crypto/rng.h>
+ #include <crypto/internal/ecc.h>
+ #include <linux/unaligned.h>
++#include <linux/fips.h>
+ 
+ #include "ecc_curve_defs.h"
+ #include "fips_canister_wrapper.h"
+diff --git a/crypto/gcm.c b/crypto/gcm.c
+index 7efe5edce..a45dba8aa 100644
+--- a/crypto/gcm.c
++++ b/crypto/gcm.c
+@@ -465,6 +465,14 @@ static int crypto_gcm_encrypt(struct aead_request *req)
+ 	struct skcipher_request *skreq = &pctx->u.skreq;
+ 	u32 flags = aead_request_flags(req);
+ 
++	if (fips_enabled && !aead_request_is_internal_iv(req)) {
++		fcw_printk(KERN_ERR "alg: (%s) (%s) Encryption with external IV is not"
++				" approved in FIPS mode\n",
++				crypto_tfm_alg_driver_name(req->base.tfm),
++				crypto_tfm_alg_name(req->base.tfm));
++		return -EINVAL;
++	}
++
+ 	crypto_gcm_init_common(req);
+ 	crypto_gcm_init_crypt(req, req->cryptlen);
+ 	skcipher_request_set_callback(skreq, flags, gcm_encrypt_done, req);
+@@ -759,6 +767,7 @@ static struct aead_request *crypto_rfc4106_crypt(struct aead_request *req)
+ 	}
+ 
+ 	aead_request_set_tfm(subreq, child);
++
+ 	aead_request_set_callback(subreq, req->base.flags, req->base.complete,
+ 				  req->base.data);
+ 	aead_request_set_crypt(subreq, rctx->src,
+@@ -766,6 +775,8 @@ static struct aead_request *crypto_rfc4106_crypt(struct aead_request *req)
+ 			       req->cryptlen, iv);
+ 	aead_request_set_ad(subreq, req->assoclen - 8);
+ 
++	subreq->internal_iv = req->internal_iv;
++
+ 	return subreq;
+ }
+ 
+@@ -773,6 +784,14 @@ static int crypto_rfc4106_encrypt(struct aead_request *req)
+ {
+ 	int err;
+ 
++	if (fips_enabled && !aead_request_is_internal_iv(req)) {
++		fcw_printk(KERN_ERR "alg: (%s) (%s) Encryption with external IV is not"
++				" approved in FIPS mode\n",
++				crypto_tfm_alg_driver_name(req->base.tfm),
++				crypto_tfm_alg_name(req->base.tfm));
++		return -EINVAL;
++	}
++
+ 	err = crypto_ipsec_check_assoclen(req->assoclen);
+ 	if (err)
+ 		return err;
+diff --git a/crypto/ghash-generic.c b/crypto/ghash-generic.c
+index 0a9180725..b3f1bbd4c 100644
+--- a/crypto/ghash-generic.c
++++ b/crypto/ghash-generic.c
+@@ -41,6 +41,7 @@
+ #include <linux/crypto.h>
+ #include <linux/init.h>
+ #include <linux/kernel.h>
++#include "fips_canister_wrapper.h"
+ 
+ static int ghash_init(struct shash_desc *desc)
+ {
+diff --git a/crypto/seqiv.c b/crypto/seqiv.c
+index 1e721a6fa..6274a0ab7 100644
+--- a/crypto/seqiv.c
++++ b/crypto/seqiv.c
+@@ -15,6 +15,7 @@
+ #include <linux/kernel.h>
+ #include <linux/slab.h>
+ #include <linux/string.h>
++#include "fips_canister_wrapper.h"
+ 
+ static void seqiv_aead_encrypt_complete2(struct aead_request *req, int err)
+ {
+@@ -100,6 +100,10 @@
+ 	crypto_xor(info, ctx->salt, ivsize);
+ 	scatterwalk_map_and_copy(info, req->dst, req->assoclen, ivsize, 1);
+ 
++	err = aead_request_mark_internal_iv(subreq);
++	if(err)
++		return err;
++
+ 	err = crypto_aead_encrypt(subreq);
+ 	if (unlikely(unaligned_info))
+ 		seqiv_aead_encrypt_complete2(req, err);
+diff --git a/crypto/sha256_generic.c b/crypto/sha256_generic.c
+index 9bc82ab39..cbc3cc424 100644
+--- a/crypto/sha256_generic.c
++++ b/crypto/sha256_generic.c
+@@ -15,6 +15,7 @@
+ #include <crypto/sha256_base.h>
+ #include <asm/byteorder.h>
+ #include <linux/unaligned.h>
++#include "fips_canister_wrapper.h"
+ 
+ const u8 sha224_zero_message_hash[SHA224_DIGEST_SIZE] = {
+ 	0xd1, 0x4a, 0x02, 0x8c, 0x2a, 0x3a, 0x2b, 0xc9, 0x47,
+diff --git a/crypto/sha3_generic.c b/crypto/sha3_generic.c
+index 7aa5becfc..0816c388a 100644
+--- a/crypto/sha3_generic.c
++++ b/crypto/sha3_generic.c
+@@ -13,6 +13,7 @@
+ #include <linux/types.h>
+ #include <crypto/sha3.h>
+ #include <linux/unaligned.h>
++#include "fips_canister_wrapper.h"
+ 
+ /*
+  * On some 32-bit architectures (h8300), GCC ends up using
+diff --git a/crypto/sha512_generic.c b/crypto/sha512_generic.c
+index 5c108024b..00b0531f7 100644
+--- a/crypto/sha512_generic.c
++++ b/crypto/sha512_generic.c
+@@ -16,6 +16,7 @@
+ #include <linux/percpu.h>
+ #include <asm/byteorder.h>
+ #include <linux/unaligned.h>
++#include "fips_canister_wrapper.h"
+ 
+ const u8 sha384_zero_message_hash[SHA384_DIGEST_SIZE] = {
+ 	0x38, 0xb0, 0x60, 0xa7, 0x51, 0xac, 0x96, 0x38,
+diff --git a/crypto/testmgr.c b/crypto/testmgr.c
+index 3e3cc4d55..c0234893e 100644
+--- a/crypto/testmgr.c
++++ b/crypto/testmgr.c
+@@ -2425,9 +2425,11 @@ static int alg_test_aead(const struct alg_test_desc *desc, const char *driver,
+ 		goto out;
+ 	}
+ 
+-	err = test_aead(ENCRYPT, suite, req, tsgls);
+-	if (err)
+-		goto out;
++	if (fips_enabled && !strstr(desc->alg, "gcm(aes)")) {
++		err = test_aead(ENCRYPT, suite, req, tsgls);
++		if (err)
++			goto out;
++	}
+ 
+ 	err = test_aead(DECRYPT, suite, req, tsgls);
+ 	if (err)
+@@ -4110,7 +4112,6 @@ static const struct alg_test_desc alg_test_descs[] = {
+ 	}, {
+ 		.alg = "authenc(hmac(sha1),rfc3686(ctr(aes)))",
+ 		.test = alg_test_null,
+-		.fips_allowed = 1,
+ 	}, {
+ 		.alg = "authenc(hmac(sha224),cbc(des))",
+ 		.test = alg_test_aead,
+@@ -4149,7 +4150,6 @@ static const struct alg_test_desc alg_test_descs[] = {
+ 	}, {
+ 		.alg = "authenc(hmac(sha256),rfc3686(ctr(aes)))",
+ 		.test = alg_test_null,
+-		.fips_allowed = 1,
+ 	}, {
+ 		.alg = "authenc(hmac(sha384),cbc(des))",
+ 		.test = alg_test_aead,
+@@ -4169,7 +4169,6 @@ static const struct alg_test_desc alg_test_descs[] = {
+ 	}, {
+ 		.alg = "authenc(hmac(sha384),rfc3686(ctr(aes)))",
+ 		.test = alg_test_null,
+-		.fips_allowed = 1,
+ 	}, {
+ 		.alg = "authenc(hmac(sha512),cbc(aes))",
+ 		.fips_allowed = 1,
+@@ -4196,7 +4195,6 @@ static const struct alg_test_desc alg_test_descs[] = {
+ 	}, {
+ 		.alg = "authenc(hmac(sha512),rfc3686(ctr(aes)))",
+ 		.test = alg_test_null,
+-		.fips_allowed = 1,
+ 	}, {
+ 		.alg = "blake2b-160",
+ 		.test = alg_test_hash,
+diff --git a/crypto/xts.c b/crypto/xts.c
+index 3f255ec8f..dab09e0ab 100644
+--- a/crypto/xts.c
++++ b/crypto/xts.c
+@@ -47,9 +47,10 @@ static int xts_setkey(struct crypto_skcipher *parent, const u8 *key,
+ 	int err;
+ 
+ 	err = xts_verify_key(parent, key, keylen);
+-	if (err)
++	if (err) {
++		fcw_printk(KERN_ERR "XTS verify duplicate key test failed\n");
+ 		return err;
+-
++	}
+ 	keylen /= 2;
+ 
+ 	/* we need two cipher instances: one to compute the initial 'tweak'
+-- 
+2.40.4
+

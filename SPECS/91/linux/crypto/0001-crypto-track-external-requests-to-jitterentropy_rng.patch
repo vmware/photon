@@ -1,0 +1,157 @@
+From 1b0b061348d9b84abae0b01d3af544631daf4f13 Mon Sep 17 00:00:00 2001
+From: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+Date: Fri, 23 Jan 2026 16:19:04 -0800
+Subject: [PATCH] crypto: track external requests to jitterentropy_rng
+
+Add a variable to crypto_tfm, which is used to denote
+if a request is originating inside or outside of the kernel.
+Pass it through where necessary, e.g for drbg/stdrng, we need
+to pass it through to the underlying jitterentropy_rng tfm.
+
+In future, this can be used to prioritize certain requests
+in the proxy.
+
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ crypto/algif_rng.c     |  2 ++
+ crypto/drbg.c          |  7 +++++++
+ crypto/rng.c           |  9 +++++++--
+ include/crypto/drbg.h  |  1 +
+ include/linux/crypto.h | 11 +++++++----
+ 5 files changed, 24 insertions(+), 6 deletions(-)
+
+diff --git a/crypto/algif_rng.c b/crypto/algif_rng.c
+index 1a86e40c8..4e9054bd1 100644
+--- a/crypto/algif_rng.c
++++ b/crypto/algif_rng.c
+@@ -212,6 +212,8 @@ static void *rng_bind(const char *name, u32 type, u32 mask)
+ 		return ERR_CAST(rng);
+ 	}
+ 
++	rng->base.external = true;
++
+ 	pctx->drng = rng;
+ 	return pctx;
+ }
+diff --git a/crypto/drbg.c b/crypto/drbg.c
+index 3addce909..f6198fcbe 100644
+--- a/crypto/drbg.c
++++ b/crypto/drbg.c
+@@ -1535,6 +1535,8 @@ static int drbg_prepare_hrng(struct drbg_state *drbg)
+ 		pr_info("DRBG: Continuing without Jitter RNG\n");
+ 	}
+ 
++	drbg->jent->base.external = drbg->external;
++
+ 	return 0;
+ }
+ 
+@@ -1936,6 +1938,9 @@ static int drbg_kcapi_random(struct crypto_rng *tfm,
+ 	struct drbg_state *drbg = crypto_rng_ctx(tfm);
+ 	struct drbg_string *addtl = NULL;
+ 	struct drbg_string string;
++	struct crypto_tfm *tfm_base = crypto_rng_tfm(tfm);
++
++	drbg->external = tfm_base->external;
+ 
+ 	if (slen) {
+ 		/* linked list variable is now local to allow modification */
+@@ -1959,6 +1964,8 @@ static int drbg_kcapi_seed(struct crypto_rng *tfm,
+ 	struct drbg_string *seed_string = NULL;
+ 	int coreref = 0;
+ 
++	drbg->external = tfm_base->external;
++
+ 	drbg_convert_tfm_core(crypto_tfm_alg_driver_name(tfm_base), &coreref,
+ 			      &pr);
+ 	if (0 < slen) {
+diff --git a/crypto/rng.c b/crypto/rng.c
+index b8092fef2..5873ea4fe 100644
+--- a/crypto/rng.c
++++ b/crypto/rng.c
+@@ -29,7 +29,7 @@ struct crypto_rng *crypto_default_rng;
+ EXPORT_SYMBOL_GPL(crypto_default_rng);
+ static int crypto_default_rng_refcnt;
+ 
+-static int get_jent_random_bytes(u8 * buf, unsigned int slen)
++static int get_jent_random_bytes(u8 * buf, unsigned int slen, bool external)
+ {
+ 	struct crypto_rng *jitter_entropy =
+ 		crypto_alloc_rng("jitterentropy_rng", 0, 0);
+@@ -39,6 +39,8 @@ static int get_jent_random_bytes(u8 * buf, unsigned int slen)
+ 		pr_err("RNG: Failed to allocated Jitter entropy RNG\n");
+ 		return -ENOENT;
+ 	}
++
++	jitter_entropy->base.external = external;
+ 	ret = crypto_rng_get_bytes(jitter_entropy, buf, slen);
+ 	if (ret) {
+ 		pr_err("RNG: Failed to read from Jitter entropy RNG\n");
+@@ -51,6 +53,7 @@ static int get_jent_random_bytes(u8 * buf, unsigned int slen)
+ int crypto_rng_reset(struct crypto_rng *tfm, const u8 *seed, unsigned int slen)
+ {
+ 	u8 *buf = NULL;
++	struct crypto_tfm *tfm_base;
+ 	int err;
+ 
+ 	if (!seed && slen) {
+@@ -59,7 +62,9 @@ int crypto_rng_reset(struct crypto_rng *tfm, const u8 *seed, unsigned int slen)
+ 			return -ENOMEM;
+ 
+ 		if (fips_enabled) {
+-			err = get_jent_random_bytes(buf, slen);
++			tfm_base = crypto_rng_tfm(tfm);
++			err = get_jent_random_bytes(buf, slen,
++							tfm_base->external);
+ 		} else {
+ 			err = get_random_bytes_wait(buf, slen);
+ 		}
+diff --git a/include/crypto/drbg.h b/include/crypto/drbg.h
+index af5ad51d3..10150f653 100644
+--- a/include/crypto/drbg.h
++++ b/include/crypto/drbg.h
+@@ -142,6 +142,7 @@ struct drbg_state {
+ 	const struct drbg_state_ops *d_ops;
+ 	const struct drbg_core *core;
+ 	struct drbg_string test_data;
++	bool external;
+ };
+ 
+ static inline __u8 drbg_statelen(struct drbg_state *drbg)
+diff --git a/include/linux/crypto.h b/include/linux/crypto.h
+index b164da5e1..d6a78fde6 100644
+--- a/include/linux/crypto.h
++++ b/include/linux/crypto.h
+@@ -425,11 +425,14 @@ struct crypto_tfm {
+ 	u32 crt_flags;
+ 
+ 	int node;
+-	
++
+ 	void (*exit)(struct crypto_tfm *tfm);
+-	
++
+ 	struct crypto_alg *__crt_alg;
+ 
++	/* Is this owned by a userspace process? */
++	bool external;
++
+ 	void *__crt_ctx[] CRYPTO_MINALIGN_ATTR;
+ };
+ 
+@@ -437,10 +440,10 @@ struct crypto_comp {
+ 	struct crypto_tfm base;
+ };
+ 
+-/* 
++/*
+  * Transform user interface.
+  */
+- 
++
+ struct crypto_tfm *crypto_alloc_base(const char *alg_name, u32 type, u32 mask);
+ void crypto_destroy_tfm(void *mem, struct crypto_tfm *tfm);
+ 
+-- 
+2.43.7
+

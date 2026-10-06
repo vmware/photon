@@ -1,0 +1,91 @@
+From 53e39abd0cb4379bcc3981c9765032e5e9859c32 Mon Sep 17 00:00:00 2001
+From: Eric Biggers <ebiggers@kernel.org>
+Date: Sat, 12 Jul 2025 16:22:53 -0700
+Subject: [PATCH 2/3] lib/crypto: sha1: Rename sha1_init() to sha1_init_raw()
+
+[Upstream commit 9503ca2ccafec51ee9e533d6f3aef14a589fc106]
+
+Rename the existing sha1_init() to sha1_init_raw(), since it conflicts
+with the upcoming library function.  This will later be removed, but
+this keeps the kernel building for the introduction of the library.
+
+Reviewed-by: Ard Biesheuvel <ardb@kernel.org>
+Link: https://lore.kernel.org/r/20250712232329.818226-3-ebiggers@kernel.org
+Signed-off-by: Eric Biggers <ebiggers@kernel.org>
+[Ankit: Backported for v6.12]
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ include/crypto/sha1.h | 2 +-
+ kernel/bpf/core.c     | 2 +-
+ lib/crypto/sha1.c     | 6 +++---
+ net/ipv6/addrconf.c   | 2 +-
+ 4 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/include/crypto/sha1.h b/include/crypto/sha1.h
+index 044ecea60..1e85d0974 100644
+--- a/include/crypto/sha1.h
++++ b/include/crypto/sha1.h
+@@ -40,7 +40,7 @@ extern int crypto_sha1_finup(struct shash_desc *desc, const u8 *data,
+  */
+ #define SHA1_DIGEST_WORDS	(SHA1_DIGEST_SIZE / 4)
+ #define SHA1_WORKSPACE_WORDS	16
+-void sha1_init(__u32 *buf);
++void sha1_init_raw(__u32 *buf);
+ void sha1_transform(__u32 *digest, const char *data, __u32 *W);
+ 
+ #endif /* _CRYPTO_SHA1_H */
+diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+index 5f2ad479e..f56bc453f 100644
+--- a/kernel/bpf/core.c
++++ b/kernel/bpf/core.c
+@@ -304,7 +304,7 @@ int bpf_prog_calc_tag(struct bpf_prog *fp)
+ 	if (!raw)
+ 		return -ENOMEM;
+ 
+-	sha1_init(digest);
++	sha1_init_raw(digest);
+ 	memset(ws, 0, sizeof(ws));
+ 
+ 	/* We need to take out the map fd for the digest calculation
+diff --git a/lib/crypto/sha1.c b/lib/crypto/sha1.c
+index ebb60519a..f117a7610 100644
+--- a/lib/crypto/sha1.c
++++ b/lib/crypto/sha1.c
+@@ -124,10 +124,10 @@ void sha1_transform(__u32 *digest, const char *data, __u32 *array)
+ EXPORT_SYMBOL(sha1_transform);
+ 
+ /**
+- * sha1_init - initialize the vectors for a SHA1 digest
++ * sha1_init_raw - initialize the vectors for a SHA1 digest
+  * @buf: vector to initialize
+  */
+-void sha1_init(__u32 *buf)
++void sha1_init_raw(__u32 *buf)
+ {
+ 	buf[0] = 0x67452301;
+ 	buf[1] = 0xefcdab89;
+@@ -135,7 +135,7 @@ void sha1_init(__u32 *buf)
+ 	buf[3] = 0x10325476;
+ 	buf[4] = 0xc3d2e1f0;
+ }
+-EXPORT_SYMBOL(sha1_init);
++EXPORT_SYMBOL(sha1_init_raw);
+ 
+ MODULE_DESCRIPTION("SHA-1 Algorithm");
+ MODULE_LICENSE("GPL");
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index be51b8792..1104d69c0 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -3390,7 +3390,7 @@ static int ipv6_generate_stable_address(struct in6_addr *address,
+ retry:
+ 	spin_lock_bh(&lock);
+ 
+-	sha1_init(digest);
++	sha1_init_raw(digest);
+ 	memset(&data, 0, sizeof(data));
+ 	memset(workspace, 0, sizeof(workspace));
+ 	memcpy(data.hwaddr, idev->dev->perm_addr, idev->dev->addr_len);
+-- 
+2.40.4
+

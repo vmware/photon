@@ -126,7 +126,7 @@ index 4eb1150e7..e65a27154 100644
 +		new_nr_frags = sinfo->nr_frags;
 +		nr_frags_free = old_nr_frags - new_nr_frags;
 +		if (unlikely(nr_frags_free))
- 			truesize -= (nr_frags_free - 1) * PAGE_SIZE +
+ 			truesize -= (nr_frags_free - 1) * page_size +
  				ALIGN(pg_consumed_bytes,
  				      BIT(rq->mpwqe.log_stride_sz));
 -		}

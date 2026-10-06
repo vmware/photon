@@ -1,0 +1,49 @@
+From f5af604d88285899202c985ecb4bc08cad0e71de Mon Sep 17 00:00:00 2001
+From: Arnaldo Carvalho de Melo <acme@redhat.com>
+Date: Tue, 20 Jan 2026 18:16:09 -0300
+Subject: [PATCH 15/19] perf list: Don't write to const memory
+
+Something now detected on fedora 44, where strchr() returns const if it
+is passed a const pointer:
+
+  util/print-events.c: In function 'print_sdt_events':
+  util/print-events.c:89:29: error: initialization discards 'const' qualifier from pointer target type [-Werror=discarded-qualifiers]
+     89 |                 char *bid = strchr(sdt_name->s, '@');
+        |                             ^~~~~~
+
+Fix it by using strchrnul() + strncmp() instead of temporarily scrubbing
+it with '\0'.
+
+Reviewed-by: Ian Rogers <irogers@google.com>
+Suggested-by: David Laight <david.laight.linux@gmail.com>
+Link: https://lore.kernel.org/r/20260121112536.27fd5d11@pumpkin
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+---
+ tools/perf/util/print-events.c | 11 +++--------
+ 1 file changed, 3 insertions(+), 8 deletions(-)
+
+diff --git a/tools/perf/util/print-events.c b/tools/perf/util/print-events.c
+index a1c71d979..3624a3c79 100644
+--- a/tools/perf/util/print-events.c
++++ b/tools/perf/util/print-events.c
+@@ -202,14 +202,9 @@ void print_sdt_events(const struct print_callbacks *print_cb, void *print_state)
+ 		} else {
+ 			next_sdt_name = strlist__next(sdt_name);
+ 			if (next_sdt_name) {
+-				char *bid2 = strchr(next_sdt_name->s, '@');
+-
+-				if (bid2)
+-					*bid2 = '\0';
+-				if (strcmp(sdt_name->s, next_sdt_name->s) == 0)
+-					show_detail = true;
+-				if (bid2)
+-					*bid2 = '@';
++				const char *bid2 = strchrnul(next_sdt_name->s, '@');
++
++				show_detail = strncmp(sdt_name->s, next_sdt_name->s, bid2 - next_sdt_name->s) == 0;
+ 			}
+ 		}
+ 		last_sdt_name = sdt_name->s;
+-- 
+2.43.7
+

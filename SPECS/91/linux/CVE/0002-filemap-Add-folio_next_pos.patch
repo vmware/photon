@@ -1,0 +1,52 @@
+From 92031d2462196c7e2d35c4bfe075110840957cde Mon Sep 17 00:00:00 2001
+From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
+Date: Fri, 24 Oct 2025 18:08:09 +0100
+Subject: [PATCH] filemap: Add folio_next_pos()
+
+[ Upstream commit 4511fd86db6f8f94f8aff01044f5c69aa38f81f4 ]
+
+Replace the open-coded implementation in ocfs2 (which loses the top
+32 bits on 32-bit architectures) with a helper in pagemap.h.
+
+Fixes: 35edec1d52c0 (ocfs2: update truncate handling of partial clusters)
+Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+[Srinidhi: back-ported this CVE fix to linux v6.12.y. Backported as a
+ prerequisite for CVE-2026-64160 (fs/netfs/misc.c in the CVE fix uses
+ folio_next_pos()). Dropped the fs/ocfs2/alloc.c hunk which is out of
+ scope for this backport and unrelated to CVE-2026-64160.
+ Declared folio_next_pos() taking a non-const `struct folio *` instead
+ of upstream's `const struct folio *`: v6.12.1y's folio_next_index(),
+ which folio_next_pos() calls, still takes a non-const pointer.
+ resolve build failure here with -Werror=discarded-qualifiers. All
+ call sites pass a non-const folio pointer, so this is behaviourally
+ identical on v6.12.y. second patch out of 4 to fix CVE-2026-64160]
+Signed-off-by: Srinidhi Rao <srinidhi.rao@broadcom.com>
+---
+ include/linux/pagemap.h | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
+index 68a5f1ff3301..bdc14e820bc2 100644
+--- a/include/linux/pagemap.h
++++ b/include/linux/pagemap.h
+@@ -928,6 +928,17 @@ static inline pgoff_t folio_next_index(struct folio *folio)
+ 	return folio->index + folio_nr_pages(folio);
+ }
+ 
++/**
++ * folio_next_pos - Get the file position of the next folio.
++ * @folio: The current folio.
++ *
++ * Return: The position of the folio which follows this folio in the file.
++ */
++static inline loff_t folio_next_pos(struct folio *folio)
++{
++	return (loff_t)folio_next_index(folio) << PAGE_SHIFT;
++}
++
+ /**
+  * folio_file_page - The page for a particular index.
+  * @folio: The folio which contains this index.
+-- 
+2.53.0
+

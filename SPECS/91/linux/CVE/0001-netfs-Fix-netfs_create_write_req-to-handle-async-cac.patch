@@ -1,0 +1,45 @@
+From 8ab75e445c161c4cb504aa98e20ce1dd1ecd8e9a Mon Sep 17 00:00:00 2001
+From: David Howells <dhowells@redhat.com>
+Date: Thu, 25 Jun 2026 15:06:20 +0100
+Subject: [PATCH] netfs: Fix netfs_create_write_req() to handle async
+ cache object creation
+
+[ Upstream commit dbd6f56d975b23241b7bbb11bb8f562af548a0aa ]
+
+netfs_create_write_req() will skip caching if the fscache cookie is
+disabled, but this is a problem because async cache object creation might
+not have got far enough yet that has been enabled - thereby causing the
+call to fscache_begin_write_operation() to be skipped.
+
+Fix this by removing the checks on the cookie and delegating this to
+fscache_begin_write_operation().
+
+Fixes: 7b589a9b45ae ("netfs: Fix handling of USE_PGPRIV2 and WRITE_TO_CACHE flags")
+Signed-off-by: David Howells <dhowells@redhat.com>
+Link: https://patch.msgid.link/20260625140640.3116900-3-dhowells@redhat.com
+cc: Paulo Alcantara <pc@manguebit.org>
+cc: netfs@lists.linux.dev
+cc: linux-fsdevel@vger.kernel.org
+Signed-off-by: Christian Brauner <brauner@kernel.org>
+
+[Ankit: Backported for v6.12.y.]
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ fs/netfs/write_issue.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/fs/netfs/write_issue.c b/fs/netfs/write_issue.c
+index 7431c0a4252c..c08c2487b311 100644
+--- a/fs/netfs/write_issue.c
++++ b/fs/netfs/write_issue.c
+@@ -105,7 +105,7 @@ struct netfs_io_request *netfs_create_write_req(struct address_space *mapping,
+ 	_enter("R=%x", wreq->debug_id);
+
+ 	ictx = netfs_inode(wreq->inode);
+-	if (is_buffered && netfs_is_cache_enabled(ictx))
++	if (is_buffered)
+ 		fscache_begin_write_operation(&wreq->cache_resources, netfs_i_cookie(ictx));
+
+ 	wreq->cleaned_to = wreq->start;
+--
+2.53.0

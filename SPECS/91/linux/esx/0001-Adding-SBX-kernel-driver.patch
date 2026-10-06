@@ -1,0 +1,1550 @@
+From 5300250ae04e694e67010865e893bf1c95cf0796 Mon Sep 17 00:00:00 2001
+From: Garrett Goble <Garrett.Goble@broadcom.com>
+Date: Tue, 4 Aug 2026 12:29:15 -0500
+Subject: [PATCH] Adding SBX kernel driver
+
+This patch adds a kernel driver for the SBX Virtual Device on ESXi.
+The driver facilitates communication between the graphics processes
+in the guest and the shared memory on the host. This driver should
+only be used for the graphics DriverVM project.
+---
+ drivers/misc/Kconfig             |    1 +
+ drivers/misc/Makefile            |    1 +
+ drivers/misc/vmw_sbx/Kconfig     |   11 +
+ drivers/misc/vmw_sbx/Makefile    |    6 +
+ drivers/misc/vmw_sbx/sbx.c       | 1356 ++++++++++++++++++++++++++++++
+ drivers/misc/vmw_sbx/sbx_ioctl.h |   43 +
+ drivers/misc/vmw_sbx/sbx_reg.h   |   55 ++
+ 7 files changed, 1473 insertions(+)
+ create mode 100644 drivers/misc/vmw_sbx/Kconfig
+ create mode 100644 drivers/misc/vmw_sbx/Makefile
+ create mode 100644 drivers/misc/vmw_sbx/sbx.c
+ create mode 100644 drivers/misc/vmw_sbx/sbx_ioctl.h
+ create mode 100644 drivers/misc/vmw_sbx/sbx_reg.h
+
+diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
+index db96ceeb7059..83b2a4b18b08 100644
+--- a/drivers/misc/Kconfig
++++ b/drivers/misc/Kconfig
+@@ -629,4 +629,5 @@ source "drivers/misc/pvpanic/Kconfig"
+ source "drivers/misc/mchp_pci1xxxx/Kconfig"
+ source "drivers/misc/keba/Kconfig"
+ source "drivers/misc/vmw_extcfg/Kconfig"
++source "drivers/misc/vmw_sbx/Kconfig"
+ endmenu
+diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
+index bcdb52acbae8..9ed76f7faa39 100644
+--- a/drivers/misc/Makefile
++++ b/drivers/misc/Makefile
+@@ -70,6 +70,7 @@ obj-$(CONFIG_TMR_INJECT)	+= xilinx_tmr_inject.o
+ obj-$(CONFIG_TPS6594_ESM)	+= tps6594-esm.o
+ obj-$(CONFIG_TPS6594_PFSM)	+= tps6594-pfsm.o
+ obj-$(CONFIG_VMWARE_EXTCFG)	+= vmw_extcfg/
++obj-$(CONFIG_SBX)		+= vmw_sbx/
+ obj-$(CONFIG_NSM)		+= nsm.o
+ obj-$(CONFIG_MARVELL_CN10K_DPI)	+= mrvl_cn10k_dpi.o
+ obj-y				+= keba/
+diff --git a/drivers/misc/vmw_sbx/Kconfig b/drivers/misc/vmw_sbx/Kconfig
+new file mode 100644
+index 000000000000..1a4e7096467f
+--- /dev/null
++++ b/drivers/misc/vmw_sbx/Kconfig
+@@ -0,0 +1,11 @@
++# SPDX-License-Identifier: GPL-2.0-or-later
++menuconfig SBX
++	tristate "VMware SBX Virtual Device Support"
++	help
++      VMware SBX Virtual Device Support.
++
++	  Enable the driver for the VMware SBX Virtual Device. This driver
++	  handles communication and memory sharing for graphics workloads
++	  on ESXi.
++
++	  If unsure, say no.
+diff --git a/drivers/misc/vmw_sbx/Makefile b/drivers/misc/vmw_sbx/Makefile
+new file mode 100644
+index 000000000000..ce1e01f1b935
+--- /dev/null
++++ b/drivers/misc/vmw_sbx/Makefile
+@@ -0,0 +1,6 @@
++# SPDX-License-Identifier: GPL-2.0-or-later
++#
++# Makefile for the VMware sbx virtual device driver
++#
++
++obj-$(CONFIG_SBX)		+= sbx.o
+diff --git a/drivers/misc/vmw_sbx/sbx.c b/drivers/misc/vmw_sbx/sbx.c
+new file mode 100644
+index 000000000000..8c6e0991cf01
+--- /dev/null
++++ b/drivers/misc/vmw_sbx/sbx.c
+@@ -0,0 +1,1356 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * Copyright (c) 2020-2026 Broadcom. All Rights Reserved. The term
++ * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.
++ */
++
++#include <linux/init.h>
++#include <linux/module.h>
++#include <linux/pci.h>
++#include <linux/kernel.h>
++#include <linux/slab.h>
++#include <linux/fs.h>
++#include <linux/errno.h>
++#include <linux/types.h>
++#include <linux/fcntl.h>
++#include <linux/cdev.h>
++#include <linux/uaccess.h>
++#include <linux/wait.h>
++#include <linux/stat.h>
++#include <linux/poll.h>
++#include <linux/pci_ids.h>
++#include <linux/version.h>
++#include "sbx_reg.h"
++#include "sbx_ioctl.h"
++
++MODULE_LICENSE("GPL");
++MODULE_AUTHOR("Broadcom");
++MODULE_DESCRIPTION("SBX device driver");
++
++#define SBX_DEVICE_VERSION          1
++#define SBX_DEVICE_GUEST_PROTOCOL   1
++
++#define SBX_NAME "sbx"
++#define SBX_MINOR_FIRST 0
++#define SBX_MINOR_COUNT (SBX_CMD_BAR_MAX_CONNECTIONS)
++
++#define SBX_MGR_NAME "sbx-mgr"
++#define SBX_MGR_MINOR_FIRST 0
++#define SBX_MGR_MINOR_COUNT 1
++
++#define SBX_CMD_BAR     0
++#define SBX_SHM_BAR     2
++
++#define SBX_IOCTL_TIMEOUT_MS	50
++
++struct sbx_minor_info {
++	unsigned long minor_index;
++	unsigned int waiting;
++};
++
++struct sbx_dev_minor {
++	atomic_t avail;
++	atomic_t incoming_signal_count;
++	wait_queue_head_t waitq;
++	/*
++	 * This mutex serializes wait/signal state and the chunks
++	 * enumeration protocol for a given sbx minor device.
++	 */
++	struct mutex lock;
++};
++
++struct sbx_dev {
++	struct cdev sbx_cdev;
++	struct cdev sbx_mgr_cdev;
++	char *cmd_remap;
++	char *cmd_global_addr;
++	char *cmd_caps_addr;
++	char *shm_remap;
++	unsigned int irq;
++	struct page *stats_desc_page;
++
++	/*
++	 * This mutex locks the sbx mgr device.
++	 */
++	struct mutex sbx_mgr_lock;
++	unsigned int sbx_mgr_open;
++
++	resource_size_t shm_addr;
++	resource_size_t shm_len;
++	wait_queue_head_t launch_waitq;
++	atomic_t launch_ready;
++
++	unsigned long pending_signals;
++	struct sbx_dev_minor minor_device[SBX_MINOR_COUNT];
++};
++
++static struct sbx_dev *sbx_device;
++static int sbx_major;
++static int sbx_mgr_major;
++static struct class *sbx_class;
++
++static int sbx_mgr_unpin_stats_file(void);
++
++static unsigned long long sbx_read_connection_reg(unsigned long minor_index,
++						  unsigned long reg)
++{
++	char *addr;
++
++	addr = sbx_device->cmd_remap + minor_index * SBX_CMD_BAR_CONNECT_LEN;
++	return readq(addr + (reg * 8));
++}
++
++static void sbx_write_connection_reg(unsigned long minor_index,
++				     unsigned long reg,
++				     unsigned long long value)
++{
++	char *addr;
++
++	addr = sbx_device->cmd_remap + minor_index * SBX_CMD_BAR_CONNECT_LEN;
++	writeq(value, addr + (reg * 8));
++}
++
++static unsigned long long sbx_read_global_reg(unsigned long reg)
++{
++	char *addr;
++
++	addr = sbx_device->cmd_global_addr;
++	return readq(addr + (reg * 8));
++}
++
++static void sbx_write_global_reg(unsigned long reg, unsigned long long value)
++{
++	char *addr;
++
++	addr = sbx_device->cmd_global_addr;
++	writeq(value, addr + (reg * 8));
++}
++
++static int sbx_open(struct inode *inode, struct file *filp)
++{
++	unsigned long minor_index = iminor(inode);
++	struct sbx_minor_info *minor_info;
++	struct sbx_dev_minor *minor_device;
++
++	if (minor_index >= SBX_MINOR_COUNT) {
++		pr_err("sbx open: pid %i (%s) invalid minor(%lu) file\n",
++		       current->pid, current->comm, minor_index);
++		return -ENODEV;
++	}
++	minor_device = &sbx_device->minor_device[minor_index];
++
++	if (atomic_cmpxchg(&minor_device->avail, 1, 0) != 1) {
++		pr_err("sbx open: pid %i (%s) minor(%lu) busy fail\n",
++		       current->pid, current->comm, minor_index);
++		return -EBUSY;
++	}
++
++	pr_info("sbx open: pid %i (%s) minor(%lu)\n", current->pid,
++		current->comm, minor_index);
++
++	minor_info = kzalloc(sizeof(*minor_info), GFP_KERNEL);
++	if (!minor_info) {
++		atomic_set(&minor_device->avail, 1);
++		return -ENOMEM;
++	}
++	minor_info->minor_index = minor_index;
++	atomic_set(&minor_device->incoming_signal_count, 0);
++	clear_bit(minor_index, &sbx_device->pending_signals);
++
++	filp->private_data = minor_info;
++
++	return 0;
++}
++
++static int sbx_release(struct inode *inode, struct file *filp)
++{
++	unsigned int minor_index = iminor(inode);
++	struct sbx_minor_info *minor_info;
++	struct sbx_dev_minor *minor_device;
++
++	if (minor_index >= SBX_MINOR_COUNT) {
++		pr_err("sbx release: pid %i (%s) invalid minor(%u) file\n",
++		       current->pid, current->comm, minor_index);
++		return -ENODEV;
++	}
++	minor_device = &sbx_device->minor_device[minor_index];
++
++	sbx_write_connection_reg(minor_index, SBX_CONNECTION_REG_RESET, 1);
++
++	pr_info("sbx release: pid %i (%s) minor(%u)\n", current->pid,
++		current->comm, minor_index);
++
++	minor_info = (struct sbx_minor_info *)filp->private_data;
++	kfree(minor_info);
++	atomic_set(&minor_device->avail, 1);
++	return 0;
++}
++
++static int sbx_ioctl_size(struct sbx_minor_info *minor_info,
++			  unsigned long arg)
++{
++	int result = 0;
++	unsigned long num_mpn;
++	unsigned long size;
++	unsigned long *user_space_ulong_ptr = (void *)arg;
++	unsigned long minor_index = minor_info->minor_index;
++
++	num_mpn = sbx_read_connection_reg(minor_index, SBX_CONNECTION_REG_MPNS);
++
++	size = num_mpn * PAGE_SIZE;
++
++	if (put_user(size, user_space_ulong_ptr) != 0) {
++		pr_err("sbx size ioctl: pid %i (%s) minor(%lu) put_user fail\n",
++		       current->pid, current->comm, minor_index);
++		result = -EFAULT;
++	}
++
++	return result;
++}
++
++static int sbx_ioctl_signal(struct sbx_minor_info *minor_info)
++{
++	int result;
++	unsigned long minor_index = minor_info->minor_index;
++
++	/*
++	 * This returns 0 on success or a positive ERRNO, so it is safe
++	 * to convert to a -ERRNO.
++	 */
++	result = sbx_read_connection_reg(minor_index,
++					 SBX_CONNECTION_REG_SIGNAL);
++
++	if (result != 0) {
++		pr_info("sbx signal ioctl: pid %i (%s) minor(%lu) fail\n",
++			current->pid, current->comm, minor_index);
++		result = -result;
++	}
++
++	return result;
++}
++
++static int sbx_wait(struct sbx_minor_info *minor_info,
++		    struct sbx_dev_minor *minor_device,
++		    long signal_count,
++		    unsigned int ms)
++{
++	int result;
++	unsigned long minor_index = minor_info->minor_index;
++	unsigned long *pending = &sbx_device->pending_signals;
++
++	if (signal_count > 0) {
++		result = 0;
++	} else {
++		int rc;
++		unsigned long timeout = msecs_to_jiffies(ms);
++
++		minor_info->waiting = 1;
++		mutex_unlock(&minor_device->lock);
++
++		rc = wait_event_interruptible_timeout(minor_device->waitq,
++						      test_bit(minor_index,
++							       pending),
++						      timeout);
++		mutex_lock(&minor_device->lock);
++		if (rc > 0)
++			result = 0;
++		else if (rc == 0)
++			result = -ETIME;
++		else
++			result = -EINTR;
++	}
++
++	if (result == 0) {
++		if (!atomic_add_unless(&minor_device->incoming_signal_count, -1, 0)) {
++			pr_err("sbx wait ioctl: pid %i (%s) minor(%lu) add unless fail\n",
++			       current->pid, current->comm, minor_index);
++		}
++		if (!test_and_clear_bit(minor_index, pending)) {
++			pr_err("sbx wait ioctl: pid %i (%s) minor(%lu) clear bit fail\n",
++			       current->pid, current->comm, minor_index);
++		}
++		if (atomic_read(&minor_device->incoming_signal_count) > 0)
++			set_bit(minor_index, pending);
++	}
++
++	if (minor_info->waiting == 1)
++		minor_info->waiting = 0;
++
++	return result;
++}
++
++static int sbx_ioctl_wait(struct sbx_minor_info *minor_info, unsigned long arg)
++{
++	int result;
++	unsigned long minor_index = minor_info->minor_index;
++	unsigned int ms = (unsigned int)arg;
++	struct sbx_dev_minor *minor_device;
++	long signal_count;
++
++	minor_device = &sbx_device->minor_device[minor_index];
++
++	mutex_lock(&minor_device->lock);
++
++	signal_count = atomic_read(&minor_device->incoming_signal_count);
++
++	if (ms > SBX_IOCTL_TIMEOUT_MS) {
++		pr_err("sbx wait ioctl: pid %i (%s) minor(%lu) ms max=50 fail\n",
++		       current->pid, current->comm, minor_index);
++		result = -EINVAL;
++	} else if (minor_info->waiting) {
++		pr_err("sbx wait ioctl: pid %i (%s) minor(%lu) already waiting fail\n",
++		       current->pid, current->comm, minor_index);
++		result = -EBUSY;
++	} else if (signal_count > 1) {
++		atomic_dec(&minor_device->incoming_signal_count);
++		result = 0;
++	} else {
++		result = sbx_wait(minor_info, minor_device, signal_count, ms);
++	}
++
++	mutex_unlock(&minor_device->lock);
++
++	return result;
++}
++
++static int sbx_ioctl_mem(struct sbx_minor_info *minor_info,
++			 unsigned long arg)
++{
++	int result = 0;
++	unsigned long long *user_space_ptr = (void *)arg;
++	unsigned long minor_index = minor_info->minor_index;
++	unsigned long long mem_kb;
++
++	mem_kb = sbx_read_connection_reg(minor_index, SBX_CONNECTION_REG_MEM_KB);
++
++	if (put_user(mem_kb, user_space_ptr) != 0) {
++		pr_err("sbx mem ioctl: pid %i (%s) minor(%lu) put_user fail\n",
++		       current->pid, current->comm, minor_index);
++		result = -EFAULT;
++	}
++
++	return result;
++}
++
++static int sbx_get_chunks(struct sbx_chunks_msg *msg,
++			  struct sbx_dev_minor *minor_device,
++			  unsigned long minor_index)
++{
++	int result = 0;
++	unsigned long *chunk_ids;
++	unsigned long total = 0;
++	unsigned long chunk_id;
++
++	chunk_ids = kmalloc_array(msg->chunk_size, sizeof(*chunk_ids), GFP_KERNEL);
++	if (!chunk_ids)
++		return -ENOMEM;
++
++	mutex_lock(&minor_device->lock);
++
++	sbx_write_connection_reg(minor_index, SBX_CONNECTION_REG_CHUNKS, 1);
++
++	/* The device will always eventually return SBX_INVALID_CHUNK. */
++	while (1) {
++		chunk_id = sbx_read_connection_reg(minor_index,
++						   SBX_CONNECTION_REG_CHUNKS);
++		if (chunk_id == SBX_INVALID_CHUNK)
++			break;
++
++		if (total >= msg->chunk_size) {
++			pr_err("sbx chunk_size too small\n");
++			result = -EFAULT;
++			break;
++		}
++
++		chunk_ids[total++] = chunk_id;
++	}
++
++	mutex_unlock(&minor_device->lock);
++
++	if (total && copy_to_user(msg->chunks, chunk_ids,
++				  total * sizeof(*chunk_ids)) != 0)
++		result = -EFAULT;
++
++	if (copy_to_user(msg->num_chunks, &total, sizeof(total)) != 0)
++		result = -EFAULT;
++
++	kfree(chunk_ids);
++
++	return result;
++}
++
++static int sbx_ioctl_chunks(struct sbx_minor_info *minor_info,
++			    struct sbx_dev_minor *minor_device,
++			    unsigned long arg)
++{
++	int result = 0;
++	struct sbx_chunks_msg msg;
++	unsigned long minor_index = minor_info->minor_index;
++
++	if (copy_from_user(&msg, (void *)arg, sizeof(msg)) == 0) {
++		result = sbx_get_chunks(&msg, minor_device, minor_index);
++	} else {
++		pr_err("sbx chunks ioctl: failed to copy msg\n");
++		result = -EFAULT;
++	}
++
++	return result;
++}
++
++static long sbx_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
++{
++	int result;
++	struct sbx_minor_info *minor_info = (struct sbx_minor_info *)filp->private_data;
++	unsigned long minor_index = minor_info->minor_index;
++	struct sbx_dev_minor *minor_device;
++
++	if (minor_index >= SBX_MINOR_COUNT) {
++		pr_err("sbx ioctl: pid %i (%s) invalid minor(%lu) file\n",
++		       current->pid, current->comm, minor_index);
++		return -ENODEV;
++	}
++	minor_device = &sbx_device->minor_device[minor_index];
++
++	switch (cmd) {
++	case SBX_IOCTL_SIZE:
++		result = sbx_ioctl_size(minor_info, arg);
++		break;
++	case SBX_IOCTL_SIGNAL:
++		result = sbx_ioctl_signal(minor_info);
++		break;
++	case SBX_IOCTL_WAIT:
++		result = sbx_ioctl_wait(minor_info, arg);
++		break;
++	case SBX_IOCTL_MEM:
++		result = sbx_ioctl_mem(minor_info, arg);
++		break;
++	case SBX_IOCTL_CHUNKS:
++		result = sbx_ioctl_chunks(minor_info, minor_device, arg);
++		break;
++	default:
++		pr_err("sbx ioctl: pid %i (%s) minor(%lu) invalid cmd(%u)\n",
++		       current->pid, current->comm, minor_index, cmd);
++		result = -EINVAL;
++		break;
++	}
++
++	return result;
++}
++
++static int sbx_mmap(struct file *filp, struct vm_area_struct *vma)
++{
++	struct sbx_minor_info *minor_info;
++	unsigned long minor_index;
++	unsigned long len = vma->vm_end - vma->vm_start;
++	unsigned long pfn = (sbx_device->shm_addr >> PAGE_SHIFT) + vma->vm_pgoff;
++
++	minor_info = (struct sbx_minor_info *)filp->private_data;
++	minor_index = minor_info->minor_index;
++
++	if (minor_index >= SBX_MINOR_COUNT) {
++		pr_err("sbx mmap: invalid minor(%lu) file\n", minor_index);
++		return -ENODEV;
++	}
++
++	pr_info("sbx mmap: vm_start=%#lx vm_end=%#lx vm_pgoff=%#lx pfn=%#lx\n",
++		vma->vm_start, vma->vm_end, vma->vm_pgoff, pfn);
++
++	if (vma->vm_pgoff > (sbx_device->shm_len >> PAGE_SHIFT) ||
++	   len > sbx_device->shm_len - (vma->vm_pgoff << PAGE_SHIFT)) {
++		pr_err("sbx mmap: invalid range\n");
++		return -EINVAL;
++	}
++
++#if KERNEL_VERSION(6, 3, 0) <= LINUX_VERSION_CODE
++	vm_flags_set(vma, VM_IO | VM_DONTEXPAND | VM_DONTDUMP);
++#else
++	vma->vm_flags |= VM_IO | VM_DONTEXPAND | VM_DONTDUMP;
++#endif
++
++	if (remap_pfn_range(vma, vma->vm_start, pfn, len, vma->vm_page_prot)) {
++		pr_err("sbx mmap: minor(%lu) remap_pfn_range fail\n",
++		       minor_index);
++		return -EAGAIN;
++	}
++
++	pr_info("sbx mmap: pid %i (%s) minor(%lu)\n", current->pid,
++		current->comm, minor_index);
++
++	return 0;
++}
++
++static irqreturn_t sbx_irq_handler(int irq, void *dev_id)
++{
++	struct sbx_dev *sbx = (struct sbx_dev *)dev_id;
++	unsigned long mask = (unsigned long)-1;
++	unsigned long new_signals;
++	int launch_ready;
++	int minor_index;
++
++	launch_ready = sbx_read_global_reg(SBX_GLOBAL_REG_LAUNCH);
++	new_signals = sbx_read_global_reg(SBX_GLOBAL_REG_SIGNAL) & mask;
++	while (new_signals != 0) {
++		struct sbx_dev_minor *minor_device;
++
++		minor_index = __ffs(new_signals);
++		minor_device = &sbx->minor_device[minor_index];
++
++		atomic_inc(&minor_device->incoming_signal_count);
++
++		if (test_and_set_bit_lock(minor_index,
++					  &sbx->pending_signals) == 0) {
++			wake_up_interruptible(&minor_device->waitq);
++		}
++
++		clear_bit(minor_index, &new_signals);
++	}
++
++	if (launch_ready) {
++		atomic_set(&sbx->launch_ready, 1);
++		wake_up_interruptible(&sbx->launch_waitq);
++	}
++
++	return IRQ_HANDLED;
++}
++
++/* 64-bit-only driver: no .compat_ioctl, 32-bit callers get -ENOTTY. */
++static const struct file_operations sbx_fops = {
++	.owner =          THIS_MODULE,
++	.open =           sbx_open,
++	.mmap =           sbx_mmap,
++	.release =        sbx_release,
++	.unlocked_ioctl = sbx_ioctl,
++};
++
++static int sbx_mgr_open(struct inode *inode, struct file *filp)
++{
++	int result;
++
++	mutex_lock(&sbx_device->sbx_mgr_lock);
++	if (sbx_device->sbx_mgr_open) {
++		pr_err("sbx mgr open: pid %i (%s) busy fail\n", current->pid,
++		       current->comm);
++		result = -EBUSY;
++		goto unlock_end;
++	}
++
++	sbx_device->sbx_mgr_open = 1;
++	pr_info("sbx mgr open: pid %i (%s)\n", current->pid, current->comm);
++
++	result = 0;
++
++unlock_end:
++	mutex_unlock(&sbx_device->sbx_mgr_lock);
++	return result;
++}
++
++static int sbx_mgr_release(struct inode *inode, struct file *filp)
++{
++	mutex_lock(&sbx_device->sbx_mgr_lock);
++	sbx_mgr_unpin_stats_file();
++	sbx_device->sbx_mgr_open = 0;
++	mutex_unlock(&sbx_device->sbx_mgr_lock);
++
++	pr_info("sbx mgr release: pid %i (%s)\n", current->pid, current->comm);
++
++	return 0;
++}
++
++static unsigned int sbx_mgr_poll(struct file *filp,
++				 struct poll_table_struct *wait)
++{
++	__poll_t mask = 0;
++
++	poll_wait(filp, &sbx_device->launch_waitq, wait);
++
++	if (atomic_read(&sbx_device->launch_ready)) {
++		atomic_set(&sbx_device->launch_ready, 0);
++		mask |= POLLIN;
++	}
++
++	return mask;
++}
++
++static int sbx_mgr_ioctl_listen(void)
++{
++	int i;
++
++	for (i = SBX_MINOR_FIRST; i < SBX_MINOR_FIRST + SBX_MINOR_COUNT; i++) {
++		int launch = sbx_read_connection_reg(i,
++						     SBX_CONNECTION_REG_LAUNCH);
++
++		if (launch) {
++			int value = i;
++
++			if ((launch & SBX_MGR_BUILD_STATS) != 0)
++				value |= SBX_BUILD_STATS;
++			if ((launch & SBX_MGR_BUILD_DEBUG) != 0)
++				value |= SBX_BUILD_DEBUG;
++			return value;
++		}
++	}
++	return -EAGAIN;
++}
++
++static int sbx_mgr_copy_caps(struct sbx_mgr_caps_msg *msg)
++{
++	int result = 0;
++	char *caps = NULL;
++
++	if (msg->caps_size > SBX_GLOBAL_CAPS_SIZE) {
++		pr_err("sbx mgr caps ioctl: caps size too large\n");
++		result = -EINVAL;
++		goto error;
++	}
++
++	caps = kmalloc(msg->caps_size, GFP_KERNEL);
++	if (!caps) {
++		result = -ENOMEM;
++		goto error;
++	}
++
++	if (copy_from_user(caps, msg->caps, msg->caps_size) != 0) {
++		pr_err("sbx mgr caps ioctl: failed to copy caps\n");
++		result = -EFAULT;
++		goto error;
++	}
++
++	memcpy_toio(sbx_device->cmd_caps_addr, caps,
++		    msg->caps_size);
++	sbx_write_global_reg(SBX_GLOBAL_REG_CAPS, 1);
++
++error:
++	kfree(caps);
++	return result;
++}
++
++static int sbx_mgr_ioctl_caps(unsigned long arg)
++{
++	int result = 0;
++	struct sbx_mgr_caps_msg msg;
++
++	if (copy_from_user(&msg, (void *)arg, sizeof(msg)) == 0) {
++		result = sbx_mgr_copy_caps(&msg);
++	} else {
++		pr_err("sbx mgr caps ioctl: failed to copy msg\n");
++		result = -EFAULT;
++	}
++
++	return result;
++}
++
++static int sbx_mgr_pin_stats_file(struct sbx_mgr_map_stats_msg *msg)
++{
++	struct page *pvec[SBX_STATS_MAX_PAGES];
++	struct page *desc_page = NULL;
++	struct sbx_guest_stats_desc *desc = NULL;
++	struct vm_area_struct *vma = NULL;
++	u64 end_bytes;
++	u64 start;
++	u64 end;
++	int npages;
++	int pinned = 0;
++	int ret_err = -ENOMEM;
++	int i = 0;
++
++	pr_info("sbx mgr pinning stats file\n");
++
++	if (check_add_overflow(msg->data, msg->size, &end_bytes)) {
++		pr_err("sbx mgr map stats ioctl: size overflow\n");
++		return -EINVAL;
++	}
++
++	if (msg->size > (u64)SBX_STATS_MAX_PAGES * PAGE_SIZE) {
++		pr_err("sbx mgr map stats ioctl: size too large\n");
++		return -EINVAL;
++	}
++
++	start = msg->data & PAGE_MASK;
++	end = PAGE_ALIGN(end_bytes);
++	npages = (end - start) >> PAGE_SHIFT;
++
++	if (sbx_device->stats_desc_page) {
++		pr_err("sbx mgr map stats ioctl: cannot map multiple stats files\n");
++		return -EINVAL;
++	}
++
++	if (msg->data % PAGE_SIZE != 0) {
++		pr_err("sbx mgr map stats ioctl: data not page aligned\n");
++		return -EINVAL;
++	}
++
++	if (npages < 1 || npages > SBX_STATS_MAX_PAGES) {
++		pr_err("sbx mgr map stats ioctl: invalid number of pages requested\n");
++		return -EINVAL;
++	}
++
++	desc_page = alloc_page(GFP_KERNEL | __GFP_ZERO);
++	if (!desc_page) {
++		ret_err = -ENOMEM;
++		pr_err("sbx mgr map stats ioctl: failed to allocate page vector\n");
++		goto alloc_page_err;
++	}
++
++	desc = page_address(desc_page);
++	desc->size = msg->size;
++	desc->format = msg->format;
++
++	mmap_read_lock(current->mm);
++
++	vma = find_vma(current->mm, start);
++	if (!vma || vma->vm_start > start || vma->vm_end < end) {
++		ret_err = -EINVAL;
++		pr_err("sbx mgr map stats ioctl: invalid mmap vma\n");
++		goto pin_err;
++	}
++
++	if (!(vma->vm_flags & VM_SHARED) || !vma->vm_file) {
++		ret_err = -EINVAL;
++		pr_err("sbx mgr map stats ioctl: invalid mmap vma flags\n");
++		goto pin_err;
++	}
++
++#if KERNEL_VERSION(6, 5, 0) <= LINUX_VERSION_CODE
++	pinned = pin_user_pages(start, npages, FOLL_LONGTERM, pvec);
++#else
++	pinned = pin_user_pages(start, npages, FOLL_LONGTERM, pvec, NULL);
++#endif
++	if (pinned != npages) {
++		ret_err = -ENOMEM;
++		pr_err("sbx mgr map stats ioctl: failed to pin pages\n");
++		goto pin_err;
++	}
++
++	for (i = 0; i < npages; i++)
++		desc->pas[i] = page_to_phys(pvec[i]);
++
++	for (i = npages; i < ARRAY_SIZE(desc->pas); i++)
++		desc->pas[i] = SBX_INVALID_PA;
++
++	sbx_device->stats_desc_page = desc_page;
++	sbx_write_global_reg(SBX_GLOBAL_REG_GUEST_STATS,
++			     page_to_phys(desc_page));
++
++	mmap_read_unlock(current->mm);
++
++	return 0;
++
++pin_err:
++	if (pinned > 0)
++		unpin_user_pages(pvec, pinned);
++
++	mmap_read_unlock(current->mm);
++
++alloc_page_err:
++	if (desc_page)
++		__free_page(desc_page);
++
++	return ret_err;
++}
++
++static int sbx_mgr_unpin_stats_file(void)
++{
++	struct sbx_guest_stats_desc *desc = NULL;
++	struct page *page = NULL;
++	int i = 0;
++
++	if (!sbx_device->stats_desc_page)
++		return -EINVAL;
++
++	sbx_write_global_reg(SBX_GLOBAL_REG_GUEST_STATS, SBX_INVALID_PA);
++
++	desc = page_address(sbx_device->stats_desc_page);
++
++	for (i = 0; i < ARRAY_SIZE(desc->pas); i++) {
++		if (desc->pas[i] != SBX_INVALID_PA) {
++			page = pfn_to_page(__phys_to_pfn(desc->pas[i]));
++			unpin_user_page(page);
++		}
++	}
++
++	__free_page(sbx_device->stats_desc_page);
++	sbx_device->stats_desc_page = NULL;
++
++	return 0;
++}
++
++static int sbx_mgr_ioctl_map_stats(unsigned long arg)
++{
++	int result = 0;
++	struct sbx_mgr_map_stats_msg msg;
++
++	if (copy_from_user(&msg, (void *)arg, sizeof(msg)) == 0) {
++		result = sbx_mgr_pin_stats_file(&msg);
++	} else {
++		pr_err("sbx mgr stats ioctl: failed to copy msg\n");
++		result = -EFAULT;
++	}
++
++	return result;
++}
++
++static int sbx_mgr_ioctl_unmap_stats(void)
++{
++	return sbx_mgr_unpin_stats_file();
++}
++
++static long sbx_mgr_ioctl(struct file *filp, unsigned int cmd,
++			  unsigned long arg)
++{
++	int result;
++
++	mutex_lock(&sbx_device->sbx_mgr_lock);
++
++	switch (cmd) {
++	case SBX_MGR_IOCTL_LISTEN:
++		result = sbx_mgr_ioctl_listen();
++		break;
++	case SBX_MGR_IOCTL_CAPS:
++		result = sbx_mgr_ioctl_caps(arg);
++		break;
++	case SBX_MGR_IOCTL_MAP_STATS:
++		result = sbx_mgr_ioctl_map_stats(arg);
++		break;
++	case SBX_MGR_IOCTL_UNMAP_STATS:
++		result = sbx_mgr_ioctl_unmap_stats();
++		break;
++	default:
++		pr_err("sbx mgr ioctl: pid %i (%s) invalid cmd(%u)\n",
++		       current->pid, current->comm, cmd);
++		result = -EINVAL;
++		break;
++	}
++
++	mutex_unlock(&sbx_device->sbx_mgr_lock);
++	return result;
++}
++
++/* 64-bit-only driver: no .compat_ioctl, 32-bit callers get -ENOTTY. */
++static const struct file_operations sbx_mgr_fops = {
++	.owner =          THIS_MODULE,
++	.open =           sbx_mgr_open,
++	.release =        sbx_mgr_release,
++	.poll =           sbx_mgr_poll,
++	.unlocked_ioctl = sbx_mgr_ioctl,
++};
++
++#if KERNEL_VERSION(6, 2, 0) <= LINUX_VERSION_CODE
++static char *sbx_devnode(const struct device *dev, umode_t *mode)
++#else
++static char *sbx_devnode(struct device *dev, umode_t *mode)
++#endif
++{
++	if (mode)
++		*mode = 0600;
++	return NULL;
++}
++
++static int sbx_alloc_chrdev(struct device *dev, dev_t *devno_sbx)
++{
++	int result;
++
++	result = alloc_chrdev_region(devno_sbx, SBX_MINOR_FIRST,
++				     SBX_MINOR_COUNT, SBX_NAME);
++	if (result != 0) {
++		dev_err(dev, "sbx probe: alloc major number with minor numbers %d-%d fail error=%d\n",
++			SBX_MINOR_FIRST, SBX_MINOR_COUNT - 1, result);
++		return result;
++	}
++
++	sbx_major = MAJOR(*devno_sbx);
++	dev_info(dev, "sbx probe: alloc major number %d with minor numbers %d-%d success\n",
++		 sbx_major, SBX_MINOR_FIRST, SBX_MINOR_COUNT - 1);
++	return 0;
++}
++
++static void sbx_free_chrdev(void)
++{
++	unregister_chrdev_region(MKDEV(sbx_major, SBX_MINOR_FIRST),
++				 SBX_MINOR_COUNT);
++}
++
++static int sbx_mgr_alloc_chrdev(struct device *dev, dev_t *devno_sbx_mgr)
++{
++	int result;
++
++	result = alloc_chrdev_region(devno_sbx_mgr, SBX_MGR_MINOR_FIRST,
++				     SBX_MGR_MINOR_COUNT, SBX_MGR_NAME);
++	if (result != 0) {
++		dev_err(dev, "sbx probe: alloc major number fail error=%d\n",
++			result);
++		return result;
++	}
++
++	sbx_mgr_major = MAJOR(*devno_sbx_mgr);
++	dev_info(dev, "sbx probe: alloc major number %d success\n",
++		 sbx_mgr_major);
++	return 0;
++}
++
++static void sbx_mgr_free_chrdev(void)
++{
++	unregister_chrdev_region(MKDEV(sbx_mgr_major, SBX_MGR_MINOR_FIRST),
++				 SBX_MGR_MINOR_COUNT);
++}
++
++static int sbx_alloc_device(void)
++{
++	unsigned int i;
++
++	sbx_device = kzalloc(sizeof(*sbx_device), GFP_KERNEL);
++	if (!sbx_device)
++		return -ENOMEM;
++
++	for (i = 0; i < SBX_MINOR_COUNT; i++)
++		mutex_init(&sbx_device->minor_device[i].lock);
++	mutex_init(&sbx_device->sbx_mgr_lock);
++	return 0;
++}
++
++static int sbx_init_pci(struct pci_dev *pdev, resource_size_t *cmd_addr,
++			resource_size_t *cmd_len)
++{
++	struct device *dev = &pdev->dev;
++	unsigned long flags;
++	unsigned long cmd_flags;
++	unsigned long shm_flags;
++	int result;
++
++	result = pci_enable_device(pdev);
++	if (result != 0) {
++		dev_err(dev, "sbx probe: pci enable device fail error=%d\n",
++			result);
++		return result;
++	}
++
++	pci_set_master(pdev);
++
++	result = pci_request_region(pdev, SBX_CMD_BAR, "sbx-cmd-bar");
++	if (result != 0) {
++		dev_err(dev, "sbx probe: cmd bar request fail error=%d\n",
++			result);
++		goto fail_disable;
++	}
++	*cmd_addr = pci_resource_start(pdev, SBX_CMD_BAR);
++	*cmd_len = pci_resource_len(pdev, SBX_CMD_BAR);
++	cmd_flags = pci_resource_flags(pdev, SBX_CMD_BAR);
++	dev_info(dev, "sbx probe: cmd bar start=%pa len=%pa flags=%#lx\n",
++		 cmd_addr, cmd_len, cmd_flags);
++	flags = IORESOURCE_MEM;
++	if ((cmd_flags & flags) != flags) {
++		dev_err(dev, "sbx probe: cmd bar flags must be %#lx fail\n",
++			flags);
++		result = -EINVAL;
++		goto fail_release_cmd;
++	}
++
++	result = pci_request_region(pdev, SBX_SHM_BAR, "sbx-shm-bar");
++	if (result != 0) {
++		dev_err(dev, "sbx probe: shm bar request fail error=%d\n",
++			result);
++		goto fail_release_cmd;
++	}
++	sbx_device->shm_addr = pci_resource_start(pdev, SBX_SHM_BAR);
++	sbx_device->shm_len = pci_resource_len(pdev, SBX_SHM_BAR);
++	shm_flags = pci_resource_flags(pdev, SBX_SHM_BAR);
++	dev_info(dev, "sbx probe: shm bar start=%pa len=%pa flags=%#lx\n",
++		 &sbx_device->shm_addr, &sbx_device->shm_len, shm_flags);
++	flags = IORESOURCE_MEM | IORESOURCE_PREFETCH;
++	if ((shm_flags & flags) != flags) {
++		dev_err(dev, "sbx probe: shm bar flags must be %#lx fail\n",
++			flags);
++		result = -EINVAL;
++		goto fail_release_shm;
++	}
++
++	result = pci_alloc_irq_vectors(pdev, 1, 1, PCI_IRQ_MSI);
++	if (result < 1) {
++		dev_err(dev, "sbx probe: pci alloc irq vectors fail error=%d\n",
++			result);
++		goto fail_release_shm;
++	}
++	return 0;
++
++fail_release_shm:
++	pci_release_region(pdev, SBX_SHM_BAR);
++
++fail_release_cmd:
++	pci_release_region(pdev, SBX_CMD_BAR);
++
++fail_disable:
++	pci_disable_device(pdev);
++	return result;
++}
++
++static void sbx_cleanup_pci(struct pci_dev *pdev)
++{
++	pci_free_irq_vectors(pdev);
++	pci_release_region(pdev, SBX_SHM_BAR);
++	pci_release_region(pdev, SBX_CMD_BAR);
++	pci_disable_device(pdev);
++}
++
++static int sbx_init_hw(struct pci_dev *pdev, resource_size_t cmd_addr,
++		       resource_size_t cmd_len)
++{
++	struct device *dev = &pdev->dev;
++	unsigned int i;
++	int irq;
++	int result;
++
++	for (i = 0; i < SBX_MINOR_COUNT; i++)
++		init_waitqueue_head(&sbx_device->minor_device[i].waitq);
++	init_waitqueue_head(&sbx_device->launch_waitq);
++
++	sbx_device->cmd_remap = ioremap(cmd_addr, cmd_len);
++	if (!sbx_device->cmd_remap) {
++		dev_err(dev, "sbx probe: cmd ioremap failed\n");
++		return -ENOMEM;
++	}
++
++	sbx_device->shm_remap = ioremap(sbx_device->shm_addr, sbx_device->shm_len);
++	if (!sbx_device->shm_remap) {
++		dev_err(dev, "sbx probe: shm ioremap failed\n");
++		result = -ENOMEM;
++		goto fail_unmap_cmd;
++	}
++
++	sbx_device->cmd_global_addr = sbx_device->cmd_remap + SBX_MINOR_COUNT * SBX_CMD_BAR_CONNECT_LEN;
++	sbx_device->cmd_caps_addr = sbx_device->cmd_remap + (SBX_MINOR_COUNT + 1) * SBX_CMD_BAR_CONNECT_LEN;
++
++	irq = pci_irq_vector(pdev, 0);
++	result = request_irq(irq, sbx_irq_handler, 0, SBX_NAME, sbx_device);
++	if (result != 0) {
++		dev_err(dev, "sbx probe: request irq fail irq=%d error=%d\n",
++			irq, result);
++		goto fail_unmap_shm;
++	}
++	sbx_device->irq = irq;
++
++	sbx_write_global_reg(SBX_GLOBAL_REG_VERSION, SBX_DEVICE_VERSION);
++	if (sbx_read_global_reg(SBX_GLOBAL_REG_VERSION) != SBX_DEVICE_VERSION) {
++		result = -ENODEV;
++		goto fail_free_irq;
++	}
++
++	sbx_write_global_reg(SBX_GLOBAL_REG_GUEST_PROTOCOL,
++			     SBX_DEVICE_GUEST_PROTOCOL);
++	dev_info(dev, "SBX Host Protocol: %lld\n",
++		 sbx_read_global_reg(SBX_GLOBAL_REG_HOST_PROTOCOL));
++	dev_info(dev, "SBX Guest Protocol: %d\n", SBX_DEVICE_GUEST_PROTOCOL);
++
++	for (i = 0; i < SBX_MINOR_COUNT; i++)
++		atomic_set(&sbx_device->minor_device[i].avail, 1);
++
++	dev_info(dev, "sbx probe: irq=%u\n", irq);
++	return 0;
++
++fail_free_irq:
++	free_irq(sbx_device->irq, sbx_device);
++
++fail_unmap_shm:
++	iounmap(sbx_device->shm_remap);
++
++fail_unmap_cmd:
++	iounmap(sbx_device->cmd_remap);
++	return result;
++}
++
++static void sbx_cleanup_hw(void)
++{
++	free_irq(sbx_device->irq, sbx_device);
++	iounmap(sbx_device->shm_remap);
++	iounmap(sbx_device->cmd_remap);
++}
++
++static int sbx_create_class(struct device *dev)
++{
++	int result;
++
++#if KERNEL_VERSION(6, 4, 0) <= LINUX_VERSION_CODE
++	sbx_class = class_create(SBX_NAME "drv");
++#else
++	sbx_class = class_create(THIS_MODULE, SBX_NAME "drv");
++#endif
++	if (IS_ERR(sbx_class)) {
++		result = PTR_ERR(sbx_class);
++		dev_err(dev, "sbx probe: class create fail error=%d\n", result);
++		sbx_class = NULL;
++		return result;
++	}
++
++	sbx_class->devnode = sbx_devnode;
++	return 0;
++}
++
++static void sbx_destroy_class(void)
++{
++	class_destroy(sbx_class);
++	sbx_class = NULL;
++}
++
++static void sbx_destroy_devices_range(unsigned int end)
++{
++	unsigned int i;
++
++	for (i = SBX_MINOR_FIRST; i < end; i++)
++		device_destroy(sbx_class, MKDEV(sbx_major, MINOR(i)));
++}
++
++static int sbx_create_devices(struct device *dev)
++{
++	unsigned int i;
++	struct device *d;
++	int result;
++
++	for (i = SBX_MINOR_FIRST; i < SBX_MINOR_FIRST + SBX_MINOR_COUNT; i++) {
++		d = device_create(sbx_class, NULL, MKDEV(sbx_major, MINOR(i)),
++				  NULL, SBX_NAME "%d", i);
++		if (IS_ERR(d)) {
++			result = PTR_ERR(d);
++			dev_err(dev, "sbx probe: sbx device create %d fail error=%d\n",
++				i, result);
++			sbx_destroy_devices_range(i);
++			return result;
++		}
++	}
++	return 0;
++}
++
++static void sbx_destroy_devices(void)
++{
++	sbx_destroy_devices_range(SBX_MINOR_FIRST + SBX_MINOR_COUNT);
++}
++
++static void sbx_mgr_destroy_devices_range(unsigned int end)
++{
++	unsigned int i;
++
++	for (i = SBX_MGR_MINOR_FIRST; i < end; i++)
++		device_destroy(sbx_class, MKDEV(sbx_mgr_major, MINOR(i)));
++}
++
++static int sbx_mgr_create_devices(struct device *dev)
++{
++	unsigned int i;
++	struct device *d;
++	int result;
++
++	for (i = SBX_MGR_MINOR_FIRST;
++	     i < SBX_MGR_MINOR_FIRST + SBX_MGR_MINOR_COUNT;
++	     i++) {
++		d = device_create(sbx_class, NULL, MKDEV(sbx_mgr_major, MINOR(i)),
++				  NULL, SBX_MGR_NAME "%d", i);
++		if (IS_ERR(d)) {
++			result = PTR_ERR(d);
++			dev_err(dev, "sbx probe: sbx mgr device create %d fail error=%d\n",
++				i, result);
++			sbx_mgr_destroy_devices_range(i);
++			return result;
++		}
++	}
++	return 0;
++}
++
++static void sbx_mgr_destroy_devices(void)
++{
++	sbx_mgr_destroy_devices_range(SBX_MGR_MINOR_FIRST + SBX_MGR_MINOR_COUNT);
++}
++
++static int sbx_add_cdev(struct device *dev, dev_t devno_sbx)
++{
++	int result;
++
++	cdev_init(&sbx_device->sbx_cdev, &sbx_fops);
++	sbx_device->sbx_cdev.owner = THIS_MODULE;
++	result = cdev_add(&sbx_device->sbx_cdev, devno_sbx, SBX_MINOR_COUNT);
++	if (result != 0)
++		dev_err(dev, "sbx probe: add sbx fail error=%d\n", result);
++	return result;
++}
++
++static void sbx_del_cdev(void)
++{
++	cdev_del(&sbx_device->sbx_cdev);
++}
++
++static int sbx_mgr_add_cdev(struct device *dev, dev_t devno_sbx_mgr)
++{
++	int result;
++
++	cdev_init(&sbx_device->sbx_mgr_cdev, &sbx_mgr_fops);
++	sbx_device->sbx_mgr_cdev.owner = THIS_MODULE;
++	result = cdev_add(&sbx_device->sbx_mgr_cdev, devno_sbx_mgr,
++			  SBX_MGR_MINOR_COUNT);
++	if (result != 0)
++		dev_err(dev, "sbx probe: add sbx mgr fail error=%d\n", result);
++	return result;
++}
++
++static void sbx_mgr_del_cdev(void)
++{
++	cdev_del(&sbx_device->sbx_mgr_cdev);
++}
++
++static int sbx_probe(struct pci_dev *pdev, const struct pci_device_id *id)
++{
++	struct device *dev = &pdev->dev;
++	dev_t devno_sbx;
++	dev_t devno_sbx_mgr;
++	resource_size_t cmd_addr;
++	resource_size_t cmd_len;
++	int result;
++
++	if (sbx_device) {
++		dev_err(dev, "sbx: unexpected probe\n");
++		return -EPERM;
++	}
++
++	result = sbx_alloc_chrdev(dev, &devno_sbx);
++	if (result != 0)
++		return result;
++
++	result = sbx_mgr_alloc_chrdev(dev, &devno_sbx_mgr);
++	if (result != 0)
++		goto fail_chrdev;
++
++	result = sbx_alloc_device();
++	if (result != 0)
++		goto fail_mgr_chrdev;
++
++	result = sbx_init_pci(pdev, &cmd_addr, &cmd_len);
++	if (result != 0)
++		goto fail_device_struct;
++
++	result = sbx_init_hw(pdev, cmd_addr, cmd_len);
++	if (result != 0)
++		goto fail_pci;
++
++	result = sbx_create_class(dev);
++	if (result != 0)
++		goto fail_hw;
++
++	result = sbx_create_devices(dev);
++	if (result != 0)
++		goto fail_class;
++
++	result = sbx_mgr_create_devices(dev);
++	if (result != 0)
++		goto fail_devices;
++
++	result = sbx_add_cdev(dev, devno_sbx);
++	if (result != 0)
++		goto fail_mgr_devices;
++
++	result = sbx_mgr_add_cdev(dev, devno_sbx_mgr);
++	if (result != 0)
++		goto fail_cdev;
++
++	return 0;
++
++fail_cdev:
++	sbx_del_cdev();
++
++fail_mgr_devices:
++	sbx_mgr_destroy_devices();
++
++fail_devices:
++	sbx_destroy_devices();
++
++fail_class:
++	sbx_destroy_class();
++
++fail_hw:
++	sbx_cleanup_hw();
++
++fail_pci:
++	sbx_cleanup_pci(pdev);
++
++fail_device_struct:
++	kfree(sbx_device);
++	sbx_device = NULL;
++
++fail_mgr_chrdev:
++	sbx_mgr_free_chrdev();
++
++fail_chrdev:
++	sbx_free_chrdev();
++	dev_info(dev, "sbx probe: fail\n");
++
++	return result;
++}
++
++static void sbx_remove(struct pci_dev *pdev)
++{
++	struct device *dev = &pdev->dev;
++
++	if (sbx_device) {
++		sbx_mgr_del_cdev();
++
++		mutex_lock(&sbx_device->sbx_mgr_lock);
++		sbx_mgr_unpin_stats_file();
++		mutex_unlock(&sbx_device->sbx_mgr_lock);
++
++		sbx_del_cdev();
++		sbx_mgr_destroy_devices();
++		sbx_destroy_devices();
++		sbx_destroy_class();
++		sbx_cleanup_hw();
++		sbx_cleanup_pci(pdev);
++		kfree(sbx_device);
++		sbx_device = NULL;
++		sbx_mgr_free_chrdev();
++		sbx_free_chrdev();
++
++		pci_clear_master(pdev);
++	}
++
++	dev_info(dev, "sbx remove: major %d\n", sbx_mgr_major);
++	sbx_mgr_major = 0;
++
++	dev_info(dev, "sbx remove: major %d with minors %d-%d\n", sbx_major,
++		 SBX_MINOR_FIRST, SBX_MINOR_COUNT - 1);
++	sbx_major = 0;
++}
++
++static struct pci_device_id sbx_ids[] = {
++	{ PCI_DEVICE(PCI_VENDOR_ID_VMWARE, 0x420), },
++	{ 0, }
++};
++
++static struct pci_driver sbx_driver = {
++	.name     = SBX_NAME,
++	.probe    = sbx_probe,
++	.remove   = sbx_remove,
++	.id_table = sbx_ids,
++};
++
++MODULE_DEVICE_TABLE(pci, sbx_ids);
++
++static int __init sbx_init_module(void)
++{
++	int ret = pci_register_driver(&sbx_driver);
++
++	if (ret < 0) {
++		pr_err("sbx init module: pci_register_driver fail\n");
++		return ret;
++	}
++
++	if (!sbx_device) {
++		pr_err("sbx init module: sbx_probe fail\n");
++		pci_unregister_driver(&sbx_driver);
++		return -ENODEV;
++	}
++
++	pr_info("sbx init module: success\n");
++	return 0;
++}
++
++static void __exit sbx_exit_module(void)
++{
++	pci_unregister_driver(&sbx_driver);
++	pr_info("sbx exit module: executed\n");
++}
++
++module_init(sbx_init_module);
++module_exit(sbx_exit_module);
+diff --git a/drivers/misc/vmw_sbx/sbx_ioctl.h b/drivers/misc/vmw_sbx/sbx_ioctl.h
+new file mode 100644
+index 000000000000..85e7f486d545
+--- /dev/null
++++ b/drivers/misc/vmw_sbx/sbx_ioctl.h
+@@ -0,0 +1,43 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++/*
++ * Copyright (c) 2025 Broadcom. All Rights Reserved. The term
++ * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.
++ */
++
++#ifndef _SBX_IOCTL_H_
++#define _SBX_IOCTL_H_
++
++#define SBX_MAGIC                0xb2
++
++struct sbx_mgr_caps_msg {
++	char *caps;
++	unsigned int caps_size;
++};
++
++struct sbx_chunks_msg {
++	unsigned long *chunks;
++	unsigned long chunk_size;
++	unsigned long *num_chunks;
++};
++
++struct sbx_mgr_map_stats_msg {
++	__u64 data;
++	__u64 size;
++	__u32 format;
++};
++
++#define SBX_MGR_IOCTL_LISTEN        _IO(SBX_MAGIC, 0)
++#define SBX_MGR_IOCTL_CAPS          _IOW(SBX_MAGIC, 1, struct sbx_mgr_caps_msg)
++#define SBX_MGR_IOCTL_MAP_STATS     _IOW(SBX_MAGIC, 2, struct sbx_mgr_map_stats_msg)
++#define SBX_MGR_IOCTL_UNMAP_STATS   _IO(SBX_MAGIC, 3)
++
++#define SBX_IOCTL_SIZE              _IOR(SBX_MAGIC, 10, unsigned long)
++#define SBX_IOCTL_SIGNAL            _IO(SBX_MAGIC, 11)
++#define SBX_IOCTL_WAIT              _IO(SBX_MAGIC, 12)
++#define SBX_IOCTL_MEM               _IOR(SBX_MAGIC, 13, unsigned long long)
++#define SBX_IOCTL_CHUNKS            _IOWR(SBX_MAGIC, 14, struct sbx_chunks_msg)
++
++#define SBX_BUILD_STATS          (1 << 30)
++#define SBX_BUILD_DEBUG          (1 << 31)
++
++#endif
+diff --git a/drivers/misc/vmw_sbx/sbx_reg.h b/drivers/misc/vmw_sbx/sbx_reg.h
+new file mode 100644
+index 000000000000..1106985ef55c
+--- /dev/null
++++ b/drivers/misc/vmw_sbx/sbx_reg.h
+@@ -0,0 +1,55 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++/*
++ * Copyright (c) 2023-2025 Broadcom. All Rights Reserved. The term
++ * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.
++ */
++
++#ifndef _SBX_REG_H_
++#define _SBX_REG_H_
++
++#define SBX_CONNECTION_REG_MEM_KB       0
++#define SBX_CONNECTION_REG_SIGNAL       1
++#define SBX_CONNECTION_REG_MPNS         2
++#define SBX_CONNECTION_REG_LAUNCH       3
++#define SBX_CONNECTION_REG_RESET        4
++#define SBX_CONNECTION_REG_CHUNKS       5
++#define SBX_CONNECTION_REG_MAX          50
++
++#define SBX_GLOBAL_REG_SIGNAL           0
++#define SBX_GLOBAL_REG_LAUNCH           1
++#define SBX_GLOBAL_REG_CAPS             2
++#define SBX_GLOBAL_REG_VERSION          3
++#define SBX_GLOBAL_REG_HOST_PROTOCOL    4
++#define SBX_GLOBAL_REG_GUEST_PROTOCOL   5
++#define SBX_GLOBAL_REG_DEVEL            6
++#define SBX_GLOBAL_REG_GUEST_STATS      7
++#define SBX_GLOBAL_REG_MAX              50
++
++#define SBX_GLOBAL_CAPS_SIZE            2048
++
++#define SBX_CMD_BAR_MAX_CONNECTIONS     64
++#define SBX_CMD_BAR_CONNECT_LEN         (SBX_CONNECTION_REG_MAX * 8)
++
++#define SBX_OFFSET_CONNECTION_REGS      0
++#define SBX_OFFSET_GLOBAL_REGS          (SBX_CMD_BAR_MAX_CONNECTIONS * \
++					 SBX_CMD_BAR_CONNECT_LEN)
++#define SBX_OFFSET_CAPS                 ((SBX_CMD_BAR_MAX_CONNECTIONS + 1) * \
++					 SBX_CMD_BAR_CONNECT_LEN)
++
++#define SBX_INVALID_CHUNK               -1
++#define SBX_INVALID_PA                  -1
++
++#define SBX_MGR_BUILD_STATS             (1 << 1)
++#define SBX_MGR_BUILD_DEBUG             (1 << 2)
++
++#define SBX_STATS_FORMAT_STATSFILE      0
++
++#define SBX_STATS_MAX_PAGES             5
++
++struct sbx_guest_stats_desc {
++	__u64 size;
++	__u32 format;
++	__u64 pas[SBX_STATS_MAX_PAGES];
++};
++
++#endif
+-- 
+2.43.0
+

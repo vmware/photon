@@ -1,0 +1,54 @@
+From 6ef0b4645b9661a371d2e2b632be4e7554bb20ba Mon Sep 17 00:00:00 2001
+From: Arnaldo Carvalho de Melo <acme@kernel.org>
+Date: Thu, 11 Dec 2025 19:17:56 -0300
+Subject: [PATCH 14/19] perf trace: Don't change const char strings
+
+We got away with this so far but now with fedora 44 complaining about
+the return value of strchr et all, lets use strdup for good measure.
+
+Reviewed-by: Ian Rogers <irogers@google.com>
+Link: https://lore.kernel.org/r/20251211221756.96294-5-acme@kernel.org
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+---
+ tools/perf/builtin-trace.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/tools/perf/builtin-trace.c b/tools/perf/builtin-trace.c
+index f77e4f4b6..02dd9138f 100644
+--- a/tools/perf/builtin-trace.c
++++ b/tools/perf/builtin-trace.c
+@@ -4909,8 +4909,8 @@ static int trace__parse_events_option(const struct option *opt, const char *str,
+ 				      int unset __maybe_unused)
+ {
+ 	struct trace *trace = (struct trace *)opt->value;
+-	const char *s = str;
+-	char *sep = NULL, *lists[2] = { NULL, NULL, };
++	const char *s;
++	char *strd, *sep = NULL, *lists[2] = { NULL, NULL, };
+ 	int len = strlen(str) + 1, err = -1, list, idx;
+ 	char *strace_groups_dir = system_path(STRACE_GROUPS_DIR);
+ 	char group_name[PATH_MAX];
+@@ -4919,6 +4919,10 @@ static int trace__parse_events_option(const struct option *opt, const char *str,
+ 	if (strace_groups_dir == NULL)
+ 		return -1;
+ 
++	s = strd = strdup(str);
++	if (strd == NULL)
++		return -1;
++
+ 	if (*s == '!') {
+ 		++s;
+ 		trace->not_ev_qualifier = true;
+@@ -4992,8 +4996,7 @@ static int trace__parse_events_option(const struct option *opt, const char *str,
+ 	free(strace_groups_dir);
+ 	free(lists[0]);
+ 	free(lists[1]);
+-	if (sep)
+-		*sep = ',';
++	free(strd);
+ 
+ 	return err;
+ }
+-- 
+2.43.7
+

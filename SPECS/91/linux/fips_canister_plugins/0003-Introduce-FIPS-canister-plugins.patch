@@ -1,0 +1,2078 @@
+From 9a68fdadf2d981a40078c1b28122c5ced0289156 Mon Sep 17 00:00:00 2001
+From: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+Date: Thu, 8 May 2025 21:38:42 +0000
+Subject: [PATCH 3/4] Introduce FIPS canister plugins
+
+Introduces two GCC plugins to facilitate the interface
+between FIPS canister binary and the Linux kernel.
+
+pad_canister_structs: Pads each whitelisted structure
+with 8 bytes of padding, to save space for new fields
+in the future. Only executed during canister building.
+
+match_canister_structs: Matches layout of structures
+in the kernel with the master versions in the FIPS canister.
+This consists of matching the order and inserting padding
+to match the size. Also can run safeguarding checks
+against structure member offsets, size, type, etc.
+Not executed during canister building.
+
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ scripts/gcc-plugins/Makefile                  |   2 +-
+ .../fips_canister_plugins/constants.h         |  11 +
+ .../fips_canister_plugins/find_bad_casts.c    | 360 +++++++++++++++
+ .../fips_canister_common.c                    | 370 +++++++++++++++
+ .../fips_canister_common.h                    |  23 +
+ .../dwarf_debuginfo_parser.c                  | 267 +++++++++++
+ .../match_canister_structs/hash_table.c       | 125 ++++++
+ .../match_canister_structs/hash_table.h       |  28 ++
+ .../match_canister_structs.c                  | 420 ++++++++++++++++++
+ .../match_canister_structs/structure_db.c     | 231 ++++++++++
+ .../match_canister_structs/structure_db.h     |  46 ++
+ .../pad_canister_structs.c                    |  69 +++
+ 12 files changed, 1951 insertions(+), 1 deletion(-)
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/constants.h
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/find_bad_casts.c
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/fips_canister_common.c
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/fips_canister_common.h
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/dwarf_debuginfo_parser.c
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/hash_table.c
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/hash_table.h
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/match_canister_structs.c
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/structure_db.c
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/structure_db.h
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/pad_canister_structs/pad_canister_structs.c
+
+diff --git a/scripts/gcc-plugins/Makefile b/scripts/gcc-plugins/Makefile
+index 74a775556..5703628d5 100644
+--- a/scripts/gcc-plugins/Makefile
++++ b/scripts/gcc-plugins/Makefile
+@@ -67,7 +67,7 @@ plugin-multi	:= $(filter-out $(plugin-single), $(GCC_PLUGIN))
+ plugin-objs	:= $(sort $(foreach m, $(plugin-multi), $($(m:%.so=%-objs))))
+
+ targets += $(plugin-single) $(plugin-multi) $(plugin-objs)
+-clean-files += *.so
++clean-files += *.so *.db
+
+ plugin-single	:= $(addprefix $(obj)/, $(plugin-single))
+ plugin-multi	:= $(addprefix $(obj)/, $(plugin-multi))
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/constants.h b/scripts/gcc-plugins/fips_canister_plugins/constants.h
+new file mode 100644
+index 000000000..a071f0bcf
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/constants.h
+@@ -0,0 +1,11 @@
++/* Copyright (C) 2025 Broadcom, Inc. */
++
++/* Used for struct members which have no name */
++#define ANON_NAME "anonymous"
++
++#define PAD_FIELD_NAME "__fips_canister_padding"
++
++#define PADDING_ADDED_ATTR "padding_added"
++#define CANISTER_MATCHED_ATTR "canister_matched"
++
++#define UNKWN_TYPE "<unknown>"
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/find_bad_casts.c b/scripts/gcc-plugins/fips_canister_plugins/find_bad_casts.c
+new file mode 100644
+index 000000000..6114752d9
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/find_bad_casts.c
+@@ -0,0 +1,360 @@
++/*
++ * Following code is taken/modified from randomize_layout_plugin.c. Much thanks to
++ * all developers of randomize_layout_plugin.c, who have already implemented this
++ * functionality in that plugin. There's no need to reinvent the wheel here.
++ *
++ * Adds a safety layer, to find bad casts between structures. This is important,
++ * because we are possibly reordering structures or adding new
++ * padding fields. And so, "bad" casts between different structure types
++ * may not line up in the way that they'd originally been written.
++ *
++ *
++ * One addition to randomize_layout_plugin: check_global_var_decl(). This is
++ * needed to check global variable assignments.
++ *
++ * Copyright (C) 2025 Broadcom, Inc.
++ */
++
++#include "constants.h"
++#include "../gcc-common.h"
++
++#define INFORM(loc, msg, ...)	inform(loc, "fips canister plugin: " msg, ##__VA_ARGS__)
++#define MISMATCH(loc, how, ...)	INFORM(loc, "casting modified canister structure pointer type (" how "): %qT and %qT\n", __VA_ARGS__)
++
++static bool canister_modified(tree type_attrs)
++{
++	return lookup_attribute(PADDING_ADDED_ATTR, type_attrs) ||
++		lookup_attribute(CANISTER_MATCHED_ATTR, type_attrs);
++
++}
++
++static void check_bad_casts_in_constructor(tree var, tree init)
++{
++	unsigned HOST_WIDE_INT idx;
++	tree field, val;
++	tree field_type, val_type;
++
++	FOR_EACH_CONSTRUCTOR_ELT(CONSTRUCTOR_ELTS(init), idx, field, val) {
++		if (TREE_CODE(val) == CONSTRUCTOR) {
++			check_bad_casts_in_constructor(var, val);
++			continue;
++		}
++
++		/* pipacs' plugin creates franken-arrays that differ from those produced by
++		   normal code which all have valid 'field' trees. work around this */
++		if (field == NULL_TREE)
++			continue;
++		field_type = TREE_TYPE(field);
++		val_type = TREE_TYPE(val);
++
++		if (TREE_CODE(field_type) != POINTER_TYPE || TREE_CODE(val_type) != POINTER_TYPE)
++			continue;
++
++		if (field_type == val_type)
++			continue;
++
++		field_type = TYPE_MAIN_VARIANT(strip_array_types(TYPE_MAIN_VARIANT(TREE_TYPE(field_type))));
++		val_type = TYPE_MAIN_VARIANT(strip_array_types(TYPE_MAIN_VARIANT(TREE_TYPE(val_type))));
++
++		if (field_type == void_type_node)
++			continue;
++		if (field_type == val_type)
++			continue;
++
++		if(!canister_modified(TYPE_ATTRIBUTES(val_type)) &&
++			!canister_modified(TYPE_ATTRIBUTES(field_type)))
++			continue;
++
++		MISMATCH(DECL_SOURCE_LOCATION(var), "constructor\n", TYPE_MAIN_VARIANT(field_type),
++				TYPE_MAIN_VARIANT(val_type));
++	}
++}
++
++static void check_global_var_decl(tree var) {
++	tree init;
++	tree var_type, init_type;
++
++	init = DECL_INITIAL(var);
++
++	if(init == NULL_TREE)
++		return;
++
++	init_type = TREE_TYPE(init);
++	var_type = TREE_TYPE(var);
++
++	if (TREE_CODE(init_type) != POINTER_TYPE || TREE_CODE(var_type) != POINTER_TYPE)
++		return;
++
++	init_type = TYPE_MAIN_VARIANT(strip_array_types(TYPE_MAIN_VARIANT(TREE_TYPE(init_type))));
++	var_type = TYPE_MAIN_VARIANT(strip_array_types(TYPE_MAIN_VARIANT(TREE_TYPE(var_type))));
++
++	if(!canister_modified(TYPE_ATTRIBUTES(var_type)) &&
++		!canister_modified(TYPE_ATTRIBUTES(init_type)))
++		return;
++
++	if(TREE_CODE(var_type) != RECORD_TYPE)
++		return;
++
++	if(TREE_CODE(init_type) == TREE_CODE(var_type))
++		return;
++
++	MISMATCH(DECL_SOURCE_LOCATION(var), "global declaration", TYPE_MAIN_VARIANT(var_type),
++			TYPE_MAIN_VARIANT(init_type));
++}
++
++/* derived from the constify plugin */
++static void check_global_variables(void *event_data, void *data)
++{
++	struct varpool_node *node;
++	tree init;
++
++	FOR_EACH_VARIABLE(node) {
++		tree var = NODE_DECL(node);
++
++		if(TREE_CODE(var) == VAR_DECL){
++			check_global_var_decl(var);
++			continue;
++		}
++
++		init = DECL_INITIAL(var);
++		if (init == NULL_TREE)
++			continue;
++
++		if (TREE_CODE(init) != CONSTRUCTOR)
++			continue;
++
++		check_bad_casts_in_constructor(var, init);
++	}
++}
++
++/* Copied from gcc/dominance.cc */
++static inline unsigned int dom_convert_dir_to_idx (cdi_direction dir)
++{
++  gcc_checking_assert (dir == CDI_DOMINATORS || dir == CDI_POST_DOMINATORS);
++  return dir - 1;
++}
++
++static bool has_dominator(enum cdi_direction dir, basic_block bb) {
++	unsigned int dir_index = dom_convert_dir_to_idx (dir);
++	if(dir_index > 1 || !bb->dom[dir_index])
++		return false;
++
++	return true;
++}
++
++static bool dominated_by_is_err(const_tree rhs, basic_block bb)
++{
++	basic_block dom;
++	gimple dom_stmt;
++	gimple call_stmt;
++	const_tree dom_lhs;
++	const_tree poss_is_err_cond;
++	const_tree poss_is_err_func;
++	const_tree is_err_arg;
++
++	/*
++	 * Attempting to get the dominator without first checking if it exists
++	 * is causing SEGFAULT in some GCC test cases, for example
++	 * gcc.dg/gimplefe-49.c.
++	 *
++	 * Add our own function to check if the dominator exists first. Skip
++	 * out if it doesn't exist.
++	 */
++	if(!has_dominator(CDI_DOMINATORS, bb))
++		return false;
++
++	dom = get_immediate_dominator(CDI_DOMINATORS, bb);
++	if (!dom)
++		return false;
++
++	dom_stmt = last_stmt(dom);
++	if (!dom_stmt)
++		return false;
++
++	if (gimple_code(dom_stmt) != GIMPLE_COND)
++		return false;
++
++	if (gimple_cond_code(dom_stmt) != NE_EXPR)
++		return false;
++
++	if (!integer_zerop(gimple_cond_rhs(dom_stmt)))
++		return false;
++
++	poss_is_err_cond = gimple_cond_lhs(dom_stmt);
++
++	if (TREE_CODE(poss_is_err_cond) != SSA_NAME)
++		return false;
++
++	call_stmt = SSA_NAME_DEF_STMT(poss_is_err_cond);
++
++	if (gimple_code(call_stmt) != GIMPLE_CALL)
++		return false;
++
++	dom_lhs = gimple_get_lhs(call_stmt);
++	poss_is_err_func = gimple_call_fndecl(call_stmt);
++	if (!poss_is_err_func)
++		return false;
++	if (dom_lhs != poss_is_err_cond)
++		return false;
++	if (strcmp(DECL_NAME_POINTER(poss_is_err_func), "IS_ERR"))
++		return false;
++
++	is_err_arg = gimple_call_arg(call_stmt, 0);
++	if (!is_err_arg)
++		return false;
++
++	if (is_err_arg != rhs)
++		return false;
++
++	return true;
++}
++
++static void handle_local_var_initializers(void)
++{
++	tree var;
++	unsigned int i;
++
++	FOR_EACH_LOCAL_DECL(cfun, i, var) {
++		tree init = DECL_INITIAL(var);
++		if (!init)
++			continue;
++		if (TREE_CODE(init) != CONSTRUCTOR)
++			continue;
++		check_bad_casts_in_constructor(var, init);
++	}
++}
++
++/*
++ * iterate over all statements to find "bad" casts:
++ * those where the address of the start of a structure is cast
++ * to a pointer of a structure of a different type, or a
++ * structure pointer type is cast to a different structure pointer type
++ */
++static unsigned int find_bad_casts_execute(void)
++{
++	basic_block bb;
++
++	handle_local_var_initializers();
++
++	FOR_EACH_BB_FN(bb, cfun) {
++		gimple_stmt_iterator gsi;
++
++		for (gsi = gsi_start_bb(bb); !gsi_end_p(gsi); gsi_next(&gsi)) {
++			gimple stmt;
++			const_tree lhs;
++			const_tree lhs_type;
++			const_tree rhs1;
++			const_tree rhs_type;
++			const_tree ptr_lhs_type;
++			const_tree ptr_rhs_type;
++			const_tree op0;
++			const_tree op0_type;
++			enum tree_code rhs_code;
++
++			stmt = gsi_stmt(gsi);
++
++#ifdef __DEBUG_PLUGIN
++#ifdef __DEBUG_VERBOSE
++			debug_gimple_stmt(stmt);
++			debug_tree(gimple_get_lhs(stmt));
++#endif
++#endif
++
++			if (gimple_code(stmt) != GIMPLE_ASSIGN)
++				continue;
++
++#ifdef __DEBUG_PLUGIN
++#ifdef __DEBUG_VERBOSE
++			debug_tree(gimple_assign_rhs1(stmt));
++#endif
++#endif
++			rhs_code = gimple_assign_rhs_code(stmt);
++
++			if (rhs_code != ADDR_EXPR && rhs_code != SSA_NAME)
++				continue;
++
++			lhs = gimple_get_lhs(stmt);
++			lhs_type = TREE_TYPE(lhs);
++			rhs1 = gimple_assign_rhs1(stmt);
++			rhs_type = TREE_TYPE(rhs1);
++
++			if (TREE_CODE(rhs_type) != POINTER_TYPE ||
++				TREE_CODE(lhs_type) != POINTER_TYPE)
++				continue;
++
++			ptr_lhs_type = TYPE_MAIN_VARIANT(strip_array_types(TYPE_MAIN_VARIANT(TREE_TYPE(lhs_type))));
++			ptr_rhs_type = TYPE_MAIN_VARIANT(strip_array_types(TYPE_MAIN_VARIANT(TREE_TYPE(rhs_type))));
++
++			if (ptr_rhs_type == void_type_node)
++				continue;
++
++			if (ptr_lhs_type == void_type_node)
++				continue;
++
++			if (dominated_by_is_err(rhs1, bb))
++				continue;
++
++			if (TREE_CODE(ptr_rhs_type) != RECORD_TYPE) {
++#ifndef __DEBUG_PLUGIN
++				if (canister_modified(TYPE_ATTRIBUTES(ptr_lhs_type)))
++#endif
++				MISMATCH(gimple_location(stmt), "rhs", ptr_lhs_type,
++						ptr_rhs_type);
++				continue;
++			}
++
++			if (rhs_code == SSA_NAME && ptr_lhs_type == ptr_rhs_type)
++				continue;
++
++			if (rhs_code == ADDR_EXPR) {
++				op0 = TREE_OPERAND(rhs1, 0);
++
++				if (op0 == NULL_TREE)
++					continue;
++
++				if (TREE_CODE(op0) != VAR_DECL)
++					continue;
++
++				op0_type = TYPE_MAIN_VARIANT(strip_array_types(TYPE_MAIN_VARIANT(TREE_TYPE(op0))));
++				if (op0_type == ptr_lhs_type)
++					continue;
++
++#ifndef __DEBUG_PLUGIN
++				if (canister_modified(TYPE_ATTRIBUTES(op0_type)))
++#endif
++				MISMATCH(gimple_location(stmt), "op0", ptr_lhs_type, op0_type);
++			} else {
++				const_tree ssa_name_var = SSA_NAME_VAR(rhs1);
++				/* skip bogus type casts introduced by container_of */
++				if (ssa_name_var != NULL_TREE && DECL_NAME(ssa_name_var) &&
++				    !strcmp((const char *)DECL_NAME_POINTER(ssa_name_var), "__mptr"))
++					continue;
++#ifndef __DEBUG_PLUGIN
++				if(canister_modified(TYPE_ATTRIBUTES(ptr_rhs_type)))
++#endif
++				MISMATCH(gimple_location(stmt), "ssa", ptr_lhs_type,
++						ptr_rhs_type);
++			}
++
++		}
++	}
++	return 0;
++}
++
++#define PASS_NAME find_bad_casts
++#define NO_GATE
++#include "../gcc-generate-gimple-pass.h"
++void register_bad_casts_pass(const char* plugin_name)
++{
++	struct register_pass_info find_bad_casts_pass_info;
++
++	find_bad_casts_pass_info.pass			= make_find_bad_casts_pass();
++	find_bad_casts_pass_info.reference_pass_name	= "ssa";
++	find_bad_casts_pass_info.ref_pass_instance_number	= 1;
++	find_bad_casts_pass_info.pos_op			= PASS_POS_INSERT_AFTER;
++
++	register_callback(plugin_name, PLUGIN_PASS_MANAGER_SETUP,
++			NULL, &find_bad_casts_pass_info);
++	register_callback(plugin_name, PLUGIN_ALL_IPA_PASSES_START,
++			check_global_variables, NULL);
++}
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/fips_canister_common.c b/scripts/gcc-plugins/fips_canister_plugins/fips_canister_common.c
+new file mode 100644
+index 000000000..db836e43d
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/fips_canister_common.c
+@@ -0,0 +1,370 @@
++/*
++ * Common code shared between match_canister_structs and pad_canister_structs.
++ *
++ * Copyright (C) 2025 Broadcom, Inc.
++ */
++
++#include "../gcc-common.h"
++
++#include "fips_canister_common.h"
++#include "constants.h"
++
++static const int nr_pad_structs = 44;
++const char *pad_struct_list[] = {
++	"crypto_async_request",
++	"crypto_tfm",
++	"cipher_alg",
++	"compress_alg",
++	"crypto_alg",
++	"crypto_aes_ctx",
++	"skcipher_request",
++	"crypto_skcipher",
++	"skcipher_alg_common",
++	"skcipher_alg",
++	"skcipher_walk",
++	"aead_request",
++	"aead_alg",
++	"crypto_aead",
++	"sha256_state",
++	"aead_geniv_ctx",
++	"crypto_sync_skcipher",
++	"rng_alg",
++	"crypto_rng",
++	"gcry_mpi",
++	"rsa_key",
++	"akcipher_request",
++	"crypto_akcipher",
++	"akcipher_alg",
++	"ecc_point",
++	"ecc_curve",
++	"crypto_wait",
++	"crypto_comp",
++	"hash_alg_common",
++	"ahash_request",
++	"crypto_ahash",
++	"shash_desc",
++	"crypto_shash",
++	"shash_alg",
++	"kpp_request",
++	"crypto_kpp",
++	"kpp_alg",
++	"acomp_req",
++	"crypto_acomp",
++	"crypto_cipher",
++	"sha1_state",
++	"sha512_state",
++	"sha3_state",
++	"ecdh"
++};
++
++/* TODO, future work: This is slow. Make it faster. */
++bool struct_in_pad_list(const char *name)
++{
++	for (int i = 0; i < nr_pad_structs; i++) {
++		if (!strcmp(name, pad_struct_list[i]))
++			return true;
++	}
++
++	return 0;
++}
++
++/* Borrowed from randomize_layout_plugin.c */
++bool is_flexible_array(const_tree field)
++{
++	const_tree fieldtype;
++	const_tree typesize;
++
++	fieldtype = TREE_TYPE(field);
++	typesize = TYPE_SIZE(fieldtype);
++
++	if (TREE_CODE(fieldtype) != ARRAY_TYPE)
++		return false;
++
++	/* size of type is represented in bits */
++
++	if (typesize == NULL_TREE && TYPE_DOMAIN(fieldtype) != NULL_TREE &&
++	    TYPE_MAX_VALUE(TYPE_DOMAIN(fieldtype)) == NULL_TREE)
++		return true;
++
++	return false;
++}
++
++tree create_padding_field(tree context, int pad_len)
++{
++	tree eltype, index, padding;
++
++	if (pad_len <= 0)
++		return NULL_TREE;
++
++	/* Type of array fields */
++	eltype = build_type_variant(char_type_node, 0, 0);
++
++	/* Maximum index into the array*/
++	index = build_index_type(size_int(pad_len - 1));
++
++	/* Build the new array type */
++	padding = build_array_type(eltype, index);
++
++	/* Build the new declaration */
++	padding = build_decl(BUILTINS_LOCATION, FIELD_DECL,
++			     get_identifier(PAD_FIELD_NAME), padding);
++
++	/* Context is the parent struct */
++	DECL_CONTEXT(padding) = context;
++
++	/* Relayout the new decl */
++	relayout_decl(padding);
++
++	return padding;
++}
++
++location_t get_type_location(tree type)
++{
++	if (!type)
++		return UNKNOWN_LOCATION;
++
++	if (DECL_P(type))
++		return DECL_SOURCE_LOCATION(type);
++
++	if (EXPR_HAS_LOCATION(type))
++		return EXPR_LOCATION(type);
++
++	return UNKNOWN_LOCATION;
++}
++
++size_t get_type_size(tree type)
++{
++	tree size_tree;
++	size_t size;
++
++	size_tree = TYPE_SIZE_UNIT(type);
++	size = size_tree ? TREE_INT_CST_LOW(size_tree) : 0;
++
++	return size;
++}
++
++size_t get_field_size(tree field)
++{
++	tree size_tree;
++	size_t field_size;
++
++	size_tree = TYPE_SIZE_UNIT(TREE_TYPE(field));
++	field_size = size_tree ? TREE_INT_CST_LOW(size_tree) : 0;
++
++	return field_size;
++}
++
++const char *get_field_name(tree field)
++{
++	const char *field_name;
++
++	field_name = get_name(field);
++	if (!field_name)
++		field_name = ANON_NAME;
++
++	return field_name;
++}
++
++/* TODO: Future work: improve this function, use it for variable type check */
++int get_field_type_str(tree field, char *type_str, int len)
++{
++	const char *type_name = NULL;
++
++	FILE *tmp_fp;
++	char* buf;
++	size_t length;
++
++	tree type;
++	tree type_name_node;
++
++	type = TREE_TYPE(field);
++
++	if (!type)
++		return 0;
++
++	type_name_node = TYPE_NAME(type);
++
++	if (type_name_node && TREE_CODE(type_name_node) == TYPE_DECL) {
++		type_name = IDENTIFIER_POINTER(DECL_NAME(type_name_node));
++	} else if (type_name_node &&
++		   TREE_CODE(type_name_node) == IDENTIFIER_NODE) {
++		type_name = get_name(type_name_node);
++	}
++
++	if(type_name) {
++		strncpy(type_str, type_name, len);
++		return 0;
++	}
++
++	tmp_fp = open_memstream(&buf, &length);
++	if(tmp_fp) {
++		print_generic_expr(tmp_fp, type, TDF_SLIM);
++		fflush(tmp_fp);
++		fclose(tmp_fp);
++		strncpy(type_str, buf, len);
++		free(buf);
++		return 0;
++	}
++
++	type_name = UNKWN_TYPE;
++	strncpy(type_str, type_name, len);
++
++	return 0;
++}
++
++int insert_pad_field(tree type, tree pad_field)
++{
++	tree last_field = NULL_TREE;
++	tree penultimate_field = NULL_TREE;
++	tree field;
++
++	if (!pad_field)
++		return 0;
++
++	for (field = TYPE_FIELDS(type); field; field = TREE_CHAIN(field)) {
++		penultimate_field = last_field;
++		last_field = field;
++	}
++
++	if (!last_field) {
++		error("No fields found for struct");
++		return -1;
++	}
++
++	if (!strcmp(get_field_name(last_field), PAD_FIELD_NAME))
++		return 0;
++
++	/* Add padding before flexible array member, as this must be the last member */
++	if (is_flexible_array(last_field)) {
++		if (!penultimate_field) {
++			error("must have at least 2 members when a flexible array member is present");
++			return -1;
++		}
++
++		TREE_CHAIN(penultimate_field) = pad_field;
++		TREE_CHAIN(pad_field) = last_field;
++	} else {
++		TREE_CHAIN(last_field) = pad_field;
++		TREE_CHAIN(pad_field) = NULL_TREE;
++	}
++
++	return 0;
++}
++
++void relayout_canister_struct(tree type, const char *identifier)
++{
++	tree main_variant, variant;
++
++	/* Relayout all variants in the same way */
++	main_variant = TYPE_MAIN_VARIANT(type);
++	for (variant = main_variant; variant; variant = TYPE_NEXT_VARIANT(variant)) {
++		TYPE_FIELDS(variant) = TYPE_FIELDS(type);
++
++		TYPE_ATTRIBUTES(variant) = copy_list(TYPE_ATTRIBUTES(variant));
++		TYPE_ATTRIBUTES(variant) = tree_cons(get_identifier(identifier),
++						     NULL_TREE,
++						     TYPE_ATTRIBUTES(variant));
++
++		/* Require designated initializers */
++		TYPE_ATTRIBUTES(variant) =
++			tree_cons(get_identifier("designated_init"), NULL_TREE,
++				  TYPE_ATTRIBUTES(variant));
++	}
++
++	/* Relayout with the updated size */
++	TYPE_SIZE(main_variant) = NULL_TREE;
++	TYPE_SIZE_UNIT(main_variant) = NULL_TREE;
++	layout_type(main_variant);
++}
++
++bool type_is_struct(tree type)
++{
++	if (type == NULL_TREE || type == error_mark_node)
++		return false;
++
++	if (TREE_CODE(type) != RECORD_TYPE)
++		return false;
++
++	if (TYPE_FIELDS(type) == NULL_TREE)
++		return false;
++
++	return 1;
++}
++
++bool lang_check(const char* plugin_name, const char* lang_name) {
++	if (strncmp(lang_name, "GNU C", 5)) {
++		inform(UNKNOWN_LOCATION, G_("%s supports C only, not %s"),
++			plugin_name,
++			lang_name);
++		return false;
++	}
++
++	return true;
++}
++
++/*
++ * Validate that the size of the struct with a flexible array
++ * is greater than the size of the basic struct definition, when declared
++ * as a constructor.
++ *
++ * As far as I can tell, this check shouldn't be necessary because
++ * the size of the flexible array is calculated when the declaration is
++ * parsed. But randomize_layout_plugin.c has some logic to reset the size
++ * of the flexible array struct at this point, and I can't figure out why.
++ * For now, just add a check and see if anything trips it.
++ */
++void validate_decl_flex_size(void *event_data, void *data)
++{
++	tree decl = (tree)event_data;
++	tree lastidx, field, init, type, flexsize;
++	unsigned HOST_WIDE_INT len;
++	size_t type_size;
++	size_t decl_size;
++
++	if (decl == NULL_TREE || decl == error_mark_node)
++		return;
++
++	type = TREE_TYPE(decl);
++
++	if (TREE_CODE(decl) != VAR_DECL)
++		return;
++
++	if (TREE_CODE(type) != RECORD_TYPE && TREE_CODE(type) != UNION_TYPE)
++		return;
++
++	if (!lookup_attribute(PADDING_ADDED_ATTR, TYPE_ATTRIBUTES(type)))
++		return;
++
++	gcc_assert(DECL_SIZE_UNIT(decl));
++
++	init = DECL_INITIAL(decl);
++	if (init == NULL_TREE || init == error_mark_node)
++		return;
++
++	if (TREE_CODE(init) != CONSTRUCTOR)
++		return;
++
++	len = CONSTRUCTOR_NELTS(init);
++	if (!len)
++		return;
++
++	lastidx = CONSTRUCTOR_ELT(init, CONSTRUCTOR_NELTS(init) - 1)->index;
++
++	for (field = TYPE_FIELDS(type); TREE_CHAIN(field);
++	     field = TREE_CHAIN(field))
++		;
++
++	if (lastidx != field)
++		return;
++
++	if (!is_flexible_array(field))
++		return;
++
++	decl_size = TREE_INT_CST_LOW(DECL_SIZE_UNIT(decl));
++	type_size = TREE_INT_CST_LOW(TYPE_SIZE_UNIT(type));
++
++	if (decl_size <= type_size)
++		error("struct '%s': declaration size (%ld) for a struct with a " \
++			"flexible array member must be > basic definition size (%ld)",
++		      ORIG_TYPE_NAME(type), decl_size, type_size);
++}
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/fips_canister_common.h b/scripts/gcc-plugins/fips_canister_plugins/fips_canister_common.h
+new file mode 100644
+index 000000000..f51cc37e0
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/fips_canister_common.h
+@@ -0,0 +1,23 @@
++/* Copyright (C) 2025 Broadcom, Inc. */
++
++#include "../gcc-common.h"
++#include "constants.h"
++
++#define ORIG_TYPE_NAME(node) \
++	(TYPE_NAME(TYPE_MAIN_VARIANT(node)) != NULL_TREE ? ((const char *)IDENTIFIER_POINTER(TYPE_NAME(TYPE_MAIN_VARIANT(node)))) : (const char *) ANON_NAME)
++
++bool is_flexible_array(const_tree field);
++tree create_padding_field(tree context, int pad_len);
++size_t get_type_size(tree type);
++size_t get_field_size(tree field);
++int get_field_type_str(tree field, char *type_str, int len);
++int insert_pad_field(tree type, tree pad_field);
++void relayout_canister_struct(tree type, const char* identifier);
++bool type_is_struct(tree type);
++const char* get_field_name(tree field);
++bool struct_in_pad_list(const char *name);
++unsigned int find_bad_casts_execute(void);
++void register_bad_casts_pass(const char* plugin_name);
++void validate_decl_flex_size(void *event_data, void *data);
++location_t get_type_location(tree type);
++bool lang_check(const char* plugin_name, const char* lang_name);
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/dwarf_debuginfo_parser.c b/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/dwarf_debuginfo_parser.c
+new file mode 100644
+index 000000000..79bb93302
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/dwarf_debuginfo_parser.c
+@@ -0,0 +1,267 @@
++/*
++ * Parse DWARF debuginfo from canister binary and extract structure information.
++ * Structure information can be returned via an API call
++ *
++ * Copyright (C) 2025 Broadcom, Inc.
++ */
++#include <stdlib.h>
++#include <dwarves/dwarves.h>
++#include <dwarves/dutil.h>
++#include <dwarves/list.h>
++#include <errno.h>
++
++#include "hash_table.h"
++#include "structure_db.h"
++#include "../constants.h"
++
++#define CANISTER_LOC "crypto/fips_canister.o"
++
++static struct conf_fprintf conf = {
++	.emit_stats = 1,
++};
++
++struct struct_def_entry {
++	struct struct_def *s_def;
++	struct list_head l_entry;
++};
++
++static struct list_head struct_list_head;
++
++static int returncode = 0;
++static int nr_structs;
++
++static void get_base_type_name(struct class_member *cls_member, struct cu *cu,
++			       char *buffer, int buf_len)
++{
++	char tmp_buf[64];
++	const char *tag_name;
++	struct tag *member_type = cu__type(cu, cls_member->tag.type);
++	struct base_type *bt = tag__base_type(member_type);
++
++	tag_name = tag__name(member_type, cu, tmp_buf, sizeof(tmp_buf), &conf);
++
++	if (tag_name)
++		strncpy(buffer, tag_name, buf_len);
++	else
++		strncpy(buffer, UNKWN_TYPE, buf_len);
++}
++
++static int parse_struct_member_tag(struct tag *tag,
++				   struct cu *cu,
++				   struct struct_member *new_member)
++{
++	struct class_member *cls_member;
++	char *tag_name;
++	struct base_type *base_type;
++	struct type *type;
++	struct tag *tag_pos;
++
++	cls_member = tag__class_member(tag);
++
++	if (cls_member->name)
++		strncpy(new_member->name, cls_member->name,
++			sizeof(new_member->name) - 1);
++	else
++		strncpy(new_member->name, ANON_NAME,
++			sizeof(new_member->name) - 1);
++
++	new_member->byte_size = cls_member->byte_size;
++	new_member->byte_offset = cls_member->byte_offset;
++	get_base_type_name(cls_member, cu, new_member->type_name,
++			   sizeof(new_member->type_name) - 1);
++
++	return 0;
++}
++
++/* If tag is a struct, parse it. Based off of __class__fprintf() */
++static struct struct_def *parse_tag(struct tag *tag, struct cu *cu)
++{
++	struct class *class;
++	struct type *type;
++	char name[64];
++	struct struct_def *new_struct;
++	struct struct_member *s_member;
++	struct tag *tag_pos;
++	const char *type_name;
++	int i;
++	size_t new_struct_sz;
++
++	if (!tag__is_struct(tag))
++		return NULL;
++
++	class = tag__class(tag);
++	type = &class->type;
++	type_name = type__name(type);
++
++	/* Don't bother with anonymous structures */
++	if (!type_name)
++		return NULL;
++
++	new_struct_sz = sizeof(struct struct_def) +
++				(type->nr_members * sizeof(struct struct_member));
++	new_struct = calloc(1, new_struct_sz);
++	if (!new_struct) {
++		perror("Failed to allocate memory for new struct!");
++		return NULL;
++	}
++
++	strncpy(new_struct->name, type_name, sizeof(new_struct->name) - 1);
++	new_struct->byte_size = type->size;
++	new_struct->nr_members = type->nr_members;
++	new_struct->__sz = new_struct_sz;
++
++	/*
++	 * Get the struct members.
++	 * According to DWARF format, the members of the struct should be
++	 * separate tags under the parent struct tag.
++	 * This loops through all the child tags for the struct.
++	 */
++	i = 0;
++	type__for_each_tag(type, tag_pos)
++	{
++		if (parse_struct_member_tag(tag_pos, cu, &new_struct->members[i]) < 0) {
++			fprintf(stderr,
++				"struct %s: Failed to parse tag for struct member\n",
++				new_struct->name);
++			free(new_struct);
++			return NULL;
++		}
++
++		i++;
++	}
++
++	/*
++	 * Debuginfo can contain some structs with no member info. Don't add
++	 * these to the DB.
++	 */
++	if(i == 0) {
++		free(new_struct);
++		return NULL;
++	}
++
++	return new_struct;
++}
++
++
++
++static void free_struct_def_list(void) {
++	struct struct_def_entry *pos, *tmp;
++	list_for_each_entry_safe(pos, tmp, &struct_list_head, l_entry) {
++		list_del(&pos->l_entry);
++		free(pos);
++	}
++}
++
++static int cu__parse_structs(struct cu *cu)
++{
++	int i;
++	struct tag *tag;
++	struct class *class;
++	const char *type_name;
++	struct struct_def_entry *pos, *new_entry;
++	bool unique;
++	struct struct_def *def;
++
++	cu__for_each_type(cu, i, tag) {
++		def = parse_tag(tag, cu);
++		if(!def)
++			continue;
++
++		unique = true;
++		list_for_each_entry(pos, &struct_list_head, l_entry) {
++			if(!strcmp(pos->s_def->name, def->name)) {
++				unique = false;
++				break;
++			}
++		}
++
++		if(!unique)
++			continue;
++
++		new_entry = calloc(1, sizeof(struct struct_def_entry));
++		if(!new_entry) {
++			perror("Failed to allocate memory for tag list entry");
++			returncode = -1;
++			return -1;
++		}
++
++		new_entry->s_def = def;
++		list_add_tail(&new_entry->l_entry, &struct_list_head);
++		nr_structs++;
++	}
++
++	return 0;
++}
++
++static enum load_steal_kind
++dwarf_struct_parser(struct cu *cu, struct conf_load *conf_load __maybe_unused,
++		     void *thr_data __maybe_unused)
++{
++	if (cu__parse_structs(cu) < 0)
++		return LSK__STOP_LOADING;
++
++	return LSK__DELETE;
++}
++
++struct conf_load dwarf_conf_parser = {
++	.steal = dwarf_struct_parser,
++	.conf_fprintf = &conf,
++};
++
++/*
++ * API call to initialize the database with the structure info.
++ */
++int init_db_from_canister(void)
++{
++	struct cus *cus = NULL;
++	int ret = 0;
++	struct struct_def_entry *pos;
++
++	if(get_cached_db() == 0)
++		return 0;
++
++	cus = cus__new();
++
++	if (dwarves__init() || cus == NULL) {
++		fprintf(stderr, "dwarf_debuginfo_parser: insufficient memory, "
++				"can't parse canister debuginfo\n");
++		return -1;
++	}
++
++	/*
++	 * Pass in 0 to read cacheline size from the build machine.
++	 * Assuming not cross-compiling, this should be accurate.
++	 * Most of the time, it will be 64 bytes anyways.
++	 */
++	dwarves__resolve_cacheline_size(&dwarf_conf_parser, 0);
++
++	INIT_LIST_HEAD(&struct_list_head);
++
++	ret = cus__load_file(cus, &dwarf_conf_parser, CANISTER_LOC);
++	if(ret < 0 || returncode < 0)
++		goto exit;
++
++	ret = init_struct_db(nr_structs);
++	if(ret < 0)
++		goto exit;
++
++	list_for_each_entry(pos, &struct_list_head, l_entry)
++		add_struct_def(pos->s_def);
++
++exit:
++	free_struct_def_list();
++	cus__delete(cus);
++	dwarves__exit();
++
++	if(ret < 0)
++		fprintf(stderr,
++			"Failed to read debuginfo from " CANISTER_LOC " : %s\n",
++			errno ? strerror(errno) : "No debugging information found");
++
++	if (ret < 0 || returncode < 0) {
++		free_structure_db();
++		return -1;
++	}
++
++	return 0;
++}
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/hash_table.c b/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/hash_table.c
+new file mode 100644
+index 000000000..8eea90a8b
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/hash_table.c
+@@ -0,0 +1,125 @@
++/*
++ * Basic hash table implementation for storing structure definitions
++ *
++ * Copyright (C) 2025 Broadcom, Inc.
++ */
++
++#include "hash_table.h"
++#include <stddef.h>
++#include <stdlib.h>
++#include <stdio.h>
++#include <string.h>
++
++#define FNV_OFFSET 14695981039346656037UL
++#define FNV_PRIME 1099511628211UL
++
++/*
++ * https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function
++ * This is simple to implement, but there may be faster hash functions
++ * out there
++ */
++static long unsigned int hash_string(const char *str, int len)
++{
++	long unsigned int hash = FNV_OFFSET;
++	for (int i = 0; i < len; i++) {
++		hash = hash * FNV_PRIME;
++		hash = hash ^ str[i];
++	}
++
++	return hash;
++}
++
++struct hash_table *alloc_hash_table(int num_entries)
++{
++	struct hash_table *table;
++	struct hash_table_entry *entries;
++
++	if(num_entries <= 0) {
++		fprintf(stderr,
++			"Can't allocate hash table with %d entries!\n",
++			num_entries);
++		return NULL;
++	}
++
++	/* Much better performance with some empty spaces */
++	num_entries = num_entries * 2;
++
++	table = calloc(1, sizeof(struct hash_table) +
++			(num_entries * sizeof(struct hash_table_entry)));
++	if (!table) {
++		perror("Failed to allocate memory for hash table");
++		return NULL;
++	}
++
++	table->num_entries = num_entries;
++
++	return table;
++}
++
++int hash_table_insert(struct hash_table *htable, void *entry, const char *key,
++		      int key_len)
++{
++	unsigned index, start_index;
++	struct hash_table_entry *htable_entry;
++
++	index = hash_string(key, key_len) % htable->num_entries;
++
++	start_index = index;
++	while(!entry_is_empty(&htable->entries[index])) {
++		if (index >= htable->num_entries - 1)
++			index = 0;
++		else
++			index++;
++
++		if(index == start_index) {
++			fprintf(stderr,
++				"No space remaining in hash table! No open entry slots!\n");
++			return -1;
++		}
++	}
++
++	htable_entry = &htable->entries[index];
++	strncpy(htable_entry->key, key, sizeof(htable_entry->key) - 1);
++	htable_entry->entry = entry;
++
++	return 0;
++}
++
++struct hash_table_entry *hash_table_get(struct hash_table *htable,
++					const char *key, int key_len)
++{
++	int index, start_index;
++	struct hash_table_entry *htable_entry;
++
++	index = hash_string(key, key_len) % htable->num_entries;
++	start_index = index;
++
++	do {
++		htable_entry = &htable->entries[index];
++		if (!strcmp(key, htable_entry->key))
++			return htable_entry;
++
++		if (index >= htable->num_entries - 1)
++			index = 0;
++		else
++			index++;
++
++	} while (index != start_index);
++
++	return NULL;
++}
++
++void hash_table_free(struct hash_table *hash_table, void (*free_entry)(void *))
++{
++	if (!hash_table)
++		return;
++
++	for(int i = 0; i < hash_table->num_entries; i++) {
++		if(entry_is_empty(&hash_table->entries[i]))
++			return;
++
++		free_entry(hash_table->entries[i].entry);
++	}
++
++	free(hash_table);
++}
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/hash_table.h b/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/hash_table.h
+new file mode 100644
+index 000000000..3acc4aa56
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/hash_table.h
+@@ -0,0 +1,28 @@
++/* Copyright (C) 2025 Broadcom, Inc. */
++#include <stddef.h>
++
++struct hash_table_entry {
++	char key[64];
++	union {
++		void* entry;
++		size_t cache_ptr;
++	};
++};
++
++struct hash_table {
++	int num_entries;
++	struct hash_table_entry entries[];
++};
++
++static inline int entry_is_empty(struct hash_table_entry *htable_entry) {
++	return htable_entry->key[0] == '\0' && htable_entry->entry == 0;
++}
++
++struct hash_table *init_hash_table(int num_entries,
++				   void (*free_entry)(void *entry));
++int hash_table_insert(struct hash_table *htable, void *entry, const char *key,
++			int key_len);
++struct hash_table_entry *hash_table_get(struct hash_table *htable, const char *key,
++					 int key_len);
++struct hash_table *alloc_hash_table(int num_entries);
++void hash_table_free(struct hash_table *hash_table, void (*free_entry)(void *));
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/match_canister_structs.c b/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/match_canister_structs.c
+new file mode 100644
+index 000000000..c333f04d6
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/match_canister_structs.c
+@@ -0,0 +1,420 @@
++/*
++ * Using debuginfo from the canister binary, modify kernel structs to match
++ * canister structs.
++ *
++ * Copyright (C) 2025 Broadcom, Inc.
++ */
++
++#include "../../gcc-common.h"
++#include "structure_db.h"
++#include "../fips_canister_common.h"
++#include "../constants.h"
++
++__visible int plugin_is_GPL_compatible;
++
++static tree get_field_by_name(tree type, char *name)
++{
++	tree field;
++	const char *field_name;
++
++	for (field = TYPE_FIELDS(type); field; field = TREE_CHAIN(field)) {
++		field_name = get_field_name(field);
++		if (!strcmp(field_name, name))
++			return field;
++	}
++
++	return NULL_TREE;
++}
++
++static size_t calculate_struct_size(tree type)
++{
++	size_t cur_offset = 0;
++	size_t total_size;
++	size_t last_fld_size = 0, field_alignment = 0;
++	tree field;
++
++	for (field = TYPE_FIELDS(type); field; field = TREE_CHAIN(field)) {
++		field_alignment = DECL_ALIGN_UNIT(field);
++		if (!field_alignment)
++			field_alignment = 1;
++
++		cur_offset += last_fld_size;
++
++		/* Account for aligning offset on X byte boundary */
++		if (cur_offset && (cur_offset % field_alignment))
++			cur_offset = cur_offset -
++				     (cur_offset % field_alignment) +
++				     field_alignment;
++
++		last_fld_size = get_field_size(field);
++	}
++
++	return cur_offset + last_fld_size;
++}
++
++/* Validate offset of each field matches between kernel and canister */
++static int validate_offsets(tree type, struct struct_def *canister_def)
++{
++	size_t cur_offset = 0;
++	size_t total_size;
++	size_t last_fld_size = 0, field_alignment = 0;
++	struct struct_member *member;
++	tree field;
++	const char *field_name;
++	int padding_remaining = 0;
++	int i = 0;
++
++	for (member = first_member(canister_def), field = TYPE_FIELDS(type);
++		field && i < canister_def->nr_members;
++		field = TREE_CHAIN(field), member = &canister_def->members[++i]) {
++
++		field_alignment = DECL_ALIGN_UNIT(field);
++		if (!field_alignment)
++			field_alignment = 1;
++
++		field_name = get_field_name(field);
++
++		cur_offset += last_fld_size;
++
++		if (cur_offset && (cur_offset % field_alignment))
++			cur_offset = cur_offset -
++				     (cur_offset % field_alignment) +
++				     field_alignment;
++
++		last_fld_size = get_field_size(field);
++
++		if (!member)
++			continue;
++
++		if (!strcmp(member->name, field_name) &&
++		    cur_offset != (size_t)member->byte_offset) {
++			error("struct '%s': field '%s', kernel offset %ld != canister offset %d\n",
++			      canister_def->name, field_name, cur_offset,
++			      member->byte_offset);
++			return -1;
++		}
++
++	}
++
++	return 0;
++}
++
++/* Match field order between kernel and canister. Moves any new fields to end of the struct */
++static int order_fields(struct struct_def *canister_struct_def, tree type,
++			tree *new_field_order, int num_fields)
++{
++	size_t field_size;
++	struct struct_member *member;
++	tree field, flexible_array = NULL_TREE;
++	tree divergence_point = NULL_TREE;
++	int nr_anon = 0;
++	const char *field_name;
++	int nf_index = 0;
++	char field_type[64];
++
++	if (!first_member(canister_struct_def)) {
++		error("struct '%s': Found no members in canister version",
++		      canister_struct_def->name);
++		return -1;
++	}
++
++	/*
++	 * Simultaneously walk both canister and kernel struct fields/members.
++	 * If we encounter a difference, where the canister/kernel members at
++	 * a given index don't match, mark the divergence point and continue
++	 * parsing all the canister members.
++	 */
++	field = TYPE_FIELDS(type);
++	for_all_members(canister_struct_def, member) {
++		if (!strcmp(member->name, PAD_FIELD_NAME))
++			continue;
++
++retry_divergence:
++		if (divergence_point)
++			field = get_field_by_name(type, member->name);
++
++		/*
++		 * Removal of struct member in the kernel can cause incompatibility
++		 * issues with the canister, if canister code is attempting to
++		 * access data at some member/memory offset which the kernel
++		 * doesn't set.
++		*/
++		if (!field) {
++			error("struct %s: found canister member '%s' which is not "
++			      "present in kernel",
++			      canister_struct_def->name, member->name);
++			return -1;
++		}
++
++		field_name = get_field_name(field);
++		field_size = get_field_size(field);
++		get_field_type_str(field, field_type, sizeof(field_type));
++
++		if (strcmp(field_name, member->name)) {
++			divergence_point = field;
++			goto retry_divergence;
++		}
++
++		if (!strcmp(member->name, ANON_NAME))
++			nr_anon++;
++
++		gcc_assert(nf_index < num_fields);
++		if (is_flexible_array(field))
++			new_field_order[num_fields - 1] = field;
++		else
++			new_field_order[nf_index++] = field;
++
++		// TODO: Future development can also add a type check here.
++
++		if (field_size != member->byte_size) {
++			inform(DECL_SOURCE_LOCATION(field),
++			       "struct '%s': field '%s' size mismatch: "
++			       "kernel: (%s) %ld != canister: (%s) %ld\n",
++			       canister_struct_def->name, member->name,
++			       field_type, field_size, member->type_name,
++			       member->byte_size);
++		}
++
++		field = TREE_CHAIN(field);
++	}
++
++	/*
++	 * Iterate all kernel fields starting from the divergence point.
++	 * This ensures we won't miss any kernel fields, but don't have to start
++	 * over from the very beginning. Usually, the kernel/canister will
++	 * maintain the same order, but in some cases this is necessary. See
++	 * crypto_kpp from 6.1 to 6.12 for an example.
++	 */
++	if (divergence_point)
++		field = divergence_point;
++
++	/* Add any new fields which are not present in the canister version */
++	while (field && nf_index < num_fields) {
++		field_name = get_field_name(field);
++		if (!strcmp(field_name, ANON_NAME))
++			nr_anon++;
++
++		member = get_member_by_name(canister_struct_def, field_name);
++		if (!member)
++			new_field_order[nf_index++] = field;
++
++		if (is_flexible_array(field) && TREE_CHAIN(field) != NULL_TREE)
++			error("struct '%s': flexible array member must be final member",
++			      canister_struct_def->name);
++
++		field = TREE_CHAIN(field);
++	}
++
++	if (nr_anon > 1 && divergence_point) {
++		error("struct '%s': Can't handle more than one anonymous member"
++		      "when struct has been reordered between kernel/canister",
++		      canister_struct_def->name);
++		return -1;
++	}
++
++	return 0;
++}
++
++static int pad_struct(struct struct_def *canister_struct_def, tree type,
++		      int kernel_size)
++{
++	size_t padding_size;
++	tree pad_field = NULL_TREE;
++
++	padding_size = canister_struct_def->byte_size - kernel_size;
++	if ((int)padding_size > 0)
++		pad_field = create_padding_field(type, padding_size);
++
++	return insert_pad_field(type, pad_field);
++}
++
++static bool needs_matching(tree type, struct struct_def *canister_def)
++{
++	struct struct_member *member;
++	const char *field_name;
++	size_t field_size;
++	tree field;
++	int i = 0;
++
++	if(get_type_size(type) != canister_def->byte_size)
++		return true;
++
++	for (member = first_member(canister_def), field = TYPE_FIELDS(type);
++		field && i < canister_def->nr_members;
++		field = TREE_CHAIN(field), member = &canister_def->members[++i]) {
++
++		field_name = get_field_name(field);
++		field_size = get_field_size(field);
++
++		/* Needs processing if fields/field order differs, or size/type has changed */
++		if (strcmp(field_name, member->name) ||
++		    field_size != member->byte_size)
++			return true;
++	}
++
++	if (!strcmp(member->name, PAD_FIELD_NAME))
++		return true;
++
++	if (field || i < canister_def->nr_members)
++		return true;
++
++	return false;
++}
++
++/* Match kernel structures to canister structures */
++static void match_struct(tree type)
++{
++	tree *new_field_order;
++	int num_fields = 0;
++	struct struct_def *canister_struct_def;
++	const char *type_name;
++	size_t struct_size;
++
++	type_name = ORIG_TYPE_NAME(type);
++	if (!type_name || !strcmp(type_name, ANON_NAME))
++		return;
++
++	/*
++	 * hmac_ctx is a weird case. Defined differently in two separate places,
++	 * one inside the canister/kernel crypto/ and another inside the chelsio
++	 * driver.
++	 *
++	 * We can't validate the chelsio version against the the canister, because
++	 * it is intentionally different by design. Probably in the future, it
++	 * would make sense to sync the two definitions so that we can run the
++	 * compatibility checks in this plugin. But for now, skip it entirely.
++	 */
++	if(!strcmp(type_name, "hmac_ctx"))
++		return;
++
++	/* Calculate alignments and sizes for all fields */
++	layout_type(type);
++
++	canister_struct_def = get_struct_def_by_name(type_name, strlen(type_name));
++	if (!canister_struct_def) {
++		if (struct_in_pad_list(type_name))
++			error("struct '%s': in padding list but not found in canister debuginfo",
++			      type_name);
++		return;
++	}
++
++	if (!needs_matching(type, canister_struct_def))
++		return;
++
++	if (!struct_in_pad_list(type_name))
++		inform(get_type_location(type),
++		       "struct '%s': mismatch between kernel/canister versions, "
++		       "but not in padding list\n",
++		       type_name);
++
++	/* First pass - count fields. */
++	for (tree field = TYPE_FIELDS(type); field; field = TREE_CHAIN(field))
++		num_fields++;
++
++	/* Note: Can't use m/calloc in GCC */
++	new_field_order = (tree *) xcalloc(sizeof(tree), num_fields);
++	if (!new_field_order) {
++		perror("Couldn't allocate memory for new field order array!");
++		return;
++	}
++
++	/* Second pass - order the fields according to canister definition */
++	if (order_fields(canister_struct_def, type, new_field_order,
++			 num_fields) < 0)
++		goto err_exit;
++
++	/* Link fields according to the new order */
++	for (int i = 0; i < num_fields - 1; i++)
++		TREE_CHAIN(new_field_order[i]) = new_field_order[i + 1];
++	TREE_CHAIN(new_field_order[num_fields - 1]) = NULL_TREE;
++
++	TYPE_FIELDS(type) = new_field_order[0];
++
++	struct_size = calculate_struct_size(type);
++	if ((int)struct_size < 0)
++		goto err_exit;
++
++	/* Insert padding to match canister size, if necessary */
++	if (pad_struct(canister_struct_def, type, struct_size) < 0)
++		goto err_exit;
++
++	/* Relayout the modified structure */
++	relayout_canister_struct(type, CANISTER_MATCHED_ATTR);
++
++	/* Validate that offsets for each field are matching between kernel and canister */
++	if (validate_offsets(type, canister_struct_def) < 0)
++		goto err_exit;
++
++	/* Enforce structure size matching */
++	struct_size = get_type_size(TYPE_MAIN_VARIANT(type));
++	if (struct_size != canister_struct_def->byte_size) {
++		error("struct '%s': kernel size %ld != canister size %ld\n",
++		      canister_struct_def->name, struct_size,
++		      canister_struct_def->byte_size);
++		goto err_exit;
++	}
++
++err_exit:
++	free(new_field_order);
++}
++
++static void before_struct_layout(void *event_data, void *data)
++{
++	tree type = (tree) event_data;
++
++	if (lookup_attribute(CANISTER_MATCHED_ATTR, TYPE_ATTRIBUTES(type)))
++		return;
++
++	if (!type_is_struct(type))
++		return;
++
++	match_struct(type);
++}
++
++static tree handle_canister_matched_attr(tree *node, tree name, tree args,
++					 int flags, bool *no_add_attrs)
++{
++	*no_add_attrs = false;
++	return NULL_TREE;
++}
++
++static struct attribute_spec canister_matched_attr = {};
++
++static void register_attributes(void *event_data, void *data)
++{
++	canister_matched_attr.name = CANISTER_MATCHED_ATTR;
++	canister_matched_attr.type_required = true;
++	canister_matched_attr.handler = handle_canister_matched_attr;
++	canister_matched_attr.affects_type_identity = true;
++
++	register_attribute(&canister_matched_attr);
++}
++
++static void destroy_canister_struct_db(void *event_data, void *data)
++{
++	cache_structure_db();
++	free_structure_db();
++}
++
++int plugin_init(struct plugin_name_args *plugin_info,
++		struct plugin_gcc_version *version)
++{
++	if(!lang_check(plugin_info->base_name, lang_hooks.name))
++		return -1;
++
++	if (init_db_from_canister() < 0)
++		return -1;
++
++	register_callback(plugin_info->base_name, PLUGIN_BEFORE_STRUCT_LAYOUT,
++			  before_struct_layout, NULL);
++	register_callback(plugin_info->base_name, PLUGIN_ATTRIBUTES,
++			  register_attributes, NULL);
++	register_callback(plugin_info->base_name, PLUGIN_FINISH,
++			  destroy_canister_struct_db, NULL);
++	register_callback(plugin_info->base_name, PLUGIN_FINISH_DECL,
++			  validate_decl_flex_size, NULL);
++	register_bad_casts_pass(plugin_info->base_name);
++
++
++	return 0;
++}
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/structure_db.c b/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/structure_db.c
+new file mode 100644
+index 000000000..95e88686a
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/structure_db.c
+@@ -0,0 +1,231 @@
++/*
++ * API for structure database
++ *
++ * Copyright (C) 2025 Broadcom, Inc.
++ */
++
++#include "hash_table.h"
++#include "structure_db.h"
++#include <dwarves/list.h>
++#include <string.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <fcntl.h>
++#include <sys/stat.h>
++#include <sys/mman.h>
++#include <unistd.h>
++#include <stdbool.h>
++
++#define CACHE_LOC "scripts/gcc-plugins/canister_structures.db"
++
++/* Simpler to keep the DB reference here. */
++static struct struct_db {
++	bool cached;
++	struct hash_table *htable;
++	unsigned char *cache;
++	size_t cache_sz;
++} struct_table = {0};
++
++struct struct_def *get_struct_def_by_name(const char *name, int name_len)
++{
++	struct hash_table_entry *entry;
++
++	entry = hash_table_get(struct_table.htable, name, name_len);
++
++	if(!entry)
++		return NULL;
++
++	if(struct_table.cached) {
++		return (struct struct_def *) (struct_table.cache + entry->cache_ptr);
++	}
++
++	return (struct struct_def *) entry->entry;
++}
++
++struct struct_member *get_member_by_name(struct struct_def *def,
++					 const char *name)
++{
++	struct struct_member *member;
++
++	if (!name)
++		return NULL;
++
++	for_all_members(def, member) {
++		if (!strcmp(name, member->name))
++			return member;
++	}
++
++	return NULL;
++}
++
++static void free_struct_def(void *def)
++{
++	if (!def)
++		return;
++
++	free(def);
++}
++
++int add_struct_def(struct struct_def *new_struct)
++{
++	int ret;
++
++	ret = hash_table_insert(struct_table.htable, (void *)new_struct,
++					new_struct->name, strlen(new_struct->name));
++	if (ret < 0)
++		fprintf(stderr,
++			"Failed to insert new entry for %s into "
++			"structure definition hash table\n",
++			new_struct->name);
++
++	return ret;
++}
++
++int get_cached_db(void)
++{
++	int fd;
++	unsigned char *mem_block;
++	struct stat cache_stat;
++
++	fd = open(CACHE_LOC, O_RDONLY);
++	if(fd < 0) {
++		fprintf(stderr, "Cache not yet present at: %s\n", CACHE_LOC);
++		return -1;
++	}
++
++	if(fstat(fd, &cache_stat) < 0) {
++		close(fd);
++		return -1;
++	}
++
++	mem_block = mmap(NULL, cache_stat.st_size, PROT_READ, MAP_SHARED, fd, 0);
++	close(fd);
++
++	if(mem_block == MAP_FAILED) {
++		perror("Cache present but failed to load");
++		return -1;
++	}
++
++	struct_table.cached = true;
++	struct_table.htable = (struct hash_table*) mem_block;
++	struct_table.cache = mem_block;
++	struct_table.cache_sz = cache_stat.st_size;
++
++	return 0;
++}
++
++int init_struct_db(int nr_structs)
++{
++	struct_table.htable = alloc_hash_table(nr_structs);
++	if (!struct_table.htable) {
++		fprintf(stderr, "Failed to allocate memory for the structure "
++				"definition hash table\n");
++		return -1;
++	}
++
++	return 0;
++}
++
++void free_structure_db(void)
++{
++	if(struct_table.cached) {
++		if(munmap(struct_table.cache, struct_table.cache_sz) < 0)
++			perror("Failed to unmap cached structure db");
++	}
++	else
++		hash_table_free(struct_table.htable, free_struct_def);
++}
++
++/*
++ * Convert the initial hash table and all structure defintions into a memory
++ * block which can be stored as a cache and mapped directly in to other plugin
++ * invocations.
++ *
++ * The cache is organized in two sections:
++ * 	Section 1: Hash table
++ * 	Section 2: Generic memory block, used to store the structure
++ *	           definitions.
++ *
++ * We can use the same hash table, but for cache purposes we can convert the
++ * normal "hash_table_entry->entry" pointer to instead be an offset from the
++ * beginning of the cache.
++ */
++int cache_structure_db(void)
++{
++	FILE *cache;
++	size_t ret;
++	unsigned char *mem_block;
++	size_t cur_ptr = 0;
++	size_t table_sz = 0, heap_sz = 0;
++	struct struct_def *def;
++	struct hash_table *cached_table;
++
++	if(struct_table.cached)
++		return 0;
++
++	/* Measure size needed for memory block */
++	table_sz = sizeof(struct hash_table) +
++		(struct_table.htable->num_entries * sizeof(struct hash_table_entry));
++
++	for(int i = 0; i < struct_table.htable->num_entries; i++) {
++		if(entry_is_empty(&struct_table.htable->entries[i]))
++			continue;
++
++		def = (struct struct_def *) struct_table.htable->entries[i].entry;
++		heap_sz += def->__sz;
++	}
++
++	/* Allocate new memory block */
++	mem_block = calloc(1, table_sz + heap_sz);
++	if(!mem_block) {
++		perror("Failed to allocate memory block for cache");
++		return -1;
++	}
++
++	/* Populate new memory block */
++	/* Copy hash table into the first bytes */
++	memcpy(mem_block, struct_table.htable, table_sz);
++	cur_ptr += table_sz;
++
++	cached_table = (struct hash_table *) mem_block;
++
++	/*
++	 * For each structure definition entry, copy into the "heap" space and
++	 * save the ptr as the offset to the beginning of the memory block
++	 */
++	for(int i = 0; i < struct_table.htable->num_entries; i++) {
++		def = (struct struct_def *) struct_table.htable->entries[i].entry;
++		if(!def)
++			continue;
++
++		cached_table->entries[i].cache_ptr = cur_ptr;
++		memcpy(mem_block + cur_ptr, def, def->__sz);
++		cur_ptr += def->__sz;
++	}
++
++	if(cur_ptr > table_sz + heap_sz) {
++		fprintf(stderr, "Memory error: Cache overflow\n");
++		ret = -1;
++		goto finish;
++	}
++
++	cache = fopen(CACHE_LOC, "wb");
++	if(!cache) {
++		perror("Failed to open cache location");
++		ret = -1;
++		goto finish;
++	}
++
++	ret = fwrite(mem_block, table_sz + heap_sz, 1, cache);
++	if(ret <= 0) {
++		perror("Failed to write structure DB to cache");
++		ret = -1;
++	}
++
++	fclose(cache);
++finish:
++	free(mem_block);
++
++	return (int) ret;
++}
++
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/structure_db.h b/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/structure_db.h
+new file mode 100644
+index 000000000..f6021ba94
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/structure_db.h
+@@ -0,0 +1,46 @@
++/* Copyright (C) 2025 Broadcom, Inc. */
++
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
++/* Structure member definition */
++struct struct_member {
++	char name[64];
++	/* Type, e.g int, char, enum, etc */
++	char type_name[64];
++	size_t byte_size;
++	int byte_offset;
++};
++
++/* Structure definition */
++struct struct_def {
++	char name[64];
++	size_t byte_size;
++	int nr_members;
++	/* Internal total size of the struct, including all struct members */
++	size_t __sz;
++	struct struct_member members[];
++};
++
++#define first_member(_def) &_def->members[0]
++
++#define for_all_members(_def, _mbr)                              \
++	int _i = 0; \
++	for (_mbr = first_member(_def); _i < _def->nr_members; _mbr = &_def->members[++_i]) \
++
++
++int init_db_from_canister(void);
++void free_structure_db(void);
++struct struct_def *get_struct_def_by_name(const char *name, int name_len);
++struct struct_member *get_first_member(struct struct_def *def);
++struct struct_member *get_member_by_name(struct struct_def *def, const char *name);
++int add_struct_def(struct struct_def *new_struct);
++struct struct_def *get_struct_def_by_name(const char *name, int name_len);
++int init_struct_db(int nr_structs);
++int cache_structure_db(void);
++int get_cached_db(void);
++
++#if defined(__cplusplus)
++}
++#endif
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/pad_canister_structs/pad_canister_structs.c b/scripts/gcc-plugins/fips_canister_plugins/pad_canister_structs/pad_canister_structs.c
+new file mode 100644
+index 000000000..275fd894a
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/pad_canister_structs/pad_canister_structs.c
+@@ -0,0 +1,69 @@
++/*
++ * Pad all canister structures with X bytes
++ *
++ * Copyright (C) 2025 Broadcom, Inc.
++ */
++
++#include "gcc-common.h"
++#include "../fips_canister_common.h"
++#include "../constants.h"
++
++__visible int plugin_is_GPL_compatible;
++
++static void pad_struct(tree type, int pad_len) {
++	tree pad_field;
++
++	if(!struct_in_pad_list(ORIG_TYPE_NAME(type)))
++		return;
++
++	pad_field = create_padding_field(type, pad_len);
++
++	if(insert_pad_field(type, pad_field) < 0)
++		return;
++
++	relayout_canister_struct(type, PADDING_ADDED_ATTR);
++}
++
++static void before_struct_layout(void *event_data, void *data) {
++	tree type = (tree) event_data;
++
++	if (lookup_attribute(PADDING_ADDED_ATTR, TYPE_ATTRIBUTES(type)))
++		return;
++
++	if(!type_is_struct(type))
++		return;
++
++	pad_struct(type, 8);
++}
++
++static tree handle_padding_added_attr(tree *node, tree name, tree args, int flags, bool *no_add_attrs)
++{
++	*no_add_attrs = false;
++	return NULL_TREE;
++}
++
++static struct attribute_spec padding_added_attr = { };
++
++static void register_attributes(void *event_data, void *data)
++{
++	padding_added_attr.name 		= PADDING_ADDED_ATTR;
++	padding_added_attr.type_required	= true;
++	padding_added_attr.handler		= handle_padding_added_attr;
++	padding_added_attr.affects_type_identity = true;
++
++	register_attribute(&padding_added_attr);
++}
++
++int plugin_init(struct plugin_name_args *plugin_info, struct plugin_gcc_version *version)
++{
++
++	if(!lang_check(plugin_info->base_name, lang_hooks.name))
++		return 0;
++
++	register_callback(plugin_info->base_name, PLUGIN_BEFORE_STRUCT_LAYOUT, before_struct_layout, NULL);
++	register_callback(plugin_info->base_name, PLUGIN_ATTRIBUTES, register_attributes, NULL);
++	register_callback(plugin_info->base_name, PLUGIN_FINISH_DECL, validate_decl_flex_size, NULL);
++	register_bad_casts_pass(plugin_info->base_name);
++
++	return 0;
++}
+--
+2.40.4
+

@@ -1,0 +1,113 @@
+From c505695037dfed0c9df0d2a28bcd686dff9590fd Mon Sep 17 00:00:00 2001
+From: Ankit Jain <ankit-aj.jain@broadcom.com>
+Date: Wed, 8 Oct 2025 08:09:02 +0000
+Subject: [PATCH] crypto: Moving rfc4543 out of canister boundry
+
+- Do not register and compile rfc4543 in canister
+  build
+- Return EINVAL in fips mode
+
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ crypto/gcm.c | 25 +++++++++++++++++++++++--
+ 1 file changed, 23 insertions(+), 2 deletions(-)
+
+diff --git a/crypto/gcm.c b/crypto/gcm.c
+index 84f7c23d1..7dbfdb9da 100644
+--- a/crypto/gcm.c
++++ b/crypto/gcm.c
+@@ -18,7 +18,9 @@
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+ #include <linux/slab.h>
++#include <linux/fips.h>
+ 
++#ifdef FIPS_CANISTER
+ struct gcm_instance_ctx {
+ 	struct crypto_skcipher_spawn ctr;
+ 	struct crypto_ahash_spawn ghash;
+@@ -40,6 +42,7 @@ struct crypto_rfc4106_req_ctx {
+ 	struct aead_request subreq;
+ };
+ 
++#else
+ struct crypto_rfc4543_instance_ctx {
+ 	struct crypto_aead_spawn aead;
+ };
+@@ -53,7 +56,9 @@ struct crypto_rfc4543_ctx {
+ struct crypto_rfc4543_req_ctx {
+ 	struct aead_request subreq;
+ };
++#endif
+ 
++#ifdef FIPS_CANISTER
+ struct crypto_gcm_ghash_ctx {
+ 	unsigned int cryptlen;
+ 	struct scatterlist *src;
+@@ -78,9 +83,17 @@ static struct {
+ 	u8 buf[16];
+ 	struct scatterlist sg;
+ } *gcm_zeroes;
++#endif
+ 
++#ifndef FIPS_CANISTER
++int crypto_rfc4543_create(struct crypto_template *tmpl,
++				struct rtattr **tb);
+ static int crypto_rfc4543_copy_src_to_dst(struct aead_request *req, bool enc);
++#endif
+ 
++#ifdef FIPS_CANISTER
++extern int crypto_rfc4543_create(struct crypto_template *tmpl,
++					struct rtattr **tb);
+ static inline struct crypto_gcm_req_priv_ctx *crypto_gcm_reqctx(
+ 	struct aead_request *req)
+ {
+@@ -891,6 +904,7 @@ static int crypto_rfc4106_create(struct crypto_template *tmpl,
+ 	}
+ 	return err;
+ }
++#else
+ 
+ static int crypto_rfc4543_setkey(struct crypto_aead *parent, const u8 *key,
+ 				 unsigned int keylen)
+@@ -1035,7 +1049,7 @@ static void crypto_rfc4543_free(struct aead_instance *inst)
+ 	kfree(inst);
+ }
+ 
+-static int crypto_rfc4543_create(struct crypto_template *tmpl,
++int crypto_rfc4543_create(struct crypto_template *tmpl,
+ 				struct rtattr **tb)
+ {
+ 	u32 mask;
+@@ -1044,6 +1058,10 @@ static int crypto_rfc4543_create(struct crypto_template *tmpl,
+ 	struct crypto_rfc4543_instance_ctx *ctx;
+ 	int err;
+ 
++	/* crypto rfc4543 is not allowed in fips mode. */
++	if (fips_enabled)
++		return -EINVAL;
++
+ 	err = crypto_check_attr_type(tb, CRYPTO_ALG_TYPE_AEAD, &mask);
+ 	if (err)
+ 		return err;
+@@ -1106,7 +1124,9 @@ static int crypto_rfc4543_create(struct crypto_template *tmpl,
+ 	}
+ 	return err;
+ }
++#endif
+ 
++#ifdef FIPS_CANISTER
+ static struct crypto_template crypto_gcm_tmpls[] = {
+ 	{
+ 		.name = "gcm_base",
+@@ -1160,5 +1180,6 @@ MODULE_DESCRIPTION("Galois/Counter Mode");
+ MODULE_AUTHOR("Mikko Herranen <mh1@iki.fi>");
+ MODULE_ALIAS_CRYPTO("gcm_base");
+ MODULE_ALIAS_CRYPTO("rfc4106");
+-MODULE_ALIAS_CRYPTO("rfc4543");
+ MODULE_ALIAS_CRYPTO("gcm");
++MODULE_ALIAS_CRYPTO("rfc4543");
++#endif
+-- 
+2.40.4
+

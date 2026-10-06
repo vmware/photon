@@ -1,0 +1,3842 @@
+From a4290eca7262e8966ccdd75b3d5b457f7e051f1a Mon Sep 17 00:00:00 2001
+From: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+Date: Wed, 27 Aug 2025 17:47:14 +0000
+Subject: [PATCH] Canister GCC Plugins: Implement type check
+
+Normalize the type name strings that are obtained
+from either the GCC representation or the DWARF debuginfo
+so that they match up and can be used for comparison.
+
+Implement the type comparison check as a recursive loop
+for each structure, following the chain of data structures.
+Throws error if the type doesn't match between kernel and
+canister versions.
+
+To account for unions, changed the structures to be more generic
+data structures and data members.
+
+Added a new structure field which can point to definitions of other
+data structures, either internal or external structs/unions. This
+can be traversed recursively to fully compare structure definitions.
+
+Generally have an exception for "void *", where we allow replacing
+any other pointer with "void *".
+
+To specify accepted/vetted differences between the kernel and
+canister fields, added a new attribute "canister_mismatch",
+which can be specified like:
+__attribute__((canister_mismatch(KERN_TYPE, CANISTER_TYPE)))
+
+Other enhancements:
+1. make clean - removes canister_structures.db
+2. Ignore canister_structures.db from git index
+3. Changed size of padding field in matching plugin to match
+   only to the end of the last canister field, instead of
+   padding to match the entire canister structure size.
+4. Implement iterators on both canister debuginfo and GCC
+   sides for stepping through data structures.
+5. Shrink cache by 3-4x by properly remapping data structures,
+   and keeping only unique.
+
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ Makefile                                      |   1 +
+ scripts/Makefile.gcc-plugins                  |   2 +
+ scripts/gcc-plugins/.gitignore                |   1 +
+ .../fips_canister_plugins/constants.h         |   1 +
+ .../fips_canister_common.c                    | 171 +++++--
+ .../fips_canister_common.h                    |   2 +
+ .../fips_canister_plugins/kernel_iterator.c   | 184 +++++++
+ .../fips_canister_plugins/kernel_iterator.h   |  28 +
+ .../gcc-plugins/fips_canister_plugins/list.h  | 188 +++++++
+ .../data_struct_iterator.c                    | 291 +++++++++++
+ .../data_struct_iterator.h                    |  33 ++
+ .../dwarf_debuginfo_parser.c                  | 416 +++++++++++++--
+ .../match_canister_structs/hash_table.c       |  33 ++
+ .../match_canister_structs/hash_table.h       |   3 +
+ .../match_canister_structs.c                  | 390 ++++++++++++--
+ .../match_canister_structs/structure_db.c     | 482 ++++++++++++++++--
+ .../match_canister_structs/structure_db.h     |  48 +-
+ .../match_canister/add-multiple-new-fields.c  |   6 +-
+ .../add-multiple-new-fields.expected          |  15 +-
+ .../self_tests/match_canister/add-new-field.c |   6 +-
+ .../match_canister/add-new-field.expected     |  13 +-
+ .../match_canister/add-too-many-fields.c      |   6 +-
+ .../add-too-many-fields.expected              |   4 +-
+ .../match_canister/attr-mismatch-fail.c       |  38 ++
+ .../attr-mismatch-fail.expected               |   8 +
+ .../match_canister/attr-mismatch-fail2.c      |  40 ++
+ .../attr-mismatch-fail2.expected              |   8 +
+ .../self_tests/match_canister/attr-mismatch.c |  36 ++
+ .../match_canister/attr-mismatch.expected     |  39 ++
+ .../match_canister/bad-cast.expected          |   3 +-
+ .../match_canister/field-size-change.c        |  12 +-
+ .../match_canister/field-size-change.expected |  16 +-
+ .../self_tests/match_canister/flexible-init.c |  21 +-
+ .../match_canister/flexible-init.expected     |  12 +-
+ .../match_canister/follow-pointer.c           |  74 +++
+ .../match_canister/follow-pointer.expected    |  14 +
+ .../match_canister/functional-flexible.c      |  13 +-
+ .../functional-flexible.expected              |   2 +-
+ .../self_tests/match_canister/no-change.c     |   5 +-
+ .../match_canister/no-change.expected         |  13 +-
+ .../self_tests/match_canister/remove-field.c  |   8 +-
+ .../match_canister/remove-field.expected      |   4 +-
+ .../self_tests/match_canister/self-test.sh    |   7 +-
+ .../match_canister/typedef-struct.c           |  15 +
+ .../match_canister/typedef-struct.expected    |   5 +
+ .../self_tests/match_canister/types.h         |  16 +
+ .../self_tests/self-test-lib.sh               |   6 +-
+ 47 files changed, 2507 insertions(+), 232 deletions(-)
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/kernel_iterator.c
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/kernel_iterator.h
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/list.h
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/data_struct_iterator.c
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/data_struct_iterator.h
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/attr-mismatch-fail.c
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/attr-mismatch-fail.expected
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/attr-mismatch-fail2.c
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/attr-mismatch-fail2.expected
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/attr-mismatch.c
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/attr-mismatch.expected
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/follow-pointer.c
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/follow-pointer.expected
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/typedef-struct.c
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/typedef-struct.expected
+ create mode 100644 scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/types.h
+
+diff --git a/Makefile b/Makefile
+index 6c7ab4c83..a6fb06bbb 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1995,6 +1995,7 @@ clean: $(clean-dirs)
+ 		-o -name '*.c.[012]*.*' \
+ 		-o -name '*.ll' \
+ 		-o -name '*.gcno' \
++		-o -name '*.db' \
+ 		\) -type f -print \
+ 		-o -name '.tmp_*' -print \
+ 		| xargs rm -rf
+diff --git a/scripts/Makefile.gcc-plugins b/scripts/Makefile.gcc-plugins
+index 8c1effd30..38fbaf990 100644
+--- a/scripts/Makefile.gcc-plugins
++++ b/scripts/Makefile.gcc-plugins
+@@ -51,6 +51,8 @@ endif
+ export DISABLE_ARM_SSP_PER_TASK_PLUGIN
+
+ gcc-plugin-$(CONFIG_GCC_PLUGIN_MATCH_CANISTER_STRUCTS) += match_canister_structs.so
++gcc-plugin-cflags-$(CONFIG_GCC_PLUGIN_MATCH_CANISTER_STRUCTS)	\
++		+= -DMATCH_CANISTER_STRUCTS
+ gcc-plugin-$(CONFIG_GCC_PLUGIN_PAD_CANISTER_STRUCTS) += pad_canister_structs.so
+
+ # All the plugin CFLAGS are collected here in case a build target needs to
+diff --git a/scripts/gcc-plugins/.gitignore b/scripts/gcc-plugins/.gitignore
+index 5cc385b9e..67e7cf01e 100644
+--- a/scripts/gcc-plugins/.gitignore
++++ b/scripts/gcc-plugins/.gitignore
+@@ -1,2 +1,3 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ /randomize_layout_seed.h
++/canister_structures.db
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/constants.h b/scripts/gcc-plugins/fips_canister_plugins/constants.h
+index a071f0bcf..908dff6e2 100644
+--- a/scripts/gcc-plugins/fips_canister_plugins/constants.h
++++ b/scripts/gcc-plugins/fips_canister_plugins/constants.h
+@@ -7,5 +7,6 @@
+
+ #define PADDING_ADDED_ATTR "padding_added"
+ #define CANISTER_MATCHED_ATTR "canister_matched"
++#define CANISTER_MISMATCH_ATTR "canister_mismatch"
+
+ #define UNKWN_TYPE "<unknown>"
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/fips_canister_common.c b/scripts/gcc-plugins/fips_canister_plugins/fips_canister_common.c
+index db836e43d..f4cefa27d 100644
+--- a/scripts/gcc-plugins/fips_canister_plugins/fips_canister_common.c
++++ b/scripts/gcc-plugins/fips_canister_plugins/fips_canister_common.c
+@@ -9,7 +9,6 @@
+ #include "fips_canister_common.h"
+ #include "constants.h"
+
+-static const int nr_pad_structs = 44;
+ const char *pad_struct_list[] = {
+ 	"crypto_async_request",
+ 	"crypto_tfm",
+@@ -51,7 +50,6 @@ const char *pad_struct_list[] = {
+ 	"acomp_req",
+ 	"crypto_acomp",
+ 	"crypto_cipher",
+-	"sha1_state",
+ 	"sha512_state",
+ 	"sha3_state",
+ 	"ecdh"
+@@ -60,6 +58,7 @@ const char *pad_struct_list[] = {
+ /* TODO, future work: This is slow. Make it faster. */
+ bool struct_in_pad_list(const char *name)
+ {
++	int nr_pad_structs = sizeof(pad_struct_list) / sizeof(char*);
+ 	for (int i = 0; i < nr_pad_structs; i++) {
+ 		if (!strcmp(name, pad_struct_list[i]))
+ 			return true;
+@@ -165,49 +164,125 @@ const char *get_field_name(tree field)
+ 	return field_name;
+ }
+
+-/* TODO: Future work: improve this function, use it for variable type check */
+-int get_field_type_str(tree field, char *type_str, int len)
++/* Print the name of the data structure, ex) struct cipher_alg, etc. */
++void print_data_structure_type_name(tree type, char *buffer, int buf_len)
+ {
+-	const char *type_name = NULL;
++	const char* prefix = "";
++	char postfix[16] = {0};
++	const char* orig_name;
+
+-	FILE *tmp_fp;
+-	char* buf;
+-	size_t length;
++	if(TREE_CODE(type) == FIELD_DECL)
++		type = TREE_TYPE(type);
+
+-	tree type;
+-	tree type_name_node;
++	while(TREE_CODE(type) == POINTER_TYPE) {
++		type = TREE_TYPE(type);
++		strncat(postfix, " *", sizeof(postfix) - 1);
++	}
+
+-	type = TREE_TYPE(field);
++	if(TREE_CODE(type) == RECORD_TYPE)
++		prefix = "struct ";
++	else if(TREE_CODE(type) == UNION_TYPE)
++		prefix = "union ";
+
+-	if (!type)
+-		return 0;
++	snprintf(buffer, buf_len, "%s%s%s", prefix, ORIG_TYPE_NAME(type), postfix);
++}
++
++/* Taken from gcc/tree-pretty-print.cc */
++static void dump_function_declaration(pretty_printer *pp, tree node, int spc,
++				      dump_flags_t flags)
++{
++	bool wrote_arg = false;
++	tree arg;
+
+-	type_name_node = TYPE_NAME(type);
++	pp_left_paren(pp);
+
+-	if (type_name_node && TREE_CODE(type_name_node) == TYPE_DECL) {
+-		type_name = IDENTIFIER_POINTER(DECL_NAME(type_name_node));
+-	} else if (type_name_node &&
+-		   TREE_CODE(type_name_node) == IDENTIFIER_NODE) {
+-		type_name = get_name(type_name_node);
++	/* Print the argument types.  */
++	arg = TYPE_ARG_TYPES(node);
++	while (arg && arg != void_list_node && arg != error_mark_node) {
++		if (wrote_arg) {
++			pp_comma(pp);
++			pp_space(pp);
++		}
++		wrote_arg = true;
++		dump_generic_node(pp, TREE_VALUE(arg), spc, flags, false);
++		arg = TREE_CHAIN(arg);
+ 	}
+
+-	if(type_name) {
+-		strncpy(type_str, type_name, len);
++	/* Drop the trailing void_type_node if we had any previous argument. */
++	if (arg == void_list_node && !wrote_arg)
++		pp_string(pp, "void");
++	/* Properly dump vararg function types.  */
++	else if (!arg && wrote_arg)
++		pp_string(pp, ", ...");
++	/* Avoid printing any arg for unprototyped functions.  */
++
++	pp_right_paren(pp);
++}
++
++/* TREE_CODE(type) == FUNCTION_TYPE */
++static char *print_func_to_str(tree type)
++{
++	tree ret_type = TREE_TYPE(type);
++	pretty_printer pp;
++	int spc = 1;
++	dump_flags_t flags = TDF_SLIM;
++
++	dump_generic_node(&pp, ret_type, spc, flags, false);
++	pp_space(&pp);
++	pp_left_paren(&pp);
++	pp_right_paren(&pp);
++	dump_function_declaration(&pp, type, spc, flags);
++
++	return xstrdup(pp_formatted_text(&pp));
++}
++
++int get_field_type_str(tree field, char *type_str, int len)
++{
++	char *type_name = NULL;
++	char type_name_buf[256];
++	tree type, base_type;
++
++	if (!field)
+ 		return 0;
++
++	type = field;
++
++	/* Dereference FIELD_DECL */
++	if(TREE_CODE(type) == FIELD_DECL)
++		type = TREE_TYPE(type);
++
++	/* Follow pointer chain to the bitter end */
++	base_type = type;
++	while(TREE_CODE(base_type) == POINTER_TYPE) {
++		if(!TREE_TYPE(base_type))
++			break;
++
++		base_type = TREE_TYPE(base_type);
+ 	}
+
+-	tmp_fp = open_memstream(&buf, &length);
+-	if(tmp_fp) {
+-		print_generic_expr(tmp_fp, type, TDF_SLIM);
+-		fflush(tmp_fp);
+-		fclose(tmp_fp);
+-		strncpy(type_str, buf, len);
+-		free(buf);
+-		return 0;
++	if (TREE_CODE(base_type) == FUNCTION_TYPE){
++		type_name = print_func_to_str(base_type);
++		strncpy(type_name_buf, type_name, sizeof(type_name_buf) - 1);
++		free(type_name);
++	} else if (TREE_CODE(base_type) == RECORD_TYPE && !TYPE_NAME(base_type))
++		strncpy(type_name_buf, "struct", sizeof(type_name_buf) - 1);
++	else if (TREE_CODE(base_type) == UNION_TYPE && !TYPE_NAME(base_type))
++		strncpy(type_name_buf, "union", sizeof(type_name_buf) - 1);
++	else {
++		type_name = print_generic_expr_to_str(type);
++		strncpy(type_name_buf, type_name, sizeof(type_name_buf) - 1);
++		free(type_name);
+ 	}
+
+-	type_name = UNKWN_TYPE;
+-	strncpy(type_str, type_name, len);
++	if(TREE_CODE(type) == ENUMERAL_TYPE && strncmp(type_name_buf, "enum", 4))
++		snprintf(type_str, len, "enum %s", type_name_buf);
++	else if(TREE_CODE(type) == RECORD_TYPE && strncmp(type_name_buf, "struct", 6))
++		snprintf(type_str, len, "struct %s", type_name_buf);
++	else if (TREE_CODE(base_type) == FUNCTION_TYPE)
++		/* Struct field function type must be a function pointer */
++		snprintf(type_str, len, "%s *", type_name_buf);
++	else
++		snprintf(type_str, len, "%s", type_name_buf);
+
+ 	return 0;
+ }
+@@ -234,10 +309,14 @@ int insert_pad_field(tree type, tree pad_field)
+ 	if (!strcmp(get_field_name(last_field), PAD_FIELD_NAME))
+ 		return 0;
+
+-	/* Add padding before flexible array member, as this must be the last member */
++	/*
++	 * Add padding before flexible array member, as this must be
++	 * the last member
++	 */
+ 	if (is_flexible_array(last_field)) {
+ 		if (!penultimate_field) {
+-			error("must have at least 2 members when a flexible array member is present");
++			error("must have at least 2 members when a flexible"
++				"array member is present");
+ 			return -1;
+ 		}
+
+@@ -257,7 +336,8 @@ void relayout_canister_struct(tree type, const char *identifier)
+
+ 	/* Relayout all variants in the same way */
+ 	main_variant = TYPE_MAIN_VARIANT(type);
+-	for (variant = main_variant; variant; variant = TYPE_NEXT_VARIANT(variant)) {
++	for (variant = main_variant; variant;
++	     variant = TYPE_NEXT_VARIANT(variant)) {
+ 		TYPE_FIELDS(variant) = TYPE_FIELDS(type);
+
+ 		TYPE_ATTRIBUTES(variant) = copy_list(TYPE_ATTRIBUTES(variant));
+@@ -291,11 +371,11 @@ bool type_is_struct(tree type)
+ 	return 1;
+ }
+
+-bool lang_check(const char* plugin_name, const char* lang_name) {
++bool lang_check(const char *plugin_name, const char *lang_name)
++{
+ 	if (strncmp(lang_name, "GNU C", 5)) {
+ 		inform(UNKNOWN_LOCATION, G_("%s supports C only, not %s"),
+-			plugin_name,
+-			lang_name);
++		       plugin_name, lang_name);
+ 		return false;
+ 	}
+
+@@ -364,7 +444,20 @@ void validate_decl_flex_size(void *event_data, void *data)
+ 	type_size = TREE_INT_CST_LOW(TYPE_SIZE_UNIT(type));
+
+ 	if (decl_size <= type_size)
+-		error("struct '%s': declaration size (%ld) for a struct with a " \
+-			"flexible array member must be > basic definition size (%ld)",
++		error("struct '%s': declaration size (%ld) for a struct with a "
++		      "flexible array member must be > basic definition size (%ld)",
+ 		      ORIG_TYPE_NAME(type), decl_size, type_size);
+ }
++
++tree get_field_base_type(tree field)
++{
++	/* Dereference FIELD_DECL */
++	field = TREE_TYPE(field);
++
++	/* Dereference pointer(s)/array(s) to get the base type */
++	while(TREE_CODE(field) == POINTER_TYPE ||
++	      TREE_CODE(field) == ARRAY_TYPE)
++		field = TREE_TYPE(field);
++
++	return TYPE_MAIN_VARIANT(field);
++}
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/fips_canister_common.h b/scripts/gcc-plugins/fips_canister_plugins/fips_canister_common.h
+index f51cc37e0..cd0438f7d 100644
+--- a/scripts/gcc-plugins/fips_canister_plugins/fips_canister_common.h
++++ b/scripts/gcc-plugins/fips_canister_plugins/fips_canister_common.h
+@@ -21,3 +21,5 @@ void register_bad_casts_pass(const char* plugin_name);
+ void validate_decl_flex_size(void *event_data, void *data);
+ location_t get_type_location(tree type);
+ bool lang_check(const char* plugin_name, const char* lang_name);
++void print_data_structure_type_name(tree type, char *buffer, int buf_len);
++tree get_field_base_type(tree member);
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/kernel_iterator.c b/scripts/gcc-plugins/fips_canister_plugins/kernel_iterator.c
+new file mode 100644
+index 000000000..6c59d527e
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/kernel_iterator.c
+@@ -0,0 +1,184 @@
++/*
++ * Implements an iterator for stepping through GCC representation of data structures.
++ * Iterator keeps the current state, as well as the historical stack/path. Handles loop
++ * detection, while traversing essentially a directed graph of data structures.
++ *
++ * Copyright (C) 2025 Broadcom, Inc.
++ */
++#include <stdlib.h>
++#include <errno.h>
++#include <stdio.h>
++#include <string.h>
++#include "kernel_iterator.h"
++#include "fips_canister_common.h"
++
++void kern_iter_init(struct kern_iter *kern_iter, tree def)
++{
++	struct kernel_stack_entry *entry;
++
++	entry = (struct kernel_stack_entry *) xcalloc(1, sizeof(struct kernel_stack_entry));
++
++	INIT_LIST_HEAD(&kern_iter->stack_head);
++
++	entry->type = TYPE_MAIN_VARIANT(def);
++	entry->member = TYPE_FIELDS(def);
++	entry->member_base_type = get_field_base_type(entry->member);
++
++	list_add_tail(&entry->l_entry, &kern_iter->stack_head);
++}
++
++void kern_iter_init_member(struct kern_iter *kern_iter, tree member)
++{
++	struct kernel_stack_entry *entry;
++
++	entry = (struct kernel_stack_entry *) xcalloc(1, sizeof(struct kernel_stack_entry));
++
++	INIT_LIST_HEAD(&kern_iter->stack_head);
++
++	entry->type = TYPE_MAIN_VARIANT(DECL_CONTEXT(member));
++	entry->member = member;
++	entry->member_base_type = get_field_base_type(member);
++
++	list_add_tail(&entry->l_entry, &kern_iter->stack_head);
++}
++
++static bool is_cycle(tree next, struct kern_iter *kern_iter)
++{
++	struct kernel_stack_entry *pos;
++
++	list_for_each_entry(pos, &kern_iter->stack_head, l_entry) {
++		if(pos->type == next)
++			return true;
++	}
++
++	return false;
++}
++
++tree kern_iter_top(struct kern_iter *kern_iter)
++{
++	if(list_empty(&kern_iter->stack_head))
++		return NULL;
++
++	return list_last_entry(&kern_iter->stack_head, kernel_stack_entry, l_entry)->type;
++}
++
++tree kern_iter_next_field(struct kern_iter *kern_iter)
++{
++	int idx = 0;
++	struct kernel_stack_entry *cur_entry;
++
++	if(list_empty(&kern_iter->stack_head))
++		return NULL;
++
++	cur_entry = list_last_entry(&kern_iter->stack_head, kernel_stack_entry, l_entry);
++	cur_entry->member = cur_entry->member ? TREE_CHAIN(cur_entry->member) : NULL;
++
++	if(!cur_entry->member)
++		return NULL;
++
++	cur_entry->member_base_type = get_field_base_type(cur_entry->member);
++
++	return cur_entry->member;
++}
++
++tree kern_iter_cur_memb(struct kern_iter *kern_iter)
++{
++	int idx = 0;
++	struct kernel_stack_entry *cur_entry;
++	tree type, member;
++
++	if(list_empty(&kern_iter->stack_head))
++		return NULL;
++
++	cur_entry = list_last_entry(&kern_iter->stack_head, kernel_stack_entry, l_entry);
++	return cur_entry->member;
++}
++
++/*
++ * If the current struct member has a definition, "step" into it by adding it to the end of the
++ * stack. Returns NULL if no definition for this member, or if member is not a struct, or if member
++ * is a struct with no fields (member of itself, for example).
++ */
++tree kern_iter_push(struct kern_iter *kern_iter, bool allow_loops)
++{
++	struct kernel_stack_entry *entry, *cur_entry;
++	tree type, memb;
++	int idx = 0;
++
++	if(list_empty(&kern_iter->stack_head))
++		return NULL;
++
++	type = kern_iter_field_base_type(kern_iter);
++	if (!type ||
++	    (TREE_CODE(type) != RECORD_TYPE && TREE_CODE(type) != UNION_TYPE) ||
++	    !TYPE_FIELDS(type))
++		type = NULL;
++
++	/* xcalloc never returns NULL */
++	entry = (struct kernel_stack_entry *) xcalloc(1, sizeof(struct kernel_stack_entry));
++
++	if(type && (!is_cycle(type, kern_iter) || allow_loops)) {
++		entry->type = type;
++		entry->member = TYPE_FIELDS(type);
++		entry->member_base_type = get_field_base_type(entry->member);
++	}
++
++	list_add_tail(&entry->l_entry, &kern_iter->stack_head);
++
++	return entry->type;
++}
++
++/* Step back to the parent definition */
++tree kern_iter_pop(struct kern_iter *kern_iter)
++{
++	struct kernel_stack_entry *cur_entry;
++
++	if(list_empty(&kern_iter->stack_head))
++		return NULL;
++
++	cur_entry = list_last_entry(&kern_iter->stack_head, kernel_stack_entry, l_entry);
++	list_del(&cur_entry->l_entry);
++	free(cur_entry);
++
++	if(list_empty(&kern_iter->stack_head))
++		return NULL;
++
++	return list_last_entry(&kern_iter->stack_head, kernel_stack_entry, l_entry)->type;
++}
++
++void kern_iter_destroy(struct kern_iter *kern_iter)
++{
++	struct kernel_stack_entry *pos, *n;
++
++	list_for_each_entry_safe(pos, n, &kern_iter->stack_head, l_entry) {
++		list_del(&pos->l_entry);
++		free(pos);
++	}
++}
++
++tree kern_iter_field_base_type(struct kern_iter *kern_iter)
++{
++    struct kernel_stack_entry *cur_entry;
++
++    if(list_empty(&kern_iter->stack_head))
++        return NULL;
++
++    cur_entry = list_last_entry(&kern_iter->stack_head, kernel_stack_entry, l_entry);
++    return cur_entry->member_base_type;
++}
++
++/* Check if we've hit a cycle in the type graph */
++bool kern_iter_is_loop(struct kern_iter *kern_iter)
++{
++    struct kernel_stack_entry *cur_entry;
++    tree cur_type;
++
++    if(list_empty(&kern_iter->stack_head))
++        return false;
++
++    cur_entry = list_entry(kern_iter->stack_head.prev->prev, struct kernel_stack_entry, l_entry);
++    cur_type = TYPE_MAIN_VARIANT(cur_entry->member_base_type);
++
++    /* Check if we've seen this type before in our stack */
++    return is_cycle(cur_type, kern_iter);
++}
+\ No newline at end of file
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/kernel_iterator.h b/scripts/gcc-plugins/fips_canister_plugins/kernel_iterator.h
+new file mode 100644
+index 000000000..375267649
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/kernel_iterator.h
+@@ -0,0 +1,28 @@
++/* Copyright (C) 2025 Broadcom, Inc. */
++#include "../gcc-common.h"
++#include "list.h"
++
++struct kernel_stack_entry {
++	/* Parent structure */
++	tree type;
++	/* Struct member (FIELD_DECL) */
++	tree member;
++	/* Base member type */
++	tree member_base_type;
++	struct list_head l_entry;
++};
++
++struct kern_iter {
++    struct list_head stack_head;
++};
++
++void kern_iter_init(struct kern_iter *kern_iter, tree def);
++void kern_iter_init_member(struct kern_iter *kern_iter, tree base_type);
++tree kern_iter_field_base_type(struct kern_iter *kern_iter);
++tree kern_iter_top(struct kern_iter *kern_iter);
++tree kern_iter_next_field(struct kern_iter *kern_iter);
++tree kern_iter_cur_memb(struct kern_iter *kern_iter);
++tree kern_iter_push(struct kern_iter *kern_iter, bool allow_loops);
++tree kern_iter_pop(struct kern_iter *kern_iter);
++void kern_iter_destroy(struct kern_iter *kern_iter);
++bool kern_iter_is_loop(struct kern_iter *ds_iter);
+\ No newline at end of file
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/list.h b/scripts/gcc-plugins/fips_canister_plugins/list.h
+new file mode 100644
+index 000000000..cc166e34b
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/list.h
+@@ -0,0 +1,188 @@
++/* Minimal list utilities for the iterator. Copied/edited from include/linux/list.h for C++ */
++#ifndef _LINUX_LIST_H
++#define _LINUX_LIST_H
++
++struct list_head {
++	struct list_head *next, *prev;
++};
++
++#define LIST_POISON1  ((struct list_head *) 0x100)
++#define LIST_POISON2  ((struct list_head *) 0x122)
++
++/**
++ * container_of - cast a member of a structure out to the containing structure
++ * @ptr:	the pointer to the member.
++ * @type:	the type of the container struct this is embedded in.
++ * @member:	the name of the member within the struct.
++ *
++ */
++#define container_of(ptr, type, member) ({			\
++        const typeof( ((type *)0)->member ) *__mptr = (ptr);	\
++        (type *)( (char *)__mptr - offsetof(type,member) );})
++
++/**
++ * INIT_LIST_HEAD - Initialize a list_head structure
++ * @list: list_head structure to be initialized.
++ *
++ * Initializes the list_head to point to itself.  If it is a list header,
++ * the result is an empty list.
++ */
++static inline void INIT_LIST_HEAD(struct list_head *list)
++{
++	list->next = list;
++	list->prev = list;
++}
++
++/**
++ * list_entry_is_head - test if the entry points to the head of the list
++ * @pos:	the type * to cursor
++ * @head:	the head for your list.
++ * @member:	the name of the list_head within the struct.
++ */
++#define list_entry_is_head(pos, head, member)				\
++	list_is_head(&pos->member, (head))
++
++/**
++ * list_is_head - tests whether @list is the list @head
++ * @list: the entry to test
++ * @head: the head of the list
++ */
++static inline int list_is_head(const struct list_head *list, const struct list_head *head)
++{
++	return list == head;
++}
++
++/*
++ * Insert a new entry between two known consecutive entries.
++ *
++ * This is only for internal list manipulation where we know
++ * the prev/next entries already!
++ */
++static inline void __list_add(struct list_head *new_entry,
++			      struct list_head *prev,
++			      struct list_head *next)
++{
++	next->prev = new_entry;
++	new_entry->next = next;
++	new_entry->prev = prev;
++	prev->next = new_entry;
++}
++
++/**
++ * list_add_tail - add a new entry
++ * @new: new entry to be added
++ * @head: list head to add it before
++ *
++ * Insert a new entry before the specified head.
++ * This is useful for implementing queues.
++ */
++static inline void list_add_tail(struct list_head *new_entry, struct list_head *head)
++{
++	__list_add(new_entry, head->prev, head);
++}
++
++/*
++ * Delete a list entry by making the prev/next entries
++ * point to each other.
++ *
++ * This is only for internal list manipulation where we know
++ * the prev/next entries already!
++ */
++static inline void __list_del(struct list_head * prev, struct list_head * next)
++{
++	next->prev = prev;
++	prev->next = next;
++}
++
++static inline void __list_del_entry(struct list_head *entry)
++{
++	__list_del(entry->prev, entry->next);
++}
++
++/**
++ * list_del - deletes entry from list.
++ * @entry: the element to delete from the list.
++ * Note: list_empty() on entry does not return true after this, the entry is
++ * in an undefined state.
++ */
++static inline void list_del(struct list_head *entry)
++{
++	__list_del_entry(entry);
++	entry->next = LIST_POISON1;
++	entry->prev = LIST_POISON2;
++}
++
++/**
++ * list_empty - tests whether a list is empty
++ * @head: the list to test.
++ */
++static inline int list_empty(const struct list_head *head)
++{
++	return head->next == head;
++}
++
++/**
++ * list_entry - get the struct for this entry
++ * @ptr:	the &struct list_head pointer.
++ * @type:	the type of the struct this is embedded in.
++ * @member:	the name of the list_head within the struct.
++ */
++#define list_entry(ptr, type, member) \
++	container_of(ptr, type, member)
++
++/**
++ * list_first_entry - get the first element from a list
++ * @ptr:	the list head to take the element from.
++ * @type:	the type of the struct this is embedded in.
++ * @member:	the name of the list_head within the struct.
++ *
++ * Note, that list is expected to be not empty.
++ */
++#define list_first_entry(ptr, type, member) \
++	list_entry((ptr)->next, type, member)
++
++/**
++ * list_last_entry - get the last element from a list
++ * @ptr:	the list head to take the element from.
++ * @type:	the type of the struct this is embedded in.
++ * @member:	the name of the list_head within the struct.
++ *
++ * Note, that list is expected to be not empty.
++ */
++#define list_last_entry(ptr, type, member) \
++	list_entry((ptr)->prev, type, member)
++
++/**
++ * list_next_entry - get the next element in list
++ * @pos:	the type * to cursor
++ * @member:	the name of the list_head within the struct.
++ */
++#define list_next_entry(pos, member) \
++	list_entry((pos)->member.next, typeof(*(pos)), member)
++
++/**
++ * list_for_each_entry	-	iterate over list of given type
++ * @pos:	the type * to use as a loop cursor.
++ * @head:	the head for your list.
++ * @member:	the name of the list_head within the struct.
++ */
++#define list_for_each_entry(pos, head, member)				\
++	for (pos = list_first_entry(head, typeof(*pos), member);	\
++	     !list_entry_is_head(pos, head, member);			\
++	     pos = list_next_entry(pos, member))
++
++/**
++ * list_for_each_entry_safe - iterate over list of given type safe against removal of list entry
++ * @pos:	the type * to use as a loop cursor.
++ * @n:		another type * to use as temporary storage
++ * @head:	the head for your list.
++ * @member:	the name of the list_head within the struct.
++ */
++#define list_for_each_entry_safe(pos, n, head, member)			\
++	for (pos = list_first_entry(head, typeof(*pos), member),	\
++		n = list_next_entry(pos, member);			\
++	     !list_entry_is_head(pos, head, member); 			\
++	     pos = n, n = list_next_entry(n, member))
++
++
++#endif /* _LINUX_LIST_H */
+\ No newline at end of file
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/data_struct_iterator.c b/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/data_struct_iterator.c
+new file mode 100644
+index 000000000..cc860763a
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/data_struct_iterator.c
+@@ -0,0 +1,291 @@
++/*
++ * Implements iterator for stepping through debuginfo parsed data structures.
++ * The data structures are essentially a directed graph. Iterator keeps stack/path
++ * context to handle loop detection and current state.
++ *
++ * Copyright (C) 2025 Broadcom, Inc.
++ */
++
++#include <dwarves/list.h>
++#include <stdlib.h>
++#include <errno.h>
++#include <stdio.h>
++#include <string.h>
++#include "../../../include/xalloc.h"
++
++#include "structure_db.h"
++#include "data_struct_iterator.h"
++
++/**
++ * list_last_entry - get the last element from a list
++ * @ptr:       the list head to take the element from.
++ * @type:      the type of the struct this is embedded in.
++ * @member:    the name of the list_struct within the struct.
++ *
++ * Note, that list is expected to be not empty.
++ */
++#define list_last_entry(ptr, type, member) \
++	list_entry((ptr)->prev, type, member)
++
++struct struct_stack_entry {
++	struct data_structure *def;
++	int memb_idx;
++	struct data_member *parent_member;
++	struct list_head l_entry;
++};
++
++void ds_iter_init(struct ds_iter *ds_iter, struct data_structure *def)
++{
++	struct struct_stack_entry *entry;
++
++	entry = xcalloc(1, sizeof(struct struct_stack_entry));
++
++	INIT_LIST_HEAD(&ds_iter->stack_head);
++
++	entry->def = def;
++	entry->memb_idx = 0;
++	entry->parent_member = NULL;
++	list_add_tail(&entry->l_entry, &ds_iter->stack_head);
++}
++
++void ds_iter_init_member(struct ds_iter *ds_iter, struct data_member *memb)
++{
++	struct struct_stack_entry *entry;
++
++	entry = xcalloc(1, sizeof(struct struct_stack_entry));
++
++	INIT_LIST_HEAD(&ds_iter->stack_head);
++
++	entry->def = get_struct_def_from_member(memb);
++	entry->memb_idx = memb->__idx;
++	entry->parent_member = NULL;
++	list_add_tail(&entry->l_entry, &ds_iter->stack_head);
++}
++
++static bool is_cycle(struct data_structure *ds, struct ds_iter *ds_iter)
++{
++	struct struct_stack_entry *pos;
++
++	list_for_each_entry(pos, &ds_iter->stack_head, l_entry) {
++		if(pos->def == ds)
++			return true;
++	}
++
++	return false;
++}
++
++struct data_structure* ds_iter_top(struct ds_iter *ds_iter)
++{
++	if(list_empty(&ds_iter->stack_head))
++		return NULL;
++
++	return list_last_entry(&ds_iter->stack_head, struct struct_stack_entry, l_entry)->def;
++}
++
++struct data_member *ds_iter_next_member(struct ds_iter *ds_iter)
++{
++	int idx = 0;
++	struct data_structure *cur_def;
++	struct struct_stack_entry *cur_entry;
++	struct data_member *memb;
++
++	if(list_empty(&ds_iter->stack_head))
++		return NULL;
++
++	cur_entry = list_last_entry(&ds_iter->stack_head, struct struct_stack_entry, l_entry);
++	cur_def = cur_entry->def;
++
++	if(!cur_def)
++		return NULL;
++
++	cur_entry->memb_idx++;
++	if(cur_entry->memb_idx >= cur_def->nr_members)
++		return NULL;
++
++	return &cur_def->members[cur_entry->memb_idx];
++}
++
++struct data_member *ds_iter_cur_memb(struct ds_iter *ds_iter)
++{
++	int idx = 0;
++	struct data_structure *cur_def;
++	struct struct_stack_entry *cur_entry;
++	struct data_member *memb;
++
++	if(list_empty(&ds_iter->stack_head))
++		return NULL;
++
++	cur_entry = list_last_entry(&ds_iter->stack_head, struct struct_stack_entry, l_entry);
++	cur_def = cur_entry->def;
++
++	if(!cur_def)
++		return NULL;
++
++	if(cur_entry->memb_idx > cur_def->nr_members)
++		return NULL;
++
++	return &cur_def->members[cur_entry->memb_idx];
++}
++
++/*
++ * If the current struct member has a definition, "step" into it by adding it to the end of the
++ * stack. Returns NULL if no definition for this member.
++ */
++struct data_structure* ds_iter_push(struct ds_iter *ds_iter, bool allow_loops)
++{
++	struct struct_stack_entry *entry, *cur_entry;
++	struct data_structure *cur_def, *memb_def = NULL;
++	struct data_member *memb;
++	int idx = 0;
++
++	if(list_empty(&ds_iter->stack_head))
++		return NULL;
++
++	memb = ds_iter_cur_memb(ds_iter);
++
++	if(memb)
++		memb_def = get_nested_structure_def(memb);
++
++	/* xcalloc will never return NULL */
++	entry = xcalloc(1, sizeof(struct struct_stack_entry));
++
++	/* Step into NULL entry if cycle */
++	if(memb_def && (!is_cycle(memb_def, ds_iter) || allow_loops)) {
++		entry->def = memb_def;
++		entry->parent_member = memb;
++		entry->memb_idx = 0;
++	}
++
++	list_add_tail(&entry->l_entry, &ds_iter->stack_head);
++
++	return entry->def;
++}
++
++/* Return true if loop, false if not loop or false if the end of the chain (no more defs) */
++bool ds_iter_is_loop(struct ds_iter *ds_iter)
++{
++	struct data_member *cur_memb;
++	struct data_structure *cur_def;
++	struct struct_stack_entry *entry;
++
++	if(list_empty(&ds_iter->stack_head))
++		return false;
++
++	cur_def = ds_iter_top(ds_iter);
++	if(cur_def)
++		return false;
++
++	/* Get the last valid entry */
++	entry = list_entry(ds_iter->stack_head.prev->prev, struct struct_stack_entry, l_entry);
++	cur_def = entry->def;
++	cur_memb = &entry->def->members[entry->memb_idx];
++
++	/*
++	 * If there is a nested definition, and we started in a NULL entry,
++	 * this must be a loop
++	 */
++	if(get_nested_structure_def(cur_memb))
++		return true;
++
++	return false;
++}
++
++/* Step back to the parent definition */
++struct data_structure* ds_iter_pop(struct ds_iter *ds_iter)
++{
++	struct struct_stack_entry *cur_entry;
++
++	if(list_empty(&ds_iter->stack_head))
++		return NULL;
++
++	cur_entry = list_last_entry(&ds_iter->stack_head, struct struct_stack_entry, l_entry);
++	list_del(&cur_entry->l_entry);
++	free(cur_entry);
++
++	if(list_empty(&ds_iter->stack_head))
++		return NULL;
++
++	return list_last_entry(&ds_iter->stack_head, struct struct_stack_entry, l_entry)->def;
++}
++
++void ds_iter_destroy(struct ds_iter *ds_iter)
++{
++	struct struct_stack_entry *pos, *n;
++
++	if(list_empty(&ds_iter->stack_head))
++		return;
++
++	list_for_each_entry_safe(pos, n, &ds_iter->stack_head, l_entry) {
++		list_del(&pos->l_entry);
++		free(pos);
++	}
++}
++
++struct data_member *ds_iter_parent_member(struct ds_iter *ds_iter)
++{
++	struct struct_stack_entry *entry;
++
++	if(list_empty(&ds_iter->stack_head))
++		return NULL;
++
++	entry = list_last_entry(&ds_iter->stack_head, struct struct_stack_entry, l_entry);
++	return entry->parent_member;
++}
++
++int ds_iter_print_stack(struct ds_iter *ds_iter, char* stack, int stack_len)
++{
++	struct struct_stack_entry *pos;
++	struct data_member *cur_memb;
++	int depth = 0;
++	char indent[32] = {0};
++	char append[426] = {0};
++
++	memset(stack, 0, stack_len);
++
++	if(list_empty(&ds_iter->stack_head)) {
++		snprintf(stack, stack_len, "Empty data structure iterator stack");
++		return 0;
++	}
++
++	list_for_each_entry(pos, &ds_iter->stack_head, l_entry) {
++		if(depth >= sizeof(indent)) {
++			fprintf(stderr, "Data structure iterator: stack overflow!\n");
++			return -1;
++		}
++
++		/* End of the stack */
++		if(!pos->def && !pos->parent_member && pos->memb_idx == 0)
++			return 0;
++
++		indent[depth] = '\t';
++
++		/* Find the current member */
++		if(pos->def){
++			/* This is a definition, get the current member by index */
++			cur_memb = &pos->def->members[pos->memb_idx];
++			if(depth == 0)
++				snprintf(stack, stack_len, "struct %s", pos->def->name);
++		} else {
++			/*
++			 * This is not a definition, must be a base type. Thus parent_member is the
++			 * actual current member. This is a corner case where we called
++			 * ds_iter_init_member() with a member that has no definition.
++			 */
++			cur_memb = pos->parent_member;
++			if(depth == 0)
++				strncpy(stack, "struct <unknown>", stack_len);
++		}
++
++		snprintf(append, sizeof(append), "\n%s->(%s) %s",
++				indent, cur_memb->type_name, cur_memb->name);
++
++		if(strlen(stack) + strlen(append) >= stack_len) {
++			fprintf(stderr, "Data structure iterator: stack overflow!\n");
++			return -1;
++		}
++		strncat(stack, append, stack_len);
++		depth++;
++	}
++
++	return 0;
++}
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/data_struct_iterator.h b/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/data_struct_iterator.h
+new file mode 100644
+index 000000000..2ee5aa45f
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/data_struct_iterator.h
+@@ -0,0 +1,33 @@
++/* Copyright (C) 2025 Broadcom, Inc. */
++
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
++#include "structure_db.h"
++
++#ifndef _LINUX_LIST_H
++struct list_head {
++	struct list_head *next, *prev;
++};
++#endif
++
++struct ds_iter {
++	struct list_head stack_head;
++};
++
++void ds_iter_init(struct ds_iter *ds_iter, struct data_structure *def);
++void ds_iter_init_member(struct ds_iter *ds_iter, struct data_member *def);
++struct data_structure* ds_iter_top(struct ds_iter *ds_iter);
++struct data_structure* ds_iter_push(struct ds_iter *ds_iter, bool allow_loops);
++struct data_structure* ds_iter_pop(struct ds_iter *ds_iter);
++void ds_iter_destroy(struct ds_iter *ds_iter);
++struct data_member *ds_iter_parent_member(struct ds_iter *ds_iter);
++struct data_member *ds_iter_next_member(struct ds_iter *ds_iter);
++struct data_member *ds_iter_cur_memb(struct ds_iter *ds_iter);
++int ds_iter_print_stack(struct ds_iter *ds_iter, char* stack, int stack_len);
++bool ds_iter_is_loop(struct ds_iter *ds_iter);
++
++#if defined(__cplusplus)
++}
++#endif
+\ No newline at end of file
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/dwarf_debuginfo_parser.c b/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/dwarf_debuginfo_parser.c
+index 79bb93302..cb6a6f5a9 100644
+--- a/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/dwarf_debuginfo_parser.c
++++ b/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/dwarf_debuginfo_parser.c
+@@ -9,9 +9,11 @@
+ #include <dwarves/dutil.h>
+ #include <dwarves/list.h>
+ #include <errno.h>
++#include <ctype.h>
+
+ #include "hash_table.h"
+ #include "structure_db.h"
++#include "data_struct_iterator.h"
+ #include "../constants.h"
+
+ #define CANISTER_LOC "crypto/fips_canister.o"
+@@ -21,7 +23,14 @@ static struct conf_fprintf conf = {
+ };
+
+ struct struct_def_entry {
+-	struct struct_def *s_def;
++	struct data_structure *s_def;
++	struct list_head l_entry;
++};
++
++/* Used for cycle detection while parsing data structures */
++struct tag_stack_entry {
++	struct data_structure *s_def;
++	struct tag *tag;
+ 	struct list_head l_entry;
+ };
+
+@@ -30,31 +39,174 @@ static struct list_head struct_list_head;
+ static int returncode = 0;
+ static int nr_structs;
+
+-static void get_base_type_name(struct class_member *cls_member, struct cu *cu,
++/* Replace multiple spaces with single space */
++static void normalize_type_name(char *type_name, int len)
++{
++	int start;
++	char tmp[len];
++
++	for(int i = 1; i < len; i++) {
++		start = 0;
++		while(isspace(type_name[i]) &&
++			isspace(type_name[i-1]) && i < len) {
++			if(!start)
++				start = i;
++			i++;
++		}
++
++		if(start) {
++			strncpy(tmp, &type_name[i], len - 1);
++			strcpy(&type_name[start], tmp);
++		}
++	}
++
++	/* Strip trailing spaces */
++	for(int i = len - 1; i >= 0 && (isspace(type_name[i]) || type_name[i] == 0); i--)
++		type_name[i] = '\0';
++}
++
++static void get_typedef_name(struct tag *tag, struct cu *cu,
++				char *buf, int buf_len) {
++	struct tag *base;
++	char typedef_name[32];
++
++	if(!tag__is_typedef(tag))
++		return;
++
++	tag__name(tag, cu, typedef_name, sizeof(typedef_name), &conf);
++	base = tag__follow_typedef(tag, cu);
++	tag__name(base, cu, buf, buf_len, &conf);
++
++	/* Typedef of struct may not have another name, ex) be128 */
++	if(tag__is_struct(base) && !strcmp(buf, "struct ")) {
++		snprintf(buf, buf_len - 1, "struct %s", typedef_name);
++		return;
++	/* Always prepend "struct" to typedef to match GCC kernel compilation version */
++	} else if (tag__is_struct(base) && strncmp(typedef_name, "struct", 6)){
++		snprintf(buf, buf_len - 1, "struct %s", typedef_name);
++		return;
++	}
++
++	strncpy(buf, typedef_name, buf_len);
++}
++
++static void print_array_dimensions(const struct array_type *at,
++					char *array_dims, int len) {
++	int i;
++	char dims[16];
++
++	for(i = 0; i < at->dimensions; ++i) {
++		if(at->nr_entries[i] == 0)
++			snprintf(dims, sizeof(dims), "%s[%d:]", array_dims,
++					at->nr_entries[i]);
++		else
++			snprintf(dims, sizeof(dims), "%s[%d]", array_dims,
++					at->nr_entries[i]);
++		strncpy(array_dims, dims, len);
++	}
++}
++
++static void get_base_type_name(struct tag *tag, struct cu *cu,
+ 			       char *buffer, int buf_len)
+ {
+-	char tmp_buf[64];
++	char tmp_buf[128];
+ 	const char *tag_name;
+-	struct tag *member_type = cu__type(cu, cls_member->tag.type);
+-	struct base_type *bt = tag__base_type(member_type);
++	struct tag *type;
++	char array_dims[16] = {0};
++	bool member_is_arr = false;
+
+-	tag_name = tag__name(member_type, cu, tmp_buf, sizeof(tmp_buf), &conf);
++	if(tag__is_class_member(tag))
++		type = cu__type(cu, tag->type);
++	else
++		type = tag;
++
++	/*ptr_type = cu__type(cu, type->type);
++	if(ptr_type && tag__is_const(ptr_type))
++		ptr_type = cu__type(cu, ptr_type->type);
+
+-	if (tag_name)
+-		strncpy(buffer, tag_name, buf_len);
++	if(ptr_type && tag__is_typedef(ptr_type))
++		ptr_type = tag__follow_typedef(ptr_type, cu); */
++
++	if(tag__is_array(type, cu)) {
++		print_array_dimensions(tag__array_type(type), array_dims,
++						sizeof(array_dims));
++		type = cu__type(cu, type->type);
++		member_is_arr = true;
++	}
++
++	if(tag__is_typedef(type))
++		get_typedef_name(type, cu, tmp_buf, sizeof(tmp_buf));
++	else
++		tag__name(type, cu, tmp_buf, sizeof(tmp_buf), &conf);
++
++	if(member_is_arr)
++		snprintf(buffer, buf_len, "%s%s", tmp_buf, array_dims);
++	else if(tag__is_struct(type) && strncmp("struct", tmp_buf, 6))
++		snprintf(buffer, buf_len, "struct %s", tmp_buf);
++	else if(tag__is_union(type) && strncmp("union", tmp_buf, 5))
++		snprintf(buffer, buf_len, "union %s", tmp_buf);
+ 	else
+-		strncpy(buffer, UNKWN_TYPE, buf_len);
++		strncpy(buffer, tmp_buf, buf_len);
++
++	normalize_type_name(buffer, buf_len);
+ }
+
++/*
++ * Drill down to absolute base type, check if at any point this type is a pointer.
++ * Safer than checks which rely on layer ordering, e.g typedef coming after pointer tag, etc.
++ */
++static bool tag_is_pointer(struct tag *tag, struct cu *cu)
++{
++	struct tag *prev = NULL;
++	while(prev != tag) {
++		prev = tag;
++		if(tag__is_modifier(tag) || tag__is_pointer(tag) || tag__is_array(tag, cu) || tag__is_class_member(tag)) {
++			if(tag__is_pointer(tag))
++				return true;
++			tag = cu__type(cu, tag->type);
++		} else if (tag__is_typedef(tag))
++			tag = tag__follow_typedef(tag, cu);
++
++		if(!tag)
++			return false;
++	}
++
++	return false;
++}
++
++static struct tag* get_absolute_base_type(struct tag *tag, struct cu *cu)
++{
++	struct tag *prev = NULL;
++	while(prev != tag) {
++		prev = tag;
++		if(tag__is_modifier(tag) || tag__is_pointer(tag) || tag__is_array(tag, cu) || tag__is_class_member(tag))
++			tag = cu__type(cu, tag->type);
++		else if (tag__is_typedef(tag))
++			tag = tag__follow_typedef(tag, cu);
++
++		if(!tag)
++			return prev;
++	}
++
++	return tag;
++}
++
++static struct data_structure *__parse_tag(struct tag *tag, struct cu *cu,
++					bool nested, struct list_head *tag_stack_head);
++
+ static int parse_struct_member_tag(struct tag *tag,
+ 				   struct cu *cu,
+-				   struct struct_member *new_member)
++				   struct data_member *new_member,
++				   struct list_head *tag_stack_head)
+ {
+ 	struct class_member *cls_member;
+ 	char *tag_name;
+ 	struct base_type *base_type;
+-	struct type *type;
++	struct tag *type;
+ 	struct tag *tag_pos;
++	struct tag *ptr_type;
++	struct data_structure *ds;
++	char prefix[9] = {0};
+
+ 	cls_member = tag__class_member(tag);
+
+@@ -67,49 +219,96 @@ static int parse_struct_member_tag(struct tag *tag,
+
+ 	new_member->byte_size = cls_member->byte_size;
+ 	new_member->byte_offset = cls_member->byte_offset;
+-	get_base_type_name(cls_member, cu, new_member->type_name,
+-			   sizeof(new_member->type_name) - 1);
++
++	if(tag_is_pointer(tag, cu))
++		new_member->is_ptr = true;
++
++	type = get_absolute_base_type(tag, cu);
++
++	if(tag__is_struct(type) || tag__is_union(type))
++		new_member->definition = __parse_tag(type, cu, true, tag_stack_head);
++
++	/*
++	 * To match the kernel type string for typedef function pointers, we need to print the
++	 * function definition. See: struct asn1_decoder->actions
++	 */
++	if(tag__is_function(type) || type->tag == DW_TAG_subroutine_type) {
++		get_base_type_name(type, cu, new_member->type_name,
++					sizeof(new_member->type_name) - 1);
++
++		/*
++		 * If the base type of a structure member is a function, the member must be a
++		 * function pointer.
++		 */
++		strncat(new_member->type_name, " *", sizeof(new_member->type_name) - 1);
++	}
++	else
++		get_base_type_name(&cls_member->tag, cu, new_member->type_name,
++					sizeof(new_member->type_name) - 1);
+
+ 	return 0;
+ }
+
+ /* If tag is a struct, parse it. Based off of __class__fprintf() */
+-static struct struct_def *parse_tag(struct tag *tag, struct cu *cu)
++static struct data_structure *__parse_tag(struct tag *tag, struct cu *cu,
++					bool nested, struct list_head *tag_stack_head)
+ {
+ 	struct class *class;
+ 	struct type *type;
+ 	char name[64];
+-	struct struct_def *new_struct;
+-	struct struct_member *s_member;
++	struct data_structure *new_struct;
++	struct data_member *s_member;
+ 	struct tag *tag_pos;
+ 	const char *type_name;
+ 	int i;
+ 	size_t new_struct_sz;
++	struct tag_stack_entry entry;
++	struct tag_stack_entry *pos;
+
+-	if (!tag__is_struct(tag))
++	if (!tag__is_struct(tag) && !tag__is_union(tag))
+ 		return NULL;
+
++	/* Check for loops/recursive structure definitions */
++	list_for_each_entry(pos, tag_stack_head, l_entry) {
++		if(pos->tag == tag)
++			return pos->s_def;
++	}
++
+ 	class = tag__class(tag);
+ 	type = &class->type;
+ 	type_name = type__name(type);
+
+-	/* Don't bother with anonymous structures */
+-	if (!type_name)
++	/* Don't bother with anonymous structures or ones which are not defined here */
++	if (!type_name && !nested)
+ 		return NULL;
+
+-	new_struct_sz = sizeof(struct struct_def) +
+-				(type->nr_members * sizeof(struct struct_member));
++	new_struct_sz = sizeof(struct data_structure) +
++				(type->nr_members * sizeof(struct data_member));
+ 	new_struct = calloc(1, new_struct_sz);
+ 	if (!new_struct) {
+-		perror("Failed to allocate memory for new struct!");
++		perror("Failed to allocate memory for new struct");
+ 		return NULL;
+ 	}
+
+-	strncpy(new_struct->name, type_name, sizeof(new_struct->name) - 1);
++	if(type_name)
++		strncpy(new_struct->name, type_name,
++			sizeof(new_struct->name) - 1);
++	else
++		strncpy(new_struct->name, ANON_NAME,
++			sizeof(new_struct->name) - 1);
++
+ 	new_struct->byte_size = type->size;
+ 	new_struct->nr_members = type->nr_members;
+ 	new_struct->__sz = new_struct_sz;
+
++	/* External definition */
++	if(type->declaration)
++		return new_struct;
++
++	entry.s_def = new_struct;
++	entry.tag = tag;
++	list_add_tail(&entry.l_entry, tag_stack_head);
++
+ 	/*
+ 	 * Get the struct members.
+ 	 * According to DWARF format, the members of the struct should be
+@@ -119,30 +318,38 @@ static struct struct_def *parse_tag(struct tag *tag, struct cu *cu)
+ 	i = 0;
+ 	type__for_each_tag(type, tag_pos)
+ 	{
+-		if (parse_struct_member_tag(tag_pos, cu, &new_struct->members[i]) < 0) {
++		if (parse_struct_member_tag(tag_pos, cu,
++						&new_struct->members[i],
++						tag_stack_head) < 0) {
+ 			fprintf(stderr,
+-				"struct %s: Failed to parse tag for struct member\n",
++				"struct %s: Failed to parse tag for struct"
++				"member\n",
+ 				new_struct->name);
+ 			free(new_struct);
+ 			return NULL;
+ 		}
+
++		new_struct->members[i].__idx = i;
++
+ 		i++;
+ 	}
+
+-	/*
+-	 * Debuginfo can contain some structs with no member info. Don't add
+-	 * these to the DB.
+-	 */
+-	if(i == 0) {
+-		free(new_struct);
+-		return NULL;
+-	}
++	list_del(&entry.l_entry);
+
+ 	return new_struct;
+ }
+
++static struct data_structure *parse_tag(struct tag *tag, struct cu *cu) {
++	struct list_head tag_stack_head;
+
++	/*
++	 * ds_iter is not used here for two reasons:
++	 * 1. This is the parse/populate step so there's nothing for the iterator to traverse yet.
++	 * 2. Keeping track of the tags is more useful for cycle detection
++	 */
++	INIT_LIST_HEAD(&tag_stack_head);
++	return __parse_tag(tag, cu, false, &tag_stack_head);
++}
+
+ static void free_struct_def_list(void) {
+ 	struct struct_def_entry *pos, *tmp;
+@@ -159,23 +366,28 @@ static int cu__parse_structs(struct cu *cu)
+ 	struct class *class;
+ 	const char *type_name;
+ 	struct struct_def_entry *pos, *new_entry;
++	struct tag_stack_entry *a, *b;
+ 	bool unique;
+-	struct struct_def *def;
++	struct data_structure *def;
+
+ 	cu__for_each_type(cu, i, tag) {
+ 		def = parse_tag(tag, cu);
+-		if(!def)
++		if(!def || def->nr_members == 0)
+ 			continue;
+
++		/*
++		 * TODO: This check can happen within parse tag, so we don't have
++		 * duplicates of sub-tags
++		 */
+ 		unique = true;
+ 		list_for_each_entry(pos, &struct_list_head, l_entry) {
+-			if(!strcmp(pos->s_def->name, def->name)) {
++			if(data_struct_eq(pos->s_def, def)) {
+ 				unique = false;
+ 				break;
+ 			}
+ 		}
+
+-		if(!unique)
++		if(!unique || def->nr_members == 0)
+ 			continue;
+
+ 		new_entry = calloc(1, sizeof(struct struct_def_entry));
+@@ -208,6 +420,118 @@ struct conf_load dwarf_conf_parser = {
+ 	.conf_fprintf = &conf,
+ };
+
++static struct data_structure *get_struct_in_list_by_name(const char *name)
++{
++	struct struct_def_entry *pos;
++
++	list_for_each_entry(pos, &struct_list_head, l_entry) {
++		if(!strcmp(pos->s_def->name, name) && pos->s_def->nr_members > 0) {
++			return pos->s_def;
++		}
++	}
++
++	return NULL;
++}
++
++static bool multiple_defs_in_list(const char *name)
++{
++	struct struct_def_entry *pos;
++	struct data_structure *complete_def = NULL;
++
++	list_for_each_entry(pos, &struct_list_head, l_entry) {
++		if(pos->s_def->nr_members == 0 || strcmp(pos->s_def->name, name))
++			continue;
++
++		if(!complete_def)
++			complete_def = pos->s_def;
++		else if(complete_def && !data_struct_eq(complete_def, pos->s_def))
++			return true;
++	}
++
++	return false;
++}
++
++static int remap_member_def(struct data_member *memb)
++{
++	struct data_structure *cached_def;
++	int idx = 0;
++
++	if(!memb || !memb->definition)
++		return 0;
++
++	cached_def = get_struct_in_list_by_name(memb->definition->name);
++
++	if(cached_def == memb->definition)
++		return 0;
++
++	/*
++	 * If this is an external definition, e.g not a full definition,
++	 * point it to the full definition. In the unlikely event that there are multiple
++	 * different structure definitions with the same name, we must throw an error, as
++	 * we don't know which one is correct.
++	 */
++	if(memb->definition->nr_members == 0) {
++		free_struct_def(memb->definition);
++		memb->definition = cached_def;
++
++		/* Only unique entries are added to the DB */
++		if(multiple_defs_in_list(memb->definition->name)) {
++			fprintf(stderr,
++				"ERROR: Multiple structure definitions detected for struct "
++				"%s. Unsure of which to assign to struct %s->%s\n",
++				memb->definition->name, memb->definition->name, memb->name
++			);
++
++			return -1;
++		}
++	/* Reassign duplicate definition */
++	} else if(data_struct_eq(cached_def, memb->definition)) {
++		free_struct_def(memb->definition);
++		memb->definition = cached_def;
++	}
++
++	if(memb->definition->nr_members == 0) {
++		fprintf(stderr, "Failed to properly remap\n");
++		return -1;
++	}
++
++	return 0;
++}
++
++static int remap_member_defs(struct ds_iter *ds_iter)
++{
++	struct data_member *memb = NULL;
++	struct data_structure *next;
++	struct tag_stack_entry entry, *pos;
++	int ret = 0;
++
++	if(!ds_iter)
++		return -1;
++
++	next = ds_iter_top(ds_iter);
++	if(!next)
++		return 0;
++
++	memb = ds_iter_cur_memb(ds_iter);
++	if(!memb)
++		return 0;
++
++	do {
++		ret += remap_member_def(memb);
++
++		/* Step into the member definition */
++		next = ds_iter_push(ds_iter, false);
++		if(next) {
++			ret += remap_member_defs(ds_iter);
++			ds_iter_pop(ds_iter);
++		}
++
++		memb = ds_iter_next_member(ds_iter);
++	} while(memb);
++
++	return ret;
++}
++
+ /*
+  * API call to initialize the database with the structure info.
+  */
+@@ -216,6 +540,7 @@ int init_db_from_canister(void)
+ 	struct cus *cus = NULL;
+ 	int ret = 0;
+ 	struct struct_def_entry *pos;
++	struct ds_iter ds_iter;
+
+ 	if(get_cached_db() == 0)
+ 		return 0;
+@@ -245,6 +570,18 @@ int init_db_from_canister(void)
+ 	if(ret < 0)
+ 		goto exit;
+
++	list_for_each_entry(pos, &struct_list_head, l_entry) {
++		ds_iter_init(&ds_iter, pos->s_def);
++		returncode = remap_member_defs(&ds_iter);
++		ds_iter_destroy(&ds_iter);
++		if(returncode != 0)
++			goto exit;
++	}
++
++	/*
++	 * For proper comparisons, add_struct_def should happen after we remap/populate the
++	 * incomplete structure definitions
++	 */
+ 	list_for_each_entry(pos, &struct_list_head, l_entry)
+ 		add_struct_def(pos->s_def);
+
+@@ -256,9 +593,12 @@ int init_db_from_canister(void)
+ 	if(ret < 0)
+ 		fprintf(stderr,
+ 			"Failed to read debuginfo from " CANISTER_LOC " : %s\n",
+-			errno ? strerror(errno) : "No debugging information found");
++			errno ? strerror(errno) :
++				"No debugging information found");
+
+ 	if (ret < 0 || returncode < 0) {
++		fprintf(stderr,
++			"Failed to initialize structure database from canister debuginfo\n");
+ 		free_structure_db();
+ 		return -1;
+ 	}
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/hash_table.c b/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/hash_table.c
+index 8eea90a8b..8d669c6c2 100644
+--- a/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/hash_table.c
++++ b/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/hash_table.c
+@@ -109,6 +109,39 @@ struct hash_table_entry *hash_table_get(struct hash_table *htable,
+ 	return NULL;
+ }
+
++/*
++ * For entries with the same key, return the entry at the specified index
++ */
++struct hash_table_entry *hash_table_get_index(struct hash_table *htable,
++						const char *key, int key_len,
++						int offset)
++{
++	int index, start_index;
++	int offset_idx = 0;
++	struct hash_table_entry *htable_entry;
++
++	index = hash_string(key, key_len) % htable->num_entries;
++	start_index = index;
++
++	do {
++		htable_entry = &htable->entries[index];
++		if (!strcmp(key, htable_entry->key)) {
++			if(offset_idx == offset)
++				return htable_entry;
++
++			offset_idx++;
++		}
++
++		if (index >= htable->num_entries - 1)
++			index = 0;
++		else
++			index++;
++
++	} while (index != start_index);
++
++	return NULL;
++}
++
+ void hash_table_free(struct hash_table *hash_table, void (*free_entry)(void *))
+ {
+ 	if (!hash_table)
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/hash_table.h b/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/hash_table.h
+index 3acc4aa56..b8fca4c4f 100644
+--- a/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/hash_table.h
++++ b/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/hash_table.h
+@@ -24,5 +24,8 @@ int hash_table_insert(struct hash_table *htable, void *entry, const char *key,
+ 			int key_len);
+ struct hash_table_entry *hash_table_get(struct hash_table *htable, const char *key,
+ 					 int key_len);
++struct hash_table_entry *hash_table_get_index(struct hash_table *htable,
++						const char *key, int key_len,
++						int offset);
+ struct hash_table *alloc_hash_table(int num_entries);
+ void hash_table_free(struct hash_table *hash_table, void (*free_entry)(void *));
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/match_canister_structs.c b/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/match_canister_structs.c
+index c333f04d6..5a2b4b8b6 100644
+--- a/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/match_canister_structs.c
++++ b/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/match_canister_structs.c
+@@ -10,6 +10,9 @@
+ #include "../fips_canister_common.h"
+ #include "../constants.h"
+
++#include "../kernel_iterator.h"
++#include "data_struct_iterator.h"
++
+ __visible int plugin_is_GPL_compatible;
+
+ static tree get_field_by_name(tree type, char *name)
+@@ -53,21 +56,20 @@ static size_t calculate_struct_size(tree type)
+ }
+
+ /* Validate offset of each field matches between kernel and canister */
+-static int validate_offsets(tree type, struct struct_def *canister_def)
++static int validate_offsets(tree type, struct data_structure *canister_def)
+ {
+ 	size_t cur_offset = 0;
+ 	size_t total_size;
+ 	size_t last_fld_size = 0, field_alignment = 0;
+-	struct struct_member *member;
++	struct data_member *member;
+ 	tree field;
+ 	const char *field_name;
+ 	int padding_remaining = 0;
+ 	int i = 0;
+
+ 	for (member = first_member(canister_def), field = TYPE_FIELDS(type);
+-		field && i < canister_def->nr_members;
+-		field = TREE_CHAIN(field), member = &canister_def->members[++i]) {
+-
++	     field && i < canister_def->nr_members;
++	     field = TREE_CHAIN(field), member = &canister_def->members[++i]) {
+ 		field_alignment = DECL_ALIGN_UNIT(field);
+ 		if (!field_alignment)
+ 			field_alignment = 1;
+@@ -88,29 +90,293 @@ static int validate_offsets(tree type, struct struct_def *canister_def)
+
+ 		if (!strcmp(member->name, field_name) &&
+ 		    cur_offset != (size_t)member->byte_offset) {
+-			error("struct '%s': field '%s', kernel offset %ld != canister offset %d\n",
++			error("struct '%s': field '%s',"
++				"kernel offset %ld != canister offset %d\n",
+ 			      canister_def->name, field_name, cur_offset,
+ 			      member->byte_offset);
+ 			return -1;
+ 		}
+-
+ 	}
+
+ 	return 0;
+ }
+
++static bool tree_is_void_ptr(tree type)
++{
++	return TREE_CODE(type) == POINTER_TYPE &&
++	       TREE_CODE(TREE_TYPE(type)) == VOID_TYPE;
++}
++
++static bool canister_type_is_void_ptr(struct data_member *type)
++{
++	return (type->is_ptr && !strcmp(type->type_name, "void *"));
++}
++
++static bool is_data_structure(tree type)
++{
++	return (TREE_CODE(type) == RECORD_TYPE || TREE_CODE(type) == UNION_TYPE);
++}
++
++/*
++ * Returns true if type of kernel structure field matches type of canister
++ * structure field
++ */
++#define TYPE_STACK_MAX_LEN 2048
++static bool __type_comparison(struct kern_iter *kern_iter, struct ds_iter *ds_iter,
++				char *err_msg, int msg_len)
++{
++	struct data_structure *canister_member_def;
++	struct data_structure *loop_end;
++	struct data_member *canister_member;
++	struct ds_iter *ds_iter_loc;
++	struct data_member *member;
++	tree field;
++	tree kernel_field, kernel_field_base_type;
++	tree kernel_def;
++	char kernel_type_str[256];
++	bool ret = true;
++	tree attr_arg;
++	tree allowed_mismatch_attr;
++	const char *mismatch_kernel_type, *mismatch_canister_type;
++	char stack[TYPE_STACK_MAX_LEN];
++	size_t field_size;
++
++	canister_member = ds_iter_cur_memb(ds_iter);
++	kernel_field = kern_iter_cur_memb(kern_iter);
++	kernel_field_base_type = kern_iter_field_base_type(kern_iter);
++	allowed_mismatch_attr = lookup_attribute(CANISTER_MISMATCH_ATTR,
++							DECL_ATTRIBUTES(kernel_field));
++
++	field_size = get_field_size(kernel_field);
++
++	/* Dereference FIELD_DECL */
++	kernel_field = TREE_TYPE(kernel_field);
++
++	ds_iter_print_stack(ds_iter, stack, TYPE_STACK_MAX_LEN);
++
++	get_field_type_str(kernel_field, kernel_type_str, sizeof(kernel_type_str));
++
++	/* Check if allowed type is specified first - this should match correctly */
++	if(allowed_mismatch_attr) {
++		attr_arg = TREE_VALUE(allowed_mismatch_attr);
++		mismatch_kernel_type = TREE_STRING_POINTER(TREE_VALUE(attr_arg));
++		/*
++		 * This should never be null, because we require two arguments when we register
++		 * the attribute. It will be caught earlier.
++		 */
++		attr_arg = TREE_CHAIN(attr_arg);
++		mismatch_canister_type = TREE_STRING_POINTER(TREE_VALUE(attr_arg));
++
++		/* Types should match the type specified in the attribute tag */
++		if(strcmp(kernel_type_str, mismatch_kernel_type)) {
++			snprintf(
++				err_msg, msg_len,
++				"Mismatch attribute:\n%s:\nKernel type doesn't match attribute "
++				"argument:\n(kernel) %s != %s (attribute specified)\n"
++				"Note: Found '__attribute__((" CANISTER_MISMATCH_ATTR
++				"('%s', '%s')));'",
++				stack, kernel_type_str, mismatch_kernel_type,
++				mismatch_kernel_type, mismatch_canister_type
++			);
++			return false;
++		}
++
++
++		if(strcmp(canister_member->type_name, mismatch_canister_type)) {
++			snprintf(
++				err_msg, msg_len,
++				"Mismatch attribute:\n%s:\nCanister type doesn't match attribute "
++				"argument:\n(canister) %s != %s (attribute specified)\n"
++				"Note: Found '__attribute__((" CANISTER_MISMATCH_ATTR
++				"('%s', '%s')));'",
++				stack, canister_member->type_name, mismatch_canister_type,
++				mismatch_kernel_type, mismatch_canister_type
++			);
++			return false;
++		}
++		return true;
++	}
++
++	/* Type string matches? */
++	if (strcmp(kernel_type_str, canister_member->type_name)) {
++		/* Allow conversions between 'void *' and other pointers */
++		if (tree_is_void_ptr(kernel_field) && canister_member->is_ptr)
++			return true;
++		else if (canister_type_is_void_ptr(canister_member) &&
++				TREE_CODE(kernel_field) == POINTER_TYPE)
++			return true;
++
++		snprintf(err_msg, msg_len, "Type mismatch:\n%s:\n(kernel) '%s' != '%s' (canister)",
++			stack, kernel_type_str, canister_member->type_name);
++		return false;
++	}
++
++	/* Size matches? */
++	if(field_size != canister_member->byte_size) {
++		snprintf(err_msg, msg_len,
++			"Type/size mismatch:\n%s:\n(kernel) %ld bytes != %ld bytes (canister)",
++			stack, field_size, canister_member->byte_size);
++		return false;
++	}
++
++	canister_member_def = get_nested_structure_def(canister_member);
++
++	/*
++	* If canister member has no definition, but kernel does, throw an error.
++	* This catches cases where the name matches, but one is a struct and the other
++	* is a basic type. If marked to allow mismatches, skip this check.
++	*/
++	if (!canister_member_def &&
++		(TREE_CODE(kernel_field_base_type) == RECORD_TYPE ||
++		 TREE_CODE(kernel_field_base_type) == UNION_TYPE)) {
++		snprintf(err_msg, msg_len,
++			"\n%s:\nReference chain mismatch: end of canister chain, kernel continues.",
++			stack);
++		return false;
++	/* Vice versa */
++	} else if (canister_member_def &&
++		(TREE_CODE(kernel_field_base_type) != RECORD_TYPE &&
++		 TREE_CODE(kernel_field_base_type) != UNION_TYPE)) {
++		snprintf(err_msg, msg_len,
++			"\n%s:\nReference chain mismatch: end of kernel chain, canister continues.",
++			stack);
++		return false;
++	}
++
++	/* Validate type matches, at least structure vs not-structure types */
++	if(!canister_member_def && is_data_structure(kernel_field_base_type)) {
++		snprintf(err_msg, msg_len,
++			"Canister type '(%s) %s' has no definition, but kernel type '%s' is a "
++			"data structure.",
++			canister_member->type_name, canister_member->name, kernel_type_str);
++		return false;
++	} else if (canister_member_def && !is_data_structure(kernel_field_base_type)) {
++		snprintf(err_msg, msg_len,
++			"Canister type '(%s) %s' has a structure definition, but kernel type "
++			"'%s' is not a data structure.",
++			canister_member->type_name, canister_member->name, kernel_type_str);
++		return false;
++	}
++
++	/*
++	 * If no canister member definition, and we've checked above, it means that it's a base type
++	 * and we can jump back (no members to compare). If no fields, and we've checked above,
++	 * it means that the kernel type is either a base type or incomplete - i.e structure with
++	 * no members yet. For example, referring to a structure which will be parsed later, or a
++	 * structure which contains itself as a member.
++	 * In either case, we have no members so there's nothing to loop through below.
++	 */
++	if(!canister_member_def || !TYPE_FIELDS(kernel_field_base_type))
++		return true;
++
++	/* Step into the next member definition */
++	canister_member_def = ds_iter_push(ds_iter, false);
++	kernel_def = kern_iter_push(kern_iter, false);
++
++	/*
++	 * Loop check. We know that both of these are data structures, so if we get a NULL from
++	 * stepping into the next definition, it means that we've hit a loop. In this case where
++	 * we hit a loop in one member but not the other, we can allow step into the next
++	 * definition continue the type comparison from there. At some point, we will either hit
++	 * a loop in both definitions, or we will have a difference and error out earlier.
++	 */
++	if(canister_member_def && !kernel_def) {
++		kern_iter_pop(kern_iter);
++		kernel_def = kern_iter_push(kern_iter, true);
++		if(!kernel_def) {
++			snprintf(
++				err_msg, msg_len,
++				"\n%s:\nUnable to step into next kernel definition! "
++				"This is a loop case.",
++			      stack
++			);
++			return false;
++		}
++	} else if (!canister_member_def && kernel_def) {
++		ds_iter_pop(ds_iter);
++		canister_member_def = ds_iter_push(ds_iter, true);
++		if(!canister_member_def) {
++			snprintf(
++				err_msg, msg_len,
++				"\n%s:\nUnable to step into next canister definition! "
++				"This is a loop case.",
++			      stack
++			);
++			return false;
++		}
++	} else if(!canister_member_def && !kernel_def)
++		return true;
++
++	/* Compare each member of the data structures */
++	for (field = kern_iter_cur_memb(kern_iter), member = ds_iter_cur_memb(ds_iter);
++		field && member;
++		field = kern_iter_next_field(kern_iter), member = ds_iter_next_member(ds_iter)) {
++
++		ret = __type_comparison(kern_iter, ds_iter, err_msg, msg_len);
++
++		if (!ret)
++			break;
++	}
++
++	if(field && !member) {
++		ds_iter_print_stack(ds_iter, stack, TYPE_STACK_MAX_LEN);
++		snprintf(
++			err_msg, msg_len,
++			"\n%s:\nKernel has more members than canister! Extra member: %s",
++		      stack, get_field_name(field)
++		);
++		ret = false;
++	}
++	else if(!field && member) {
++		ds_iter_print_stack(ds_iter, stack, TYPE_STACK_MAX_LEN);
++		snprintf(
++			err_msg, msg_len,
++			"\n%s:\nCanister has more members than kernel! Extra member: %s",
++			stack, member->name
++		);
++		ret = false;
++	}
++
++	kern_iter_pop(kern_iter);
++	ds_iter_pop(ds_iter);
++
++	return ret;
++}
++
++/* Compares types between kernel FIELD_DECL and struct data_member, basically structure members */
++static bool type_comparison(tree kernel_type, struct data_member *canister_type,
++				char *err_msg, int msg_len)
++{
++	struct ds_iter ds_iter;
++	struct data_structure *nested_structure_def;
++	struct kern_iter kern_iter;
++	bool ret;
++
++	kern_iter_init_member(&kern_iter, kernel_type);
++	ds_iter_init_member(&ds_iter, canister_type);
++
++	ret = __type_comparison(&kern_iter, &ds_iter, err_msg, msg_len);
++
++	ds_iter_destroy(&ds_iter);
++	kern_iter_destroy(&kern_iter);
++
++	return ret;
++}
++
+ /* Match field order between kernel and canister. Moves any new fields to end of the struct */
+-static int order_fields(struct struct_def *canister_struct_def, tree type,
++static int order_fields(struct data_structure *canister_struct_def, tree type,
+ 			tree *new_field_order, int num_fields)
+ {
+ 	size_t field_size;
+-	struct struct_member *member;
++	struct data_member *member;
+ 	tree field, flexible_array = NULL_TREE;
+ 	tree divergence_point = NULL_TREE;
+ 	int nr_anon = 0;
+ 	const char *field_name;
+ 	int nf_index = 0;
+ 	char field_type[64];
++	char err_msg[4096];
++	tree canister_mismatch_attr;
+
+ 	if (!first_member(canister_struct_def)) {
+ 		error("struct '%s': Found no members in canister version",
+@@ -125,7 +391,8 @@ static int order_fields(struct struct_def *canister_struct_def, tree type,
+ 	 * parsing all the canister members.
+ 	 */
+ 	field = TYPE_FIELDS(type);
+-	for_all_members(canister_struct_def, member) {
++	for_all_members(canister_struct_def, member)
++	{
+ 		if (!strcmp(member->name, PAD_FIELD_NAME))
+ 			continue;
+
+@@ -164,9 +431,14 @@ static int order_fields(struct struct_def *canister_struct_def, tree type,
+ 		else
+ 			new_field_order[nf_index++] = field;
+
+-		// TODO: Future development can also add a type check here.
++		if (!type_comparison(field, member, err_msg, sizeof(err_msg))) {
++			error(err_msg);
++			return -1;
++		}
+
+-		if (field_size != member->byte_size) {
++		canister_mismatch_attr = lookup_attribute(CANISTER_MISMATCH_ATTR,
++								DECL_ATTRIBUTES(field));
++		if (field_size != member->byte_size && !canister_mismatch_attr) {
+ 			inform(DECL_SOURCE_LOCATION(field),
+ 			       "struct '%s': field '%s' size mismatch: "
+ 			       "kernel: (%s) %ld != canister: (%s) %ld\n",
+@@ -215,50 +487,69 @@ static int order_fields(struct struct_def *canister_struct_def, tree type,
+ 	return 0;
+ }
+
+-static int pad_struct(struct struct_def *canister_struct_def, tree type,
++static int pad_struct(struct data_structure *canister_struct_def, tree type,
+ 		      int kernel_size)
+ {
+-	size_t padding_size;
++	size_t padding_size, canister_size;
++	size_t byte_size, byte_offset;
++	struct data_member *final_member;
+ 	tree pad_field = NULL_TREE;
+
+-	padding_size = canister_struct_def->byte_size - kernel_size;
++	/* Only add padding up to the end of the last canister structure field. */
++	final_member = &canister_struct_def->members[canister_struct_def->nr_members - 1];
++	canister_size = final_member->byte_offset + final_member->byte_size;
++
++	padding_size = canister_size - kernel_size;
+ 	if ((int)padding_size > 0)
+ 		pad_field = create_padding_field(type, padding_size);
+
+ 	return insert_pad_field(type, pad_field);
+ }
+
+-static bool needs_matching(tree type, struct struct_def *canister_def)
++static bool needs_matching(tree type, struct data_structure *canister_def)
+ {
+-	struct struct_member *member;
++	struct data_member *member;
+ 	const char *field_name;
+-	size_t field_size;
+ 	tree field;
+-	int i = 0;
++	tree canister_mismatch_attr;
++	bool ret = false;
++	struct ds_iter ds_iter;
++	struct kern_iter kern_iter;
++	char err_msg[4096];
+
+-	if(get_type_size(type) != canister_def->byte_size)
++	if (get_type_size(type) != canister_def->byte_size)
+ 		return true;
+
+-	for (member = first_member(canister_def), field = TYPE_FIELDS(type);
+-		field && i < canister_def->nr_members;
+-		field = TREE_CHAIN(field), member = &canister_def->members[++i]) {
++	ds_iter_init(&ds_iter, canister_def);
++	kern_iter_init(&kern_iter, type);
++
++	for(member = ds_iter_cur_memb(&ds_iter), field = kern_iter_cur_memb(&kern_iter);
++		field && member;
++		member = ds_iter_next_member(&ds_iter), field = kern_iter_next_field(&kern_iter)) {
+
+ 		field_name = get_field_name(field);
+-		field_size = get_field_size(field);
+
+-		/* Needs processing if fields/field order differs, or size/type has changed */
+-		if (strcmp(field_name, member->name) ||
+-		    field_size != member->byte_size)
+-			return true;
++		/* Needs processing if fields/field order differs */
++		if (strcmp(field_name, member->name))
++			ret = true;
++
++		/* Check if type or type size has changed/doesn't match */
++		if(!__type_comparison(&kern_iter, &ds_iter, err_msg, sizeof(err_msg)))
++			ret = true;
+ 	}
+
+-	if (!strcmp(member->name, PAD_FIELD_NAME))
+-		return true;
++	/* Mismatch in struct length */
++	if (field || member)
++		ret = true;
+
+-	if (field || i < canister_def->nr_members)
+-		return true;
++	/* If last field is padding */
++	if(member && !strcmp(member->name, PAD_FIELD_NAME))
++		ret = true;
++
++	ds_iter_destroy(&ds_iter);
++	kern_iter_destroy(&kern_iter);
+
+-	return false;
++	return ret;
+ }
+
+ /* Match kernel structures to canister structures */
+@@ -266,9 +557,10 @@ static void match_struct(tree type)
+ {
+ 	tree *new_field_order;
+ 	int num_fields = 0;
+-	struct struct_def *canister_struct_def;
++	struct data_structure *canister_struct_def;
+ 	const char *type_name;
+ 	size_t struct_size;
++	int canister_def_idx = 0;
+
+ 	type_name = ORIG_TYPE_NAME(type);
+ 	if (!type_name || !strcmp(type_name, ANON_NAME))
+@@ -284,13 +576,14 @@ static void match_struct(tree type)
+ 	 * would make sense to sync the two definitions so that we can run the
+ 	 * compatibility checks in this plugin. But for now, skip it entirely.
+ 	 */
+-	if(!strcmp(type_name, "hmac_ctx"))
++	if (!strcmp(type_name, "hmac_ctx"))
+ 		return;
+
+ 	/* Calculate alignments and sizes for all fields */
+ 	layout_type(type);
+
+-	canister_struct_def = get_struct_def_by_name(type_name, strlen(type_name));
++	canister_struct_def = get_struct_def_by_name_idx(type_name, strlen(type_name),
++								canister_def_idx);
+ 	if (!canister_struct_def) {
+ 		if (struct_in_pad_list(type_name))
+ 			error("struct '%s': in padding list but not found in canister debuginfo",
+@@ -312,7 +605,7 @@ static void match_struct(tree type)
+ 		num_fields++;
+
+ 	/* Note: Can't use m/calloc in GCC */
+-	new_field_order = (tree *) xcalloc(sizeof(tree), num_fields);
++	new_field_order = (tree *) xcalloc(num_fields, sizeof(tree));
+ 	if (!new_field_order) {
+ 		perror("Couldn't allocate memory for new field order array!");
+ 		return;
+@@ -378,7 +671,17 @@ static tree handle_canister_matched_attr(tree *node, tree name, tree args,
+ 	return NULL_TREE;
+ }
+
++static tree handle_allowed_mismatch_attr(tree *node, tree name, tree args,
++						int flags, bool *no_add_attrs)
++{
++
++	*no_add_attrs = false;
++
++	return NULL_TREE;
++}
++
+ static struct attribute_spec canister_matched_attr = {};
++static struct attribute_spec allowed_mismatch_attr = {};
+
+ static void register_attributes(void *event_data, void *data)
+ {
+@@ -387,7 +690,17 @@ static void register_attributes(void *event_data, void *data)
+ 	canister_matched_attr.handler = handle_canister_matched_attr;
+ 	canister_matched_attr.affects_type_identity = true;
+
++	allowed_mismatch_attr.name = CANISTER_MISMATCH_ATTR;
++	allowed_mismatch_attr.type_required = true;
++	allowed_mismatch_attr.min_length = 2;
++	allowed_mismatch_attr.max_length = 2;
++	allowed_mismatch_attr.decl_required = 1;
++	allowed_mismatch_attr.type_required = 0;
++	allowed_mismatch_attr.handler = handle_allowed_mismatch_attr;
++	allowed_mismatch_attr.affects_type_identity = true;
++
+ 	register_attribute(&canister_matched_attr);
++	register_attribute(&allowed_mismatch_attr);
+ }
+
+ static void destroy_canister_struct_db(void *event_data, void *data)
+@@ -399,7 +712,7 @@ static void destroy_canister_struct_db(void *event_data, void *data)
+ int plugin_init(struct plugin_name_args *plugin_info,
+ 		struct plugin_gcc_version *version)
+ {
+-	if(!lang_check(plugin_info->base_name, lang_hooks.name))
++	if (!lang_check(plugin_info->base_name, lang_hooks.name))
+ 		return -1;
+
+ 	if (init_db_from_canister() < 0)
+@@ -415,6 +728,5 @@ int plugin_init(struct plugin_name_args *plugin_info,
+ 			  validate_decl_flex_size, NULL);
+ 	register_bad_casts_pass(plugin_info->base_name);
+
+-
+ 	return 0;
+ }
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/structure_db.c b/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/structure_db.c
+index 95e88686a..dc723153f 100644
+--- a/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/structure_db.c
++++ b/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/structure_db.c
+@@ -7,6 +7,7 @@
+ #include "hash_table.h"
+ #include "structure_db.h"
+ #include <dwarves/list.h>
++#include "data_struct_iterator.h"
+ #include <string.h>
+ #include <stdio.h>
+ #include <stdlib.h>
+@@ -24,33 +25,73 @@ static struct struct_db {
+ 	struct hash_table *htable;
+ 	unsigned char *cache;
+ 	size_t cache_sz;
+-} struct_table = {0};
++} struct_table = { 0 };
+
+-struct struct_def *get_struct_def_by_name(const char *name, int name_len)
++
++struct stack_entry {
++	void* ptr;
++	struct list_head l_entry;
++};
++
++struct comp_stack {
++	struct data_structure *a, *b;
++	struct list_head l_entry;
++};
++
++struct data_structure *get_struct_def_by_name(const char *name, int name_len)
+ {
+ 	struct hash_table_entry *entry;
+
+ 	entry = hash_table_get(struct_table.htable, name, name_len);
+
+-	if(!entry)
++	if (!entry)
+ 		return NULL;
+
+-	if(struct_table.cached) {
+-		return (struct struct_def *) (struct_table.cache + entry->cache_ptr);
++	if (struct_table.cached) {
++		return (struct data_structure *) (struct_table.cache +
++						 entry->cache_ptr);
+ 	}
+
+-	return (struct struct_def *) entry->entry;
++	return (struct data_structure *) entry->entry;
+ }
+
+-struct struct_member *get_member_by_name(struct struct_def *def,
+-					 const char *name)
++struct data_structure *get_struct_def_from_member(struct data_member *member)
+ {
+-	struct struct_member *member;
++	if (!member)
++		return NULL;
++
++	size_t memb_addr = (size_t) member;
++	size_t arr_off = (sizeof(struct data_member) * member->__idx);
++	size_t base_addr = memb_addr - arr_off - sizeof(struct data_structure);
++	return (struct data_structure *) base_addr;
++}
++
++struct data_structure *get_struct_def_by_name_idx(const char *name,
++						  int name_len, int idx)
++{
++	struct hash_table_entry *entry;
++
++	entry = hash_table_get_index(struct_table.htable, name, name_len, idx);
++
++	if (!entry)
++		return NULL;
++
++	if (struct_table.cached)
++		return (struct data_structure *) (struct_table.cache + entry->cache_ptr);
++
++	return (struct data_structure *) entry->entry;
++}
++
++struct data_member *get_member_by_name(struct data_structure *def,
++				       const char *name)
++{
++	struct data_member *member;
+
+ 	if (!name)
+ 		return NULL;
+
+-	for_all_members(def, member) {
++	for_all_members(def, member)
++	{
+ 		if (!strcmp(name, member->name))
+ 			return member;
+ 	}
+@@ -58,20 +99,65 @@ struct struct_member *get_member_by_name(struct struct_def *def,
+ 	return NULL;
+ }
+
+-static void free_struct_def(void *def)
++static void __free_struct_def(void *def, struct list_head *stack_head)
+ {
++	struct data_member *member;
++	struct data_structure *ds;
++	struct stack_entry entry, *pos;
++
+ 	if (!def)
+ 		return;
+
++	list_for_each_entry(pos, stack_head, l_entry) {
++		if(pos->ptr == def)
++			return;
++	}
++
++	for_all_members(((struct data_structure *)def), member)
++	{
++		if (!member->definition || member->definition->nr_members == 0)
++			continue;
++
++		entry.ptr = def;
++		list_add_tail(&entry.l_entry, stack_head);
++
++		__free_struct_def(def, stack_head);
++
++		list_del(&entry.l_entry);
++	}
++
+ 	free(def);
+ }
+
+-int add_struct_def(struct struct_def *new_struct)
++void free_struct_def(void *ds)
++{
++	struct list_head stack_head;
++
++	INIT_LIST_HEAD(&stack_head);
++
++	__free_struct_def(ds, &stack_head);
++}
++
++int add_struct_def(struct data_structure *new_struct)
+ {
+ 	int ret;
++	int idx = 0;
++	struct data_structure *cached_def;
++
++	/* Ignore duplicates */
++	do {
++		cached_def = get_struct_def_by_name_idx(new_struct->name,
++							sizeof(new_struct->name),
++							idx);
++
++		if (data_struct_eq(cached_def, new_struct))
++			return 0;
++
++		idx++;
++	} while (cached_def);
+
+ 	ret = hash_table_insert(struct_table.htable, (void *)new_struct,
+-					new_struct->name, strlen(new_struct->name));
++				new_struct->name, strlen(new_struct->name));
+ 	if (ret < 0)
+ 		fprintf(stderr,
+ 			"Failed to insert new entry for %s into "
+@@ -84,16 +170,31 @@ int add_struct_def(struct struct_def *new_struct)
+ int get_cached_db(void)
+ {
+ 	int fd;
++	struct flock lock;
+ 	unsigned char *mem_block;
+ 	struct stat cache_stat;
+
+ 	fd = open(CACHE_LOC, O_RDONLY);
+-	if(fd < 0) {
++	if (fd < 0) {
+ 		fprintf(stderr, "Cache not yet present at: %s\n", CACHE_LOC);
+ 		return -1;
+ 	}
+
+-	if(fstat(fd, &cache_stat) < 0) {
++	lock.l_whence = SEEK_SET;
++	lock.l_len = 0;
++	lock.l_type = F_RDLCK;
++	lock.l_start = 0;
++
++	/* Try to acquire a read lock - just check if another process is still working on writing */
++	if(fcntl(fd, F_SETLK, &lock) < 0) {
++		close(fd);
++		return 0;
++	}
++
++	/* Unlock, don't need to hold it for mmap. No writes will happen once file is created */
++	fcntl(fd, F_SETLK, &lock);
++
++	if (fstat(fd, &cache_stat) < 0) {
+ 		close(fd);
+ 		return -1;
+ 	}
+@@ -101,13 +202,13 @@ int get_cached_db(void)
+ 	mem_block = mmap(NULL, cache_stat.st_size, PROT_READ, MAP_SHARED, fd, 0);
+ 	close(fd);
+
+-	if(mem_block == MAP_FAILED) {
++	if (mem_block == MAP_FAILED) {
+ 		perror("Cache present but failed to load");
+ 		return -1;
+ 	}
+
+ 	struct_table.cached = true;
+-	struct_table.htable = (struct hash_table*) mem_block;
++	struct_table.htable = (struct hash_table *)mem_block;
+ 	struct_table.cache = mem_block;
+ 	struct_table.cache_sz = cache_stat.st_size;
+
+@@ -128,14 +229,265 @@ int init_struct_db(int nr_structs)
+
+ void free_structure_db(void)
+ {
+-	if(struct_table.cached) {
+-		if(munmap(struct_table.cache, struct_table.cache_sz) < 0)
++	if (struct_table.cached) {
++		if (munmap(struct_table.cache, struct_table.cache_sz) < 0)
+ 			perror("Failed to unmap cached structure db");
+-	}
+-	else
++	} else
+ 		hash_table_free(struct_table.htable, free_struct_def);
+ }
+
++/* Return true if equal */
++static bool __data_struct_eq(struct ds_iter *ds_iter_a, struct ds_iter *ds_iter_b);
++
++static bool data_mem_eq(struct ds_iter *ds_iter_a, struct ds_iter *ds_iter_b)
++{
++	unsigned int ret = 0;
++	struct data_structure *def_a, *def_b;
++	struct data_member *a, *b;
++
++	a = ds_iter_cur_memb(ds_iter_a);
++	b = ds_iter_cur_memb(ds_iter_b);
++
++	ret += (strcmp(a->name, b->name) != 0);
++	ret += (strcmp(a->type_name, b->type_name) != 0);
++	ret += (a->byte_size != b->byte_size);
++	ret += (a->byte_offset != b->byte_offset);
++	ret += (a->is_ptr != b->is_ptr);
++
++	def_a = ds_iter_push(ds_iter_a, false);
++	def_b = ds_iter_push(ds_iter_b, false);
++
++	if(ds_iter_is_loop(ds_iter_a) && ds_iter_is_loop(ds_iter_b))
++		return ret == 0;
++	else if(!def_a && !def_b)
++		return ret == 0;
++
++	/* Allow loops, eventually will either be unequal or both hit loop at the same time */
++	if(!def_a && ds_iter_is_loop(ds_iter_a)) {
++		ds_iter_pop(ds_iter_a);
++		ds_iter_push(ds_iter_a, true);
++	}
++
++	if(!def_b && ds_iter_is_loop(ds_iter_b)) {
++		ds_iter_pop(ds_iter_b);
++		ds_iter_push(ds_iter_b, true);
++	}
++
++	ret += !__data_struct_eq(ds_iter_a, ds_iter_b);
++
++	return ret == 0;
++}
++
++/* Return true if equal, false if not equal. */
++static bool __data_struct_eq(struct ds_iter *ds_iter_a, struct ds_iter *ds_iter_b)
++{
++	struct data_structure *a, *b;
++	unsigned int ret = 0;
++	int i = 0;
++
++
++	a = ds_iter_top(ds_iter_a);
++	b = ds_iter_top(ds_iter_b);
++
++	if (!a && !b)
++		return true;
++	else if (!a || !b)
++		return false;
++
++	ret += (strcmp(a->name, b->name) != 0);
++	ret += (a->byte_size != b->byte_size);
++	ret += (a->nr_members != b->nr_members);
++
++	if (ret)
++		return false;
++
++	while(ds_iter_next_member(ds_iter_a) && ds_iter_next_member(ds_iter_b)) {
++		if (!data_mem_eq(ds_iter_a, ds_iter_b))
++			return false;
++	}
++
++	return ret == 0;
++}
++
++/* Return true if equal, false if not equal. */
++bool data_struct_eq(struct data_structure *a, struct data_structure *b)
++{
++	struct ds_iter ds_iter_a, ds_iter_b;
++	bool ret;
++
++	ds_iter_init(&ds_iter_a, a);
++	ds_iter_init(&ds_iter_b, b);
++
++	ret = __data_struct_eq(&ds_iter_a, &ds_iter_b);
++
++	ds_iter_destroy(&ds_iter_a);
++	ds_iter_destroy(&ds_iter_b);
++
++	return ret;
++}
++
++struct data_structure *get_nested_structure_def(struct data_member *member)
++{
++	if (struct_table.cached && !member->definition_cptr)
++		return NULL;
++
++	if (struct_table.cached)
++		return (struct data_structure *)(struct_table.cache +
++						 member->definition_cptr);
++
++	return member->definition;
++}
++
++struct data_structure *def_from_cptr(size_t def_cptr)
++{
++	if(!struct_table.cached || !def_cptr)
++		return NULL;
++
++	return (struct data_structure *)(struct_table.cache + def_cptr);
++}
++
++/*
++ * Calculate the total size needed for all dynamically allocated nested data
++ * containers (structs/unions).
++ */
++static size_t __calc_nested_member_size(struct data_structure *def, struct list_head *stack_head)
++{
++	struct data_structure *nested;
++	struct data_member *member;
++	struct stack_entry *entry, *pos;
++	bool touched = false;
++	size_t sz = 0;
++
++	for_all_members(def, member)
++	{
++		nested = member->definition;
++		if(!nested)
++			continue;
++
++		list_for_each_entry(pos, stack_head, l_entry) {
++			if(data_struct_eq(pos->ptr, nested))
++				touched = true;
++		}
++
++		if(touched)
++			continue;
++
++		entry = calloc(1, sizeof(struct stack_entry));
++		if(!entry) {
++			fprintf(stderr, "Memory allocation error\n");
++			return -1;
++		}
++
++		entry->ptr = nested;
++		list_add_tail(&entry->l_entry, stack_head);
++
++		sz += nested->__sz;
++		sz += __calc_nested_member_size(nested, stack_head);
++	}
++
++	return sz;
++}
++
++static size_t calc_heap_sz(void)
++{
++	struct list_head stack_head;
++	struct data_structure *def;
++	struct stack_entry *entry, *pos, *n;
++	size_t heap_sz = 0;
++	size_t ret = 0;
++
++	INIT_LIST_HEAD(&stack_head);
++
++	for (int i = 0; i < struct_table.htable->num_entries; i++) {
++		if (entry_is_empty(&struct_table.htable->entries[i]))
++			continue;
++
++		def = (struct data_structure *) struct_table.htable->entries[i].entry;
++
++		entry = calloc(1, sizeof(struct stack_entry));
++		if(!entry) {
++			fprintf(stderr, "Memory allocation error\n");
++			return -1;
++		}
++
++		entry->ptr = def;
++		list_add_tail(&entry->l_entry, &stack_head);
++
++		heap_sz += def->__sz;
++		ret = __calc_nested_member_size(def, &stack_head);
++		if(ret < 0)
++			break;
++		heap_sz += ret;
++	}
++
++	list_for_each_entry_safe(pos, n, &stack_head, l_entry) {
++		list_del(&pos->l_entry);
++		free(pos);
++	}
++
++	if(ret < 0)
++		return ret;
++
++	return heap_sz;
++}
++
++/* Step through all definitions in the cache. Returns offset of cached definition if match is found */
++static size_t find_definition_in_cache(struct data_structure *target,
++					unsigned char *cache, size_t table_sz, size_t cache_sz) {
++
++	/* Structure definitions start at cache + table_sz (after hash table) */
++	size_t offset = table_sz;
++	struct data_structure *candidate;
++
++	while(offset < cache_sz) {
++		candidate = (struct data_structure *) (cache + offset);
++
++		if(data_struct_eq(candidate, target))
++			return offset;
++
++		offset += candidate->__sz;
++	}
++
++	return 0;
++}
++
++/* For each member of the data structure, add it to the cache and re-point the pointers. */
++static size_t add_nested_members_to_cache(unsigned char *cache, size_t cur_ptr,
++					  struct data_structure *def,
++					  size_t table_sz)
++{
++	struct data_structure *nested, *cached;
++	struct data_member *member;
++	size_t cached_offset = 0;
++	size_t sz = 0;
++	int i = 0;
++
++	for_all_members(def, member)
++	{
++		nested = member->definition;
++		if(!nested)
++			continue;
++
++		/* If already in the cache, we can point to the already cached version and return immediately */
++		cached_offset = find_definition_in_cache(nested, cache, table_sz, cur_ptr);
++		if(cached_offset > 0) {
++			cached = (struct data_structure *) (cache + cached_offset);
++			member->definition_cptr = (long int) cached - (long int) cache;
++			continue;
++		}
++
++		memcpy(cache + cur_ptr, nested, nested->__sz);
++		member->definition_cptr = cur_ptr;
++		cur_ptr += nested->__sz;
++
++		/* Get the cached version */
++		nested = (struct data_structure*) (cache + member->definition_cptr);
++		cur_ptr = add_nested_members_to_cache(cache, cur_ptr, nested, table_sz);
++	}
++
++	return cur_ptr;
++}
++
+ /*
+  * Convert the initial hash table and all structure defintions into a memory
+  * block which can be stored as a cache and mapped directly in to other plugin
+@@ -153,35 +505,60 @@ void free_structure_db(void)
+ int cache_structure_db(void)
+ {
+ 	FILE *cache;
++	struct flock lock;
+ 	size_t ret;
++	size_t cached_offset = 0;
+ 	unsigned char *mem_block;
+ 	size_t cur_ptr = 0;
+ 	size_t table_sz = 0, heap_sz = 0;
+-	struct struct_def *def;
++	struct data_structure *def;
+ 	struct hash_table *cached_table;
++	struct data_member *member;
++	/* List of all definitions which have been added to the cache already */
++	struct list_head struct_list_head;
++	struct stack_entry *entry, *tmp, *tmp1;
++
++	if (struct_table.cached)
++		return 0;
++
++	cache = fopen(CACHE_LOC, "wb");
++	if (!cache) {
++		perror("Failed to open cache location");
++		return -1;
++	}
++
++	lock.l_whence = SEEK_SET;
++	lock.l_len = 0;
++	lock.l_type = F_WRLCK;
++	lock.l_start = 0;
+
+-	if(struct_table.cached)
++	/* Acquire exclusive lock or return if someone already locked it */
++	if(fcntl(fileno(cache), F_SETLK, &lock) < 0) {
++		fclose(cache);
+ 		return 0;
++	}
+
+ 	/* Measure size needed for memory block */
+ 	table_sz = sizeof(struct hash_table) +
+-		(struct_table.htable->num_entries * sizeof(struct hash_table_entry));
+-
+-	for(int i = 0; i < struct_table.htable->num_entries; i++) {
+-		if(entry_is_empty(&struct_table.htable->entries[i]))
+-			continue;
++			(struct_table.htable->num_entries * sizeof(struct hash_table_entry));
+
+-		def = (struct struct_def *) struct_table.htable->entries[i].entry;
+-		heap_sz += def->__sz;
++	heap_sz = calc_heap_sz();
++	if(heap_sz < 0) {
++		ret = -1;
++		goto finish;
+ 	}
+
+ 	/* Allocate new memory block */
+ 	mem_block = calloc(1, table_sz + heap_sz);
+-	if(!mem_block) {
++	if (!mem_block) {
+ 		perror("Failed to allocate memory block for cache");
+-		return -1;
++		ret = -1;
++		goto finish;
+ 	}
+
++	struct_table.cache = mem_block;
++	struct_table.cache_sz = table_sz + heap_sz;
++
+ 	/* Populate new memory block */
+ 	/* Copy hash table into the first bytes */
+ 	memcpy(mem_block, struct_table.htable, table_sz);
+@@ -193,39 +570,50 @@ int cache_structure_db(void)
+ 	 * For each structure definition entry, copy into the "heap" space and
+ 	 * save the ptr as the offset to the beginning of the memory block
+ 	 */
+-	for(int i = 0; i < struct_table.htable->num_entries; i++) {
+-		def = (struct struct_def *) struct_table.htable->entries[i].entry;
+-		if(!def)
++	for (int i = 0; i < struct_table.htable->num_entries; i++) {
++		def = (struct data_structure *) struct_table.htable->entries[i].entry;
++		if (!def)
++			continue;
++
++		cached_offset = find_definition_in_cache(def, mem_block, table_sz, cur_ptr);
++		if(cached_offset > 0) {
++			cached_table->entries[i].cache_ptr = cached_offset;
+ 			continue;
++		}
+
+ 		cached_table->entries[i].cache_ptr = cur_ptr;
+ 		memcpy(mem_block + cur_ptr, def, def->__sz);
+ 		cur_ptr += def->__sz;
+-	}
+
+-	if(cur_ptr > table_sz + heap_sz) {
+-		fprintf(stderr, "Memory error: Cache overflow\n");
+-		ret = -1;
+-		goto finish;
++		cur_ptr = add_nested_members_to_cache(
++			mem_block, cur_ptr,
++			(struct data_structure *)(mem_block + cur_ptr - def->__sz),
++			table_sz
++		);
+ 	}
+
+-	cache = fopen(CACHE_LOC, "wb");
+-	if(!cache) {
+-		perror("Failed to open cache location");
++	if (cur_ptr > table_sz + heap_sz) {
++		fprintf(stderr, "Memory error: Cache overflow\n");
+ 		ret = -1;
+ 		goto finish;
+ 	}
+
+ 	ret = fwrite(mem_block, table_sz + heap_sz, 1, cache);
+-	if(ret <= 0) {
++	if (ret <= 0) {
+ 		perror("Failed to write structure DB to cache");
+ 		ret = -1;
+ 	}
+
+-	fclose(cache);
+ finish:
++	lock.l_type = F_UNLCK;
++	fcntl(fileno(cache), F_SETLK, &lock);
++	fclose(cache);
++
++	/* Delete file on error - outside of lock... */
++	if(ret < 0)
++		remove(CACHE_LOC);
++
+ 	free(mem_block);
+
+-	return (int) ret;
++	return (int)ret;
+ }
+-
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/structure_db.h b/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/structure_db.h
+index f6021ba94..14df6485e 100644
+--- a/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/structure_db.h
++++ b/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/structure_db.h
+@@ -1,26 +1,40 @@
+ /* Copyright (C) 2025 Broadcom, Inc. */
++#ifndef _FIPS_CANISTER_COMMON_H
++#define _FIPS_CANISTER_COMMON_H
+
+ #if defined(__cplusplus)
+ extern "C" {
+ #endif
++#include <stdbool.h>
+
+-/* Structure member definition */
+-struct struct_member {
++/* Structure/union member definition */
++struct data_member {
+ 	char name[64];
+-	/* Type, e.g int, char, enum, etc */
+-	char type_name[64];
++	/* Type, e.g int, char, etc. */
++	char type_name[256];
+ 	size_t byte_size;
+ 	int byte_offset;
++	/* 0 if ptr, 1 otherwise */
++	char is_ptr;
++
++	/* Handle nested unions/structures */
++	struct data_structure *definition;
++	size_t definition_cptr;
++
++	/* Help to determine parent structure address */
++	short int __idx;
+ };
+
+-/* Structure definition */
+-struct struct_def {
++/* Structure/union definition */
++struct data_structure {
+ 	char name[64];
+ 	size_t byte_size;
+ 	int nr_members;
+-	/* Internal total size of the struct, including all struct members */
++	/* Internal total size of this data_structure, including all members */
+ 	size_t __sz;
+-	struct struct_member members[];
++	/* Internal: set during graph traversal to indicate we've already touched this structure */
++	int __flag;
++	struct data_member members[];
+ };
+
+ #define first_member(_def) &_def->members[0]
+@@ -29,18 +43,24 @@ struct struct_def {
+ 	int _i = 0; \
+ 	for (_mbr = first_member(_def); _i < _def->nr_members; _mbr = &_def->members[++_i]) \
+
+-
+ int init_db_from_canister(void);
+ void free_structure_db(void);
+-struct struct_def *get_struct_def_by_name(const char *name, int name_len);
+-struct struct_member *get_first_member(struct struct_def *def);
+-struct struct_member *get_member_by_name(struct struct_def *def, const char *name);
+-int add_struct_def(struct struct_def *new_struct);
+-struct struct_def *get_struct_def_by_name(const char *name, int name_len);
++struct data_structure *get_struct_def_by_name(const char *name, int name_len);
++struct data_structure *get_struct_def_by_name_idx(const char* name, int name_len, int idx);
++struct data_member *get_first_member(struct data_structure *def);
++struct data_member *get_member_by_name(struct data_structure *def, const char *name);
++int add_struct_def(struct data_structure *new_struct);
++struct data_structure *get_struct_def_by_name(const char *name, int name_len);
+ int init_struct_db(int nr_structs);
+ int cache_structure_db(void);
+ int get_cached_db(void);
++struct data_structure *get_nested_structure_def(struct data_member *member);
++bool data_struct_eq(struct data_structure *a, struct data_structure *b);
++void free_struct_def(void *def);
++struct data_structure *def_from_cptr(size_t def_cptr);
++struct data_structure *get_struct_def_from_member(struct data_member *member);
+
+ #if defined(__cplusplus)
+ }
+ #endif
++#endif /* _FIPS_CANISTER_COMMON_H */
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-multiple-new-fields.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-multiple-new-fields.c
+index e4b970b8b..f378be55f 100644
+--- a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-multiple-new-fields.c
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-multiple-new-fields.c
+@@ -1,8 +1,10 @@
++#include "types.h"
++
+ /* Add new_field to crypto_tfm */
+ struct crypto_tfm {
+-	char refcnt[4];
++	refcount_t refcnt;
+
+-	int crt_flags;
++	u32 crt_flags;
+
+ 	int new_field;
+
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-multiple-new-fields.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-multiple-new-fields.expected
+index 573a7cada..aa54e2575 100644
+--- a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-multiple-new-fields.expected
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-multiple-new-fields.expected
+@@ -1,6 +1,12 @@
++struct refcount_struct {
++	atomic_t                   refs;                 /*     0     4 */
++
++	/* size: 4, cachelines: 1, members: 1 */
++	/* last cacheline: 4 bytes */
++};
+ struct crypto_tfm {
+-	char                       refcnt[4];            /*     0     4 */
+-	int                        crt_flags;            /*     4     4 */
++	refcount_t                 refcnt;               /*     0     4 */
++	u32                        crt_flags;            /*     4     4 */
+ 	int                        node;                 /*     8     4 */
+
+ 	/* XXX 4 bytes hole, try to pack */
+@@ -20,9 +26,10 @@ struct ecdh {
+ 	char *                     key;                  /*     0     8 */
+ 	short unsigned int         key_size;             /*     8     2 */
+ 	char                       new_field[3];         /*    10     3 */
+-	char                       __fips_canister_padding[11]; /*    13    11 */
+-	char                       new_flexible_array[]; /*    24     0 */
++	char                       __fips_canister_padding[5]; /*    13     5 */
++	char                       new_flexible_array[]; /*    18     0 */
+
+ 	/* size: 24, cachelines: 1, members: 5 */
++	/* padding: 6 */
+ 	/* last cacheline: 24 bytes */
+ };
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-new-field.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-new-field.c
+index 198206c42..3238a261b 100644
+--- a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-new-field.c
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-new-field.c
+@@ -1,8 +1,10 @@
++#include "types.h"
++
+ /* Add new_field to crypto_tfm */
+ struct crypto_tfm {
+-	char refcnt[4];
++	refcount_t refcnt;
+
+-	int crt_flags;
++	u32 crt_flags;
+
+ 	long int new_field;
+
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-new-field.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-new-field.expected
+index 6b00439d3..f89e56184 100644
+--- a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-new-field.expected
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-new-field.expected
+@@ -1,6 +1,12 @@
++struct refcount_struct {
++	atomic_t                   refs;                 /*     0     4 */
++
++	/* size: 4, cachelines: 1, members: 1 */
++	/* last cacheline: 4 bytes */
++};
+ struct crypto_tfm {
+-	char                       refcnt[4];            /*     0     4 */
+-	int                        crt_flags;            /*     4     4 */
++	refcount_t                 refcnt;               /*     0     4 */
++	u32                        crt_flags;            /*     4     4 */
+ 	int                        node;                 /*     8     4 */
+
+ 	/* XXX 4 bytes hole, try to pack */
+@@ -19,8 +25,9 @@ struct ecdh {
+ 	char *                     key;                  /*     0     8 */
+ 	short unsigned int         key_size;             /*     8     2 */
+ 	char                       new_field[5];         /*    10     5 */
+-	char                       __fips_canister_padding[9]; /*    15     9 */
++	char                       __fips_canister_padding[3]; /*    15     3 */
+
+ 	/* size: 24, cachelines: 1, members: 4 */
++	/* padding: 6 */
+ 	/* last cacheline: 24 bytes */
+ };
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-too-many-fields.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-too-many-fields.c
+index 8cbe70647..43363ad85 100644
+--- a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-too-many-fields.c
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-too-many-fields.c
+@@ -1,8 +1,10 @@
++#include "types.h"
++
+ /* Expected failure: Overflowing padding before flexible array member */
+ struct crypto_tfm {
+-	char refcnt[4];
++	refcount_t refcnt;
+
+-	int crt_flags;
++	u32 crt_flags;
+
+ 	int new_field;
+
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-too-many-fields.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-too-many-fields.expected
+index 7a690ca1d..d23da4386 100644
+--- a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-too-many-fields.expected
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/add-too-many-fields.expected
+@@ -1,4 +1,4 @@
+-add-too-many-fields.c:20:1: error: struct 'crypto_tfm': kernel size 48 != canister size 40
++add-too-many-fields.c:22:1: error: struct 'crypto_tfm': kernel size 48 != canister size 40
+
+-   20 | };
++   22 | };
+       | ^
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/attr-mismatch-fail.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/attr-mismatch-fail.c
+new file mode 100644
+index 000000000..39d34b49e
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/attr-mismatch-fail.c
+@@ -0,0 +1,38 @@
++#include "types.h"
++
++/* This should be a struct which is padded in the canister */
++struct ecdh {
++	char *key;
++	unsigned short key_size;
++};
++
++/* Struct padded in canster, with flexible array member */
++struct crypto_tfm {
++	refcount_t refcnt;
++
++	/* Attribute: kernel type doesn't match */
++	int crt_flags __attribute__((canister_mismatch("char[4]", "u32")));
++
++	int node;
++
++	void (*exit)(struct crypto_tfm *tfm);
++
++	/* Used to be "void *" - should be an incorrect type */
++	long int __crt_alg;
++
++	void *__crt_ctx[] __attribute__((__aligned__(8)));
++};
++
++
++/* This can be a struct which is not padded in the canister */
++struct list_head {
++	struct list_head *next, *prev;
++};
++
++int main() {
++	struct ecdh ecdh;
++	struct list_head list;
++	struct crypto_tfm tfm;
++
++	return 0;
++}
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/attr-mismatch-fail.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/attr-mismatch-fail.expected
+new file mode 100644
+index 000000000..30ccab0ac
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/attr-mismatch-fail.expected
+@@ -0,0 +1,8 @@
++attr-mismatch-fail.c:24:1: error: Mismatch attribute:
++struct crypto_tfm
++	->(u32) crt_flags:
++Kernel type doesn't match attribute argument:
++(kernel) int != char[4] (attribute specified)
++Note: Found '__attribute__((canister_mismatch('char[4]', 'u32')));'
++   24 | };
++      | ^
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/attr-mismatch-fail2.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/attr-mismatch-fail2.c
+new file mode 100644
+index 000000000..c72baa39b
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/attr-mismatch-fail2.c
+@@ -0,0 +1,40 @@
++#include "types.h"
++
++/* This should be a struct which is padded in the canister */
++struct ecdh {
++	char *key;
++	unsigned short key_size;
++};
++
++/* Struct padded in canster, with flexible array member */
++struct crypto_tfm {
++	refcount_t refcnt;
++
++	u32 crt_flags;
++
++	/* Attribute: canister type doesn't match */
++	char node[4] __attribute__((canister_mismatch("char[4]", "void *")));
++
++	void (*exit)(struct crypto_tfm *tfm);
++
++	/* Used to be "void *" - should be an incorrect type */
++	long int __crt_alg;
++
++	void *__crt_ctx[] __attribute__((__aligned__(8)));
++};
++
++
++/* This can be a struct which is not padded in the canister */
++struct list_head {
++	struct list_head *next, *prev;
++};
++
++int main() {
++	struct ecdh ecdh;
++	struct list_head list;
++	struct crypto_tfm tfm;
++
++	return 0;
++}
++
++
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/attr-mismatch-fail2.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/attr-mismatch-fail2.expected
+new file mode 100644
+index 000000000..8c1ed355f
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/attr-mismatch-fail2.expected
+@@ -0,0 +1,8 @@
++attr-mismatch-fail2.c:24:1: error: Mismatch attribute:
++struct crypto_tfm
++	->(int) node:
++Canister type doesn't match attribute argument:
++(canister) int != void * (attribute specified)
++Note: Found '__attribute__((canister_mismatch('char[4]', 'void *')));'
++   24 | };
++      | ^
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/attr-mismatch.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/attr-mismatch.c
+new file mode 100644
+index 000000000..cc9195439
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/attr-mismatch.c
+@@ -0,0 +1,36 @@
++#include "types.h"
++
++/* This should be a struct which is padded in the canister */
++struct ecdh {
++	char *key;
++	unsigned short key_size;
++};
++
++/* Struct padded in canster, with flexible array member */
++struct crypto_tfm {
++	refcount_t refcnt;
++
++	u32 crt_flags;
++
++	char node[4] __attribute__((canister_mismatch("char[4]", "int")));
++
++	void (*exit)(struct crypto_tfm *tfm);
++
++	void *__crt_alg;
++
++	void *__crt_ctx[] __attribute__((__aligned__(8)));
++};
++
++
++/* This can be a struct which is not padded in the canister */
++struct list_head {
++	struct list_head *next, *prev;
++};
++
++int main() {
++	struct ecdh ecdh;
++	struct list_head list;
++	struct crypto_tfm tfm;
++
++	return 0;
++}
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/attr-mismatch.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/attr-mismatch.expected
+new file mode 100644
+index 000000000..3eeaa4f2c
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/attr-mismatch.expected
+@@ -0,0 +1,39 @@
++struct refcount_struct {
++	atomic_t                   refs;                 /*     0     4 */
++
++	/* size: 4, cachelines: 1, members: 1 */
++	/* last cacheline: 4 bytes */
++};
++struct ecdh {
++	char *                     key;                  /*     0     8 */
++	short unsigned int         key_size;             /*     8     2 */
++	char                       __fips_canister_padding[8]; /*    10     8 */
++
++	/* size: 24, cachelines: 1, members: 3 */
++	/* padding: 6 */
++	/* last cacheline: 24 bytes */
++};
++struct crypto_tfm {
++	refcount_t                 refcnt;               /*     0     4 */
++	u32                        crt_flags;            /*     4     4 */
++	char                       node[4];              /*     8     4 */
++
++	/* XXX 4 bytes hole, try to pack */
++
++	void                       (*exit)(struct crypto_tfm *); /*    16     8 */
++	void *                     __crt_alg;            /*    24     8 */
++	char                       __fips_canister_padding[8]; /*    32     8 */
++	void *                     __crt_ctx[] __attribute__((__aligned__(8))); /*    40     0 */
++
++	/* size: 40, cachelines: 1, members: 7 */
++	/* sum members: 36, holes: 1, sum holes: 4 */
++	/* forced alignments: 1 */
++	/* last cacheline: 40 bytes */
++} __attribute__((__aligned__(8)));
++struct list_head {
++	struct list_head *         next;                 /*     0     8 */
++	struct list_head *         prev;                 /*     8     8 */
++
++	/* size: 16, cachelines: 1, members: 2 */
++	/* last cacheline: 16 bytes */
++};
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/bad-cast.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/bad-cast.expected
+index 0d813b0e0..7f235c032 100644
+--- a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/bad-cast.expected
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/bad-cast.expected
+@@ -1,8 +1,9 @@
+ struct ecdh {
+ 	char *                     key;                  /*     0     8 */
+ 	short unsigned int         key_size;             /*     8     2 */
+-	char                       __fips_canister_padding[14]; /*    10    14 */
++	char                       __fips_canister_padding[8]; /*    10     8 */
+
+ 	/* size: 24, cachelines: 1, members: 3 */
++	/* padding: 6 */
+ 	/* last cacheline: 24 bytes */
+ };
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/field-size-change.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/field-size-change.c
+index f08f54a72..c78da2463 100644
+--- a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/field-size-change.c
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/field-size-change.c
+@@ -1,10 +1,16 @@
++#define DEF_U32
++typedef long int u32;
++
++#include "types.h"
++
+ /* Field size change */
+ struct crypto_tfm {
+-	char refcnt[24];
++	refcount_t refcnt;
+
+-	int crt_flags;
++	/* Same type name but different size */
++	u32 crt_flags;
+
+-	long int node;
++	int node;
+
+ 	void (*exit)(struct crypto_tfm *tfm);
+
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/field-size-change.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/field-size-change.expected
+index 55499de81..82230221e 100644
+--- a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/field-size-change.expected
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/field-size-change.expected
+@@ -1,12 +1,6 @@
+-field-size-change.c:3:14: note: struct 'crypto_tfm': field 'refcnt' size mismatch: kernel: (char[24]) 24 != canister: (refcount_t) 4
+-
+-    3 |         char refcnt[24];
+-      |              ^~~~~~
+-field-size-change.c:7:18: note: struct 'crypto_tfm': field 'node' size mismatch: kernel: (long int) 8 != canister: (int) 4
+-
+-    7 |         long int node;
+-      |                  ^~~~
+-field-size-change.c:14:1: error: struct 'crypto_tfm': field 'crt_flags', kernel offset 24 != canister offset 4
+-
+-   14 | };
++field-size-change.c:20:1: error: Type/size mismatch:
++struct crypto_tfm
++	->(u32) crt_flags:
++(kernel) 8 bytes != 4 bytes (canister)
++   20 | };
+       | ^
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/flexible-init.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/flexible-init.c
+index 74061f8fd..0f905f78b 100644
+--- a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/flexible-init.c
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/flexible-init.c
+@@ -1,8 +1,10 @@
++#include "types.h"
++
+ /* Struct padded in canister, with flexible array member */
+ struct crypto_tfm {
+-	char refcnt[4];
++	refcount_t refcnt;
+
+-	int crt_flags;
++	u32 crt_flags;
+
+ 	int node;
+
+@@ -10,7 +12,7 @@ struct crypto_tfm {
+
+ 	void *__crt_alg;
+
+-	char __crt_ctx[];
++	void *__crt_ctx[];
+ };
+
+ const struct crypto_tfm tfm_var = {
+@@ -19,8 +21,17 @@ const struct crypto_tfm tfm_var = {
+ 	.node = 2,
+ 	.exit = 0,
+ 	.__crt_alg = 0,
+-	// Alloc 8 bytes for the flexible array size
+-	.__crt_ctx = {0, 1, 2, 3, 4, 5, 6, 7}
++	// Alloc 64 bytes for the flexible array size
++	.__crt_ctx = {
++			(void*) 0,
++			(void*) 1,
++			(void*) 2,
++			(void*) 3,
++			(void*) 4,
++			(void*) 5,
++			(void*) 6,
++			(void*) 7
++	}
+ };
+
+ int main() {
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/flexible-init.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/flexible-init.expected
+index d5875707d..7ed87bd74 100644
+--- a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/flexible-init.expected
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/flexible-init.expected
+@@ -1,6 +1,12 @@
++struct refcount_struct {
++	atomic_t                   refs;                 /*     0     4 */
++
++	/* size: 4, cachelines: 1, members: 1 */
++	/* last cacheline: 4 bytes */
++};
+ struct crypto_tfm {
+-	char                       refcnt[4];            /*     0     4 */
+-	int                        crt_flags;            /*     4     4 */
++	refcount_t                 refcnt;               /*     0     4 */
++	u32                        crt_flags;            /*     4     4 */
+ 	int                        node;                 /*     8     4 */
+
+ 	/* XXX 4 bytes hole, try to pack */
+@@ -8,7 +14,7 @@ struct crypto_tfm {
+ 	void                       (*exit)(struct crypto_tfm *); /*    16     8 */
+ 	void *                     __crt_alg;            /*    24     8 */
+ 	char                       __fips_canister_padding[8]; /*    32     8 */
+-	char                       __crt_ctx[];          /*    40     0 */
++	void *                     __crt_ctx[];          /*    40     0 */
+
+ 	/* size: 40, cachelines: 1, members: 7 */
+ 	/* sum members: 36, holes: 1, sum holes: 4 */
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/follow-pointer.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/follow-pointer.c
+new file mode 100644
+index 000000000..7262763f8
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/follow-pointer.c
+@@ -0,0 +1,74 @@
++#include "types.h"
++
++struct list_head {
++	struct list_head *next, *prev;
++};
++struct crypto_tfm;
++struct crypto_alg;
++
++struct cipher_alg {
++	/* Sneaky change - three layers down from crypto_alg, 4 layers from crypto_tfm */
++	long int cia_min_keysize;
++	unsigned int cia_max_keysize;
++	int (*cia_setkey)(struct crypto_tfm *tfm, const u8 *key,
++	                  unsigned int keylen);
++	void (*cia_encrypt)(struct crypto_tfm *tfm, u8 *dst, const u8 *src);
++	void (*cia_decrypt)(struct crypto_tfm *tfm, u8 *dst, const u8 *src);
++};
++
++struct compress_alg {
++	int (*coa_compress)(struct crypto_tfm *tfm, const u8 *src,
++			    unsigned int slen, u8 *dst, unsigned int *dlen);
++	int (*coa_decompress)(struct crypto_tfm *tfm, const u8 *src,
++			      unsigned int slen, u8 *dst, unsigned int *dlen);
++};
++
++struct crypto_tfm {
++	refcount_t refcnt;
++
++	u32 crt_flags;
++
++	int node;
++
++	void (*exit)(struct crypto_tfm *tfm);
++
++	/*
++	 * This is incomplete because crypto_alg is not yet defined, so no error here
++	 * (type name matches).
++	 */
++	struct crypto_alg *__crt_alg;
++
++	void *__crt_ctx[];
++};
++
++struct crypto_alg {
++	struct list_head cra_list;
++	struct list_head cra_users;
++
++	u32 cra_flags;
++	unsigned int cra_blocksize;
++	unsigned int cra_ctxsize;
++	unsigned int cra_alignmask;
++
++	int cra_priority;
++	refcount_t cra_refcnt;
++
++	char cra_name[128];
++	char cra_driver_name[128];
++
++	/* Convert to void * to avoid errors */
++	void *cra_type;
++
++	union {
++		struct cipher_alg cipher;
++		struct compress_alg compress;
++	} cra_u;
++
++	int (*cra_init)(struct crypto_tfm *tfm);
++	void (*cra_exit)(struct crypto_tfm *tfm);
++	void (*cra_destroy)(struct crypto_alg *alg);
++
++	void *cra_module;
++};
++
++
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/follow-pointer.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/follow-pointer.expected
+new file mode 100644
+index 000000000..55ab03a2f
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/follow-pointer.expected
+@@ -0,0 +1,14 @@
++follow-pointer.c:17:1: error: Type mismatch:
++struct cipher_alg
++	->(unsigned int) cia_min_keysize:
++(kernel) 'long int' != 'unsigned int' (canister)
++   17 | };
++      | ^
++follow-pointer.c:72:1: error: Type mismatch:
++struct crypto_alg
++	->(union) cra_u
++		->(struct cipher_alg) cipher
++			->(unsigned int) cia_min_keysize:
++(kernel) 'long int' != 'unsigned int' (canister)
++   72 | };
++      | ^
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/functional-flexible.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/functional-flexible.c
+index a1a64d504..101692346 100644
+--- a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/functional-flexible.c
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/functional-flexible.c
+@@ -2,11 +2,12 @@
+ #include <stddef.h>
+ #include <stdlib.h>
+ #include <string.h>
++#include "types.h"
+
+ struct crypto_tfm {
+-        char refcnt[4];
++        refcount_t refcnt;
+
+-        int crt_flags;
++        u32 crt_flags;
+
+         long int new_field;
+
+@@ -26,7 +27,13 @@ int main() {
+ 		return -1;
+ 	}
+
+-	char bytes[8] = "8 bytes.";
++	/*
++	 * Add a NUL terminator to the string to avoid heap overflow
++	 * (printf will attempt to read till the NUL terminator, which will be beyond the
++	 * string bounds)
++	 */
++	char bytes[8] = "8 bytes";
++	bytes[7] = '\0';
+
+ 	strncpy((char *) func_tfm->__crt_ctx, bytes, sizeof(bytes));
+
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/functional-flexible.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/functional-flexible.expected
+index 9ae2783db..60b2d5a8d 100644
+--- a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/functional-flexible.expected
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/functional-flexible.expected
+@@ -1,4 +1,4 @@
+-__crt_ctx: 8 bytes.
++__crt_ctx: 8 bytes
+
+ new_field offset: 32
+ refcnt offset: 0
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/no-change.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/no-change.c
+index 09964b512..e59115397 100644
+--- a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/no-change.c
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/no-change.c
+@@ -1,3 +1,4 @@
++#include "types.h"
+
+ /* This should be a struct which is padded in the canister */
+ struct ecdh {
+@@ -7,9 +8,9 @@ struct ecdh {
+
+ /* Struct padded in canster, with flexible array member */
+ struct crypto_tfm {
+-	char refcnt[4];
++	refcount_t refcnt;
+
+-	int crt_flags;
++	u32 crt_flags;
+
+ 	int node;
+
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/no-change.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/no-change.expected
+index 814dcb7a9..7b96cf157 100644
+--- a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/no-change.expected
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/no-change.expected
+@@ -1,14 +1,21 @@
++struct refcount_struct {
++	atomic_t                   refs;                 /*     0     4 */
++
++	/* size: 4, cachelines: 1, members: 1 */
++	/* last cacheline: 4 bytes */
++};
+ struct ecdh {
+ 	char *                     key;                  /*     0     8 */
+ 	short unsigned int         key_size;             /*     8     2 */
+-	char                       __fips_canister_padding[14]; /*    10    14 */
++	char                       __fips_canister_padding[8]; /*    10     8 */
+
+ 	/* size: 24, cachelines: 1, members: 3 */
++	/* padding: 6 */
+ 	/* last cacheline: 24 bytes */
+ };
+ struct crypto_tfm {
+-	char                       refcnt[4];            /*     0     4 */
+-	int                        crt_flags;            /*     4     4 */
++	refcount_t                 refcnt;               /*     0     4 */
++	u32                        crt_flags;            /*     4     4 */
+ 	int                        node;                 /*     8     4 */
+
+ 	/* XXX 4 bytes hole, try to pack */
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/remove-field.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/remove-field.c
+index f7f435d58..bc2aeafce 100644
+--- a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/remove-field.c
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/remove-field.c
+@@ -1,8 +1,10 @@
++#include "types.h"
++
+ /* Remove field from crypto_tfm */
+ struct crypto_tfm {
+-	char refcnt[4];
++	refcount_t refcnt;
+
+-	int crt_flags;
++	u32 crt_flags;
+
+ 	void (*exit)(struct crypto_tfm *tfm);
+
+@@ -16,4 +18,4 @@ int main()
+ 	struct crypto_tfm tfm;
+
+ 	return 0;
+-}
+\ No newline at end of file
++}
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/remove-field.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/remove-field.expected
+index 4ca5ba886..332677397 100644
+--- a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/remove-field.expected
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/remove-field.expected
+@@ -1,3 +1,3 @@
+-remove-field.c:12:1: error: struct crypto_tfm: found canister member 'node' which is not present in kernel
+-   12 | };
++remove-field.c:14:1: error: struct crypto_tfm: found canister member 'node' which is not present in kernel
++   14 | };
+       | ^
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/self-test.sh b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/self-test.sh
+index 2a765a24e..502e1d55f 100755
+--- a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/self-test.sh
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/self-test.sh
+@@ -5,13 +5,18 @@ test_case "no-change" "$match_canister_plugin_path"
+ test_case "add-new-field" "$match_canister_plugin_path"
+ test_case "add-multiple-new-fields" "$match_canister_plugin_path"
+ test_case "struct-assignment" "$match_canister_plugin_path"
++test_case "attr-mismatch" "$match_canister_plugin_path"
++test_case "typedef-struct" "$match_canister_plugin_path"
+ test_case_expect_gcc_failure "remove-field" "$match_canister_plugin_path"
+ test_case_expect_gcc_failure "field-size-change" "$match_canister_plugin_path"
+ test_case_expect_gcc_failure "add-too-many-fields" "$match_canister_plugin_path"
+ test_case_expect_gcc_failure "designated-init" "$match_canister_plugin_path"
+ test_case_expect_gcc_failure "unnamed-struct-init" "$match_canister_plugin_path"
++test_case_expect_gcc_failure "attr-mismatch-fail" "$match_canister_plugin_path"
++test_case_expect_gcc_failure "attr-mismatch-fail2" "$match_canister_plugin_path"
++test_case_expect_gcc_failure "follow-pointer" "$match_canister_plugin_path"
+ test_case_gcc_warning "bad-cast" "$match_canister_plugin_path"
+-test_flexible_array_init "flexible-init" "$match_canister_plugin_path" 8 "tfm_var"
++test_flexible_array_init "flexible-init" "$match_canister_plugin_path" 64 "tfm_var"
+ test_case_functional "functional" "$match_canister_plugin_path"
+ test_case_functional "functional-flexible" "$match_canister_plugin_path"
+ exit_return_code
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/typedef-struct.c b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/typedef-struct.c
+new file mode 100644
+index 000000000..8dd14c6d2
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/typedef-struct.c
+@@ -0,0 +1,15 @@
++typedef long int __be64;
++typedef struct {
++        __be64 a, b;
++} be128;
++
++struct gf128mul_4k {
++        be128 t[256];
++};
++
++int main() {
++	be128 b;
++	struct gf128mul_4k k;
++
++	return 0;
++}
+\ No newline at end of file
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/typedef-struct.expected b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/typedef-struct.expected
+new file mode 100644
+index 000000000..2479c6e9d
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/typedef-struct.expected
+@@ -0,0 +1,5 @@
++struct gf128mul_4k {
++	be128                      t[256];               /*     0  4096 */
++
++	/* size: 4096, cachelines: 64, members: 1 */
++};
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/types.h b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/types.h
+new file mode 100644
+index 000000000..2cabc9b6d
+--- /dev/null
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/match_canister/types.h
+@@ -0,0 +1,16 @@
++#ifndef DEF_U32
++#define DEF_U32
++typedef int u32;
++#endif
++
++typedef char u8;
++
++typedef struct {
++	int counter;
++} atomic_t;
++
++typedef struct refcount_struct {
++	atomic_t refs;
++} refcount_t;
++
++
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/self_tests/self-test-lib.sh b/scripts/gcc-plugins/fips_canister_plugins/self_tests/self-test-lib.sh
+index e596a4287..f5285fef4 100755
+--- a/scripts/gcc-plugins/fips_canister_plugins/self_tests/self-test-lib.sh
++++ b/scripts/gcc-plugins/fips_canister_plugins/self_tests/self-test-lib.sh
+@@ -74,14 +74,16 @@ test_flexible_array_init() {
+                 return
+         fi
+
+-        base_size=$(grep -Eo "size: [0-9]+" "${test_name}.output")
++	# Two structures in pahole output for this test - we only want the size of
++	# the last one. If other structures added in the future, update this line.
++        base_size=$(grep -Eo "size: [0-9]+" "${test_name}.output" | tail -1)
+         base_size=$(cut -d " " -f 2 <<< "$base_size")
+
+         var_size=$(readelf -s "${test_name}.o" | grep "$struct_var_name" | awk '{print $3}')
+
+         cleanup_files "$test_name"
+
+-        if [[ $var_size -ne $((base_size + flex_array_size)) ]]; then
++        if [[ "$var_size" -ne $((base_size + flex_array_size)) ]]; then
+                 echo -e "\n********************** TEST FAIL: $test_name ************************"
+                 echo "Expected variable size for $struct_var_name: $((base_size + flex_array_size))"
+                 echo "Found variable size: $var_size instead"
+--
+2.40.4
+

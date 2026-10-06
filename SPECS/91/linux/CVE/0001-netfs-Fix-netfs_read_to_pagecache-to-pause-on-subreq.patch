@@ -1,0 +1,40 @@
+From 8a8c0cfdf4658fc5b295b7fc87be56e0d76741f4 Mon Sep 17 00:00:00 2001
+From: David Howells <dhowells@redhat.com>
+Date: Tue, 12 May 2026 13:33:41 +0100
+Subject: [PATCH] netfs: Fix netfs_read_to_pagecache() to pause on subreq
+ failure
+
+[ Upstream commit 8a8c0cfdf4658fc5b295b7fc87be56e0d76741f4 ]
+
+Fix netfs_read_to_pagecache() so that it pauses the generation of new
+subrequests if an already-issued subrequest fails.
+
+Note: In 6.12.y netfs_read_to_pagecache() does not use netfs_issue_read()
+or netfs_wait_for_paused_read() (introduced later). The equivalent fix is
+to add NETFS_RREQ_PAUSE/FAILED checks at the done: label before
+cond_resched(), using wait_on_bit() directly as the write path does in
+write_issue.c.
+
+Fixes: ee4cdf7ba857 ("netfs: Speed up buffered reading")
+Signed-off-by: David Howells <dhowells@redhat.com>
+Signed-off-by: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
+---
+ fs/netfs/buffered_read.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/fs/netfs/buffered_read.c b/fs/netfs/buffered_read.c
+--- a/fs/netfs/buffered_read.c
++++ b/fs/netfs/buffered_read.c
+@@ -325,6 +325,10 @@ static void netfs_read_to_pagecache(struct netfs_io_request *rreq)
+ 	done:
+ 		size -= slice;
+ 		start += slice;
++		if (test_bit(NETFS_RREQ_PAUSE, &rreq->flags))
++			wait_on_bit(&rreq->flags, NETFS_RREQ_PAUSE, TASK_UNINTERRUPTIBLE);
++		if (test_bit(NETFS_RREQ_FAILED, &rreq->flags))
++			break;
+ 		cond_resched();
+ 	} while (size > 0);
+
+--
+2.39.0

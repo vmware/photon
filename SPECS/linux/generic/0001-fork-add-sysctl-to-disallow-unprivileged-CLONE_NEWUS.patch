@@ -77,7 +77,7 @@ index 79e6cb1d5c48..956887cd69c2 100644
  /* Constants used for minimum and maximum */
  
  #ifdef CONFIG_PERF_EVENTS
-@@ -1761,6 +1764,15 @@ static struct ctl_table kern_table[] = {
+@@ -1739,6 +1742,15 @@ static struct ctl_table kern_table[] = {
  		.proc_handler	= sysrq_sysctl_handler,
  	},
  #endif
@@ -90,9 +90,9 @@ index 79e6cb1d5c48..956887cd69c2 100644
 +		.proc_handler	= proc_dointvec,
 +	},
 +#endif
- #ifdef CONFIG_PROC_SYSCTL
  	{
- 		.procname	= "cad_pid",
+ 		.procname	= "threads-max",
+ 		.data		= NULL,
 diff --git a/kernel/user_namespace.c b/kernel/user_namespace.c
 index 0b0b95418b16..69fb9d5fc3d5 100644
 --- a/kernel/user_namespace.c

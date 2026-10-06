@@ -118,10 +118,10 @@ index c999f9733326..112513044988 100644
  		bnxt_reuse_rx_data(rxr, cons, data);
 @@ -1103,13 +1109,13 @@ static struct sk_buff *bnxt_rx_multi_page_skb(struct bnxt *bp,
  	dma_addr -= bp->rx_dma_offset;
- 	dma_sync_single_for_cpu(&bp->pdev->dev, dma_addr, BNXT_RX_PAGE_SIZE,
+ 	dma_sync_single_for_cpu(&bp->pdev->dev, dma_addr, rxr->rx_page_size,
  				bp->rx_dir);
--	skb = napi_build_skb(data_ptr - bp->rx_offset, BNXT_RX_PAGE_SIZE);
-+	skb = napi_build_skb(frag_start, BNXT_RX_PAGE_SIZE);
+-	skb = napi_build_skb(data_ptr - bp->rx_offset, rxr->rx_page_size);
++	skb = napi_build_skb(frag_start, rxr->rx_page_size);
  	if (!skb) {
  		page_pool_recycle_direct(rxr->page_pool, page);
  		return NULL;

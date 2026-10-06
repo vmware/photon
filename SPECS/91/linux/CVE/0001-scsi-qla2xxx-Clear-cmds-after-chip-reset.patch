@@ -1,0 +1,110 @@
+From 1fe9a94eb0a133a13e870f1bf1c83f8ab392e8fc Mon Sep 17 00:00:00 2001
+From: Tony Battersby <tonyb@cybernetics.com>
+Date: Mon, 10 Nov 2025 11:07:37 -0500
+Subject: [PATCH] scsi: qla2xxx: Clear cmds after chip reset
+
+[ Upstream commit d46c69a087aa3d1513f7a78f871b80251ea0c1ae ]
+
+Commit aefed3e5548f ("scsi: qla2xxx: target: Fix offline port handling
+and host reset handling") caused two problems:
+
+1. Commands sent to FW, after chip reset got stuck and never freed as FW
+   is not going to respond to them anymore.
+
+2. BUG_ON(cmd->sg_mapped) in qlt_free_cmd().  Commit 26f9ce53817a
+   ("scsi: qla2xxx: Fix missed DMA unmap for aborted commands")
+   attempted to fix this, but introduced another bug under different
+   circumstances when two different CPUs were racing to call
+   qlt_unmap_sg() at the same time: BUG_ON(!valid_dma_direction(dir)) in
+   dma_unmap_sg_attrs().
+
+So revert "scsi: qla2xxx: Fix missed DMA unmap for aborted commands" and
+partially revert "scsi: qla2xxx: target: Fix offline port handling and
+host reset handling" at __qla2x00_abort_all_cmds.
+
+Fixes: aefed3e5548f ("scsi: qla2xxx: target: Fix offline port handling and host reset handling")
+Fixes: 26f9ce53817a ("scsi: qla2xxx: Fix missed DMA unmap for aborted commands")
+Co-developed-by: Dmitry Bogdanov <d.bogdanov@yadro.com>
+Signed-off-by: Dmitry Bogdanov <d.bogdanov@yadro.com>
+Signed-off-by: Tony Battersby <tonyb@cybernetics.com>
+Link: https://patch.msgid.link/0e7e5d26-e7a0-42d1-8235-40eeb27f3e98@cybernetics.com
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[ Applied patch to v6.12 by Gerrit Photon ]
+---
+ drivers/scsi/qla2xxx/qla_os.c     | 20 ++++++++++++++++++--
+ drivers/scsi/qla2xxx/qla_target.c |  5 +----
+ drivers/scsi/qla2xxx/qla_target.h |  1 +
+ 4 files changed, 21 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/scsi/qla2xxx/qla_os.c b/drivers/scsi/qla2xxx/qla_os.c
+index b8631698e..6f013b5db 100644
+--- a/drivers/scsi/qla2xxx/qla_os.c
++++ b/drivers/scsi/qla2xxx/qla_os.c
+@@ -1888,10 +1888,26 @@ __qla2x00_abort_all_cmds(struct qla_qpair *qp, int res)
+ 					continue;
+ 				}
+ 				cmd = (struct qla_tgt_cmd *)sp;
+-				cmd->aborted = 1;
++
++				if (cmd->sg_mapped)
++					qlt_unmap_sg(vha, cmd);
++
++				if (cmd->state == QLA_TGT_STATE_NEED_DATA) {
++					cmd->aborted = 1;
++					cmd->write_data_transferred = 0;
++					cmd->state = QLA_TGT_STATE_DATA_IN;
++					ha->tgt.tgt_ops->handle_data(cmd);
++				} else {
++					ha->tgt.tgt_ops->free_cmd(cmd);
++				}
+ 				break;
+ 			case TYPE_TGT_TMCMD:
+-				/* Skip task management functions. */
++				/*
++				 * Currently, only ABTS response gets on the
++				 * outstanding_cmds[]
++				 */
++				ha->tgt.tgt_ops->free_mcmd(
++					(struct qla_tgt_mgmt_cmd *) sp);
+ 				break;
+ 			default:
+ 				break;
+diff --git a/drivers/scsi/qla2xxx/qla_target.c b/drivers/scsi/qla2xxx/qla_target.c
+index 11eadb3bd..a1f913fb8 100644
+--- a/drivers/scsi/qla2xxx/qla_target.c
++++ b/drivers/scsi/qla2xxx/qla_target.c
+@@ -2487,7 +2487,7 @@ static int qlt_pci_map_calc_cnt(struct qla_tgt_prm *prm)
+ 	return -1;
+ }
+
+-static void qlt_unmap_sg(struct scsi_qla_host *vha, struct qla_tgt_cmd *cmd)
++void qlt_unmap_sg(struct scsi_qla_host *vha, struct qla_tgt_cmd *cmd)
+ {
+ 	struct qla_hw_data *ha;
+ 	struct qla_qpair *qpair;
+@@ -3817,9 +3817,6 @@ int qlt_abort_cmd(struct qla_tgt_cmd *cmd)
+
+ 	spin_lock_irqsave(&cmd->cmd_lock, flags);
+ 	if (cmd->aborted) {
+-		if (cmd->sg_mapped)
+-			qlt_unmap_sg(vha, cmd);
+-
+ 		spin_unlock_irqrestore(&cmd->cmd_lock, flags);
+ 		/*
+ 		 * It's normal to see 2 calls in this path:
+diff --git a/drivers/scsi/qla2xxx/qla_target.h b/drivers/scsi/qla2xxx/qla_target.h
+index 354fca2e7..3644ab140 100644
+--- a/drivers/scsi/qla2xxx/qla_target.h
++++ b/drivers/scsi/qla2xxx/qla_target.h
+@@ -1059,6 +1059,7 @@ extern int qlt_abort_cmd(struct qla_tgt_cmd *);
+ extern void qlt_xmit_tm_rsp(struct qla_tgt_mgmt_cmd *);
+ extern void qlt_free_mcmd(struct qla_tgt_mgmt_cmd *);
+ extern void qlt_free_cmd(struct qla_tgt_cmd *cmd);
++extern void qlt_unmap_sg(struct scsi_qla_host *vha, struct qla_tgt_cmd *cmd);
+ extern void qlt_async_event(uint16_t, struct scsi_qla_host *, uint16_t *);
+ extern void qlt_enable_vha(struct scsi_qla_host *);
+ extern void qlt_vport_create(struct scsi_qla_host *, struct qla_hw_data *);
+--
+2.53.0
+

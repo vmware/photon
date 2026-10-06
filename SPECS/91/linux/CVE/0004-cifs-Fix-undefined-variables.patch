@@ -1,0 +1,65 @@
+From 4b014e530ac15150007076e3ef8edf66ea056bf8 Mon Sep 17 00:00:00 2001
+From: David Howells <dhowells@redhat.com>
+Date: Mon, 18 May 2026 22:13:09 +0100
+Subject: [PATCH] cifs: Fix undefined variables
+
+[ Upstream commit 8cf8b5ae8e093132b0dce0a932af10c9ef077936 ]
+
+Fix a couple of undefined variables introduced by the patch to fix tearing
+on ->remote_i_size and ->zero_point.  For some reason, make W=1 with gcc
+doesn't give undefined variable warnings (but clang does).
+
+Fixes: 2c8f4742bb76 ("netfs: Fix potential for tearing in ->remote_i_size and ->zero_point")
+Reported-by: kernel test robot <lkp@intel.com>
+Closes: https://lore.kernel.org/oe-kbuild-all/202605031459.eX5UbO3K-lkp@intel.com/
+Closes: https://lore.kernel.org/oe-kbuild-all/202605021450.ca5QGqLH-lkp@intel.com/
+cc: Steve French <sfrench@samba.org>
+cc: Paulo Alcantara <pc@manguebit.org>
+cc: Matthew Wilcox <willy@infradead.org>
+cc: Christian Brauner <brauner@kernel.org>
+cc: linux-cifs@vger.kernel.org
+cc: netfs@lists.linux.dev
+cc: linux-fsdevel@vger.kernel.org
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+[Srinidhi: cherry picked from commit 8cf8b5ae8e09 for linux 6.12.y.
+  Mandatory follow-up fix for the CVE-2026-64160.
+  fourth and last patch to fix CVE-2026-64160]
+Signed-off-by: Srinidhi Rao <srinidhi.rao@broadcom.com>
+---
+ fs/smb/client/cifsfs.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/fs/smb/client/cifsfs.c b/fs/smb/client/cifsfs.c
+index f26b539e1725..8098cd850c9e 100644
+--- a/fs/smb/client/cifsfs.c
++++ b/fs/smb/client/cifsfs.c
+@@ -1286,7 +1286,7 @@ static loff_t cifs_remap_file_range(struct file *src_file, loff_t off,
+ 	struct cifsFileInfo *smb_file_src = src_file->private_data;
+ 	struct cifsFileInfo *smb_file_target = dst_file->private_data;
+ 	struct cifs_tcon *target_tcon, *src_tcon;
+-	unsigned long long i_size, old_size, new_size, zero_point;
++	unsigned long long i_size, new_size;
+ 	unsigned long long destend, fstart, fend;
+ 	unsigned int xid;
+ 	int rc;
+@@ -1354,7 +1354,7 @@ static loff_t cifs_remap_file_range(struct file *src_file, loff_t off,
+ 		goto unlock;
+ 
+ 	spin_lock(&target_inode->i_lock);
+-	if (fend > zero_point)
++	if (fend > target_cifsi->netfs._zero_point)
+ 		netfs_write_zero_point(target_inode, fend + 1);
+ 	i_size = target_inode->i_size;
+ 	spin_unlock(&target_inode->i_lock);
+@@ -1369,7 +1369,7 @@ static loff_t cifs_remap_file_range(struct file *src_file, loff_t off,
+ 	if (target_tcon->ses->server->ops->duplicate_extents) {
+ 		rc = target_tcon->ses->server->ops->duplicate_extents(xid,
+ 			smb_file_src, smb_file_target, off, len, destoff);
+-		if (rc == 0 && new_size > old_size) {
++		if (rc == 0 && new_size > i_size) {
+ 			truncate_setsize(target_inode, new_size);
+ 			fscache_resize_cookie(cifs_inode_cookie(target_inode),
+ 					      new_size);
+-- 
+2.53.0
+

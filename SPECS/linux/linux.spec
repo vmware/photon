@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} >= 92
 %global security_hardening none
 %global __cmake_in_source_build 0
 %global lkcm_version 6.12
@@ -79,8 +79,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.12.111
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        6.12.112
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -1028,6 +1028,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Oct 06 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.12.112-1
+- Update to version 6.12.112
 * Wed Sep 30 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.111-3
 - Fix jent mem free.
 * Mon Sep 28 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.12.111-2

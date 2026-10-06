@@ -1,0 +1,241 @@
+From 3ad5df2391040d1596ce888c042f99b7c1d7870a Mon Sep 17 00:00:00 2001
+From: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Date: Mon, 15 Dec 2025 14:34:06 +0100
+Subject: [PATCH] ACPI: PNP: Drop PNP0C01 and PNP0C02 from
+ acpi_pnp_device_ids[]
+
+[ Upstream commit 3ad5df2391040d1596ce888c042f99b7c1d7870a ]
+
+There is a long-standing problem with ACPI device enumeration that
+if the given device has a compatible ID which is one of the generic
+system resource device IDs (PNP0C01 and PNP0C02), it will be claimed
+by the PNP scan handler and it will not be represented as a platform
+device, so it cannot be handled by a platform driver.
+
+Drivers have been working around this issue by "manually" creating
+platform devices that they can bind to (see the Intel HID driver for
+one example) or adding their device IDs to acpi_nonpnp_device_ids[].
+None of the above is particularly clean though and the only reason why
+the PNP0C01 and PNP0C02 device IDs are present in acpi_pnp_device_ids[]
+is to allow the legacy PNP system driver to bind to those devices and
+reserve their resources so they are not used going forward.
+
+Obviously, to address this problem PNP0C01 and PNP0C02 need to be
+dropped from acpi_pnp_device_ids[], but doing so without making any
+other changes would be problematic because the ACPI core would then
+create platform devices for the generic system resource device objects
+and that would not work on all systems for two reasons.  First, the
+PNP system driver explicitly avoids reserving I/O resources below the
+"standard PC hardware" boundary, 0x100, to avoid conflicts in that range
+(one possible case when this may happen is when the CMOS RTC driver is
+involved), but the platform device creation code does not do that.
+Second, there may be resource conflicts between the "system" devices and
+the other devices in the system, possibly including conflicts with PCI
+BARs.  Registering the PNP system driver via fs_initcall() helps to
+manage those conflicts, even though it does not make them go away.
+Resource conflicts during the registration of "motherboard resources"
+that occur after PCI has claimed BARs are harmless as a rule and do
+not need to be addressed in any specific way.
+
+To overcome the issues mentioned above, use the observation that it
+is not actually necessary to create any device objects in addition
+to struct acpi_device ones in order to reserve the "system" device
+resources because that can be done directly in the ACPI device
+enumeration code.
+
+Namely, modify acpi_default_enumeration() to add the given ACPI device
+object to a special "system devices" list if its _HID is either PNP0C01
+or PNP0C02 without creating a platform device for it.  Next, add a new
+special acpi_scan_claim_resources() function that will be run via
+fs_initcall() and will walk that list and reserve resources for each
+device in it along the lines of what the PNP system driver does.
+
+Having made the above changes, drop PNP0C01 and PNP0C02 from
+acpi_pnp_device_ids[] which will allow platform devices to be created
+for ACPI device objects whose _CID lists contain PNP0C01 or PNP0C02,
+but the _HID is not in acpi_pnp_device_ids[].
+
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Reviewed-by: Mario Limonciello (AMD) <superm1@kernel.org>
+[ rjw: Drop a leftover comment and add a new one elsewhere ]
+Link: https://patch.msgid.link/9550709.CDJkKcVGEf@rafael.j.wysocki
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+
+[Bo: Backported to v6.12]
+Signed-off-by: Bo Gan <bo.gan@broadcom.com> 
+---
+ drivers/acpi/acpi_pnp.c |   3 -
+ drivers/acpi/scan.c     | 120 ++++++++++++++++++++++++++++++++++++++--
+ 2 files changed, 116 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/acpi/acpi_pnp.c b/drivers/acpi/acpi_pnp.c
+index 4ad88187dc7a0..17b2219a361e7 100644
+--- a/drivers/acpi/acpi_pnp.c
++++ b/drivers/acpi/acpi_pnp.c
+@@ -125,9 +125,6 @@ static const struct acpi_device_id acpi_pnp_device_ids[] = {
+ 	{"PNP0401"},		/* ECP Printer Port */
+ 	/* apple-gmux */
+ 	{"APP000B"},
+-	/* system */
+-	{"PNP0c02"},		/* General ID for reserving resources */
+-	{"PNP0c01"},		/* memory controller */
+ 	/* rtc_cmos */
+ 	{"PNP0b00"},
+ 	{"PNP0b01"},
+diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
+index 416d87f9bd107..8a895d377e213 100644
+--- a/drivers/acpi/scan.c
++++ b/drivers/acpi/scan.c
+@@ -42,6 +42,7 @@ static LIST_HEAD(acpi_scan_handlers_list);
+ DEFINE_MUTEX(acpi_device_lock);
+ LIST_HEAD(acpi_wakeup_device_list);
+ static DEFINE_MUTEX(acpi_hp_context_lock);
++static LIST_HEAD(acpi_scan_system_dev_list);
+ 
+ /*
+  * The UART device described by the SPCR table is the only object which needs
+@@ -2203,19 +2204,48 @@ static acpi_status acpi_bus_check_add_2(acpi_handle handle, u32 lvl_not_used,
+ 	return acpi_bus_check_add(handle, false, (struct acpi_device **)ret_p);
+ }
+ 
++struct acpi_scan_system_dev {
++	struct list_head node;
++	struct acpi_device *adev;
++};
++
++static const char * const acpi_system_dev_ids[] = {
++	"PNP0C01", /* Memory controller */
++	"PNP0C02", /* Motherboard resource */
++	NULL
++};
++
+ static void acpi_default_enumeration(struct acpi_device *device)
+ {
+ 	/*
+ 	 * Do not enumerate devices with enumeration_by_parent flag set as
+ 	 * they will be enumerated by their respective parents.
+ 	 */
+-	if (!device->flags.enumeration_by_parent) {
+-		acpi_create_platform_device(device, NULL);
+-		acpi_device_set_enumerated(device);
+-	} else {
++	if (device->flags.enumeration_by_parent) {
+ 		blocking_notifier_call_chain(&acpi_reconfig_chain,
+ 					     ACPI_RECONFIG_DEVICE_ADD, device);
++		return;
++	}
++	if (match_string(acpi_system_dev_ids, -1, acpi_device_hid(device)) >= 0) {
++		struct acpi_scan_system_dev *sd;
++
++		/*
++		 * This is a generic system device, so there is no need to
++		 * create a platform device for it, but its resources need to be
++		 * reserved.  However, that needs to be done after all of the
++		 * other device objects have been processed and PCI has claimed
++		 * BARs in case there are resource conflicts.
++		 */
++		sd = kmalloc(sizeof(*sd), GFP_KERNEL);
++		if (sd) {
++			sd->adev = device;
++			list_add_tail(&sd->node, &acpi_scan_system_dev_list);
++		}
++	} else {
++		/* For a regular device object, create a platform device. */
++		acpi_create_platform_device(device, NULL);
+ 	}
++	acpi_device_set_enumerated(device);
+ }
+ 
+ static const struct acpi_device_id generic_device_ids[] = {
+@@ -2571,6 +2601,88 @@ static void acpi_scan_postponed(void)
+ 	mutex_unlock(&acpi_dep_list_lock);
+ }
+ 
++static void acpi_scan_claim_resources(struct acpi_device *adev)
++{
++	struct list_head resource_list = LIST_HEAD_INIT(resource_list);
++	struct resource_entry *rentry;
++	unsigned int count = 0;
++	const char *regionid;
++
++	if (acpi_dev_get_resources(adev, &resource_list, NULL, NULL) <= 0)
++		return;
++
++	regionid = kstrdup(dev_name(&adev->dev), GFP_KERNEL);
++	if (!regionid)
++		goto exit;
++
++	list_for_each_entry(rentry, &resource_list, node) {
++		struct resource *res = rentry->res;
++		struct resource *r;
++
++		/* Skip disabled and invalid resources. */
++		if ((res->flags & IORESOURCE_DISABLED) || res->end < res->start)
++			continue;
++
++		if (res->flags & IORESOURCE_IO) {
++			/*
++			 * Follow the PNP system driver and on x86 skip I/O
++			 * resources that start below 0x100 (the "standard PC
++			 * hardware" boundary).
++			 */
++			if (IS_ENABLED(CONFIG_X86) && res->start < 0x100) {
++				dev_info(&adev->dev, "Skipped %pR\n", res);
++				continue;
++			}
++			r = request_region(res->start, resource_size(res), regionid);
++		} else if (res->flags & IORESOURCE_MEM) {
++			r = request_mem_region(res->start, resource_size(res), regionid);
++		} else {
++			continue;
++		}
++
++		if (r) {
++			r->flags &= ~IORESOURCE_BUSY;
++			dev_info(&adev->dev, "Reserved %pR\n", r);
++			count++;
++		} else {
++			/*
++			 * Failures at this point are usually harmless. PCI
++			 * quirks, for example, reserve resources they know
++			 * about too, so there may well be double reservations.
++			 */
++			dev_info(&adev->dev, "Could not reserve %pR\n", res);
++		}
++	}
++
++	if (!count)
++		kfree(regionid);
++
++exit:
++	acpi_dev_free_resource_list(&resource_list);
++}
++
++
++static int __init acpi_reserve_motherboard_resources(void)
++{
++	struct acpi_scan_system_dev *sd, *tmp;
++
++	guard(mutex)(&acpi_scan_lock);
++
++	list_for_each_entry_safe(sd, tmp, &acpi_scan_system_dev_list, node) {
++		acpi_scan_claim_resources(sd->adev);
++		list_del(&sd->node);
++		kfree(sd);
++	}
++
++	return 0;
++}
++
++/*
++ * Reserve motherboard resources after PCI claims BARs, but before PCI assigns
++ * resources for uninitialized PCI devices.
++ */
++fs_initcall(acpi_reserve_motherboard_resources);
++
+ /**
+  * acpi_bus_scan - Add ACPI device node objects in a given namespace scope.
+  * @handle: Root of the namespace scope to scan.
+-- 
+2.34.1
+

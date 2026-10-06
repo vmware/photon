@@ -1,0 +1,36 @@
+From e1c5b13e55850963ebd3877c2c7d57b0ab2a4bc6 Mon Sep 17 00:00:00 2001
+From: Bo Gan <ganb@vmware.com>
+Date: Wed, 2 Sep 2020 05:40:06 -0700
+Subject: [PATCH 79/82] x86/sev-es: Disable BIOS ACPI RSDP probing if SEV-ES is
+ enabled
+
+Signed-off-by: Bo Gan <ganb@vmware.com>
+---
+ arch/x86/boot/compressed/acpi.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/boot/compressed/acpi.c b/arch/x86/boot/compressed/acpi.c
+index 8bcbcee..b93e6b4 100644
+--- a/arch/x86/boot/compressed/acpi.c
++++ b/arch/x86/boot/compressed/acpi.c
+@@ -249,6 +249,8 @@ static acpi_physical_address bios_get_rsdp_addr(void)
+ 	return 0;
+ }
+ 
++extern unsigned int get_sev_encryption_bit(void);
++
+ /* Return RSDP address on success, otherwise 0. */
+ acpi_physical_address get_rsdp_addr(void)
+ {
+@@ -267,7 +269,7 @@ acpi_physical_address get_rsdp_addr(void)
+ 	if (!pa)
+ 		pa = efi_get_rsdp_addr();
+ 
+-	if (!pa)
++	if (!pa && !get_sev_encryption_bit())
+ 		pa = bios_get_rsdp_addr();
+ 
+ 	return pa;
+-- 
+2.7.4
+

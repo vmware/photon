@@ -1,0 +1,106 @@
+# CVE patches shared across all Linux kernel flavours
+# Patch range reserved: 3000–3999
+# DO NOT add non-CVE patches to this file.
+
+# Fix CVE-2017-1000252
+Patch3000: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
+
+# Fix CVE-2026-43083
+Patch3001: 0001-net-ioam6-fix-OOB-and-missing-lock.patch
+
+# Fix CVE-2025-68359
+Patch3002: 0001-btrfs-fix-double-free-of-qgroup-record-after-failure.patch
+
+# Fix CVE-2026-43101
+Patch3004: 0002-ipv6-ioam-fix-potential-NULL-dereferences-in-__ioam6.patch
+# Fixes CVE-2026-31589, CVE-2026-43414, CVE-2026-43465, CVE-2026-53224, CVE-2026-53246, CVE-2026-53260
+Patch3005: 0001-mm-call-free_folio-directly-in-folio_.patch
+Patch3006: 0001-net-mlx5e-RX-Fix-XDP-multi-buf-frag-c.patch
+Patch3007: 0001-scsi-qla2xxx-Completely-fix-fcport-do.patch
+Patch3008: 0001-sctp-validate-cached-peer-INIT-chunk-length-in-COOKI.patch
+Patch3010: 0002-sctp-validate-embedded-INIT-chunk-and.patch
+Patch3011: 0003-sctp-add-INIT-verification-after-cookie-unpacking.patch
+# Fixes CVE-2025-40074, CVE-2025-68353, CVE-2026-23208, CVE-2026-43009, CVE-2026-43485
+Patch3014: 0001-ALSA-usb-audio-Prevent-excessive-number-of-frames.patch
+Patch3015: 0001-bpf-Fix-incorrect-pruning-due-to-atomic-fetch-precis.patch
+Patch3017: 0001-net-vxlan-prevent-NULL-deref-in-vxlan_xmit_one.patch
+Patch3018: 0001-nouveau-gsp-drop-WARN_ON-in-ACPI-probes.patch
+Patch3019: 0002-ALSA-usb-audio-Use-the-right-limit-for-PCM-OOB-check.patch
+# Fixes CVE-2025-40158, CVE-2025-68745, CVE-2026-63872, CVE-2026-64076, CVE-2026-64077
+Patch3020: 0001-esp-fix-page-frag-reference-leak-on-skb_to_sgvec-failure.patch
+Patch3021: 0001-ipv6-use-RCU-in-ip6_output.patch
+Patch3022: 0001-netfilter-bridge-eb_tables-close-module-init-race.patch
+Patch3023: 0001-netfilter-ebtables-move-to-two-stage-removal-scheme.patch
+Patch3024: 0001-scsi-qla2xxx-Clear-cmds-after-chip-reset.patch
+# Fixes CVE-2026-52988, CVE-2026-52991, CVE-2026-53089, CVE-2026-53091
+Patch3026: 0001-cgroup-psi-Set-of-priv-to-NULL-upon-file-release.patch
+Patch3027: 0001-rculist-add-list_splice_rcu-for-private-lists.patch
+Patch3028: 0002-netfilter-nf_tables-join-hook-list-via-splice_list_r.patch
+Patch3029: 0002-sched-psi-fix-race-between-file-release-and-pressure.patch
+Patch3030: 0001-net_sched-make-room-for-struct-qdisc_skb_cb-pkt_segs.patch
+Patch3031: 0002-net-init-shinfo-gso_segs-from-qdisc_pkt_len_init.patch
+Patch3032: 0003-net_sched-initialize-qdisc_skb_cb-skb-pkt_segs-in-qd.patch
+Patch3033: 0004-net-use-qdisc_pkt_len_segs_init-in-sch_handle_ingres.patch
+Patch3034: 0005-net-dropreason-add-SKB_DROP_REASON_RECURSION_LIMIT.patch
+Patch3035: 0006-net-plumb-drop-reasons-to-__dev_queue_xmit.patch
+Patch3036: 0007-net-qdisc_pkt_len_segs_init-cleanup.patch
+Patch3037: 0008-net-pull-headers-in-qdisc_pkt_len_segs_init.patch
+Patch3038: 0009-xfrm-Do-not-clobber-inner-headers-when-already-set.patch
+# Fixes CVE-2026-63979, CVE-2026-64024, CVE-2026-64066, CVE-2026-64067, CVE-2026-64068
+Patch3039: 0001-net-handshake-hand-off-the-pinned-file-reference-to-.patch
+Patch3040: 0001-netfs-Fix-missing-barriers-when-accessing-stream-sub.patch
+Patch3041: 0001-netfs-Fix-missing-locking-around-retry-adding-new-su.patch
+Patch3042: 0001-netfs-Fix-netfs_read_to_pagecache-to-pause-on-subreq.patch
+Patch3043: 0001-tcp-fix-stale-per-CPU-tcp_tw_isn-leak-enabling-ISN-p.patch
+# Fixes CVE-2026-72288, CVE-2026-72355
+Patch3045: 0001-KVM-arm64-vgic-Handle-race-between-interrupt-affini.patch
+Patch3046: 0001-netfs-Fix-barriering-when-walking-subrequest-list.patch
+# Fixes CVE-2026-72413, CVE-2026-72423
+Patch3047: 0001-bpf-Guard-conntrack-opts-error-writes.patch
+# Fixes CVE-2026-72366, CVE-2026-72463, CVE-2026-72493, CVE-2026-74268, CVE-2026-74269
+Patch3049: 0001-bnxt-fix-head-underflow-on-XDP-head-grow.patch
+Patch3050: 0001-net-serialize-netif_running-check-in-enqueue_to_backlog.patch
+Patch3051: 0001-netfs-Fix-netfs_create_write_req-to-handle-async-cac.patch
+Patch3053: 0001-xfrm-Fix-dev-use-after-free-in-xfrm-async-resumption.patch
+# Fixes CVE-2026-64160
+Patch3054: 0001-cifs-Fix-handling-of-a-beyond-EOF-DIO-unbuffered-rea.patch
+Patch3055: 0002-filemap-Add-folio_next_pos.patch
+Patch3056: 0003-netfs-Fix-potential-for-tearing-in-remote_i_size-and.patch
+Patch3057: 0004-cifs-Fix-undefined-variables.patch
+# Fixes CVE-2026-63853, CVE-2026-63879, CVE-2026-64036, CVE-2026-64058, CVE-2026-64078
+Patch3058: 0001-cgroup-rstat-validate-cpu-before-css_rstat_cpu-acce.patch
+Patch3059: 0001-drm-amdgpu-fix-amdgpu_hmm_range_get_pages.patch
+Patch3060: 0001-drm-amdgpu-vcn-set-no_user_fence-for-VCN-v4.0-enc-r.patch
+Patch3061: 0001-netfilter-x_tables-add-and-use-xt_unregister_table_p.patch
+Patch3063: 0002-netfilter-x_tables-add-and-use-xtables_unregister_ta.patch
+# Fixes CVE-2026-74571, CVE-2026-80580
+Patch3064: 0001-btrfs-skip-global-block-reserve-accounting-for-res.patch
+Patch3065: 0001-fbdev-bound-mode-sysfs-output-to-the-sysfs-buffer.patch
+# Fixes CVE-2026-68399, CVE-2026-68404, CVE-2026-68409, CVE-2026-68441, CVE-2026-68447, CVE-2026-74571
+Patch3066: 0001-CVE-2026-68399-bpf-Fix-UAF-in-sock-clone-early-bailo.patch
+Patch3067: 0001-CVE-2026-68404-wifi-cfg80211-use-wiphy-work-for-sock.patch
+Patch3068: 0001-CVE-2026-68409-wifi-mac80211-defer-link-RX-stats-per.patch
+Patch3069: 0001-CVE-2026-68441-net-sched-Handle-TC_ACT_REDIRECT-from.patch
+Patch3070: 0001-CVE-2026-68447-drm-amdkfd-clamp-v9-CRIU-control-stac.patch
+# Fixes CVE-2026-74605, CVE-2026-74611
+Patch3071: 0001-eventfs-Use-children-field-for-rcu-head-and-add-memo.patch
+Patch3072: 0002-tls-rx-restore-msg_iter-before-TLS-1.3-optimistic-re.patch
+# Fixes CVE-2026-80785
+Patch3073: 0001-fbdev-Wrap-user-invoked-calls-to-fb_set_var-in-helpe.patch
+Patch3074: 0002-fbdev-serialize-mode-sysfs-access-with-lock_fb_info.patch
+# Fixes CVE-2026-43464, CVE-2026-45932, CVE-2026-46324, CVE-2026-52956
+Patch3075: 0001-bpf-Fix-tcx-netkit-detach-permissions-when-prog-fd-i.patch
+Patch3076: 0001-libceph-Fix-potential-out-of-bounds-access-in-__ceph.patch
+Patch3077: 0001-net-mlx5e-RX-Fix-XDP-multi-buf-frag-counting-for-leg.patch
+Patch3078: 0001-netfilter-nf_tables-use-list_del_rcu-for-netlink-hoo.patch
+# Fixes CVE-2026-64388, CVE-2026-72031, CVE-2026-72341, CVE-2026-72439
+Patch3080: 0001-ata-libata-core-Add-NOLPM-quirk-for-PNY-CS900-1TB-SS.patch
+Patch3081: 0001-md-raid10-fix-writes_pending-leak-on-write-request-f.patch
+Patch3082: 0001-net-mlx5e-Fix-publication-race-for-priv-channel_stat.patch
+Patch3083: 0001-smb-client-fix-chown-chgrp-with-SMB3-POSIX-Extension.patch
+# Fixes CVE-2026-68426
+Patch3084: 0001-xfrm-fix-stale-skb-prev-after-async-crypto-steals-a-.patch
+# Fixes CVE-2026-46325, CVE-2026-68242, CVE-2026-68258
+Patch3085: 0001-RDMA-rxe-Fix-iova-to-va-conversion-for-MR-page-sizes.patch
+Patch3086: 0001-drm-amdkfd-Check-bounds-on-CRIU-restore-queue-type-a.patch
+Patch3087: 0001-drm-i915-gt-Fix-NULL-deref-on-sched_engine-alloc-fai.patch

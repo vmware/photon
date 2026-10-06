@@ -1,0 +1,139 @@
+From 8817005efbdfdf5d4e4814cb5dc52b53d12917d7 Mon Sep 17 00:00:00 2001
+From: Qing Ming <a0yami@mailbox.org>
+Date: Sat, 16 May 2026 15:08:49 +0800
+Subject: [PATCH] cgroup/rstat: validate cpu before css_rstat_cpu() access
+
+commit 8817005efbdfdf5d4e4814cb5dc52b53d12917d7 upstream.
+
+css_rstat_updated() is exposed as a BPF kfunc and accepts a
+caller-provided cpu argument. The function uses cpu for per-cpu rstat
+lookups without checking whether it refers to a valid possible CPU.
+
+A BPF iter/cgroup program with CAP_BPF and CAP_PERFMON can pass an
+invalid cpu value. On an unfixed UBSCAN_BOUNDS test kernel, cpu ==
+0x7fffffff triggers:
+
+  UBSAN: array-index-out-of-bounds in kernel/cgroup/rstat.c:31:9
+  index 2147483647 is out of range for type 'long unsigned int [64]'
+  Call Trace:
+    css_rstat_updated
+    bpf_iter_run_prog
+    cgroup_iter_seq_show
+    bpf_seq_read
+
+Add cpu validation to the BPF-facing css_rstat_updated() kfunc and
+move the common implementation to __css_rstat_updated() for in-kernel
+callers.
+
+Fixes: a319185be9f5 ("cgroup: bpf: enable bpf programs to integrate with rstat")
+Signed-off-by: Qing Ming <a0yami@mailbox.org>
+Signed-off-by: Tejun Heo <tj@kernel.org>
+[ Brennan: 6.12.y predates the css-based rstat rework (a97915559f5c), so
+  the split below is cgroup_rstat_updated()/__cgroup_rstat_updated()
+  rather than css_rstat_updated()/__css_rstat_updated() -- same
+  struct-cgroup-taking kfunc that's been there since a319185be9f5, just
+  not yet renamed to the css-based signature ]
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ block/blk-cgroup.c     |  2 +-
+ include/linux/cgroup.h |  1 +
+ kernel/cgroup/rstat.c  | 19 ++++++++++++++++---
+ mm/memcontrol.c        |  2 +-
+ 4 files changed, 19 insertions(+), 5 deletions(-)
+
+diff --git a/block/blk-cgroup.c b/block/blk-cgroup.c
+index d95104f..727a220 100644
+--- a/block/blk-cgroup.c
++++ b/block/blk-cgroup.c
+@@ -2190,7 +2190,7 @@ void blk_cgroup_bio_start(struct bio *bio)
+ 	}
+ 
+ 	u64_stats_update_end_irqrestore(&bis->sync, flags);
+-	cgroup_rstat_updated(blkcg->css.cgroup, cpu);
++	__cgroup_rstat_updated(blkcg->css.cgroup, cpu);
+ 	put_cpu();
+ }
+ 
+diff --git a/include/linux/cgroup.h b/include/linux/cgroup.h
+index 2a510db..66a2835 100644
+--- a/include/linux/cgroup.h
++++ b/include/linux/cgroup.h
+@@ -688,6 +688,7 @@ static inline void cgroup_path_from_kernfs_id(u64 id, char *buf, size_t buflen)
+ /*
+  * cgroup scalable recursive statistics.
+  */
++void __cgroup_rstat_updated(struct cgroup *cgrp, int cpu);
+ void cgroup_rstat_updated(struct cgroup *cgrp, int cpu);
+ void cgroup_rstat_flush(struct cgroup *cgrp);
+ void cgroup_rstat_flush_hold(struct cgroup *cgrp);
+diff --git a/kernel/cgroup/rstat.c b/kernel/cgroup/rstat.c
+index c4ce2f5..d8bdebd 100644
+--- a/kernel/cgroup/rstat.c
++++ b/kernel/cgroup/rstat.c
+@@ -1,6 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0-only
+ #include "cgroup-internal.h"
+ 
++#include <linux/cpumask.h>
+ #include <linux/sched/cputime.h>
+ 
+ #include <linux/bpf.h>
+@@ -74,7 +75,7 @@ void _cgroup_rstat_cpu_unlock(raw_spinlock_t *cpu_lock, int cpu,
+ }
+ 
+ /**
+- * cgroup_rstat_updated - keep track of updated rstat_cpu
++ * __cgroup_rstat_updated - keep track of updated rstat_cpu
+  * @cgrp: target cgroup
+  * @cpu: cpu on which rstat_cpu was updated
+  *
+@@ -82,7 +83,7 @@ void _cgroup_rstat_cpu_unlock(raw_spinlock_t *cpu_lock, int cpu,
+  * rstat_cpu->updated_children list.  See the comment on top of
+  * cgroup_rstat_cpu definition for details.
+  */
+-__bpf_kfunc void cgroup_rstat_updated(struct cgroup *cgrp, int cpu)
++void __cgroup_rstat_updated(struct cgroup *cgrp, int cpu)
+ {
+ 	raw_spinlock_t *cpu_lock = per_cpu_ptr(&cgroup_rstat_cpu_lock, cpu);
+ 	unsigned long flags;
+@@ -129,6 +130,18 @@ __bpf_kfunc void cgroup_rstat_updated(struct cgroup *cgrp, int cpu)
+ 	_cgroup_rstat_cpu_unlock(cpu_lock, cpu, cgrp, flags, true);
+ }
+ 
++/*
++ * BPF-facing wrapper for __cgroup_rstat_updated(). Validate the
++ * caller-provided CPU before passing it to the internal rstat updater.
++ */
++__bpf_kfunc void cgroup_rstat_updated(struct cgroup *cgrp, int cpu)
++{
++	if (unlikely(cpu < 0 || cpu >= nr_cpu_ids || !cpu_possible(cpu)))
++		return;
++
++	__cgroup_rstat_updated(cgrp, cpu);
++}
++
+ /**
+  * cgroup_rstat_push_children - push children cgroups into the given list
+  * @head: current head of the list (= subtree root)
+@@ -511,7 +524,7 @@ static void cgroup_base_stat_cputime_account_end(struct cgroup *cgrp,
+ 						 unsigned long flags)
+ {
+ 	u64_stats_update_end_irqrestore(&rstatc->bsync, flags);
+-	cgroup_rstat_updated(cgrp, smp_processor_id());
++	__cgroup_rstat_updated(cgrp, smp_processor_id());
+ 	put_cpu_ptr(rstatc);
+ }
+ 
+diff --git a/mm/memcontrol.c b/mm/memcontrol.c
+index dcd2d0e..d278e28 100644
+--- a/mm/memcontrol.c
++++ b/mm/memcontrol.c
+@@ -569,7 +569,7 @@ static inline void memcg_rstat_updated(struct mem_cgroup *memcg, int val)
+ 	if (!val)
+ 		return;
+ 
+-	cgroup_rstat_updated(memcg->css.cgroup, cpu);
++	__cgroup_rstat_updated(memcg->css.cgroup, cpu);
+ 	statc = this_cpu_ptr(memcg->vmstats_percpu);
+ 	for (; statc; statc = statc->parent) {
+ 		stats_updates = READ_ONCE(statc->stats_updates) + abs(val);

@@ -40,6 +40,7 @@ Signed-off-by: Christian Brauner <brauner@kernel.org>
  Third patch out of 4 patches to fix CVE-2026-64160]
 Signed-off-by: Srinidhi Rao <srinidhi.rao@broadcom.com>
 ---
+ fs/9p/vfs_addr.c          |   5 +-
  fs/9p/v9fs_vfs.h          |  13 --
  fs/9p/vfs_inode.c         |   6 +-
  fs/9p/vfs_inode_dotl.c    |  12 +-
@@ -60,8 +61,31 @@ Signed-off-by: Srinidhi Rao <srinidhi.rao@broadcom.com>
  fs/smb/client/smb2ops.c   |  42 +++---
  fs/smb/client/smb2pdu.c   |   3 +-
  include/linux/netfs.h     | 293 ++++++++++++++++++++++++++++++++++++--
- 20 files changed, 453 insertions(+), 113 deletions(-)
+ 21 files changed, 455 insertions(+), 116 deletions(-)
 
+diff --git a/fs/9p/vfs_addr.c b/fs/9p/vfs_addr.c
+index 5bf1e5caa..75f14e7a9 100644
+--- a/fs/9p/vfs_addr.c
++++ b/fs/9p/vfs_addr.c
+@@ -55,7 +55,6 @@ static void v9fs_issue_write(struct netfs_io_subrequest *subreq)
+ {
+ 	struct p9_fid *fid = subreq->rreq->netfs_priv;
+ 	struct inode *inode = subreq->rreq->inode;
+-	struct netfs_inode *ictx = netfs_inode(inode);
+ 	int err, len;
+ 
+ 	len = p9_client_write(fid, subreq->start, &subreq->io_iter, &err);
+@@ -65,8 +64,8 @@ static void v9fs_issue_write(struct netfs_io_subrequest *subreq)
+ 		spin_lock(&inode->i_lock);
+ 		if (end > i_size_read(inode))
+ 			i_size_write(inode, end);
+-		if (end > ictx->remote_i_size)
+-			ictx->remote_i_size = end;
++		if (end > netfs_read_remote_i_size(inode))
++			netfs_write_remote_i_size(inode, end);
+ 		spin_unlock(&inode->i_lock);
+ 	}
+ 	netfs_write_subrequest_terminated(subreq, len ?: err, false);
 diff --git a/fs/9p/v9fs_vfs.h b/fs/9p/v9fs_vfs.h
 index d3aefbec4de6..34c115d7c250 100644
 --- a/fs/9p/v9fs_vfs.h

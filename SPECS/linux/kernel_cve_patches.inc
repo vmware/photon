@@ -34,8 +34,6 @@ Patch3023: 0001-netfilter-ebtables-move-to-two-stage-removal-scheme.patch
 Patch3024: 0001-scsi-qla2xxx-Clear-cmds-after-chip-reset.patch
 # Fixes CVE-2026-52988, CVE-2026-52991, CVE-2026-53089, CVE-2026-53091
 Patch3026: 0001-cgroup-psi-Set-of-priv-to-NULL-upon-file-release.patch
-Patch3027: 0001-rculist-add-list_splice_rcu-for-private-lists.patch
-Patch3028: 0002-netfilter-nf_tables-join-hook-list-via-splice_list_r.patch
 Patch3029: 0002-sched-psi-fix-race-between-file-release-and-pressure.patch
 Patch3030: 0001-net_sched-make-room-for-struct-qdisc_skb_cb-pkt_segs.patch
 Patch3031: 0002-net-init-shinfo-gso_segs-from-qdisc_pkt_len_init.patch
@@ -61,7 +59,6 @@ Patch3047: 0001-bpf-Guard-conntrack-opts-error-writes.patch
 Patch3049: 0001-bnxt-fix-head-underflow-on-XDP-head-grow.patch
 Patch3050: 0001-net-serialize-netif_running-check-in-enqueue_to_backlog.patch
 Patch3051: 0001-netfs-Fix-netfs_create_write_req-to-handle-async-cac.patch
-Patch3053: 0001-xfrm-Fix-dev-use-after-free-in-xfrm-async-resumption.patch
 # Fixes CVE-2026-64160
 Patch3054: 0001-cifs-Fix-handling-of-a-beyond-EOF-DIO-unbuffered-rea.patch
 Patch3055: 0002-filemap-Add-folio_next_pos.patch

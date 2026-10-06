@@ -1,0 +1,52 @@
+From c2e27bf916be26d20fc453ee6a94bdab54617f9a Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <ajay.kaher@broadcom.com>
+Date: Wed, 15 Jul 2026 09:34:57 +0000
+Subject: [PATCH] CVE-2026-43414: scsi: qla2xxx: Completely fix fcport double
+ free
+
+From: Vladimir Riabchun <ferr.lambarginio@gmail.com>
+
+commit c0b7da13a04bd70ef6070bfb9ea85f582294560a upstream.
+
+In qla24xx_els_dcmd_iocb() sp->free is set to qla2x00_els_dcmd_sp_free().
+When an error happens, this function is called by qla2x00_sp_release(),
+when kref_put() releases the first and the last reference.
+
+qla2x00_els_dcmd_sp_free() frees fcport by calling qla2x00_free_fcport().
+Doing it one more time after kref_put() is a bad idea.
+
+Fixes: 82f522ae0d97 ("scsi: qla2xxx: Fix double free of fcport")
+Fixes: 4895009c4bb7 ("scsi: qla2xxx: Prevent command send on chip reset")
+Signed-off-by: Vladimir Riabchun <ferr.lambarginio@gmail.com>
+Signed-off-by: Farhat Abbas <fabbas@cloudlinux.com>
+Link: https://patch.msgid.link/aYsDln9NFQQsPDgg@vova-pc
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+[ Ajay: Modified to apply on v6.12 ]
+Signed-off-by: Ajay Kaher <ajay.kaher@broadcom.com>
+---
+ drivers/scsi/qla2xxx/qla_iocb.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/drivers/scsi/qla2xxx/qla_iocb.c b/drivers/scsi/qla2xxx/qla_iocb.c
+index 0b41e8a06..faec66bd1 100644
+--- a/drivers/scsi/qla2xxx/qla_iocb.c
++++ b/drivers/scsi/qla2xxx/qla_iocb.c
+@@ -2751,7 +2751,6 @@ qla24xx_els_dcmd_iocb(scsi_qla_host_t *vha, int els_opcode,
+ 	if (!elsio->u.els_logo.els_logo_pyld) {
+ 		/* ref: INIT */
+ 		kref_put(&sp->cmd_kref, qla2x00_sp_release);
+-		qla2x00_free_fcport(fcport);
+ 		return QLA_FUNCTION_FAILED;
+ 	}
+ 
+@@ -2776,7 +2775,6 @@ qla24xx_els_dcmd_iocb(scsi_qla_host_t *vha, int els_opcode,
+ 	if (rval != QLA_SUCCESS) {
+ 		/* ref: INIT */
+ 		kref_put(&sp->cmd_kref, qla2x00_sp_release);
+-		qla2x00_free_fcport(fcport);
+ 		return QLA_FUNCTION_FAILED;
+ 	}
+ 
+-- 
+2.53.0
+

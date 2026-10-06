@@ -1,0 +1,74 @@
+From 871c2e9dab80525fdac4426b5dc36f9549d6baa1 Mon Sep 17 00:00:00 2001
+From: Eric Dumazet <edumazet@google.com>
+Date: Tue, 16 Jun 2026 14:13:17 +0000
+Subject: [PATCH] net: serialize netif_running() check in enqueue_to_backlog()
+
+[ Upstream commit 46762cefe7f4e5bffc1eb467810a7bbb02e461d7 ]
+
+Syzbot reported a KASAN slab-use-after-free in fib_rules_lookup().
+
+The root cause is a race condition where packets can escape the backlog
+flushing during device unregistration (e.g., during netns exit).
+
+Commit e9e4dd3267d0 ("net: do not process device backlog during unregistration")
+introduced a lockless netif_running() check in enqueue_to_backlog() to
+prevent queuing packets to an unregistering device.
+
+However, this creates a TOCTOU race window.
+
+A lockless transmitter (like veth_xmit) can pass
+the check before dev_close() clears IFF_UP. If the transmitter is then
+delayed, flush_all_backlogs() can run and finish before the transmitter
+grabs the backlog lock and queues the packet. The packet then escapes
+the flush and triggers UAF later when processed.
+
+Fix this by moving the netif_running() check inside the backlog lock.
+This serializes the check with the flush work (which also grabs the lock).
+We then either queue the packet before the flush runs (so it gets flushed),
+or check netif_running() after the flush/close completes (so it gets dropped).
+
+Fixes: e9e4dd3267d0 ("net: do not process device backlog during unregistration")
+Reported-by: syzbot+965506b59a2de0b6905c@syzkaller.appspotmail.com
+Closes: https://lore.kernel.org/netdev/6a315824.b0403584.28d0ff.0000.GAE@google.com/T/#u
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Julian Anastasov <ja@ssi.bg>
+Reviewed-by: Kuniyuki Iwashima <kuniyu@google.com>
+
+[Ankit: Backported for v6.12.y. Re-set the drop reason to
+SKB_DROP_REASON_DEV_READY inside the moved, now-locked netif_running()
+check, since this tree always sets a default reason just above it.]
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ net/core/dev.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 8efe2ea92..28a44ff68 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -5015,10 +5015,6 @@ static int enqueue_to_backlog(struct sk_buff *skb, int cpu,
+ 	int max_backlog;
+ 	u32 tail;
+ 
+-	reason = SKB_DROP_REASON_DEV_READY;
+-	if (!netif_running(skb->dev))
+-		goto bad_dev;
+-
+ 	reason = SKB_DROP_REASON_CPU_BACKLOG;
+ 	sd = &per_cpu(softnet_data, cpu);
+ 
+@@ -5029,6 +5025,11 @@ static int enqueue_to_backlog(struct sk_buff *skb, int cpu,
+ 	backlog_lock_irq_save(sd, &flags);
+ 	qlen = skb_queue_len(&sd->input_pkt_queue);
+ 	if (qlen <= max_backlog && !skb_flow_limit(skb, qlen)) {
++		if (unlikely(!netif_running(skb->dev))) {
++			reason = SKB_DROP_REASON_DEV_READY;
++			backlog_unlock_irq_restore(sd, &flags);
++			goto bad_dev;
++		}
+ 		if (!qlen) {
+ 			/* Schedule NAPI for backlog device. We can use
+ 			 * non atomic operation as we own the queue lock.
+-- 
+2.53.0
+

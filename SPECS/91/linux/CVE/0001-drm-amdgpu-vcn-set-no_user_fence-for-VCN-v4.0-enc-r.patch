@@ -1,0 +1,36 @@
+From 51f694221047c84fa185be98210eb2c354ffb8c6 Mon Sep 17 00:00:00 2001
+From: Yinjie Yao <yinjie.yao@amd.com>
+Date: Mon, 27 Apr 2026 11:45:36 -0400
+Subject: [PATCH] drm/amdgpu/vcn: set no_user_fence for VCN v4.0 enc ring
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+commit 51f694221047c84fa185be98210eb2c354ffb8c6 upstream.
+
+VCN encoder and decoder rings do not support 64-bit user fence writes,
+reject CS submissions with user fences.
+
+Fixes: 8da1170a16e4 ("drm/amdgpu: add VCN4 ip block support")
+Reviewed-by: Christian König <christian.koenig@amd.com>
+Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Yinjie Yao <yinjie.yao@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+(cherry picked from commit fd852c048b46f9825e904a4f3f4538fe9d8827d9)
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ drivers/gpu/drm/amd/amdgpu/vcn_v4_0.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/gpu/drm/amd/amdgpu/vcn_v4_0.c b/drivers/gpu/drm/amd/amdgpu/vcn_v4_0.c
+index 5dec92691f73..bbdd017cbafb 100644
+--- a/drivers/gpu/drm/amd/amdgpu/vcn_v4_0.c
++++ b/drivers/gpu/drm/amd/amdgpu/vcn_v4_0.c
+@@ -1921,6 +1921,7 @@ static struct amdgpu_ring_funcs vcn_v4_0_unified_ring_vm_funcs = {
+ 	.type = AMDGPU_RING_TYPE_VCN_ENC,
+ 	.align_mask = 0x3f,
+ 	.nop = VCN_ENC_CMD_NO_OP,
++	.no_user_fence = true,
+ 	.extra_dw = sizeof(struct amdgpu_vcn_rb_metadata),
+ 	.get_rptr = vcn_v4_0_unified_ring_get_rptr,
+ 	.get_wptr = vcn_v4_0_unified_ring_get_wptr,
