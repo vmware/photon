@@ -2,8 +2,8 @@
 
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
-Version:        3.5.8
-Release:        2%{?dist}
+Version:        3.5.9
+Release:        1%{?dist}
 URL:            http://www.openssl.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -194,6 +194,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Tue Oct 06 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.5.9-1
+- Upgrade to v3.5.9
 * Wed Sep 23 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 3.5.8-2
 - Branch out openssl for Sub-release 93 due to fips-provider upgrade.
 * Tue Sep 01 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.5.8-1
