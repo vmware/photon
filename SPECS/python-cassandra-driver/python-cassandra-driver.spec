@@ -1,29 +1,31 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} >= 92
 
 %define srcname cassandra-driver
 
 Summary:        A modern, feature-rich and highly-tunable Python client library for Apache Cassandra (2.1+)
 Name:           python3-cassandra-driver
-Version:        3.25.0
-Release:        4%{?dist}
-Url:            https://github.com/datastax/python-driver#datastax-python-driver-for-apache-cassandra
+Version:        3.29.3
+Release:        1%{?dist}
+Url:            https://github.com/apache/cassandra-python-driver
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://github.com/datastax/python-driver/archive/%{srcname}-%{version}.tar.gz
+Source0: https://github.com/apache/cassandra-python-driver/archive/refs/tags/%{version}.tar.gz#/%{srcname}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
 
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
+BuildRequires: python3-build
+BuildRequires: python3-installer
+BuildRequires: python3-packaging
 BuildRequires: libev-devel
 
 Requires: libev
 Requires: python3
-Requires: python3-six
-Requires: python3-geomet
+Requires: python3-geomet >= 1.1.0
 
 %description
 A modern, feature-rich and highly-tunable Python client library for Apache Cassandra (2.1+)
@@ -31,20 +33,23 @@ using exclusively Cassandra's binary protocol and Cassandra Query Language v3. T
 supports Python 3.3, 3.4, 3.5, and 3.6.
 
 %prep
-%autosetup -p1 -n %{srcname}-%{version}
+%autosetup -p1 -n cassandra-python-driver-%{version}
 
 %build
-%{python3} setup.py build --no-cython
+export CASS_DRIVER_NO_CYTHON=1
+%py3_build_wheel
 
 %install
-%{python3} setup.py install \
-        --prefix=%{_prefix} --root=%{buildroot} --no-cython
+%py3_install_wheel
+%{py_byte_compile_and_ghost}
 
-%files
+%files -f %{py_ghost_filelist}
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+* Wed Oct 07 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.29.3-1
+- Upgrade to 3.29.3
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.25.0-4
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.25.0-3

@@ -1,7 +1,13 @@
 sources:
-- archive: geomet-0.3.0.tar.gz
-  archive_sha512sum: 85380ed30adc027c6a97fa3b6e95034a9452617d26c6fb18d6700d5d4069acfde976a094a1a3f6e7240b9357e69f5dca85fa1c81d78102fa8a49b3186ccb82ac
-  skip_validation: true
+- archive: geomet-1.1.0.tar.gz
+  archive_sha512sum: 68cc1c2296eb07b930202a70db2a988d57533fd183324a91c8d19505fa1dbb57dd7b48889821368cdd9f973f363f425426e5138bf985122048c7e5c6ba174692
+  archive_type: upstream
+  name: geomet-1.1.0
+  url: https://github.com/geomet/geomet/archive/refs/tags/1.1.0.tar.gz
+  repo_url: https://github.com/geomet/geomet
+  commit_id: 6ac73c312b52aca328db2e61d90c5e363b62639f
+  skip_list: []
+  missing: []
   spdx:
     package:
       detailed_description: 'Convert GeoJSON to WKT/WKB (Well-Known Text/Binary),

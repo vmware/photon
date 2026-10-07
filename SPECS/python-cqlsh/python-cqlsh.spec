@@ -1,28 +1,33 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} >= 92
 
 %define srcname cqlsh
 
 Summary:        A Python-based command-line client for running simple CQL commands on a Cassandra cluster.
 Name:           python3-cqlsh
-Version:        6.1.2
-Release:        4%{?dist}
+Version:        6.2.1
+Release:        1%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/cqlsh
 
-Source0: https://files.pythonhosted.org/packages/source/c/cqlsh/%{srcname}-%{version}.tar.gz
+Source0: https://github.com/jeffwidman/cqlsh/archive/refs/tags/%{version}.tar.gz#/%{srcname}-%{version}.tar.gz
+Patch0: 0001-pyproject-Drop-the-pure-sasl-dependency.patch
 
 Source1: license.txt
 %include %{SOURCE1}
 
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
+BuildRequires: python3-build
+BuildRequires: python3-installer
+BuildRequires: python3-packaging
+BuildRequires: python3-wheel
 
 Requires: python3
-Requires: python3-six
 Requires: cassandra
 Requires: python3-cassandra-driver
+Requires: python3-wcwidth
 
 BuildArch: noarch
 
@@ -34,17 +39,20 @@ This is a simple re-bundling of the open source tool that comes bundled with Cas
 %autosetup -p1 -n %{srcname}-%{version}
 
 %build
-%{py3_build}
+%py3_build_wheel
 
 %install
-%{py3_install}
+%py3_install_wheel
+%{py_byte_compile_and_ghost}
 
-%files
+%files -f %{py_ghost_filelist}
 %defattr(-,root,root)
 %{_bindir}/%{srcname}
 %{python3_sitelib}/*
 
 %changelog
+* Tue Oct 13 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.2.1-1
+- Upgrade to 6.2.1
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.1.2-4
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.1.2-3

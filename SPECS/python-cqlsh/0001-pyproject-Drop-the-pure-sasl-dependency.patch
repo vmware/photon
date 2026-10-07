@@ -1,0 +1,30 @@
+From b1c8da94a5f0b2db7d23a62e51cec7b58eb6315c Mon Sep 17 00:00:00 2001
+From: Prashant Singh Chauhan <prashant.singh-chauhan@broadcom.com>
+Date: Tue, 13 Oct 2026 09:13:28 +0000
+Subject: [PATCH] pyproject: Drop the pure-sasl dependency
+
+pure-sasl is only used by the driver's SaslAuthProvider and
+GSSAPIAuthProvider, which cqlsh does not need. cassandra-driver imports
+it optionally, and nothing in cqlsh imports it. Drop it from the
+dependencies so installing cqlsh does not require pure-sasl.
+
+Signed-off-by: Prashant Singh Chauhan <prashant.singh-chauhan@broadcom.com>
+---
+ pyproject.toml | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/pyproject.toml b/pyproject.toml
+index 3cf56d0..a6cbfed 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -30,7 +30,6 @@ classifiers = [
+ ]
+ dependencies = [
+     "cassandra-driver",
+-    "pure-sasl",
+     "wcwidth"
+ ]
+ 
+-- 
+2.53.0
+

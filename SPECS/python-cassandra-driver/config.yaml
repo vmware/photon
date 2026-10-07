@@ -1,7 +1,13 @@
 sources:
-- archive: cassandra-driver-3.25.0.tar.gz
-  archive_sha512sum: 82a2bace177d74551ea349bf30141785e1e7b750e612c8aa64a51520a082d43b0828b68a4c8e82b21b17a4d955fe9f82118cdf0b2a259f86eacfd3994bd45a56
-  skip_validation: true
+- archive: cassandra-driver-3.29.3.tar.gz
+  archive_sha512sum: 0db384c021c033af6a5afb34f04ac4f58a2c677415679a895bff6ab53734c74f6b404dd2221065835d838689219fcd28e6c0d6e8c90148aff74e8cd49178fb86
+  archive_type: upstream
+  name: cassandra-python-driver-3.29.3
+  url: https://github.com/apache/cassandra-python-driver/archive/refs/tags/3.29.3.tar.gz
+  repo_url: https://github.com/apache/cassandra-python-driver
+  commit_id: 27a1770933e490ff4282a0f6b098de472576ff14
+  skip_list: []
+  missing: []
   spdx:
     package:
       detailed_description: 'A modern, feature-rich and highly-tunable Python client
