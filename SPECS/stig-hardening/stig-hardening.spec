@@ -46,6 +46,7 @@ pushd %{_builddir}/%{name}-ph5-%{version}
 cp -a *.md \
   *.yml \
   defaults \
+  files \
   handlers \
   meta \
   tasks \

@@ -1,5 +1,5 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Factory AI Bot <factory-droid[bot]@users.noreply.github.com>
+From: Daniel Casota <dcasota@gmail.com>
 Date: Thu, 02 Apr 2026 15:00:00 +0200
 Subject: [PATCH] Fix STIG playbook: PAM stack, FIPS module config, IMA hash
 
@@ -21,7 +21,7 @@ Subject: [PATCH] Fix STIG playbook: PAM stack, FIPS module config, IMA hash
    Without it, booting with fips=1 causes OpenSSL to fail to
    initialize FIPS mode and pam_unix.so cannot verify passwords.
 
-Signed-off-by: Factory AI Bot <factory-droid[bot]@users.noreply.github.com>
+Signed-off-by: Daniel Casota <dcasota@gmail.com>
 ---
 diff -ruN a/tasks/photon.yml b/tasks/photon.yml
 --- a/tasks/photon.yml	2026-04-02 14:09:20.577266299 +0200

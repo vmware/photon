@@ -1,5 +1,5 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Factory AI Bot <factory-droid[bot]@users.noreply.github.com>
+From: Daniel Casota <dcasota@gmail.com>
 Date: Thu, 09 Apr 2026 15:00:00 +0200
 Subject: [PATCH] Add first-boot SELinux filesystem relabel service
 
@@ -41,7 +41,7 @@ consume files the playbook wrote.
 The relabel block is appended as the last task of tasks/photon.yml so
 that every file the playbook creates or modifies is covered.
 
-Signed-off-by: Factory AI Bot <factory-droid[bot]@users.noreply.github.com>
+Signed-off-by: Daniel Casota <dcasota@gmail.com>
 ---
 diff -ruN a/files/selinux-relabel.service b/files/selinux-relabel.service
 --- a/files/selinux-relabel.service	1970-01-01 01:00:00.000000000 +0100
@@ -84,7 +84,7 @@ diff -ruN a/tasks/photon.yml b/tasks/photon.yml
 +    - name: Install SELinux relabel service
 +      ansible.builtin.copy:
 +        src: selinux-relabel.service
-+        dest: /usr/lib/systemd/system/selinux-relabel.service
++        dest: /etc/systemd/system/selinux-relabel.service
 +        owner: root
 +        group: root
 +        mode: "0644"
