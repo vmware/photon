@@ -1,6 +1,6 @@
 sources:
-- archive: linux-firmware-20230207.tar.gz
-  archive_sha512sum: f8862c6a58a8a2d79da14fe4d64265407bd1a4062beb821494d1a2b738bae526feb61755f133317458aa1dcadf84275d49d8916d9cae13d291fbb69aa11c2e6b
+- archive: linux-firmware-20261015.tar.gz
+  archive_sha512sum: c34c4bf510314553f747ce467e1f96ba2204081d8ea60d567fb1fc563b315a3400b2e162176da718f02b46f9ba9f98ccaa4210849b1a1cc4299fe650271b53e6
   skip_validation: true
   spdx:
     package:

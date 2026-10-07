@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} >= 92
 %global security_hardening  none
 %define src_ver             %{PKG_VERSION}
 %define kernel_ver          %{KERNEL_VERSION}-%{KERNEL_RELEASE}
@@ -15,7 +15,11 @@ Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://sourceforge.net/projects/e1000/files/ice%20stable/%{src_ver}/ice-%{src_ver}.tar.gz
+Source0: https://github.com/intel/ethernet-linux-ice/releases/download/v%{src_ver}/ice-%{src_ver}.tar.gz
+
+%if "%{src_ver}" == "2.6.7"
+Release:        1%{?kernelsubrelease}%{?dist}
+%endif
 
 %if "%{src_ver}" == "2.3.10"
 Release:        2%{?kernelsubrelease}%{?dist}
@@ -97,6 +101,11 @@ find %{buildroot}%{_modulesdir} -name *.ko -type f -print0 | xargs -0 chmod u+x
 %{_mandir}/*
 
 %changelog
+%if "%{src_ver}" == "2.6.7"
+* Wed Oct 07 2026 Yifeng Sun <yifeng.sun@broadcom.com> %{PKG_VERSION}-1
+- Initial addition of ice v2.6.7
+%endif
+
 %if "%{src_ver}" == "2.3.10"
 * Tue Sep 01 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> %{PKG_VERSION}-2
 - Extend release to 91
@@ -121,7 +130,7 @@ find %{buildroot}%{_modulesdir} -name *.ko -type f -print0 | xargs -0 chmod u+x
 - Initial addition of ice v1.14.9
 %endif
 
-%if "%{src_ver}" != "1.14.9" && "%{src_ver}" != "2.3.10"
+%if "%{src_ver}" != "1.14.9" && "%{src_ver}" != "2.3.10" && "%{src_ver}" != "2.6.7"
 * Tue Sep 15 2026 Ankit Jain <ankit-aj.jain@broadcom.com> %{PKG_VERSION}-9
 - Release bump
 * Thu Oct 23 2025 Ajay Kaher <ajay.kaher@broadcom.com> %{PKG_VERSION}-8

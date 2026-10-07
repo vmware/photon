@@ -1,3 +1,5 @@
+%global build_if %{photon_subrelease} >= 92
+
 %global debug_package %{nil}
 %global __os_install_post %{nil}
 %global _firmwarepath    /lib/firmware
@@ -5,8 +7,8 @@
 
 Summary:        Linux Firmware
 Name:           linux-firmware
-Version:        20230207
-Release:        2%{?dist}
+Version:        20261015
+Release:        1%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -35,6 +37,8 @@ cp -r * %{buildroot}%{_firmwarepath}
 %{_firmwarepath}/*
 
 %changelog
+*   Thu Oct 15 2026 Yifeng Sun <yifeng.sun@broadcom.com> 20261015-1
+-   Added firmware for Intel's ice-2.6.7 driver
 *   Wed Dec 11 2024 Ajay Kaher <ajay.kaher@broadcom.com> 20230207-2
 -   Release bump for SRP compliance
 *   Tue Feb 07 2023 Ankit Jain <ankitja@vmware.com> 20230207-1

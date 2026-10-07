@@ -1,1 +1,1 @@
-License: GPL-3.0-only AND MIT AND BSD-3-Clause AND ISC AND (BSD-3-Clause OR GPL-2.0-only) AND (GPL-2.0-only OR Linux-OpenIB) AND Intel AND GPL-2.0-only AND GPL-1.0-or-later AND GPL-2.0-or-later
+License: (BSD-2-Clause OR GPL-2.0-only) AND (BSD-3-Clause OR GPL-2.0-only) AND (GPL-2.0-only OR Linux-OpenIB) AND (GPL-2.0-only OR MPL-1.1) AND Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND BSD-4-Clause AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND ISC AND Intel AND MIT

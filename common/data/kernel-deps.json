@@ -54,26 +54,43 @@
             }
         },
         "kernels-drivers-intel-ice": {
-            "v6.1": {
-                "linux": [
-                    "1.13.7"
+            "1.13.7": {
+                "subrelease_max": 90,
+                "flavours": [
+                    "linux",
+                    "linux-esx"
                 ],
-                "linux-rt": [
-                    "1.14.9"
-                ],
-                "linux-esx": [
-                    "1.13.7"
+                "kernel_versions": [
+                    "v6.1"
                 ]
             },
-            "v6.12": {
-                "linux": [
-                    "2.3.10"
+            "1.14.9": {
+                "subrelease_max": 90,
+                "flavours": [
+                    "linux-rt"
                 ],
-                "linux-rt": [
-                    "2.3.10"
+                "kernel_versions": [
+                    "v6.1"
+                ]
+            },
+            "2.3.10": {
+                "subrelease_max": 91,
+                "flavours": [
+                    "linux",
+                    "linux-esx"
                 ],
-                "linux-esx": [
-                    "2.3.10"
+                "kernel_versions": [
+                    "v6.12"
+                ]
+            },
+            "2.6.7": {
+                "subrelease_min": 92,
+                "flavours": [
+                    "linux",
+                    "linux-esx"
+                ],
+                "kernel_versions": [
+                    "v6.12"
                 ]
             }
         },
