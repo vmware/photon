@@ -1,3 +1,18 @@
+From 770ce982ded42df1048ce39335499d75d6b3e085 Mon Sep 17 00:00:00 2001
+From: dcasota <14890243+dcasota@users.noreply.github.com>
+Date: Mon, 13 Apr 2026 00:38:16 +0200
+Subject: [PATCH] Include btrfs-progs for btrfs filesystem support
+
+Add btrfs-progs to install list for btrfs partitions.
+
+Backport of upstream commit 770ce982ded42df1048ce39335499d75d6b3e085,
+first released in v2.9:
+https://github.com/vmware/photon-os-installer/commit/770ce982ded42df1048ce39335499d75d6b3e085
+The trailing whitespace upstream leaves after the added call is dropped.
+---
+ photon_installer/installer.py | 4 ++++
+ 1 file changed, 4 insertions(+)
+
 diff --git a/photon_installer/installer.py b/photon_installer/installer.py
 index 7c50b29..7b9ab39 100644
 --- a/photon_installer/installer.py

@@ -1,4 +1,4 @@
-From 43ea3a467cfc4c4abb2690e17fe3ab5e619f19cf Mon Sep 17 00:00:00 2001
+From f1b15dd0893c3be9eb96eff83b68598914177d1d Mon Sep 17 00:00:00 2001
 From: Daniel Casota <dcasota@gmail.com>
 Date: Thu, 4 Jun 2026 22:05:37 +0200
 Subject: [PATCH] tdnf: capture install output so it doesn't overlay the curses
@@ -10,6 +10,10 @@ progress bar with tdnf/rpm messages (e.g. file paths like /etc/os-release).
 Capture the output and send it to the log instead.
 
 Co-Authored-By: Daniel Casota <dcasota@gmail.com>
+
+Backport of upstream commit f1b15dd0893c3be9eb96eff83b68598914177d1d,
+first released in v2.9:
+https://github.com/vmware/photon-os-installer/commit/f1b15dd0893c3be9eb96eff83b68598914177d1d
 ---
  photon_installer/tdnf.py | 14 +++++++++++++-
  1 file changed, 13 insertions(+), 1 deletion(-)

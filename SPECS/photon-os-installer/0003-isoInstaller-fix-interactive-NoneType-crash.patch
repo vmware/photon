@@ -1,4 +1,4 @@
-From ad38512caefb9525a4d9cde74f7e736887930346 Mon Sep 17 00:00:00 2001
+From 72e0448d1640c7b504d992714a0a0cecde9d1777 Mon Sep 17 00:00:00 2001
 From: Daniel Casota <dcasota@gmail.com>
 Date: Thu, 4 Jun 2026 15:24:46 +0200
 Subject: [PATCH] isoInstaller: fix interactive (no-kickstart) ISO install
@@ -23,6 +23,10 @@ guestinfo.kickstart.*) was broken by two coupled regressions:
 Regression introduced by 9fc8733 on top of 0a72c3a.
 
 Co-Authored-By: Daniel Casota <dcasota@gmail.com>
+
+Backport of upstream commit 72e0448d1640c7b504d992714a0a0cecde9d1777,
+first released in v2.9:
+https://github.com/vmware/photon-os-installer/commit/72e0448d1640c7b504d992714a0a0cecde9d1777
 ---
  photon_installer/isoInstaller.py | 17 ++++++++++++++---
  1 file changed, 14 insertions(+), 3 deletions(-)
