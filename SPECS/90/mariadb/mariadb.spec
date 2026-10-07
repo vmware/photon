@@ -2,8 +2,8 @@
 
 Summary:          Database servers made by the original developers of MySQL.
 Name:             mariadb
-Version:          11.4.10
-Release:          2.1%{?dist}
+Version:          11.4.13
+Release:          0.1%{?dist}
 Group:            Applications/Databases
 Vendor:           VMware, Inc.
 Distribution:     Photon
@@ -18,6 +18,7 @@ Source4: license.txt
 %include %{SOURCE4}
 
 BuildRequires: cmake
+BuildRequires: git
 BuildRequires: Linux-PAM-devel
 BuildRequires: openssl-devel
 BuildRequires: zlib-devel
@@ -451,6 +452,8 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/*/errmsg.sys
 
 %changelog
+* Wed Oct 07 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 11.4.13-0.1
+- Upgrade to v11.4.13
 * Mon May 18 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 11.4.10-2.1
 - Move to SPECS/90
 * Tue May 05 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> - 11.4.10-2
