@@ -1,11 +1,11 @@
 %global build_if %{photon_subrelease} <= 90
 
 %global VER 7.1.2
-%global Patchlevel 19
+%global Patchlevel 32
 %global major_version 7
 
 Name:           ImageMagick
-Version:        7.1.2.19
+Version:        7.1.2.32
 Release:        1.1.1%{?dist}
 Summary:        An X application for displaying and manipulating images
 Group:          Development/Libraries
@@ -175,6 +175,8 @@ rm PerlMagick/demo/Generic.ttf
 %{_libdir}/libMagick++-%{major_version}.Q16HDRI.so.*
 
 %changelog
+* Wed Oct 07 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 7.1.2.32-1.1.1
+- Upgrade to 7.1.2.32, fixes multiple CVEs
 * Mon May 11 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 7.1.2.19-1.1.1
 - Move to /90
 * Mon Apr 20 2026 Michelle Wang <michelle.wang@broadcom.com> 7.1.2.19-1.1
