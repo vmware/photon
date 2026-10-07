@@ -3,7 +3,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        3.5.9
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.openssl.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -194,6 +194,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Wed Oct 07 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 3.5.9-2
+- Set TLS Group config for default and fips providers.
 * Tue Oct 06 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.5.9-1
 - Upgrade to v3.5.9
 * Wed Sep 23 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 3.5.8-2

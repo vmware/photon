@@ -3,7 +3,7 @@
 Summary:        FIPS Libraries for openssl
 Name:           openssl-fips-provider
 Version:        3.5.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.openssl.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -92,6 +92,8 @@ rm -rf %{buildroot}/*
 %exclude %{_sysconfdir}/ssl/fipsmodule.cnf
 
 %changelog
+* Wed Oct 07 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 3.5.4-2
+- Set TLS Group config for default and fips providers.
 * Sun Sep 27 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 3.5.4-1
 - Upgrade OpenSSL FIPS provider to 3.5.4.
 - Enable ML-KEM hybrid key agreement for TLSv1.3 in FIPS mode.

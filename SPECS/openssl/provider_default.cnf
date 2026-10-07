@@ -4,6 +4,7 @@
 
 [openssl_init]
 providers = provider_sect
+ssl_conf = ssl_module
 
 # List of providers to load
 [provider_sect]
@@ -19,3 +20,33 @@ default = default_sect
 # problems including inability to remotely access the system.
 [default_sect]
 activate = 1
+
+[ssl_module]
+system_default = system_default_sect
+
+[system_default_sect]
+
+# Post-quantum key agreement (FIPS 203 / ML-KEM), TLS 1.3 only.
+# Notation :- Each Tuple is Marked and Differentiated by '/'.
+#             Mandatory pre-sharing of key happens for algos Marked with '*'
+#
+# Tuple 1 - ML-KEM Hybrid X25519. This is the most widely supported algo
+# and an industry standard even though it is a hybrid. Hence Tuple-1 will always
+# starred to pre-share 1216 bytes of X25519-ML-KEM Hybrid within ClientHello msg,
+# So that, Negotiation can succeed with the peers & servers which support X25519 hybrid.
+#
+# Tuple-2, Tuple 3 and Tuple 4 are reserved for Full ML-KEM FIPS Compliant &
+# NIST approved algos.
+# However, since actual ML-KEM 768 & 1024 are not widely supported in the industry today,
+# they are not starred and hence the Tuple doesn't contain actual pre-shared ML-KEM keys,
+# so that Payload size is minimized. However, If a server supports pure ML-KEM,
+# it can always Re-route and request for the ML-KEM Key for exchange with retry.
+#
+# Tuple-5, Tuple 6 and Tuple 7 are reserved for classic algos which are already
+# widely supported & adopted.
+# Tuple 5 algo is starred, so that Keys are always pre-shared in the ClientHello itself.
+# Since, the Key length for these classic algos are very less, it doesn't increase
+# the payload size by much and it will avoid Re-Routing and Retry.
+#
+# Tuple 8 contains the non-FIPS classic x25519 algorithm as the last resort mechanism
+Groups = *X25519MLKEM768 / SecP256r1MLKEM768 / SecP384r1MLKEM1024 / MLKEM1024 / *secp256r1 / secp384r1 / secp521r1 / ?X25519
