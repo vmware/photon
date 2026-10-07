@@ -1,7 +1,13 @@
 sources:
-- archive: python-linux-procfs-0.7.0.tar.xz
-  archive_sha512sum: 9b2489b47949560245fb23eefa1600869618921173a94534af4db88938fbc855ce37e24100286bdee9fd18a3f140fb86bef06fa7a473ed55e5cdde721f54113c
-  skip_validation: true
+- archive: python-linux-procfs-0.7.4.tar.xz
+  archive_sha512sum: 99254aec2f205617391ed4d8833d8f20a1eaa6ef33042acbe4e19815976dca9cc3b41e00077fd4a51d15d8a0c83ea6934aa5fbd7bb1d9470c01b1811b0a54ea1
+  archive_type: upstream
+  name: python-linux-procfs-0.7.4
+  url: https://cdn.kernel.org/pub/software/libs/python/python-linux-procfs/python-linux-procfs-0.7.4.tar.xz
+  repo_url: https://git.kernel.org/pub/scm/libs/python/python-linux-procfs/python-linux-procfs.git
+  commit_id: 702d6360ce082d8328e0cfd84f6415b0c94ca6dd
+  skip_list: []
+  missing: [.gitattributes, .gitignore]
   spdx:
     package:
       detailed_description: 'Abstractions to extract information from the Linux kernel

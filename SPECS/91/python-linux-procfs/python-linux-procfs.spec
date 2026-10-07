@@ -1,12 +1,12 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} == 91
 
 #
 # spec file for package python3-linux-procfs
 #
 
 Name:           python3-linux-procfs
-Version:        0.7.4
-Release:        1%{?dist}
+Version:        0.7.0
+Release:        5%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -21,10 +21,11 @@ Source1: license.txt
 %include %{SOURCE1}
 
 BuildRequires: python3-devel
-BuildRequires: python3-build
 BuildRequires: python3-setuptools
-BuildRequires: python3-installer
-BuildRequires: python3-packaging
+
+%if 0%{?with_check}
+BuildRequires: python3-six
+%endif
 
 Requires:      python3
 
@@ -35,24 +36,24 @@ Abstractions to extract information from the Linux kernel /proc files.
 %autosetup -n python-linux-procfs-%{version}
 
 %build
-%py3_build_wheel
+%py3_build
 
 %install
-%py3_install_wheel
-%{py_byte_compile_and_ghost}
+rm -rf %{buildroot}
+python3 setup.py install --skip-build --root %{buildroot}
 
 %check
 LANG=en_US.UTF-8 python3 bitmasklist_test.py
 
-%files -f %{py_ghost_filelist}
-%defattr(-,root,root)
+%files
+%defattr(0755,root,root,0755)
 %{_bindir}/pflags
-%{python3_sitelib}/*
+%{python3_sitelib}/procfs/
+%defattr(0644,root,root,0755)
+%{python3_sitelib}/python_linux_procfs*.egg-info
 %license COPYING
 
 %changelog
-* Wed Oct 07 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.7.4-1
-- Upgrade to 0.7.4
 * Mon May 18 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 0.7.0-5
 - Remove deprecated python3-defusedxml from BuildRequires
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.7.0-4

@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} == 91
 
 Summary:        Python binding for libudev
 Name:           python3-pyudev
-Version:        0.24.3
-Release:        1%{?dist}
+Version:        0.23.2
+Release:        6%{?dist}
 Group:          Development/Languages/Python
 URL:            https://pypi.org/project/pyudev
 Source0:        pyudev-%{version}.tar.gz
@@ -15,17 +15,16 @@ Distribution:   Photon
 BuildArch:      noarch
 
 BuildRequires:  python3-setuptools
-BuildRequires:  python3-build
-BuildRequires:  python3-installer
-BuildRequires:  python3-packaging
 BuildRequires:  python3-devel
 BuildRequires:  python3-xml
 BuildRequires:  systemd-devel
 Requires:       systemd
 Requires:       python3
+Requires:       python3-six
 %if 0%{?with_check}
 BuildRequires:  python3-pip
 BuildRequires:  curl-devel
+BuildRequires:  python3-six
 BuildRequires:  python3-py
 BuildRequires:  python3-pytest
 BuildRequires:  python3-attrs
@@ -45,25 +44,21 @@ The binding supports CPython 2 (2.6 or newer) and 3 (3.1 or newer), and PyPy 1.5
 %autosetup -n pyudev-%{version}
 
 %build
-%py3_build_wheel
+%py3_build
 
 %install
-%py3_install_wheel
-%{py_byte_compile_and_ghost}
+%py3_install
 
-%if 0%{?with_check}
 %check
-%pytest
-%endif
+pip3 install pluggy more_itertools hypothesis mock
+python3 setup.py test
 
-%files -f %{py_ghost_filelist}
+%files
 %defattr(-,root,root)
 %doc COPYING README.rst
 %{python3_sitelib}/*
 
 %changelog
-* Wed Oct 07 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.24.3-1
-- Upgrade to 0.24.3
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.23.2-6
 - Extended to build for subrelease 91 and above
 * Fri May 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.23.2-5

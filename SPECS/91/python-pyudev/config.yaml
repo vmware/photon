@@ -1,13 +1,7 @@
 sources:
-- archive: pyudev-0.24.3.tar.gz
-  archive_sha512sum: 9075437f6fdba0fc1921e252c0a49e1a5eeed8c5cf598856a32aa9f9fcb8885dc0727258d2965241b2e044acfdf70561d5aa3f1380b84e013afc7cb8dcbfce2b
-  archive_type: upstream
-  name: pyudev-0.24.3
-  url: https://github.com/pyudev/pyudev/archive/refs/tags/v0.24.3.tar.gz
-  repo_url: https://github.com/pyudev/pyudev
-  commit_id: 5df7045aaa95e4b923c9a2f64fd5115b3642a69f
-  skip_list: []
-  missing: []
+- archive: pyudev-0.23.2.tar.gz
+  archive_sha512sum: 40b947d363dca73789f5ab77cbda4b48349e28fe04f2f5cafb93d20799d842ebeb2b7d78d1f16dcbcaac5c20aff1b931b372c75852706e731337e6e1d30b8538
+  skip_validation: true
   spdx:
     package:
       detailed_description: 'pyudev is a LGPL licensed, pure Python binding for libudev,
