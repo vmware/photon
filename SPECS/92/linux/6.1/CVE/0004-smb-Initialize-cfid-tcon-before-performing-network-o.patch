@@ -1,0 +1,45 @@
+From c457d2a99f79b6c652bab292289fb2e4a3c14db4 Mon Sep 17 00:00:00 2001
+From: Paul Aurich <paul@darkrain42.org>
+Date: Fri, 24 Jan 2025 09:40:14 +0000
+Subject: [PATCH 4/5] smb: Initialize cfid->tcon before performing network ops
+
+[ Upstream commit c353ee4fb119a2582d0e011f66a76a38f5cf984d ]
+
+Avoid leaking a tcon ref when a lease break races with opening the
+cached directory. Processing the leak break might take a reference to
+the tcon in cached_dir_lease_break() and then fail to release the ref in
+cached_dir_offload_close, since cfid->tcon is still NULL.
+
+Fixes: ebe98f1447bb ("cifs: enable caching of directories for which a lease is held")
+Signed-off-by: Paul Aurich <paul@darkrain42.org>
+Signed-off-by: Steve French <stfrench@microsoft.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[Guru: Backported to 6.1.y branch]
+Signed-off-by: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
+---
+ fs/smb/client/cached_dir.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/fs/smb/client/cached_dir.c b/fs/smb/client/cached_dir.c
+index d09226c1ac90..3d028b6a2089 100644
+--- a/fs/smb/client/cached_dir.c
++++ b/fs/smb/client/cached_dir.c
+@@ -191,6 +191,7 @@ int open_cached_dir(unsigned int xid, struct cifs_tcon *tcon,
+ 		kfree(utf16_path);
+ 		return rc;
+ 	}
++	cfid->tcon = tcon;
+ 
+ 	/*
+ 	 * We do not hold the lock for the open because in case
+@@ -256,7 +257,6 @@ int open_cached_dir(unsigned int xid, struct cifs_tcon *tcon,
+ 		}
+ 		goto oshr_free;
+ 	}
+-	cfid->tcon = tcon;
+ 	cfid->is_open = true;
+ 
+ 	o_rsp = (struct smb2_create_rsp *)rsp_iov[0].iov_base;
+-- 
+2.39.4
+

@@ -1,0 +1,215 @@
+From 009a1fc5cf8a63275a224dd895f7e1c5791d1f2b Mon Sep 17 00:00:00 2001
+From: srinidhira0 <srinidhir@vmware.com>
+Date: Thu, 18 Feb 2021 21:17:40 +0000
+Subject: [PATCH] FIPS:crypto:drbg: Jitterentropy RNG as the only RND source
+
+  -  There are some crypto modules in linux kernel like
+DRBG, ECC and CRNG which uses urandom for various reasons.
+However, as per SP800-90B, urandom entropy source is not
+compliant and hence any crypto module which depends on
+/dev/urandom will not be compliant with SP800-90B.
+
+Hence, remove the urandom read from DRBG, ECC and RNG
+modules in kernel is in FIPS mode. Replace the urandom
+with jitterentropy RNG.
+Jitter entropy rng can be accessed by any crypto module
+using crypto_alloc_rng for "jitternetropy_rng".
+
+Signed-off-by: srinidhira0 <srinidhir@vmware.com>
+Signed-off-by: Keerthana K <keerthanak@vmware.com>
+---
+ crypto/drbg.c | 93 +++++++++++++++++++++++++++++++++++++++------------
+ crypto/ecc.c  | 26 +++++++++++++-
+ 2 files changed, 97 insertions(+), 22 deletions(-)
+
+diff --git a/crypto/drbg.c b/crypto/drbg.c
+index 177983b6a..9baf2ec07 100644
+--- a/crypto/drbg.c
++++ b/crypto/drbg.c
+@@ -1148,7 +1148,7 @@ static bool drbg_nopr_reseed_interval_elapsed(struct drbg_state *drbg)
+ static int drbg_seed(struct drbg_state *drbg, struct drbg_string *pers,
+ 		     bool reseed)
+ {
+-	int ret;
++	int ret, jent_retry_count = 3;
+ 	unsigned char entropy[((32 + 16) * 2)];
+ 	unsigned int entropylen = drbg_sec_strength(drbg->core->flags);
+ 	struct drbg_string data1;
+@@ -1181,27 +1181,26 @@ static int drbg_seed(struct drbg_state *drbg, struct drbg_string *pers,
+ 		BUG_ON((entropylen * 2) > sizeof(entropy));
+ 
+ 		/* Get seed from in-kernel /dev/urandom */
+-		if (!rng_is_initialized())
+-			new_seed_state = DRBG_SEED_STATE_PARTIAL;
++		if (!rng_is_initialized()) {
++			if (fips_enabled && drbg->jent)
++				new_seed_state = DRBG_SEED_STATE_FULL;
++			else
++				new_seed_state = DRBG_SEED_STATE_PARTIAL;
++		}
+ 
+-		ret = drbg_get_random_bytes(drbg, entropy, entropylen);
+-		if (ret)
++		if (fips_enabled && !drbg->jent) {
++			pr_err("DRBG: Jitter entropy source does not exist");
+ 			goto out;
++		}
+ 
+-		if (!drbg->jent) {
+-			drbg_string_fill(&data1, entropy, entropylen);
+-			pr_devel("DRBG: (re)seeding with %u bytes of entropy\n",
+-				 entropylen);
+-		} else {
+-			/*
+-			 * Get seed from Jitter RNG, failures are
+-			 * fatal only in FIPS mode.
+-			 */
++jent_retry:
++		if (fips_enabled) {
++			/* Jitter RNG is present, Get seed from Jitter RNG */
+ 			ret = crypto_rng_get_bytes(drbg->jent,
+-						   entropy + entropylen,
+-						   entropylen);
++						   entropy,
++						   entropylen * 2);
+ 			if (fips_enabled && ret) {
+-				pr_devel("DRBG: jent failed with %d\n", ret);
++				pr_err("DRBG: jent failed with %d\n", ret);
+ 
+ 				/*
+ 				 * Do not treat the transient failure of the
+@@ -1216,15 +1215,49 @@ static int drbg_seed(struct drbg_state *drbg, struct drbg_string *pers,
+ 				 * However, we mandate that at least the first
+ 				 * seeding operation must succeed with the
+ 				 * Jitter RNG.
++				 *
++				 * VMWARE:photonOS FIPS Compatibility:
++				 * Since we now rely only on Jitter RNG as entropy
++				 * source, we have to consider every jitter RNG read
++				 * failure and report it.
+ 				 */
++				if (ret == -EAGAIN && jent_retry_count > 0) {
++					pr_err("DRBG: retrying, retry_count = %d\n",
++								jent_retry_count);
++					jent_retry_count--;
++					goto jent_retry;
++				} else {
++					pr_err("DRBG: jent reseed failure,err = %d\n",
++									ret);
++					goto out;
++				}
++
++			}
++		} else { /* NOT In FIPS mode */
++			/* Get seed from in-kernel /dev/urandom */
++			ret = drbg_get_random_bytes(drbg, entropy, entropylen);
++			if (ret)
++				goto out;
++			if (!drbg->jent) {
++				drbg_string_fill(&data1, entropy, entropylen);
++				pr_devel("DRBG: (re)seeding with %u bytes of entropy\n",
++					entropylen);
++			} else {
++
++				ret = crypto_rng_get_bytes(drbg->jent,
++							entropy + entropylen,
++							entropylen);
++			}
++			if (ret) {
++				pr_devel("DRBG: jent failed with %d\n", ret);
+ 				if (!reseed || ret != -EAGAIN)
+ 					goto out;
+ 			}
+-
+-			drbg_string_fill(&data1, entropy, entropylen * 2);
+-			pr_devel("DRBG: (re)seeding with %u bytes of entropy\n",
+-				 entropylen * 2);
+ 		}
++		drbg_string_fill(&data1, entropy, entropylen * 2);
++		pr_devel("DRBG: Captured 64-bytes random from jitter rng\n");
++		pr_devel("DRBG: (re)seeding with %u bytes of entropy\n",
++			entropylen * 2);
+ 	}
+ 	list_add_tail(&data1.list, &seedlist);
+ 
+@@ -1440,9 +1473,23 @@ static int drbg_generate(struct drbg_state *drbg,
+ 	} else if (rng_is_initialized() &&
+ 		   (drbg->seeded == DRBG_SEED_STATE_PARTIAL ||
+ 		    drbg_nopr_reseed_interval_elapsed(drbg))) {
+-		len = drbg_seed_from_random(drbg);
+-		if (len)
+-			goto err;
++		if (fips_enabled) {
++			if (IS_ERR_OR_NULL(drbg->jent)) {
++				pr_err("DRBG:seed rand,non-existing jent\n");
++				BUG();
++				goto err;
++			}
++			len = crypto_rng_get_bytes(drbg->jent,
++						buf, buflen);
++			if (len)
++				goto err;
++			else
++				len = buflen;
++		} else {
++			len = drbg_seed_from_random(drbg);
++			if (len)
++				goto err;
++		}
+ 	}
+ 
+ 	if (addtl && 0 < addtl->len)
+diff --git a/crypto/ecc.c b/crypto/ecc.c
+index 7315217c8..b2a412d94 100644
+--- a/crypto/ecc.c
++++ b/crypto/ecc.c
+@@ -35,6 +35,7 @@
+ #include <crypto/internal/ecc.h>
+ #include <asm/unaligned.h>
+ #include <linux/ratelimit.h>
++#include <linux/fips.h>
+ 
+ #include "ecc_curve_defs.h"
+ 
+@@ -1604,6 +1605,26 @@ int ecc_is_pubkey_valid_full(const struct ecc_curve *curve,
+ }
+ EXPORT_SYMBOL(ecc_is_pubkey_valid_full);
+ 
++static int get_jitter_ent_random_bytes(u64 *buf, unsigned int len)
++{
++	struct crypto_rng *jitter_entropy =
++		crypto_alloc_rng("jitterentropy_rng", 0, 0);
++	int ret = 0;
++
++	if (IS_ERR_OR_NULL(jitter_entropy)) {
++		pr_err("RNG: Failed to allocated Jitter entropy RNG\n");
++		return -ENOENT;
++	}
++	ret = crypto_rng_get_bytes(jitter_entropy,(u8 *)buf, len);
++	if (ret) {
++		pr_err("RNG: Failed to read from Jitter entropy RNG\n");
++		return -EAGAIN;
++	}
++	crypto_free_rng(jitter_entropy);
++	jitter_entropy = NULL;
++	return 0;
++}
++
+ int crypto_ecdh_shared_secret(unsigned int curve_id, unsigned int ndigits,
+ 			      const u64 *private_key, const u64 *public_key,
+ 			      u64 *secret)
+@@ -1623,7 +1644,10 @@ int crypto_ecdh_shared_secret(unsigned int curve_id, unsigned int ndigits,
+ 
+ 	nbytes = ndigits << ECC_DIGITS_TO_BYTES_SHIFT;
+ 
+-	get_random_bytes(rand_z, nbytes);
++	if (fips_enabled)
++		get_jitter_ent_random_bytes(rand_z, nbytes);
++	else
++		get_random_bytes(rand_z, nbytes);
+ 
+ 	pk = ecc_alloc_point(ndigits);
+ 	if (!pk) {
+-- 
+2.23.3
+
