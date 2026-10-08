@@ -6,7 +6,7 @@
 Summary:        Samba Client Programs
 Name:           samba-client
 Version:        4.19.3
-Release:        7.3.1%{?dist}
+Release:        7.3.2%{?dist}
 Group:          Productivity/Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -18,8 +18,8 @@ Source1: smb.conf.vendor
 Source2: license.txt
 %include %{SOURCE2}
 
-Patch0: CVE-2025-9640.patch
-Patch1: CVE-2025-10230.patch
+Source3: cve-patches.txt
+%include %{SOURCE3}
 
 BuildRequires: krb5-devel
 BuildRequires: libtirpc-devel
@@ -465,6 +465,9 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/wbclient.pc
 
 %changelog
+* Thu Oct 08 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.19.3-7.3.2
+- Bump version as a part of bindutils upgrade
+- Fix CVE-2026-4408, CVE-2026-4480
 * Sat May 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.19.3-7.3.1
 - Adjusted to build for subrelease 90
 * Tue May 12 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 4.19.3-7.3

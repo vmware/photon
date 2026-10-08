@@ -6,8 +6,8 @@
 
 Summary:        Domain Name System software
 Name:           bindutils
-Version:        9.20.23
-Release:        1.0.1%{?dist}
+Version:        9.20.29
+Release:        0.0.1%{?dist}
 URL:            http://www.isc.org/downloads/bind
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -29,7 +29,6 @@ Requires:       userspace-rcu
 Requires:       nghttp2
 Requires:       %{name}-libs = %{version}-%{release}
 Requires(pre):  systemd-rpm-macros
-Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 
 BuildRequires:  openssl-devel
 BuildRequires:  libuv-devel
@@ -135,6 +134,8 @@ chmod 0770 %{_home_dir}
 %{_mandir}/man8/*
 
 %changelog
+* Thu Oct 08 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.20.29-0.0.1
+- Upgrade to v9.20.29
 * Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 9.20.23-1.0.1
 - Restrict to build for subrelease 90 and below
 * Mon Jun 8 2026 Michelle Wang <michelle.wang@broadcom.com> 9.20.23-1
