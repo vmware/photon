@@ -1,7 +1,0 @@
-obj-m := viomem.o
-
-all:
-	$(MAKE) -C /lib/modules/$(BUILD_KERNEL)/build M=$(CURDIR) modules
-
-clean:
-	$(MAKE) -C /lib/modules/$(BUILD_KERNEL)/build M=$(CURDIR) clean
