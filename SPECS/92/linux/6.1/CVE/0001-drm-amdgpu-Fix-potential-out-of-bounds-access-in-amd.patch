@@ -1,0 +1,67 @@
+From 3c0b353242d2964b6c3442a336e7fc8fc282f353 Mon Sep 17 00:00:00 2001
+From: Srinivasan Shanmugam <srinivasan.shanmugam@amd.com>
+Date: Mon, 30 Jun 2025 23:33:59 -0500
+Subject: [PATCH] drm/amdgpu: Fix potential out-of-bounds access in
+ 'amdgpu_discovery_reg_base_init()'
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+[ Upstream commit cdb637d339572398821204a1142d8d615668f1e9 ]
+
+The issue arises when the array 'adev->vcn.vcn_config' is accessed
+before checking if the index 'adev->vcn.num_vcn_inst' is within the
+bounds of the array.
+
+The fix involves moving the bounds check before the array access. This
+ensures that 'adev->vcn.num_vcn_inst' is within the bounds of the array
+before it is used as an index.
+
+Fixes the below:
+drivers/gpu/drm/amd/amdgpu/amdgpu_discovery.c:1289 amdgpu_discovery_reg_base_init() error: testing array offset 'adev->vcn.num_vcn_inst' after use.
+
+Fixes: a0ccc717c4ab ("drm/amdgpu/discovery: validate VCN and SDMA instances")
+Cc: Christian König <christian.koenig@amd.com>
+Cc: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Srinivasan Shanmugam <srinivasan.shanmugam@amd.com>
+Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com>
+---
+ drivers/gpu/drm/amd/amdgpu/amdgpu_discovery.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_discovery.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_discovery.c
+index d8441e273cb5..0358923865ce 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_discovery.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_discovery.c
+@@ -1128,15 +1128,16 @@ static int amdgpu_discovery_reg_base_init(struct amdgpu_device *adev)
+ 				 *     0b10 : encode is disabled
+ 				 *     0b01 : decode is disabled
+ 				 */
+-				adev->vcn.vcn_config[adev->vcn.num_vcn_inst] =
+-					ip->revision & 0xc0;
+-				ip->revision &= ~0xc0;
+-				if (adev->vcn.num_vcn_inst < AMDGPU_MAX_VCN_INSTANCES)
+-					adev->vcn.num_vcn_inst++;
++				if (adev->vcn.num_vcn_inst < AMDGPU_MAX_VCN_INSTANCES) {
++				    adev->vcn.vcn_config[adev->vcn.num_vcn_inst] =
++									ip->revision & 0xc0;
++				    adev->vcn.num_vcn_inst++;
++				}
+ 				else
+ 					dev_err(adev->dev, "Too many VCN instances: %d vs %d\n",
+ 						adev->vcn.num_vcn_inst + 1,
+ 						AMDGPU_MAX_VCN_INSTANCES);
++				ip->revision &= ~0xc0;
+ 			}
+ 			if (le16_to_cpu(ip->hw_id) == SDMA0_HWID ||
+ 			    le16_to_cpu(ip->hw_id) == SDMA1_HWID ||
+@@ -2424,4 +2425,3 @@ int amdgpu_discovery_set_ip_blocks(struct amdgpu_device *adev)
+ 
+ 	return 0;
+ }
+-
+-- 
+2.49.0
+

@@ -1,0 +1,48 @@
+From 032c5407a608ac3b2a98bf4fbda27d12c20c5887 Mon Sep 17 00:00:00 2001
+From: Alex Hung <alex.hung@amd.com>
+Date: Tue, 16 Apr 2024 16:30:17 -0600
+Subject: [PATCH] drm/amd/display: Check link_index before accessing
+ dc->links[]
+
+commit 8aa2864044b9d13e95fe224f32e808afbf79ecdf upstream.
+
+[WHY & HOW]
+dc->links[] has max size of MAX_LINKS and NULL is return when trying to
+access with out-of-bound index.
+
+This fixes 3 OVERRUN and 1 RESOURCE_LEAK issues reported by Coverity.
+
+Reviewed-by: Harry Wentland <harry.wentland@amd.com>
+Acked-by: Tom Chung <chiahsuan.chung@amd.com>
+Signed-off-by: Alex Hung <alex.hung@amd.com>
+Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+[The macro MAX_LINKS is introduced by Commit 60df5628144b ("drm/amd/display:
+ handle invalid connector indices") after 6.10. So here we still use the
+ original array length MAX_PIPES * 2]
+Signed-off-by: Jianqi Ren <jianqi.ren.cn@windriver.com>
+Signed-off-by: He Zhe <zhe.he@windriver.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[ KN: Backport to v6.1 ; dc_link_get_status() is in dc/dc_link.h ]
+Signed-off-by: Kuntal Nayak <kuntal.nayak@broadcom.com>
+---
+ drivers/gpu/drm/amd/display/dc/dc_link.h | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/gpu/drm/amd/display/dc/dc_link.h b/drivers/gpu/drm/amd/display/dc/dc_link.h
+index 17f080f8a..fe313104d 100644
+--- a/drivers/gpu/drm/amd/display/dc/dc_link.h
++++ b/drivers/gpu/drm/amd/display/dc/dc_link.h
+@@ -285,6 +285,9 @@ const struct dc_link_status *dc_link_get_status(const struct dc_link *dc_link);
+  */
+ static inline struct dc_link *dc_get_link_at_index(struct dc *dc, uint32_t link_index)
+ {
++	if (link_index >= (MAX_PIPES * 2))
++		return NULL;
++
+ 	return dc->links[link_index];
+ }
+ 
+-- 
+2.39.4
+

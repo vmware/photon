@@ -1,0 +1,70 @@
+From 48233ada37da182d4f98ed6467ea72ebb71d1650 Mon Sep 17 00:00:00 2001
+From: Zhipeng Lu <alexious@zju.edu.cn>
+Date: Sun, 24 Dec 2023 16:20:33 +0800
+Subject: [PATCH] SUNRPC: fix a memleak in gss_import_v2_context
+
+[ Upstream commit e67b652d8e8591d3b1e569dbcdfcee15993e91fa ]
+
+The ctx->mech_used.data allocated by kmemdup is not freed in neither
+gss_import_v2_context nor it only caller gss_krb5_import_sec_context,
+which frees ctx on error.
+
+Thus, this patch reform the last call of gss_import_v2_context to the
+gss_krb5_import_ctx_v2, preventing the memleak while keepping the return
+formation.
+
+Fixes: 47d848077629 ("gss_krb5: handle new context format from gssd")
+Signed-off-by: Zhipeng Lu <alexious@zju.edu.cn>
+Reviewed-by: Jeff Layton <jlayton@kernel.org>
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[ Brennan : Ported error handling to v6.1 ]
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ net/sunrpc/auth_gss/gss_krb5_mech.c | 18 +++++++++++++++---
+ 1 file changed, 15 insertions(+), 3 deletions(-)
+
+diff --git a/net/sunrpc/auth_gss/gss_krb5_mech.c b/net/sunrpc/auth_gss/gss_krb5_mech.c
+index 1c092b05c2bb..232d31111e4f 100644
+--- a/net/sunrpc/auth_gss/gss_krb5_mech.c
++++ b/net/sunrpc/auth_gss/gss_krb5_mech.c
+@@ -471,6 +471,7 @@ gss_import_v2_context(const void *p, const void *end, struct krb5_ctx *ctx,
+ 	u64 seq_send64;
+ 	int keylen;
+ 	u32 time32;
++	int ret;
+ 
+ 	p = simple_get_bytes(p, end, &ctx->flags, sizeof(ctx->flags));
+ 	if (IS_ERR(p))
+@@ -528,14 +529,25 @@ gss_import_v2_context(const void *p, const void *end, struct krb5_ctx *ctx,
+ 
+ 	switch (ctx->enctype) {
+ 	case ENCTYPE_DES3_CBC_RAW:
+-		return context_derive_keys_des3(ctx, gfp_mask);
++		ret = context_derive_keys_des3(ctx, gfp_mask);
++		break;
+ 	case ENCTYPE_AES128_CTS_HMAC_SHA1_96:
+ 	case ENCTYPE_AES256_CTS_HMAC_SHA1_96:
+-		return context_derive_keys_new(ctx, gfp_mask);
++		ret = context_derive_keys_new(ctx, gfp_mask);
++		break;
+ 	default:
+-		return -EINVAL;
++		ret = -EINVAL;
++	}
++
++	if (ret) {
++		p = ERR_PTR(ret);
++		goto out_free;
+ 	}
+ 
++	return 0;
++
++out_free:
++	kfree(ctx->mech_used.data);
+ out_err:
+ 	return PTR_ERR(p);
+ }
+-- 
+2.40.4
+
