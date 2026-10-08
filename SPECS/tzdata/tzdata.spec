@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Time zone data
 Name:           tzdata
 Version:        2026e
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.iana.org/time-zones
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -46,6 +46,8 @@ ln -svf %{_datarootdir}/zoneinfo/UTC %{buildroot}%{_sysconfdir}/localtime
 %{_datadir}/*
 
 %changelog
+*   Thu Oct 08 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2026e-2
+-   Build for sr-91 and above
 *   Mon Oct 05 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2026e-1
 -   Upgrade to 2026e
 *   Tue Aug 18 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 2026c-1
