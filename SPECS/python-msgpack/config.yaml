@@ -1,7 +1,13 @@
 sources:
-- archive: msgpack-1.0.4.tar.gz
-  archive_sha512sum: dcd59bf77408acf7171bdcc46c4d6bf875d36e80b216b7721544855e6c2b20be469415ee768b2195e74fe4650621ee6bfaa7897e709ac0d8d59cdb30772cb90b
-  skip_validation: true
+- archive: msgpack-1.2.2.tar.gz
+  archive_sha512sum: 64bfb521749f45e1283a7ff6f5bdf526f13844c000b3346c2f56d1cc8dbc54e0bc35ba19359080a7d15700e2831f4376d8172adef546345e7450c32b3b52bef2
+  archive_type: upstream
+  name: msgpack-python-1.2.2
+  url: https://github.com/msgpack/msgpack-python/archive/refs/tags/v1.2.2.tar.gz
+  repo_url: https://github.com/msgpack/msgpack-python
+  commit_id: 7381b318f51688f3f941df0b4c056d7a7a20c9d0
+  skip_list: []
+  missing: []
   spdx:
     package:
       detailed_description: 'MessagePack is a fast, compact binary serialization format,

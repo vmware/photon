@@ -1,0 +1,26 @@
+From 07274a2eee6527a6bbd71e0fb4bc40497564fc82 Mon Sep 17 00:00:00 2001
+From: Prashant Singh Chauhan <prashant.singh-chauhan@broadcom.com>
+Date: Mon, 12 Oct 2026 08:37:46 +0000
+Subject: [PATCH] Makefile: Use cython3 binary for the cython target
+
+Signed-off-by: Prashant Singh Chauhan <prashant.singh-chauhan@broadcom.com>
+---
+ Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index 51f3e0e..e704155 100644
+--- a/Makefile
++++ b/Makefile
+@@ -22,7 +22,7 @@ pyupgrade:
+ 
+ .PHONY: cython
+ cython:
+-	cython msgpack/_cmsgpack.pyx
++	cython3 msgpack/_cmsgpack.pyx
+ 
+ .PHONY: test
+ test: cython
+-- 
+2.53.0
+

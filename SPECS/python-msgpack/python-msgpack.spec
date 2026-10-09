@@ -1,46 +1,59 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} >= 92
 %global debug_package %{nil}
 
 Summary:        MessagePack (de)serializer.
 Name:           python3-msgpack
-Version:        1.0.4
-Release:        6%{?dist}
+Version:        1.2.2
+Release:        1%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            http://msgpack.org/
-Source0:        https://pypi.io/packages/source/m/msgpack-python/msgpack-%{version}.tar.gz
+Source0:        https://github.com/msgpack/msgpack-python/archive/refs/tags/v%{version}.tar.gz#/msgpack-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0: 0001-Makefile-Use-cython3-binary-for-the-cython-target.patch
 
 # Note: If you are fixing a CVE here, please check for the same in python3-pip
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
+BuildRequires:  python3-build
+BuildRequires:  python3-installer
+BuildRequires:  python3-packaging
 BuildRequires:  python3-xml
+BuildRequires:  cython3
+%if 0%{?with_check}
+BuildRequires:  python3-pytest
+%endif
 Requires:       python3
 
 %description
 MessagePack is a fast, compact binary serialization format, suitable for similar data to JSON. This package provides CPython bindings for reading and writing MessagePack data.
 
 %prep
-%autosetup -n msgpack-%{version}
+%autosetup -p1 -n msgpack-python-%{version}
 
 %build
-%py3_build
+%make_build cython
+%py3_build_wheel
 
 %install
-%py3_install
+%py3_install_wheel
+%{py_byte_compile_and_ghost}
 
 %check
-python3 setup.py test
+PYTHONPATH=%{buildroot}%{python3_sitelib} python3 -m pytest -v test
 
-%files
+%files -f %{py_ghost_filelist}
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+* Fri Oct 09 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.2.2-1
+- Upgrade to 1.2.2
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.0.4-6
 - Extended to build for subrelease 91 and above
 * Mon Mar 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.0.4-5

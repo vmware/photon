@@ -1,0 +1,14 @@
+sources:
+- archive: msgpack-1.0.4.tar.gz
+  archive_sha512sum: dcd59bf77408acf7171bdcc46c4d6bf875d36e80b216b7721544855e6c2b20be469415ee768b2195e74fe4650621ee6bfaa7897e709ac0d8d59cdb30772cb90b
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'MessagePack is a fast, compact binary serialization format,
+        suitable for similar data to JSON. This package provides CPython bindings
+        for reading and writing MessagePack data. '
+      home_page: http://msgpack.org/
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: MessagePack (de)serializer.
+      supplier: 'Organization: Broadcom, Inc.'
