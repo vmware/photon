@@ -1,48 +1,48 @@
 sources:
-- archive: photon-os-installer-2.8.tar.gz
-  archive_sha512sum: 023e58799ed8c71cd9dc420c57337bef27b95c2926aff53253e6c8294d75711d27a49f9a9c12578b3b9e7a7efcf858638ad8559f0734e142b13bc00b011c47ab
+- archive: photon-os-installer-2.9.tar.gz
+  archive_sha512sum: 6fce11f895350b44af2b407a5f1f768bb072676771241c743ae62547b1bf89d16fe75ba9d2ef19afb850c96ce3ad8b1c4db0ca385fa6c2beeae629d81752a2c6
   archive_type: upstream
-  name: photon-os-installer-2.8
-  version: 2.8
-  url: https://github.com/vmware/photon-os-installer/archive/refs/tags/v2.8.tar.gz
+  name: photon-os-installer-2.9
+  version: 2.9
+  url: https://github.com/vmware/photon-os-installer/archive/refs/tags/v2.9.tar.gz
   repo_url: https://github.com/vmware/photon-os-installer
-  commit_id: 8b63bb56db64746021c3b98d56ea9b858bdaa048
+  commit_id: 59a011da9f32b4a983be0737027d951d5dfca968
   skip_list: []
   missing: []
   license_manual_review:
   # Ignore standalone Apache-2.0 and GPL-2.0-only licenses, to ensure we only get
   # Apache-2.0 OR GPL-2.0-only
   - file_paths:
-    - photon-os-installer-2.8/LICENSE-Apachev2
+    - photon-os-installer-2.9/LICENSE-Apachev2
     sha256sum: 76de58b4bfb164a4e2243d798af4473baab2d4dad58adc0ebfd689e507d259f3
     spdx_exp: ''
   - file_paths:
-    - photon-os-installer-2.8/LICENSE-GPL2.0
+    - photon-os-installer-2.9/LICENSE-GPL2.0
     sha256sum: 536cc4aabf01ed675648fdd3e5d3f0e7c2cbe6c4ec6ef1d1265249ef15e669a2
     spdx_exp: ''
   - file_paths:
-    - photon-os-installer-2.8/NOTICE-Apachev2
+    - photon-os-installer-2.9/NOTICE-Apachev2
     sha256sum: 2d226247cb1af7c76b5b6b97d14687d91567e41925ea70d9cdd0706880f0eb3c
     spdx_exp: ''
   - file_paths:
-    - photon-os-installer-2.8/NOTICE-GPL2.0
+    - photon-os-installer-2.9/NOTICE-GPL2.0
     sha256sum: 9587baa5e649eac92c00567c15a4e4062d5bc3c8114392623ed9459dfe7fe572
     spdx_exp: ''
   - file_paths:
-    - photon-os-installer-2.8/README.md
+    - photon-os-installer-2.9/README.md
     sha256sum: 49e5cd0d0ec73f8ff6eb1ec3142c09e711677ae68f26fc7e4caa1ec5e72c5ab1
     spdx_exp: Apache-2.0 OR GPL-2.0-only
   - file_paths:
-    - photon-os-installer-2.8/docker/README.md
+    - photon-os-installer-2.9/docker/README.md
     sha256sum: 8fb12b6ddc043b39c3767fc81ad4136779ee9d899d51973ea7e356a77975740c
     spdx_exp: Apache-2.0 OR GPL-2.0-only
   - file_paths:
-    - photon-os-installer-2.8/examples/iso/iso.yaml
+    - photon-os-installer-2.9/examples/iso/iso.yaml
     sha256sum: 6a76e3103277e21a9098f87f304d65c4f836a4bdfdd58abab8fe5ecadd7dafad
     spdx_exp: Apache-2.0 OR GPL-2.0-only
   - file_paths:
-    - photon-os-installer-2.8/photon-os-installer.spec
-    sha256sum: 983c839fa0fd7c3b6c7458a707eadf0c83a8d73c5c6060d7db28d2954b5d7926
+    - photon-os-installer-2.9/photon-os-installer.spec
+    sha256sum: cc0217916b85f266c0f8fb901208906889f4d3f95d6548ab1072ef173331fafa
     spdx_exp: Apache-2.0 OR GPL-2.0-only
   spdx:
     package:
