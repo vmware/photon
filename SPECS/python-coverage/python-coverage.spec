@@ -1,21 +1,24 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} >= 92
 %define debug_package %{nil}
 
 Summary:        The code coverage tool for Python
 Name:           python3-coverage
-Version:        6.4.4
-Release:        6%{?dist}
+Version:        7.16.2
+Release:        1%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/coverage
-Source0:        https://files.pythonhosted.org/packages/source/c/coverage/coverage-%{version}.tar.gz
+Source0:        https://github.com/coveragepy/coveragepy/archive/refs/tags/%{version}.tar.gz#/coverage-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
+BuildRequires:  python3-build
+BuildRequires:  python3-installer
+BuildRequires:  python3-packaging
 BuildRequires:  python3-xml
 %if 0%{?with_check}
 BuildRequires:  openssl-devel
@@ -31,18 +34,19 @@ Code coverage measurement for Python.
 Coverage.py measures code coverage, typically during test execution. It uses the code analysis tools and tracing hooks provided in the Python standard library to determine which lines are executable, and which have been executed.
 
 %prep
-%autosetup -n coverage-%{version}
+%autosetup -n coveragepy-%{version}
 
 %build
-%py3_build
+%py3_build_wheel
 
 %install
-%py3_install
+%py3_install_wheel
+%{py_byte_compile_and_ghost}
 
 %check
 LANG=en_US.UTF-8 tox -e py36
 
-%files
+%files -f %{py_ghost_filelist}
 %defattr(-,root,root)
 %{python3_sitelib}/*
 %{_bindir}/coverage
@@ -50,6 +54,8 @@ LANG=en_US.UTF-8 tox -e py36
 %{_bindir}/coverage-%{python3_version}
 
 %changelog
+* Fri Oct 09 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 7.16.2-1
+- Upgrade to 7.16.2
 * Tue Sep 22 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.4.4-6
 - Remove stale python3-six dependency
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.4.4-5

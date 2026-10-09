@@ -1,14 +1,20 @@
 sources:
-- archive: coverage-6.4.4.tar.gz
-  archive_sha512sum: f210f2471b170e05d4dac2cc9a91e3f0d4ba6456cdf91dc1c0ef67a02a11f4279c5beca5df8854c42660346995492b1eff020e1ac578d2a0a129627dadd17114
-  skip_validation: true
+- archive: coverage-7.16.2.tar.gz
+  archive_sha512sum: 1b4a0900a21f537f1fa4abe11bf078c01987afcf51c0774ad7c65c6348bdd6eb925ed9e2aa3b65150b802782557c3289fe9b389f7eb0609634db1927c886234b
+  archive_type: upstream
+  name: coveragepy-7.16.2
+  url: https://github.com/coveragepy/coveragepy/archive/refs/tags/7.16.2.tar.gz
+  repo_url: https://github.com/coveragepy/coveragepy
+  commit_id: 5643ae7c682bbd56ee1ac2b11556145ab8c2cab0
+  skip_list: []
+  missing: []
   spdx:
     package:
       detailed_description: 'Code coverage measurement for Python. Coverage.py measures
         code coverage, typically during test execution. It uses the code analysis
         tools and tracing hooks provided in the Python standard library to determine
         which lines are executable, and which have been executed. '
-      home_page: https://pypi.python.org/pypi/coverage
+      home_page: https://coverage.readthedocs.io
       license_concluded: Apache-2.0 AND (MIT OR GPL-2.0-only)
       license_declared: Apache-2.0 AND (MIT OR GPL-2.0-only)
       short_summary: The code coverage tool for Python
