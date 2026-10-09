@@ -1,10 +1,12 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} >= 92
+
+%define srcname vmware-photon-5.0-stig-ansible-hardening-3r4
 
 Summary:        VMware Photon OS 5.0 STIG Readiness Guide Ansible Playbook
 Name:           stig-hardening
 #Version x.y.z corresponds v<x>r<y>-z tag in the repo. Eg 1.1.1 = v1r1-1
-Version:        2.1
-Release:        9%{?dist}
+Version:        3.4
+Release:        1%{?dist}
 URL:            https://github.com/vmware/dod-compliance-and-automation/tree/master/photon/5.0/ansible/vmware-photon-5.0-stig-ansible-hardening
 Group:          Productivity/Security
 Vendor:         VMware, Inc.
@@ -15,14 +17,10 @@ BuildArch: noarch
 #Remove these files from gitrepo while preparing tar ball
 #.ansible-lint .gitignore .yamllint .gitattributes .gitlab-ci.yml vars-cap.yml
 #Update this URL to github URL once the source code is available in github
-Source0: https://packages.broadcom.com/photon/photon_sources/1.0/%{name}-ph5-%{version}.tar.gz
+Source0: https://packages.broadcom.com/photon/photon_sources/1.0/%{srcname}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
-
-Patch0: fix-some-value-checks.patch
-Patch1: system-auth-fix.patch
-Patch2: fix-photon.yml-for-latest-audit-and-ansible.patch
 
 Requires: ansible >= 2.20.1
 Requires: ansible-community-general
@@ -33,14 +31,15 @@ Requires: sshpass
 VMware Photon OS 5.0 STIG Readiness Guide Ansible Playbook
 
 %prep
-%autosetup -p1 -n %{name}-ph5-%{version}
+%autosetup -p1 -n %{srcname}
 
 %build
 
 %install
 install -d %{buildroot}%{_datadir}/ansible/%{name}
 
-pushd %{_builddir}/%{name}-ph5-%{version}
+pushd %{_builddir}/%{srcname}
+ls
 cp -a *.md \
   *.yml \
   defaults \
@@ -48,7 +47,7 @@ cp -a *.md \
   meta \
   tasks \
   templates \
-  vars* \
+  vars \
   %{buildroot}%{_datadir}/ansible/%{name}
 popd
 
@@ -57,6 +56,8 @@ popd
 %{_datadir}/ansible/
 
 %changelog
+* Fri Oct 09 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.4-1
+- Upgrade to v3r4
 * Mon Sep 07 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.1-9
 - Use a definite list files for installation
 * Wed Jun 17 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.1-8

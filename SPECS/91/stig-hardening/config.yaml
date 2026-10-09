@@ -1,0 +1,12 @@
+sources:
+- archive: stig-hardening-ph5-2.1.tar.gz
+  archive_sha512sum: 32974725804e64eb8941872af0d1da7e839833e534b0b07f677c78f92e55ae5fcc8860c0d176193019ef28d3f7c63c351ceda50916834dc707f1accc0145ee51
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'VMware Photon OS 5.0 STIG Readiness Guide Ansible Playbook '
+      home_page: https://github.com/vmware/dod-compliance-and-automation/tree/master/photon/5.0/ansible/vmware-photon-5.0-stig-ansible-hardening
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: VMware Photon OS 5.0 STIG Readiness Guide Ansible Playbook
+      supplier: 'Organization: Broadcom, Inc.'
