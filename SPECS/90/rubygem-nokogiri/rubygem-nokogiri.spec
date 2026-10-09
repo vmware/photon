@@ -4,8 +4,8 @@
 
 Summary:        Nokogiri is an HTML, XML, SAX, and Reader parser.
 Name:           rubygem-nokogiri
-Version:        1.18.8
-Release:        2.1.2%{?dist}
+Version:        1.19.4
+Release:        0.0.1%{?dist}
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -14,12 +14,6 @@ Source0:        https://rubygems.org/downloads/nokogiri-%{version}.gem
 
 Source1: license.txt
 %include %{SOURCE1}
-
-# Remove this patch with nokogiri-1.19.1 upgrade
-Patch0:         0001-Raise-RuntimeError-when-canonicalization-fails.patch
-# Remove this patch with nokogiri-1.19.3 upgrade
-Patch1:         0001-fix-ReDoS-in-CSS-tokenizer-STRING-rule.patch
-Patch2:         0002-fix-ReDoS-in-CSS-tokenizer-ident-rule.patch
 
 BuildRequires:  ruby-devel
 BuildRequires:  rubygem-mini_portile2
@@ -35,7 +29,6 @@ Nokogiri is an HTML, XML, SAX, and Reader parser. Among Nokogiri's many features
 
 %prep
 %gem_unpack %{SOURCE0}
-%autopatch -p1
 
 %build
 %gem_build
@@ -51,6 +44,8 @@ rm -rf %{buildroot}/*
 %{gem_base}
 
 %changelog
+* Fri Oct 09 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.19.4-0.0.1
+- Upgrade to 1.19.4
 * Thu May 21 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.18.8-2.1.2
 - Fixing ReDoS in CSS tokenizer rule
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.18.8-2.1.1
