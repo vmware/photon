@@ -6,8 +6,8 @@
 
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
-Version:        10.5p1
-Release:        2%{?dist}
+Version:        10.6p1
+Release:        1%{?dist}
 URL:            https://www.openssh.com
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -248,6 +248,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/sshd@.service
 
 %changelog
+* Fri Oct 09 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.6p1-1
+- Upgrade to v10.6p1
 * Tue Sep 29 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.5p1-2
 - Add PQC KEX methods: mlkem768x25519-sha256, mlkem768nistp256-sha256, mlkem1024nistp384-sha384
 - Use OpenSSL EVP for ML-KEM instead of libcrux
