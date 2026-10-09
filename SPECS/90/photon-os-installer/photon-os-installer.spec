@@ -5,7 +5,7 @@
 Summary:       Photon OS Installer
 Name:          photon-os-installer
 Version:       2.7
-Release:       3.1.1%{?dist}
+Release:       3.1.2%{?dist}
 Group:         System Environment/Base
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -14,6 +14,10 @@ Source0:       %{name}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0: poi-2.7-installer-add-btrfs-progs.patch
+Patch1: poi-2.7-stig-drop-redundant-packages.patch
+Patch2: poi-2.7-isoBuilder-installer-requestable-packages-on-media.patch
 
 BuildRequires: python3-devel
 BuildRequires: python3-pyinstaller
@@ -67,6 +71,8 @@ rm -rf %{buildroot}
 %{_bindir}/photon-iso-builder
 
 %changelog
+* Thu Oct 08 2026 Daniel Casota <dcasota@gmail.com> 2.7-3.1.2
+- Install btrfs-progs, trim STIG packages, ship them on media
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.7-3.1.1
 - Adjusted to build for subrelease 90
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.7-3.1
