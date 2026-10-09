@@ -1,0 +1,86 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Eric Dumazet <edumazet@google.com>
+Date: Tue, 3 Feb 2026 19:25:09 +0000
+Subject: inet: RAW sockets using IPPROTO_RAW MUST drop incoming ICMP
+
+[ Upstream commit c89477ad79446867394360b29bb801010fc3ff22 ]
+
+Yizhou Zhao reported that simply having one RAW socket on protocol
+IPPROTO_RAW (255) was dangerous.
+
+  socket(AF_INET, SOCK_RAW, 255);
+
+A malicious incoming ICMP packet can set the protocol field to 255
+and match this socket, leading to FNHE cache changes.
+
+inner = IP(src="192.168.2.1", dst="8.8.8.8", proto=255)/Raw("TEST")
+pkt = IP(src="192.168.1.1", dst="192.168.2.1")/ICMP(type=3, code=4, nexthopmtu=576)/inner
+
+"man 7 raw" states:
+
+  A protocol of IPPROTO_RAW implies enabled IP_HDRINCL and is able
+  to send any IP protocol that is specified in the passed header.
+  Receiving of all IP protocols via IPPROTO_RAW is not possible
+  using raw sockets.
+
+Make sure we drop these malicious packets.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[Harinadh: backport fix to 6.1.176 , icmpv6_notify return type is void in 6.1.y,
+In 6.6 and above return type is enum, So ignored assigning value to reason ]
+Signed-off-by: Harinadh Dommaraju <harinadh.dommaraju@broadcom.com>
+---
+ net/ipv4/icmp.c | 14 ++++++++++----
+ net/ipv6/icmp.c |  4 ++++
+ 2 files changed, 14 insertions(+), 4 deletions(-)
+
+diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
+index e556ca28a6ce..aabbccddeeff 100644
+--- a/net/ipv4/icmp.c
++++ b/net/ipv4/icmp.c
+@@ -853,16 +853,20 @@ static void icmp_socket_deliver(struct sk_buff *skb, u32 info)
+ 	/* Checkin full IP header plus 8 bytes of protocol to
+ 	 * avoid additional coding at protocol handlers.
+ 	 */
+-	if (!pskb_may_pull(skb, iph->ihl * 4 + 8)) {
+-		__ICMP_INC_STATS(dev_net_rcu(skb->dev), ICMP_MIB_INERRORS);
+-		return;
+-	}
++	if (!pskb_may_pull(skb, iph->ihl * 4 + 8))
++		goto out;
+ 
+-	raw_icmp_error(skb, protocol, info);
+-
++	/* IPPROTO_RAW sockets are not supposed to receive anything. */
++	if (protocol == IPPROTO_RAW)
++		goto out;
++
++	raw_icmp_error(skb, protocol, info);
+ 	ipprot = rcu_dereference(inet_protos[protocol]);
+ 	if (ipprot && ipprot->err_handler)
+ 		ipprot->err_handler(skb, info);
++	return;
++out:
++	__ICMP_INC_STATS(dev_net_rcu(skb->dev), ICMP_MIB_INERRORS);
+ }
+ 
+ static bool icmp_tag_validation(int proto)
+
+diff --git a/net/ipv6/icmp.c b/net/ipv6/icmp.c
+index ea1cdacbdcf1..112233445566 100644
+--- a/net/ipv6/icmp.c
++++ b/net/ipv6/icmp.c
+@@ -857,6 +857,10 @@ void icmpv6_notify(struct sk_buff *skb, u8 type, u8 code, __be32 info)
+ 	/* Checkin header including 8 bytes of inner protocol header. */
+ 	if (!pskb_may_pull(skb, inner_offset+8))
+ 		goto out;
++
++	/* IPPROTO_RAW sockets are not supposed to receive anything. */
++	if (nexthdr == IPPROTO_RAW)
++		goto out;
+
+ 	/* BUGGG_FUTURE: we should try to parse exthdrs in this packet.
+ 	   Without this we will not able f.e. to make source routed
