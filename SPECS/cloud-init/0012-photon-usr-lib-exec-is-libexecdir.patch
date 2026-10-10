@@ -1,0 +1,39 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Daniel Casota <dcasota@gmail.com>
+Date: Thu, 10 Sep 2026 00:00:00 +0000
+Subject: [PATCH] photon: usr_lib_exec is /usr/libexec, as for the other RPM
+ distros
+
+Distro.usr_lib_exec defaults to /usr/lib in cloudinit/distros/__init__.py,
+and photon.py does not override it - while rhel.py:30 sets /usr/libexec.
+
+The meson install puts the helpers in libexecdir:
+
+    /usr/libexec/cloud-init/write-ssh-key-fingerprints
+    /usr/libexec/cloud-init/hook-hotplug
+
+so cc_keys_to_console looks for write-ssh-key-fingerprints under
+/usr/lib/cloud-init and does not find it. Distro.get_clouddir() derives
+from the same attribute.
+
+This is the same libexecdir-vs-lib mismatch the generator template has,
+expressed in Python rather than in a rendered shell script. Upstream issue
+6588 describes the class of bug.
+
+Signed-off-by: Daniel Casota <dcasota@gmail.com>
+---
+ cloudinit/distros/photon.py | 1 +
+ 1 file changed, 1 insertion(+)
+
+--- a/cloudinit/distros/photon.py
++++ b/cloudinit/distros/photon.py
+@@ -17,6 +17,7 @@
+     network_conf_dir = "/etc/systemd/network/"
+     systemd_locale_conf_fn = "/etc/locale.conf"
+     resolve_conf_fn = "/etc/systemd/resolved.conf"
++    usr_lib_exec = "/usr/libexec"
+ 
+     renderer_configs = {
+         "networkd": {
+-- 
+2.51.0
