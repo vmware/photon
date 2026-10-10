@@ -1,0 +1,55 @@
+From d64cb81dcbd54927515a7f65e5e24affdc73c14b Mon Sep 17 00:00:01 2001
+From: Yucheng Lu <kanolyc@gmail.com>
+Date: Tue, 31 Mar 2026 16:00:21 +0800
+Subject: [PATCH] net/sched: sch_netem: fix out-of-bounds access in packet corruption
+
+[ Upstream commit d64cb81dcbd54927515a7f65e5e24affdc73c14b ]
+
+In netem_enqueue(), the packet corruption logic uses
+get_random_u32_below(skb_headlen(skb)) to select an index for
+modifying skb->data. When an AF_PACKET TX_RING sends fully non-linear
+packets over an IPIP tunnel, skb_headlen(skb) evaluates to 0.
+
+Passing 0 to get_random_u32_below() takes the variable-ceil slow path
+which returns an unconstrained 32-bit random integer. Using this
+unconstrained value as an offset into skb->data results in an
+out-of-bounds memory access.
+
+Fix this by verifying skb_headlen(skb) is non-zero before attempting
+to corrupt the linear data area. Fully non-linear packets will silently
+bypass the corruption logic.
+
+Fixes: c865e5d99e25 ("[PKT_SCHED] netem: packet corruption option")
+Reported-by: Yifan Wu <yifanwucs@gmail.com>
+Reported-by: Juefei Pu <tomapufckgml@gmail.com>
+Signed-off-by: Yuan Tan <tanyuan98@outlook.com>
+Signed-off-by: Xin Liu <bird@lzu.edu.cn>
+Signed-off-by: Yuhang Zheng <z1652074432@gmail.com>
+Signed-off-by: Yucheng Lu <kanolyc@gmail.com>
+Reviewed-by: Stephen Hemminger <stephen@networkplumber.org>
+Link: https://patch.msgid.link/45435c0935df877853a81e6d06205ac738ec65fa.1774941614.git.kanolyc@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+[Ankit: Backported for v6.1.175. v6.1.x uses prandom_u32_max() in place of get_random_u32_below()]
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ net/sched/sch_netem.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/net/sched/sch_netem.c b/net/sched/sch_netem.c
+index 2c47bd8dba64..5d6e928ab750 100644
+--- a/net/sched/sch_netem.c
++++ b/net/sched/sch_netem.c
+@@ -508,8 +508,9 @@ static int netem_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+ 			goto finish_segs;
+ 		}
+ 
+-		skb->data[prandom_u32_max(skb_headlen(skb))] ^=
+-			1<<prandom_u32_max(8);
++		if (skb_headlen(skb))
++			skb->data[prandom_u32_max(skb_headlen(skb))] ^=
++				1 << prandom_u32_max(8);
+ 	}
+ 
+ 	if (unlikely(sch->q.qlen >= sch->limit)) {
+--
+2.39.5

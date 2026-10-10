@@ -1,0 +1,40 @@
+From df1478f468e5e8ab9fdef1e1a0728616307d1e0b Mon Sep 17 00:00:00 2001
+From: Joshua Rogers <linux@joshua.hu>
+Date: Wed, 31 Dec 2025 17:44:24 -0500
+Subject: [PATCH] svcrdma: bound check rq_pages index in inline path
+
+[ Upstream commit d1bea0ce35b6095544ee82bb54156fc62c067e58 ]
+
+svc_rdma_copy_inline_range indexed rqstp->rq_pages[rc_curpage] without
+verifying rc_curpage stays within the allocated page array. Add guards
+before the first use and after advancing to a new page.
+
+Fixes: d7cc73972661 ("svcrdma: support multiple Read chunks per RPC")
+Cc: stable@vger.kernel.org
+Signed-off-by: Joshua Rogers <linux@joshua.hu>
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+[ adapted rc_curpage and rq_maxpages fields to ri_pageno and RPCSVC_MAXPAGES constant ]
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[ Applied patch to v6.1 by Gerrit Photon ]
+---
+ net/sunrpc/xprtrdma/svc_rdma_rw.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/net/sunrpc/xprtrdma/svc_rdma_rw.c b/net/sunrpc/xprtrdma/svc_rdma_rw.c
+index ed581c183..024d36b92 100644
+--- a/net/sunrpc/xprtrdma/svc_rdma_rw.c
++++ b/net/sunrpc/xprtrdma/svc_rdma_rw.c
+@@ -811,6 +811,9 @@ static int svc_rdma_copy_inline_range(struct svc_rdma_read_info *info,
+ 	for (page_no = 0; page_no < numpages; page_no++) {
+ 		unsigned int page_len;
+ 
++		if (info->ri_pageno >= RPCSVC_MAXPAGES)
++			return -EINVAL;
++
+ 		page_len = min_t(unsigned int, remaining,
+ 				 PAGE_SIZE - info->ri_pageoff);
+ 
+-- 
+2.43.7
+

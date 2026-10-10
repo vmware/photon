@@ -1,0 +1,53 @@
+From 125f932a76a97904ef8a555f1dd53e5d0e288c54 Mon Sep 17 00:00:00 2001
+From: Tobi Gaertner <tob.gaertner@me.com>
+Date: Fri, 13 Mar 2026 22:46:40 -0700
+Subject: [PATCH] net: usb: cdc_ncm: add ndpoffset to NDP32 nframes bounds
+ check
+
+[ Upstream commit 77914255155e68a20aa41175edeecf8121dac391 ]
+
+The same bounds-check bug fixed for NDP16 in the previous patch also
+exists in cdc_ncm_rx_verify_ndp32(). The DPE array size is validated
+against the total skb length without accounting for ndpoffset, allowing
+out-of-bounds reads when the NDP32 is placed near the end of the NTB.
+
+Add ndpoffset to the nframes bounds check and use struct_size_t() to
+express the NDP-plus-DPE-array size more clearly.
+
+Compile-tested only.
+
+Fixes: 0fa81b304a79 ("cdc_ncm: Implement the 32-bit version of NCM Transfer Block")
+Signed-off-by: Tobi Gaertner <tob.gaertner@me.com>
+Link: https://patch.msgid.link/20260314054640.2895026-3-tob.gaertner@me.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+[Ankit: Backported for v6.1.172, replaced struct_size_t() with explicit
+ sizeof arithmetic as the macro is not available in v6.1.]
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ drivers/net/usb/cdc_ncm.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+--- a/drivers/net/usb/cdc_ncm.c
++++ b/drivers/net/usb/cdc_ncm.c
+@@ -1691,6 +1691,7 @@
+ 	struct usbnet *dev = netdev_priv(skb_in->dev);
+ 	struct usb_cdc_ncm_ndp32 *ndp32;
+ 	int ret = -EINVAL;
++	size_t ndp_len;
+ 
+ 	if ((ndpoffset + sizeof(struct usb_cdc_ncm_ndp32)) > skb_in->len) {
+ 		netif_dbg(dev, rx_err, dev->net, "invalid NDP offset  <%u>\n",
+@@ -1710,8 +1711,9 @@
+ 					sizeof(struct usb_cdc_ncm_dpe32));
+ 	ret--; /* we process NDP entries except for the last one */
+ 
+-	if ((sizeof(struct usb_cdc_ncm_ndp32) +
+-	     ret * (sizeof(struct usb_cdc_ncm_dpe32))) > skb_in->len) {
++	ndp_len = sizeof(struct usb_cdc_ncm_ndp32) +
++		  ret * sizeof(struct usb_cdc_ncm_dpe32);
++	if (ndpoffset + ndp_len > skb_in->len) {
+ 		netif_dbg(dev, rx_err, dev->net, "Invalid nframes = %d\n", ret);
+ 		ret = -EINVAL;
+ 	}
+-- 
+2.40.4
