@@ -290,8 +290,8 @@ index bfde0f28c..a631b4905 100644
  	const unsigned int digest_size = req->dst_len;
  	int err;
  
--	if (WARN_ON(req->dst) || WARN_ON(!digest_size) ||
-+	if (fcw_warn_on(req->dst) || fcw_warn_on(!digest_size) ||
+-	if (WARN_ON(req->dst) || !digest_size ||
++	if (fcw_warn_on(req->dst) || !digest_size ||
  	    !ctx->key_size || sig_size != ctx->key_size)
  		return -EINVAL;
  
