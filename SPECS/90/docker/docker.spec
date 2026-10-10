@@ -14,7 +14,7 @@
 Summary:        Docker
 Name:           docker
 Version:        28.2.2
-Release:        7.4.1%{?dist}
+Release:        7.4.2%{?dist}
 URL:            http://docs.docker.com
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -64,6 +64,11 @@ Docker is an open source project to build, ship and run any application as a lig
 
 %package        engine
 Summary:        Docker Engine
+# docker-init is bind-mounted into containers and exec'd as PID 1 there, so it
+# must not depend on the container's libc. The dependency is versioned because
+# tini-static first appears in tini-0.19.0-3; an unversioned one would let an
+# older tini satisfy it and leave /usr/bin/docker-init dangling.
+Requires:       tini-static >= 0.19.0-3
 Requires:       libapparmor
 Requires:       libseccomp
 Requires:       libltdl
@@ -197,7 +202,7 @@ install -p -m 755 src/%{gopath_comp_engine}/bundles/dynbinary-daemon/dockerd %{b
 install -p -m 755 src/%{gopath_comp_engine}/bundles/dynbinary-daemon/docker-proxy %{buildroot}%{_bindir}/docker-proxy
 
 # install tini
-ln -srv %{buildroot}%{_bindir}/tini %{buildroot}%{_bindir}/docker-init
+ln -srv %{buildroot}%{_bindir}/tini-static %{buildroot}%{_bindir}/docker-init
 
 # install udev rules
 install -p -m 644 src/%{gopath_comp_engine}/contrib/udev/80-docker.rules %{buildroot}%{_udevrulesdir}/80-docker.rules
@@ -307,6 +312,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Fri Aug 07 2026 Daniel Casota <dcasota@gmail.com> 28.2.2-7.4.2
+- Point docker-init at tini-static so --init works in non-glibc containers
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 28.2.2-7.4.1
 - Adjusted to build for subrelease 90
 * Thu Apr 09 2026 Mukul Sikka <mukul.sikka@broadcom.com> 28.2.2-7.4
