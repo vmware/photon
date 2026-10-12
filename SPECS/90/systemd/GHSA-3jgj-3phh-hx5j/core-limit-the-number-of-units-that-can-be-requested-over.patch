@@ -1,0 +1,29 @@
+From: Frantisek Sumsal <frantisek@sumsal.cz>
+Date: Wed, 29 Apr 2026 12:02:32 +0200
+Subject: core: limit the number of units that can be requested over
+
+Origin: upstream, https://github.com/systemd/systemd-stable/commit/5bbb84ac2769a5ad504e6c2e1cf9457f725090f9
+ ListUnitsByNames
+
+(cherry picked from commit 51a88ac72330f20a030b8938b6bfce2b2215d8a0)
+(cherry picked from commit 3766ad840552a33c5deef3f77b5411ae57182034)
+(cherry picked from commit 5bbb84ac2769a5ad504e6c2e1cf9457f725090f9)
+---
+ src/core/dbus-manager.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/src/core/dbus-manager.c b/src/core/dbus-manager.c
+index 9cf83b2..aab6289 100644
+--- a/src/core/dbus-manager.c
++++ b/src/core/dbus-manager.c
+@@ -947,6 +947,10 @@ static int method_list_units_by_names(sd_bus_message *message, void *userdata, s
+         if (r < 0)
+                 return r;
+ 
++        if (strv_length(units) > MAX(hashmap_size(m->units), (unsigned) MANAGER_MAX_NAMES / 2))
++                return sd_bus_error_set(error, SD_BUS_ERROR_LIMITS_EXCEEDED,
++                                        "Too many unit names requested.");
++
+         r = sd_bus_message_new_method_return(message, &reply);
+         if (r < 0)
+                 return r;

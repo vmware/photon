@@ -1,0 +1,88 @@
+From: Frantisek Sumsal <frantisek@sumsal.cz>
+Date: Thu, 30 Apr 2026 14:03:47 +0200
+Subject: dbus: limit the number of env variables to something reasonable,
+
+Origin: upstream, https://github.com/systemd/systemd-stable/commit/271071eaa1c221d532ee51049cceaeeca0d249b9
+ vol. 2
+
+Turns out we can utilize this limit at a couple more places, so let's
+move the previously defined limit constant to env-util.h and use it to
+guard a couple more D-Bus methods. Also, bump it a bit, given it's meant
+to be a safety cap that can't be hit in valid scenarios.
+
+Follow-up for 7671b43cb88532cce2aa9ad12f777922206d6a42.
+
+(cherry picked from commit 49c1e1bcf2b482b6de35a4212a06ed1d8c382745)
+(cherry picked from commit 5ac450552d7f811352c9cb44ef4f6fd277a1d784)
+(cherry picked from commit 271071eaa1c221d532ee51049cceaeeca0d249b9)
+
+(modified for backport to 255.4)
+---
+ src/basic/env-util.h       |  2 ++
+ src/core/dbus-manager.c    | 10 ++++++++++
+ src/machine/machine-dbus.c |  4 ++++
+ 3 files changed, 16 insertions(+)
+
+diff --git a/src/basic/env-util.h b/src/basic/env-util.h
+index f7fb1e9..5421d24 100644
+--- a/src/basic/env-util.h
++++ b/src/basic/env-util.h
+@@ -15,6 +15,8 @@ static inline size_t sc_arg_max(void) {
+         return (size_t) l;
+ }
+ 
++#define ENVIRONMENT_ASSIGNMENTS_MAX 16384U
++
+ bool env_name_is_valid(const char *e);
+ bool env_value_is_valid(const char *e);
+ bool env_assignment_is_valid(const char *e);
+diff --git a/src/core/dbus-manager.c b/src/core/dbus-manager.c
+index a1bc505..df44998 100644
+--- a/src/core/dbus-manager.c
++++ b/src/core/dbus-manager.c
+@@ -1945,6 +1945,10 @@ static int method_set_environment(sd_bus_message *message, void *userdata, sd_bu
+         r = sd_bus_message_read_strv(message, &plus);
+         if (r < 0)
+                 return r;
++
++        if (strv_length(plus) > ENVIRONMENT_ASSIGNMENTS_MAX)
++                return sd_bus_error_set(error, SD_BUS_ERROR_LIMITS_EXCEEDED,
++                                        "Too many environment assignments in a single query.");
+         if (!strv_env_is_valid(plus))
+                 return sd_bus_error_set(error, SD_BUS_ERROR_INVALID_ARGS, "Invalid environment assignments");
+ 
+@@ -1976,6 +1980,9 @@ static int method_unset_environment(sd_bus_message *message, void *userdata, sd_
+         if (r < 0)
+                 return r;
+ 
++        if (strv_length(minus) > ENVIRONMENT_ASSIGNMENTS_MAX)
++                return sd_bus_error_set(error, SD_BUS_ERROR_LIMITS_EXCEEDED,
++                                        "Too many environment variable names in a single query.");
+         if (!strv_env_name_or_assignment_is_valid(minus))
+                 return sd_bus_error_setf(error, SD_BUS_ERROR_INVALID_ARGS,
+                                          "Invalid environment variable names or assignments");
+@@ -2012,6 +2019,9 @@ static int method_unset_and_set_environment(sd_bus_message *message, void *userd
+         if (r < 0)
+                 return r;
+ 
++        if (strv_length(plus) > ENVIRONMENT_ASSIGNMENTS_MAX || strv_length(minus) > ENVIRONMENT_ASSIGNMENTS_MAX)
++                return sd_bus_error_set(error, SD_BUS_ERROR_LIMITS_EXCEEDED,
++                                        "Too many environment variable names or assignments in a single query.");
+         if (!strv_env_name_or_assignment_is_valid(minus))
+                 return sd_bus_error_setf(error, SD_BUS_ERROR_INVALID_ARGS,
+                                          "Invalid environment variable names or assignments");
+diff --git a/src/machine/machine-dbus.c b/src/machine/machine-dbus.c
+index 4620f32..d1729f9 100644
+--- a/src/machine/machine-dbus.c
++++ b/src/machine/machine-dbus.c
+@@ -640,6 +640,10 @@ int bus_machine_method_open_shell(sd_bus_message *message, void *userdata, sd_bu
+         r = sd_bus_message_read_strv(message, &env);
+         if (r < 0)
+                 return r;
++
++        if (strv_length(env) > ENVIRONMENT_ASSIGNMENTS_MAX)
++                return sd_bus_error_set(error, SD_BUS_ERROR_LIMITS_EXCEEDED,
++                                        "Too many environment assignments in a single query.");
+         if (!strv_env_is_valid(env))
+                 return sd_bus_error_set(error, SD_BUS_ERROR_INVALID_ARGS, "Invalid environment assignments");
+ 

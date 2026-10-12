@@ -1,0 +1,44 @@
+From d67768d6b696a50d4d0d34280aa31c11201baff4 Mon Sep 17 00:00:00 2001
+From: Frantisek Sumsal <frantisek@sumsal.cz>
+Date: Wed, 29 Apr 2026 11:50:01 +0200
+Subject: [PATCH 4/5] sd-bus: store the strv size when extending it
+
+Origin: upstream, https://github.com/systemd/systemd-stable/commit/3865ea557977d850c46a32b20677438de7c921ef
+
+So strv_push_with_size() doesn't have to recalculate the size every
+time.
+
+(cherry picked from commit 0d71d58da084a5548bcb762aa4b0fad9dc49fac9)
+(cherry picked from commit c03267827e4e39577e8ab0c3d8c18241733b21df)
+(cherry picked from commit 3865ea557977d850c46a32b20677438de7c921ef)
+---
+ src/libsystemd/sd-bus/bus-message.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/src/libsystemd/sd-bus/bus-message.c b/src/libsystemd/sd-bus/bus-message.c
+index 7de00d7..fb823a6 100644
+--- a/src/libsystemd/sd-bus/bus-message.c
++++ b/src/libsystemd/sd-bus/bus-message.c
+@@ -4295,6 +4295,7 @@ int bus_message_get_blob(sd_bus_message *m, void **buffer, size_t *sz) {
+ _public_ int sd_bus_message_read_strv_extend(sd_bus_message *m, char ***l) {
+         char type;
+         const char *contents, *s;
++        size_t n;
+         int r;
+ 
+         assert(m);
+@@ -4311,9 +4312,10 @@ _public_ int sd_bus_message_read_strv_extend(sd_bus_message *m, char ***l) {
+         if (r <= 0)
+                 return r;
+ 
++        n = strv_length(*l);
+         /* sd_bus_message_read_basic() does content validation for us. */
+         while ((r = sd_bus_message_read_basic(m, *contents, &s)) > 0) {
+-                r = strv_extend(l, s);
++                r = strv_extend_with_size(l, &n, s);
+                 if (r < 0)
+                         return r;
+         }
+-- 
+2.56.0
+

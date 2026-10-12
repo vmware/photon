@@ -1,0 +1,66 @@
+From eaff74e002d74e86fa5d7955be704b10de0b2f2e Mon Sep 17 00:00:00 2001
+From: Frantisek Sumsal <frantisek@sumsal.cz>
+Date: Wed, 29 Apr 2026 13:48:49 +0200
+Subject: [PATCH 5/5] sd-json,user-record: store the strv size when extending
+ it
+
+Origin: upstream, https://github.com/systemd/systemd-stable/commit/b313f7cc8c464451025e6fd8137c477ad4d373d5
+
+So strv_push_with_size() doesn't have to recalculate the size every
+time.
+
+(cherry picked from commit 82614a4c6f19f0902b6fefc2988ccc54edb47eb5)
+(cherry picked from commit 396f3f0cd6fa92a3ebefd8f20b40514585756af3)
+(cherry picked from commit b313f7cc8c464451025e6fd8137c477ad4d373d5)
+
+(modified for backport to 255.4)
+---
+ src/shared/json.c        | 3 ++-
+ src/shared/user-record.c | 3 ++-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/src/shared/json.c b/src/shared/json.c
+index fff6c81..f788302 100644
+--- a/src/shared/json.c
++++ b/src/shared/json.c
+@@ -4617,6 +4617,7 @@ int json_dispatch_strv(const char *name, JsonVariant *variant, JsonDispatchFlags
+         _cleanup_strv_free_ char **l = NULL;
+         char ***s = ASSERT_PTR(userdata);
+         JsonVariant *e;
++        size_t n = 0;
+         int r;
+ 
+         assert(variant);
+@@ -4649,7 +4650,7 @@ int json_dispatch_strv(const char *name, JsonVariant *variant, JsonDispatchFlags
+                 if ((flags & JSON_SAFE) && !string_is_safe(json_variant_string(e)))
+                         return json_log(e, flags, SYNTHETIC_ERRNO(EINVAL), "JSON field '%s' contains unsafe characters, refusing.", strna(name));
+ 
+-                r = strv_extend(&l, json_variant_string(e));
++                r = strv_extend_with_size(&l, &n, json_variant_string(e));
+                 if (r < 0)
+                         return json_log(e, flags, r, "Failed to append array element: %m");
+         }
+diff --git a/src/shared/user-record.c b/src/shared/user-record.c
+index 06bc699..a456478 100644
+--- a/src/shared/user-record.c
++++ b/src/shared/user-record.c
+@@ -617,6 +617,7 @@ int json_dispatch_user_group_list(const char *name, JsonVariant *variant, JsonDi
+         _cleanup_strv_free_ char **l = NULL;
+         char ***list = userdata;
+         JsonVariant *e;
++        size_t s = 0;
+         int r;
+ 
+         if (!json_variant_is_array(variant))
+@@ -630,7 +631,7 @@ int json_dispatch_user_group_list(const char *name, JsonVariant *variant, JsonDi
+                 if (!valid_user_group_name(json_variant_string(e), FLAGS_SET(flags, JSON_RELAX) ? VALID_USER_RELAX : 0))
+                         return json_log(e, flags, SYNTHETIC_ERRNO(EINVAL), "JSON array element is not a valid user/group name: %s", json_variant_string(e));
+ 
+-                r = strv_extend(&l, json_variant_string(e));
++                r = strv_extend_with_size(&l, &s, json_variant_string(e));
+                 if (r < 0)
+                         return json_log(e, flags, r, "Failed to append array element: %m");
+         }
+-- 
+2.56.0
+

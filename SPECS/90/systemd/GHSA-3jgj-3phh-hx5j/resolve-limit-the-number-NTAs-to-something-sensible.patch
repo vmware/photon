@@ -1,0 +1,42 @@
+From 7d39042e27c5294e8b552be9c2ad9b3b8ba8e963 Mon Sep 17 00:00:00 2001
+From: Frantisek Sumsal <frantisek@sumsal.cz>
+Date: Mon, 4 May 2026 22:07:46 +0200
+Subject: [PATCH 3/5] resolve: limit the number NTAs to something sensible
+
+(cherry picked from commit 17e6a3e2a88e822b730f298ebb9fdb526a04a2e2)
+(cherry picked from commit 75ceeac012425347a762a106a850fbebde3fdc8f)
+(cherry picked from commit 72c4686786a2a237c7bd2fb33871f0ba747d2a88)
+---
+ src/resolve/resolved-link-bus.c | 3 +++
+ src/resolve/resolved-link.h     | 1 +
+ 2 files changed, 4 insertions(+)
+
+diff --git a/src/resolve/resolved-link-bus.c b/src/resolve/resolved-link-bus.c
+index 1168315..f3e05f1 100644
+--- a/src/resolve/resolved-link-bus.c
++++ b/src/resolve/resolved-link-bus.c
+@@ -712,6 +712,9 @@ int bus_link_method_set_dnssec_negative_trust_anchors(sd_bus_message *message, v
+         if (r < 0)
+                 return r;
+ 
++        if (strv_length(ntas) > LINK_NEGATIVE_TRUST_ANCHORS_MAX)
++                return sd_bus_error_set(error, SD_BUS_ERROR_LIMITS_EXCEEDED, "Too many negative trust anchors per link");
++
+         STRV_FOREACH(i, ntas) {
+                 r = dns_name_is_valid(*i);
+                 if (r < 0)
+diff --git a/src/resolve/resolved-link.h b/src/resolve/resolved-link.h
+index d2043a1..d886e8a 100644
+--- a/src/resolve/resolved-link.h
++++ b/src/resolve/resolved-link.h
+@@ -20,6 +20,7 @@ typedef struct LinkAddress LinkAddress;
+ 
+ #define LINK_SEARCH_DOMAINS_MAX 256
+ #define LINK_DNS_SERVERS_MAX 256
++#define LINK_NEGATIVE_TRUST_ANCHORS_MAX 2048
+ 
+ struct LinkAddress {
+         Link *link;
+-- 
+2.56.0
+

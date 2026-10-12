@@ -1,13 +1,11 @@
 %global build_if %{photon_subrelease} <= 90
 
-%define STIG_HARDEN 0
-
 %global udev_services %{name}-udevd.service %{name}-udev-settle.service %{name}-udev-trigger.service %{name}-udevd-control.socket %{name}-udevd-kernel.socket %{name}-timesyncd.service
 
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        253.19
-Release:        17.2.2%{?dist}
+Release:        17.2.3%{?dist}
 Summary:        System and Service Manager
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -16,14 +14,7 @@ Distribution:   Photon
 Source0: https://github.com/systemd/systemd-stable/archive/%{name}-stable-%{version}.tar.gz
 
 Source1:        99-vmware-hotplug.rules
-
-%if 0%{?STIG_HARDEN}
-Source2:        50-security-hardening.stig.conf
-%endif
-
-%if 0%{?STIG_HARDEN} == 0
 Source2:        50-security-hardening.conf
-%endif
 
 Source3:        %{name}.cfg
 Source4:        99-dhcp-en.network
@@ -40,27 +31,8 @@ Source14:       sysusers.generate-pre.sh
 Source15: license.txt
 %include %{SOURCE15}
 
-Patch0: enoX-uses-instance-number-for-vmware-hv.patch
-Patch1: fetch-dns-servers-from-environment.patch
-Patch2: execute-suppress-credentials-mount-if-empty.patch
-Patch3: fix-lvrename-unmount.patch
-Patch4: revert-network-delay-to-configure-address-until-it-i.patch
-Patch5: do-not-build-with-trivial-auto-var-init-zero.patch
-Patch6: do-not-allocate-1m-on-stack.patch
-Patch7: 0001-Remove-unused-default-groups-rules-and-tmpfiles.patch
-Patch8: sd-netlink-make-default-timeout-configurable.patch
-
-%if 0%{?STIG_HARDEN}
-Patch9: harden-tmpfs-mount-options.patch
-%endif
-
-Patch10: CVE-2026-29111-1.patch
-Patch11: CVE-2026-29111-2.patch
-Patch12: CVE-2026-29111-3.patch
-Patch13: CVE-2026-29111-4.patch
-Patch14: CVE-2026-40225.patch
-Patch15: CVE-2026-40226-1.patch
-Patch16: CVE-2026-40226-2.patch
+Source16: %{name}-patches.txt
+%include %{SOURCE16}
 
 Requires:       Linux-PAM
 Requires:       bzip2
@@ -244,40 +216,6 @@ They can be useful to test systemd internals.
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf.in
 
 %build
-if [ %{_host} != %{_build} ]; then
-CPU_FAMILY=""
-test %{_arch} == "aarch64" && CPU_FAMILY="aarch64"
-test %{_arch} == "i686" && CPU_FAMILY="x86"
-
-cat > cross-compile-config.txt << EOF
-[binaries]
-c = '%{_host}-gcc'
-cpp = '%{_host}-g++'
-ar = '%{_host}-ar'
-ld = '%{_host}-ld'
-ranlib = '%{_host}-ranlib'
-strip = '%{_host}-strip'
-pkgconfig = '%{_host}-pkg-config'
-
-[properties]
-needs_exe_wrapper = true
-c_args = ['--sysroot=/target-%{_arch}']
-cpp_args = ['--sysroot=/target-%{_arch}']
-c_link_args = ['-lssp']
-cpp_link_args = ['-lssp']
-
-[host_machine]
-system = 'linux'
-cpu_family = '$CPU_FAMILY'
-cpu = '%{_arch}'
-endian = 'little'
-EOF
-
-  CROSS_COMPILE_CONFIG="--cross-file ./cross-compile-config.txt"
-else
-  CROSS_COMPILE_CONFIG=
-fi
-
 CONFIGURE_OPTS=(
        -Dmode=release
        -Dkmod=true
@@ -327,7 +265,6 @@ CONFIGURE_OPTS=(
        -Dsystemd-resolve-uid=77
        -Dsystemd-timesync-uid=78
        -Dsysupdate=false
-       $CROSS_COMPILE_CONFIG
 )
 
 %{meson} "${CONFIGURE_OPTS[@]}"
@@ -704,6 +641,8 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+* Mon Oct 12 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 253.19-17.2.3
+- Security fixes
 * Thu May 21 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 253.19-17.2.2
 - Fix CVE-2026-40225, CVE-2026-40226
 * Thu May 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 253.19-17.2.1

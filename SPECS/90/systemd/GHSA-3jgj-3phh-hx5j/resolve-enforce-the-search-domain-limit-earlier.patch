@@ -1,0 +1,43 @@
+From 7361b611af72c741c9287eea8e89d14a12775b10 Mon Sep 17 00:00:00 2001
+From: Frantisek Sumsal <frantisek@sumsal.cz>
+Date: Mon, 4 May 2026 21:38:56 +0200
+Subject: [PATCH 2/5] resolve: enforce the search domain limit earlier
+
+Origin: upstream, https://github.com/systemd/systemd-stable/commit/f48ced6cc413ce2625211b9b8802bd8ef7798709
+
+The search domain limit is already enforced by dns_search_domain_new(),
+but in this case it's way too late. Let's enforce it during the first
+loop to avoid unnecessary parsing.
+
+(cherry picked from commit 50138e36ffc6d05d8c32a5b6ac1d4c5d32377450)
+(cherry picked from commit 4bf52a5d798516435df70d0a247a09833eaceaf3)
+(cherry picked from commit f48ced6cc413ce2625211b9b8802bd8ef7798709)
+---
+ src/resolve/resolved-link-bus.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/src/resolve/resolved-link-bus.c b/src/resolve/resolved-link-bus.c
+index 9b6d14f..1168315 100644
+--- a/src/resolve/resolved-link-bus.c
++++ b/src/resolve/resolved-link-bus.c
+@@ -361,7 +361,7 @@ int bus_link_method_set_domains(sd_bus_message *message, void *userdata, sd_bus_
+         if (r < 0)
+                 return r;
+ 
+-        for (;;) {
++        for (unsigned n_names = 0;; n_names++) {
+                 _cleanup_free_ char *prefixed = NULL;
+                 const char *name;
+                 int route_only;
+@@ -379,6 +379,8 @@ int bus_link_method_set_domains(sd_bus_message *message, void *userdata, sd_bus_
+                         return sd_bus_error_setf(error, SD_BUS_ERROR_INVALID_ARGS, "Invalid search domain %s", name);
+                 if (!route_only && dns_name_is_root(name))
+                         return sd_bus_error_set(error, SD_BUS_ERROR_INVALID_ARGS, "Root domain is not suitable as search domain");
++                if (n_names >= LINK_SEARCH_DOMAINS_MAX)
++                        return sd_bus_error_set(error, SD_BUS_ERROR_LIMITS_EXCEEDED, "Too many search domains per link");
+ 
+                 if (route_only) {
+                         prefixed = strjoin("~", name);
+-- 
+2.56.0
+

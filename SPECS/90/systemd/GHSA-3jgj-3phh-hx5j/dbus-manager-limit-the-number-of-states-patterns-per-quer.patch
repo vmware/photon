@@ -1,0 +1,110 @@
+From f5a2a58fa51372eeb67533c2f745ca9e773ada85 Mon Sep 17 00:00:00 2001
+From: Frantisek Sumsal <frantisek@sumsal.cz>
+Date: Thu, 30 Apr 2026 11:59:26 +0200
+Subject: [PATCH] dbus-manager: limit the number of states/patterns per query
+
+Origin: upstream, https://github.com/systemd/systemd-stable/commit/cb6c3e5bf1c6014db5e15cfffecb0172f317cfe8
+
+Let's cap the number of states/patterns per query to something
+reasonable, i.e. max 256 states and 4K patterns per query.
+
+(cherry picked from commit eb357bfff8685c10e7b1f6365b3a80cd792f0336)
+(cherry picked from commit 7529dd7aebc4498519e4781007335da98cff97bc)
+(cherry picked from commit cb6c3e5bf1c6014db5e15cfffecb0172f317cfe8)
+
+Includes pre-requisite commit:
+
+core: check selinux access on each unit when listing
+
+Units might have different access rules, so check the access on each
+unit when querying the full list.
+
+(cherry picked from commit 04f32dddd7221de01c4da70128bd5fb21bc53427)
+(cherry picked from commit 0952b4e793bfddd9a769514a434e14c3aaf682fa)
+
+(modified for backport to 255.4)
+---
+ src/core/dbus-manager.c | 26 +++++++++++++++++++++++---
+ src/core/manager.h      |  6 +++++-
+ 2 files changed, 28 insertions(+), 4 deletions(-)
+
+diff --git a/src/core/dbus-manager.c b/src/core/dbus-manager.c
+index 492e68c..51cc8cd 100644
+--- a/src/core/dbus-manager.c
++++ b/src/core/dbus-manager.c
+@@ -1233,9 +1233,13 @@ static int list_units_filtered(sd_bus_message *message, void *userdata, sd_bus_e
+ 
+         /* Anyone can call this method */
+ 
+-        r = mac_selinux_access_check(message, "status", error);
+-        if (r < 0)
+-                return r;
++        if (strv_length(states) > MANAGER_MAX_STATES_PER_CALL)
++                return sd_bus_error_set(error, SD_BUS_ERROR_LIMITS_EXCEEDED,
++                                        "Too many states in a single query.");
++
++        if (strv_length(patterns) > MANAGER_MAX_PATTERNS_PER_CALL)
++                return sd_bus_error_set(error, SD_BUS_ERROR_LIMITS_EXCEEDED,
++                                        "Too many patterns in a single query.");
+ 
+         r = sd_bus_message_new_method_return(message, &reply);
+         if (r < 0)
+@@ -1249,6 +1253,10 @@ static int list_units_filtered(sd_bus_message *message, void *userdata, sd_bus_e
+                 if (k != u->id)
+                         continue;
+ 
++                _cleanup_(sd_bus_error_free) sd_bus_error unused_error = SD_BUS_ERROR_NULL;
++                r = mac_selinux_unit_access_check(u, message, "status", &unused_error);
++                if (r < 0)
++                        continue; /* silently skip units the caller is not allowed to see */
+                 if (!strv_isempty(states) &&
+                     !strv_contains(states, unit_load_state_to_string(u->load_state)) &&
+                     !strv_contains(states, unit_active_state_to_string(unit_active_state(u))) &&
+@@ -1423,6 +1431,10 @@ static int dump_impl(
+ 
+         assert(message);
+ 
++        if (strv_length(patterns) > MANAGER_MAX_PATTERNS_PER_CALL)
++                return sd_bus_error_set(error, SD_BUS_ERROR_LIMITS_EXCEEDED,
++                                        "Too many patterns in a single query.");
++
+         /* 'status' access is the bare minimum always needed for this, as the policy might straight out
+          * forbid a client from querying any information from systemd, regardless of any rate limiting. */
+         r = mac_selinux_access_check(message, "status", error);
+@@ -2151,6 +2163,14 @@ static int list_unit_files_by_patterns(sd_bus_message *message, void *userdata,
+ 
+         /* Anyone can call this method */
+ 
++        if (strv_length(states) > MANAGER_MAX_STATES_PER_CALL)
++                return sd_bus_error_set(error, SD_BUS_ERROR_LIMITS_EXCEEDED,
++                                        "Too many states in a single query.");
++
++        if (strv_length(patterns) > MANAGER_MAX_PATTERNS_PER_CALL)
++                return sd_bus_error_set(error, SD_BUS_ERROR_LIMITS_EXCEEDED,
++                                        "Too many patterns in a single query.");
++
+         r = mac_selinux_access_check(message, "status", error);
+         if (r < 0)
+                 return r;
+diff --git a/src/core/manager.h b/src/core/manager.h
+index e03574a..a12246c 100644
+--- a/src/core/manager.h
++++ b/src/core/manager.h
+@@ -20,9 +20,13 @@
+ struct libmnt_monitor;
+ typedef struct Unit Unit;
+ 
+-/* Enforce upper limit how many names we allow */
++/* Enforce upper limit on how many names we allow */
+ #define MANAGER_MAX_NAMES 131072 /* 128K */
+ 
++/* Enforce upper limit on the number of patterns/states requested over IPC */
++#define MANAGER_MAX_PATTERNS_PER_CALL 4096U
++#define MANAGER_MAX_STATES_PER_CALL 256U
++
+ typedef struct Manager Manager;
+ 
+ /* An externally visible state. We don't actually maintain this as state variable, but derive it from various fields
+-- 
+2.56.0
+
