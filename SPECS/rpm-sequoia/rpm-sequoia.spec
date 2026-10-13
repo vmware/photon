@@ -1,7 +1,7 @@
 %global build_if %{photon_subrelease} >= 92
 
 Name:           rpm-sequoia
-Version:        1.10.0
+Version:        1.10.3
 Release:        1%{?dist}
 Summary:        Implementation of the RPM PGP interface using Sequoia
 URL:            https://crates.io/crates/rpm-sequoia
@@ -23,11 +23,16 @@ Source2: license.txt
 
 Source3: %{name}.config
 
-BuildRequires: openssl-devel
+BuildRequires: openssl-devel >= 3.5
 BuildRequires: libgcc-devel
+# openssl-sys and ossl (sequoia OpenSSL backend) generate their bindings
+# with bindgen, which needs libclang, clang's builtin headers (shipped in
+# clang-devel) and kernel headers
+BuildRequires: clang-devel
+BuildRequires: linux-api-headers
 
 Requires: libgcc
-Requires: openssl-libs
+Requires: openssl-libs >= 3.5
 
 %define ExtraBuildRequires rust
 
@@ -84,5 +89,7 @@ install -D -m 755 %{SOURCE3} \
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Tue Oct 13 2026 Oliver Kurth <oliver.kurth@broadcom.com> 1.10.3-1
+- Upgrade to 1.10.3 for PQC (ML-DSA) signature support
 * Tue Jan 20 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.10.0-1
 - Initial version

@@ -1,12 +1,12 @@
 sources:
-- archive: rpm-sequoia-1.10.0.tar.gz
-  archive_sha512sum: 9daef76430385f6a9e54cc7613929a3d0123227b26872ef917bd9d00623e812d0c658c6b71cdb9a885f63c9c02050dc9a697610886c8a33a57f33303dfdf8bd7
+- archive: rpm-sequoia-1.10.3.tar.gz
+  archive_sha512sum: 81928a9f09f4088269237ee3f0d4c912fbceac0957566e471fc39d80eb7593aa7c3c94d3ee6affe80274dc13cf57f029c3067180e8c98eb8da8d77873547d2df
   archive_type: upstream
-  name: rpm-sequoia-1.10.0
-  version: 1.10.0
-  url: https://github.com/rpm-software-management/rpm-sequoia/archive/refs/tags/v1.10.0.tar.gz
+  name: rpm-sequoia-1.10.3
+  version: 1.10.3
+  url: https://github.com/rpm-software-management/rpm-sequoia/archive/refs/tags/v1.10.3.tar.gz
   repo_url: https://github.com/rpm-software-management/rpm-sequoia
-  commit_id: eb3cd2bfaf42a8806cba5bd060c7458654625c94
+  commit_id: 8e0b76e1e75c83d7d8e6f38976b0c83b52ebe7ee
   skip_list: []
   missing: []
   spdx:
@@ -18,8 +18,8 @@ sources:
       short_summary: Implementation of the RPM PGP interface using Sequoia
       supplier: 'Organization: Broadcom, Inc.'
 
-- archive: rpm-sequoia-registry-1.10.0.tar.gz
-  archive_sha512sum: e769d7c9444d6b40d96e0f61a81c9e3135c29490e065d01bc54e99f6c7a407871e345de02d5c94ba651b8ab1932140fdd44ecca348cef066304ca1db3fb7b253
+- archive: rpm-sequoia-registry-1.10.3.tar.gz
+  archive_sha512sum: 865881ef60b623bd3423998fb61834bc6959f04747a4daa6cb06747f161914a15d64a2c09f186626e6570bdc8e65f04c3dea04a5df7bccf3313bddf84b0a40d9
   skip_validation: true
   spdx:
     package:

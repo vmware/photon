@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} >= 92
 
 %define network_required 1
 %global debug_package   %{nil}
@@ -7,7 +7,7 @@
 Summary:        A collection of modular and reusable compiler and toolchain technologies.
 Name:           llvm
 Version:        22.1.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            https://llvm.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -260,6 +260,7 @@ rm -rf %{buildroot}/*
 %{_bindir}/bugpoint
 %{_bindir}/dsymutil
 %{_bindir}/llvm-*
+%exclude %{_bindir}/llvm-spirv
 %{_bindir}/llc
 %{_bindir}/lli
 %{_bindir}/opt
@@ -282,12 +283,14 @@ rm -rf %{buildroot}/*
 %{_includedir}/llvm
 %{_includedir}/llvm-c/
 %{_libdir}/libLLVM*.so
+%exclude %{_libdir}/libLLVMSPIRVLib.so
 %{_libdir}/libLTO.so
 %{_libdir}/libRemarks.so
 
 %files -n libllvm
 %defattr(-,root,root)
 %{_libdir}/libLLVM*.so.*
+%exclude %{_libdir}/libLLVMSPIRVLib.so.*
 %{_libdir}/libLTO.so.*
 %{_libdir}/libRemarks.so.*
 
@@ -378,6 +381,9 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/LLVMSPIRVLib.pc
 
 %changelog
+* Tue Oct 13 2026 Oliver Kurth <oliver.kurth@broadcom.com> 22.1.0-5
+- Do not package libLLVMSPIRVLib in libllvm and llvm-devel, and llvm-spirv
+  in llvm, they are owned by spirv-llvm-translator(-devel,-tools)
 * Tue Sep 22 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 22.1.0-4
 - Remove stale python3-six dependency
 * Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 22.1.0-3
