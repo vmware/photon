@@ -4,7 +4,7 @@
 Summary:        Samba Client Programs
 Name:           samba-client
 Version:        4.19.3
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        GPLv3+ and LGPLv3+
 Group:          Productivity/Networking
 Vendor:         VMware, Inc.
@@ -16,30 +16,8 @@ Source0: https://www.samba.org/ftp/samba/stable/samba-%{version}.tar.gz
 
 Source1: smb.conf.vendor
 
-Patch0: CVE-2025-9640.patch
-Patch1: CVE-2025-10230.patch
-# Fix CVE-2026-4480: s3:printing: mask jobname passed as %J to "print command"
-Patch2:  CVE-2026-4480-01.patch
-Patch3:  CVE-2026-4480-02.patch
-Patch4:  CVE-2026-4480-03.patch
-Patch5:  CVE-2026-4480-04.patch
-Patch6:  CVE-2026-4480-05.patch
-Patch7:  CVE-2026-4480-06.patch
-Patch8:  CVE-2026-4480-07.patch
-Patch9:  CVE-2026-4480-08.patch
-Patch10: CVE-2026-4480-09.patch
-Patch11: CVE-2026-4480-10.patch
-Patch12: CVE-2026-4480-11.patch
-Patch13: CVE-2026-4480-12.patch
-Patch14: CVE-2026-4480-13.patch
-# Fix CVE-2026-4408: s3:samr-server: deny/mask username passed as %u to "check password script"
-Patch15: CVE-2026-4408-01.patch
-Patch16: CVE-2026-4408-02.patch
-Patch17: CVE-2026-4408-03.patch
-Patch18: CVE-2026-4408-04.patch
-Patch19: CVE-2026-4408-05.patch
-Patch20: CVE-2026-4408-06.patch
-Patch21: CVE-2026-4408-07.patch
+Source2: cve-patches.txt
+%include %{SOURCE2}
 
 BuildRequires: krb5-devel
 BuildRequires: libtirpc-devel
@@ -485,6 +463,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/wbclient.pc
 
 %changelog
+* Tue Oct 13 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.19.3-8
+- Security fixes
 * Fri Jun 19 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 4.19.3-7
 - Fix CVE-2026-4480
 - Fix CVE-2026-4408
