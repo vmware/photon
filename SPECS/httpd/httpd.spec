@@ -1,6 +1,6 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
-Version:        2.4.68
+Version:        2.4.69
 Release:        1%{?dist}
 License:        Apache License 2.0
 URL:            http://httpd.apache.org
@@ -8,8 +8,8 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://dlcdn.apache.org/%{name}/%{name}-%{version}.tar.bz2
-%define sha512 %{name}=134a5bbd3ffe97523ac750490531bcb9441c532cedf0229aa006aa1368e9d25040507c6f519bed6754044f62c371f7c7f9a11b6a311f79b9680d478bf4373eb3
+Source0: https://archive.apache.org/dist/%{name}/%{name}-%{version}.tar.bz2
+%define sha512 %{name}=ca9c5808eef7a0d8d88148b0d2d6045b5a0151823f09afc786b283cef9990036a9c7bc53d043e2f67b6ec06db05f655aa961cb875fa7ad0911fa04fdd295bd93
 
 # Patch0 is taken from:
 # https://www.linuxfromscratch.org/patches/blfs/svn
@@ -201,8 +201,10 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+* Tue Oct 13 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.4.69-1
+- Upgrade to v2.4.69, contains security fixes
 * Mon Jun 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.4.68-1
-- Upgrade to v2.4.67, contains security fixes
+- Upgrade to v2.4.68, contains security fixes
 * Fri May 08 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.4.67-1
 - Upgrade to v2.4.67, contains security fixes
 * Mon Dec 08 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.4.66-1
