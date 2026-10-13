@@ -1,7 +1,13 @@
 sources:
-- archive: pycryptodome-3.20.0.tar.gz
-  archive_sha512sum: 9fed02190db9ae71b6895af2525d7670858817acf213c494969104da81138dacb11bc00be83b308e070a2c90766cd763e25a611ada402b32f6160a8ac9283f85
-  skip_validation: true
+- archive: pycryptodome-3.24.1.tar.gz
+  archive_sha512sum: 90df69c1f003d9a06391709e09d1cb3124053c4eb4a062cba01e6048c1fc07ba29db36b94dbafc6e5f7f6f173321b8e687358d8a3cca88921234e74f46c17c37
+  archive_type: upstream
+  name: pycryptodome-3.24.1
+  url: https://github.com/Legrandin/pycryptodome/archive/refs/tags/v3.24.1.tar.gz
+  repo_url: https://github.com/Legrandin/pycryptodome
+  commit_id: 59351474682db6648825f17b11112d6821d66cb9
+  skip_list: []
+  missing: []
   spdx:
     package:
       detailed_description: 'PyCryptodome is a self-contained Python package of low-level

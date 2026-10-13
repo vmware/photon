@@ -1,20 +1,23 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} >= 92
 
 Summary:        Cryptographic library for Python
 Name:           python3-pycryptodome
-Version:        3.20.0
-Release:        4%{?dist}
+Version:        3.24.1
+Release:        1%{?dist}
 URL:            http://www.pycryptodome.org/
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://files.pythonhosted.org/packages/b9/ed/19223a0a0186b8a91ebbdd2852865839237a21c74f1fbc4b8d5b62965239/pycryptodome-%{version}.tar.gz
+Source0:        https://github.com/Legrandin/pycryptodome/archive/refs/tags/v%{version}.tar.gz#/pycryptodome-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
 
 BuildRequires:  python3-setuptools
+BuildRequires:  python3-build
+BuildRequires:  python3-installer
+BuildRequires:  python3-packaging
 BuildRequires:  python3-devel
 
 Requires:       python3
@@ -30,19 +33,22 @@ cryptographic primitives.
 %autosetup -p1 -n pycryptodome-%{version}
 
 %build
-%py3_build
+%py3_build_wheel
 
 %install
-%py3_install
+%py3_install_wheel
+%{py_byte_compile_and_ghost}
 
 %check
 python3 setup.py test
 
-%files
+%files -f %{py_ghost_filelist}
 %defattr(-, root, root,-)
 %{python3_sitelib}/*
 
 %changelog
+* Tue Oct 13 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.24.1-1
+- Upgrade to 3.24.1
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.20.0-4
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.20.0-3

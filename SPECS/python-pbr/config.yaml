@@ -1,7 +1,13 @@
 sources:
-- archive: pbr-5.10.0.tar.gz
-  archive_sha512sum: a5f4393407a17f4de5977483f3c7fa651780b9b9069a0a1898a5b511742262dfb06f891cfcb632c5b64ecfd041188095ceb880c6e71c99c81f0eace59e4e1976
-  skip_validation: true
+- archive: pbr-7.1.3.tar.gz
+  archive_sha512sum: f079045a23c3d92092ad7405108392fce75f325144a852612514d9db8d5c4d63ea343c75247b12ab5a67e5db7022c02c2bfe14ab607db4c542333fd217972478
+  archive_type: upstream
+  name: pbr-7.1.3
+  url: https://github.com/openstack/pbr/archive/refs/tags/7.1.3.tar.gz
+  repo_url: https://github.com/openstack/pbr
+  commit_id: 34cd3b86d793b24edc67d97396f953975fc3c842
+  skip_list: []
+  missing: []
   spdx:
     package:
       detailed_description: 'A library for managing setuptools packaging needs in

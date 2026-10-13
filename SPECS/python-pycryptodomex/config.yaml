@@ -1,11 +1,17 @@
 sources:
-- archive: pycryptodomex-3.20.0.tar.gz
-  archive_sha512sum: dd0f05338a209de26d93321d0709bdc9240c74768683c7decc572ee3a9a075bda95f527ae0d433e02a1674b6e12c4e7d35cc0ef721fb5e98fdb12878e047ebcd
-  skip_validation: true
+- archive: pycryptodomex-3.24.1.tar.gz
+  archive_sha512sum: 1aa5331be4a4804fd4e774922aca09f3f0207981cfbf90bde57181785334a9222f9739062f1588b8fa4c4c7059cfae6e9df0ea6fe8584ac20873910b110a2b82
+  archive_type: upstream
+  name: pycryptodome-3.24.1x
+  url: https://github.com/Legrandin/pycryptodome/archive/refs/tags/v3.24.1x.tar.gz
+  repo_url: https://github.com/Legrandin/pycryptodome
+  commit_id: 2c47d2017977a274bd85cffecfe5706ee196a488
+  skip_list: []
+  missing: []
   spdx:
     package:
       detailed_description: 'Cryptographic library for Python '
-      home_page: https://pypi.org/project/pycryptodomex
+      home_page: https://www.pycryptodome.org
       license_concluded: BSD-2-Clause AND DOC AND CC0-1.0 AND OFL-1.1 AND Python-2.0
         AND MIT AND Unlicense AND Apache-2.0 AND BSD-3-Clause
       license_declared: BSD-2-Clause AND DOC AND CC0-1.0 AND OFL-1.1 AND Python-2.0

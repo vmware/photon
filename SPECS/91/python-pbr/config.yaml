@@ -1,0 +1,15 @@
+sources:
+- archive: pbr-5.10.0.tar.gz
+  archive_sha512sum: a5f4393407a17f4de5977483f3c7fa651780b9b9069a0a1898a5b511742262dfb06f891cfcb632c5b64ecfd041188095ceb880c6e71c99c81f0eace59e4e1976
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'A library for managing setuptools packaging needs in
+        a consistent manner. '
+      home_page: https://docs.openstack.org/developer/pbr/
+      license_concluded: (Apache-2.0 OR BSD-3-Clause) AND BSD-3-Clause AND Apache-2.0
+        AND BSD-2-Clause
+      license_declared: (Apache-2.0 OR BSD-3-Clause) AND BSD-3-Clause AND Apache-2.0
+        AND BSD-2-Clause
+      short_summary: Python Build Reasonableness
+      supplier: 'Organization: Broadcom, Inc.'

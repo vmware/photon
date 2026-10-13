@@ -1,1 +1,1 @@
-License: BSD-2-Clause AND Unlicense AND MIT AND BSD-3-Clause AND Apache-2.0 AND OFL-1.1 AND Python-2.0 AND CC0-1.0 AND DOC
+License: Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND CC0-1.0 AND DOC AND MIT AND OFL-1.1 AND Python-2.0 AND Unlicense
