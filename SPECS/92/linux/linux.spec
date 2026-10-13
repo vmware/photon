@@ -80,7 +80,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.116
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -387,6 +387,7 @@ Patch10201: 0002-Build-with-FIPS-Canister-GCC-plugins.patch
 Patch10202: 0003-Introduce-FIPS-canister-plugins.patch
 Patch10203: 0004-FIPS-Canister-Plugins-Add-self-tests.patch
 Patch10204: 0001-Canister-GCC-Plugins-Implement-type-check.patch
+Patch10205: 0001-fips-canister-plugins-don-t-compare-offsets-of-pad-f.patch
 
 # Compile and inject jitterentropy rng proxy
 Patch10300: 0001-compile-jitterentropy-rng-proxy.patch
@@ -653,7 +654,7 @@ install %{SOURCE10300} crypto/
 %autopatch -p1 -m10001 -M10004
 %autopatch -p1 -m10101 -M10118
 # FIPS canister plugins
-%autopatch -p1 -m10200 -M10204
+%autopatch -p1 -m10200 -M10205
 # Jitterentropy proxy
 %autopatch -p1 -m10300 -M10301
 %endif
@@ -1031,6 +1032,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Nov 17 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.116-3
+- Widen aead_request internal_iv to u64 and use atomic magic value
+- FIPS canister plugins: don't compare offsets of pad field
 * Tue Nov 17 2026 Ajay Kaher <ajay.kaher@broadcom.com> 6.12.116-2
 - Fixes CVE-2026-99122
 * Mon Nov 09 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.12.116-1

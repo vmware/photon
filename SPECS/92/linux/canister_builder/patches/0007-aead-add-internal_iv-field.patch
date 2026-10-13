@@ -1,4 +1,4 @@
-From af18e5c4a4b484c3127e3427c87f68e99e8b32ae Mon Sep 17 00:00:00 2001
+From 2fdb5e8ed5ea5ef7e3999df5b6e63259d541d123 Mon Sep 17 00:00:00 2001
 From: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
 Date: Thu, 25 Sep 2025 18:14:41 +0000
 Subject: [PATCH] aead: add internal_iv field
@@ -9,74 +9,87 @@ an internally generated IV (e.g from seqiv).
 Also, change to kzalloc for request allocation to ensure
 all request fields are zeroed out at the beginning.
 
+V2:
+  1. Replace spinlocks with atomic variables
+  2. Use random_get_entropy() instead of drbg
+  3. Increase size of internal_iv field to reduce chance of collisions.
+  4. Ensure internal_iv field is 0 in aead_request_set_crypt(), to help
+     catch callers who may not use aead_request_alloc().
+
 Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
 ---
- crypto/aead.c                  | 42 ++++++++++++++++++++++++++++++++++
- include/crypto/aead.h          |  7 ++++--
- include/crypto/internal/aead.h |  5 +++-
- 3 files changed, 51 insertions(+), 3 deletions(-)
+ crypto/aead.c                  | 48 ++++++++++++++++++++++++++++++++++
+ include/crypto/aead.h          |  9 ++++++-
+ include/crypto/internal/aead.h |  3 +++
+ 3 files changed, 59 insertions(+), 1 deletion(-)
 
 diff --git a/crypto/aead.c b/crypto/aead.c
-index cade53241..06af40b1c 100644
+index cade53241..1ac00a66e 100644
 --- a/crypto/aead.c
 +++ b/crypto/aead.c
-@@ -16,6 +16,7 @@
- #include <linux/slab.h>
+@@ -17,6 +17,8 @@
  #include <linux/seq_file.h>
  #include <linux/string.h>
-+#include <crypto/internal/rng.h>
  #include <net/netlink.h>
++#include <linux/timex.h>
++#include <asm-generic/archrandom.h>
  
  #include "internal.h"
-@@ -290,5 +291,46 @@ int aead_register_instance(struct crypto_template *tmpl,
+ 
+@@ -290,5 +292,51 @@ int aead_register_instance(struct crypto_template *tmpl,
  }
  EXPORT_SYMBOL_GPL(aead_register_instance);
  
-+static u8 internal_iv_magic = 0;
-+static DEFINE_SPINLOCK(internal_iv_magic_lock);
++static atomic64_t internal_iv_magic = ATOMIC_INIT(0);
 +int aead_request_mark_internal_iv(struct aead_request *req) {
-+	int err;
-+	unsigned long flags;
++	u64 rand = 0;
++	unsigned long random_long;
++	int bytes = 0;
 +
-+	spin_lock_irqsave(&internal_iv_magic_lock, flags);
-+	while(!internal_iv_magic) {
-+		err = crypto_get_default_rng();
-+		if(err)
-+			break;
++	if(!atomic64_read(&internal_iv_magic)) {
++		do {
++			if(!arch_get_random_longs(&random_long, 1)) {
++				rand = 0;
++				break;
++			}
 +
-+		err = crypto_rng_get_bytes(crypto_default_rng, (u8 *) &internal_iv_magic,
-+						sizeof(internal_iv_magic));
-+		crypto_put_default_rng();
-+		if(err)
-+			break;
++			rand = rand << (bytes * 8);
++			rand = rand | ((u64) random_long);
++			bytes += sizeof(long);
++		} while(bytes < 8);
++
++		if(!rand)
++			rand = get_random_u64();
++
++		/* If somehow rand is 0, we still need to guarantee some value here. */
++		if(!rand)
++			rand = 0x80085;
++
++		/*
++		 * TODO: Remove this when canister is regenerated and is capable of handling a u64.
++		 * This handles the case where the lowest 8 bits are 0s but rand itself is not 0
++		 */
++		while(!(rand & 0xFF))
++			rand = rand >> 8;
++
++		atomic64_cmpxchg(&internal_iv_magic, 0, rand);
 +	}
-+	spin_unlock_irqrestore(&internal_iv_magic_lock, flags);
 +
-+	if(err)
-+		return err;
-+
-+	req->internal_iv = internal_iv_magic;
++	req->internal_iv = atomic64_read(&internal_iv_magic);
 +	return 0;
 +}
 +
 +int aead_request_is_internal_iv(struct aead_request *req) {
-+	unsigned long flags;
-+	int ret;
-+
-+	if(!req->internal_iv)
++	if(!((u8)req->internal_iv))
 +		return 0;
 +
-+	spin_lock_irqsave(&internal_iv_magic_lock, flags);
-+	ret = (req->internal_iv == internal_iv_magic);
-+	spin_unlock_irqrestore(&internal_iv_magic_lock, flags);
-+
-+	return ret;
++	return (u8) req->internal_iv == (u8) atomic64_read(&internal_iv_magic);
 +}
 +
  MODULE_LICENSE("GPL");
  MODULE_DESCRIPTION("Authenticated Encryption with Associated Data (AEAD)");
 diff --git a/include/crypto/aead.h b/include/crypto/aead.h
-index 0e8a41638..8c8021b86 100644
+index 0e8a41638..a4553ea6b 100644
 --- a/include/crypto/aead.h
 +++ b/include/crypto/aead.h
 @@ -85,6 +85,7 @@ struct scatterlist;
@@ -91,7 +104,7 @@ index 0e8a41638..8c8021b86 100644
  	struct scatterlist *src;
  	struct scatterlist *dst;
  
-+	u8 internal_iv;
++	u64 internal_iv;
 +
  	void *__ctx[] CRYPTO_MINALIGN_ATTR;
  };
@@ -105,8 +118,26 @@ index 0e8a41638..8c8021b86 100644
  
  	if (likely(req))
  		aead_request_set_tfm(req, tfm);
+@@ -514,6 +517,9 @@ static inline void aead_request_set_callback(struct aead_request *req,
+  * caller wants to have that data buffer filled, the caller must either
+  * use an in-place cipher operation (i.e. same memory location for
+  * input/output memory location).
++ *
++ * Setting a new IV clears any internal IV marking on the request, so
++ * aead_request_mark_internal_iv() must be called after this function.
+  */
+ static inline void aead_request_set_crypt(struct aead_request *req,
+ 					  struct scatterlist *src,
+@@ -524,6 +530,7 @@ static inline void aead_request_set_crypt(struct aead_request *req,
+ 	req->dst = dst;
+ 	req->cryptlen = cryptlen;
+ 	req->iv = iv;
++	req->internal_iv = 0;
+ }
+ 
+ /**
 diff --git a/include/crypto/internal/aead.h b/include/crypto/internal/aead.h
-index 28a95eb31..ddd99f92d 100644
+index 28a95eb31..547bd79d7 100644
 --- a/include/crypto/internal/aead.h
 +++ b/include/crypto/internal/aead.h
 @@ -163,6 +163,9 @@ int crypto_register_aeads(struct aead_alg *algs, int count);
@@ -120,5 +151,5 @@ index 28a95eb31..ddd99f92d 100644
  #endif	/* _CRYPTO_INTERNAL_AEAD_H */
  
 -- 
-2.40.4
+2.53.0
 

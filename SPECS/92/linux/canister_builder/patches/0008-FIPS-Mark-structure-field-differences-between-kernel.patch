@@ -1,4 +1,4 @@
-From 72534194554a8e1fdbe70952edb181dc9112798c Mon Sep 17 00:00:00 2001
+From e477ce2698e45fb8ae33945579222773ed8c2c5e Mon Sep 17 00:00:00 2001
 From: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
 Date: Wed, 27 Aug 2025 17:31:01 +0000
 Subject: [PATCH] FIPS: Mark structure field differences between kernel and
@@ -12,12 +12,37 @@ Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
 
 [Alexey: Make it compatible with canister_build]
 Signed-off-by: Alexey Makhalov <alexey.makhalov@broadcom.com>
+[Add mismatch for internal_iv field in aead_request]
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+
 ---
+ include/crypto/aead.h       | 3 ++-
  include/linux/plugin-attr.h | 9 +++++++++
  include/linux/swait.h       | 7 ++++++-
- 2 files changed, 15 insertions(+), 1 deletion(-)
+ 3 files changed, 17 insertions(+), 2 deletions(-)
  create mode 100644 include/linux/plugin-attr.h
 
+diff --git a/include/crypto/aead.h b/include/crypto/aead.h
+index aaabe3ea0..0ab652985 100644
+--- a/include/crypto/aead.h
++++ b/include/crypto/aead.h
+@@ -13,6 +13,7 @@
+ #include <linux/crypto.h>
+ #include <linux/slab.h>
+ #include <linux/types.h>
++#include <linux/plugin-attr.h>
+
+ /**
+  * DOC: Authenticated Encryption With Associated Data (AEAD) Cipher API
+@@ -99,7 +100,7 @@ struct aead_request {
+ 	struct scatterlist *src;
+ 	struct scatterlist *dst;
+
+-	u64 internal_iv;
++	u64 internal_iv CANISTER_MISMATCH("u64", "u8");
+
+ 	void *__ctx[] CRYPTO_MINALIGN_ATTR;
+ };
 diff --git a/include/linux/plugin-attr.h b/include/linux/plugin-attr.h
 new file mode 100644
 index 000000000..386a90eac
@@ -42,12 +67,12 @@ index d32441948..f6662ea40 100644
  #include <linux/wait.h>
  #include <asm/current.h>
 +#include <linux/plugin-attr.h>
- 
+
  /*
   * Simple waitqueues are semantically very different to regular wait queues
 @@ -41,7 +42,11 @@
  struct task_struct;
- 
+
  struct swait_queue_head {
 -	raw_spinlock_t		lock;
 +#ifdef FIPS_CANISTER
@@ -57,7 +82,7 @@ index d32441948..f6662ea40 100644
 +#endif
  	struct list_head	task_list;
  };
- 
--- 
-2.40.4
+
+--
+2.53.0
 

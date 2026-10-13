@@ -1,0 +1,32 @@
+From 40845bba84c673df9d551dd17e898d4698e3237c Mon Sep 17 00:00:00 2001
+From: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+Date: Mon, 12 Oct 2026 14:41:31 -0700
+Subject: [PATCH] fips canister plugins: don't compare offsets of pad field
+
+Padding field offset is irrelevant and of course subject to change,
+as if a previous field changes in size, the padding field offset may
+change. As long as we can resize the pad field to match, and the
+offsets of all the other fields are matching between the canister and
+the kernel, then everything is hunky-dory.
+
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ .../match_canister_structs/match_canister_structs.c             | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/match_canister_structs.c b/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/match_canister_structs.c
+index 5a2b4b8b6..5b11a0688 100644
+--- a/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/match_canister_structs.c
++++ b/scripts/gcc-plugins/fips_canister_plugins/match_canister_structs/match_canister_structs.c
+@@ -85,7 +85,7 @@ static int validate_offsets(tree type, struct data_structure *canister_def)
+ 
+ 		last_fld_size = get_field_size(field);
+ 
+-		if (!member)
++		if (!member || !strcmp(field_name, PAD_FIELD_NAME))
+ 			continue;
+ 
+ 		if (!strcmp(member->name, field_name) &&
+-- 
+2.53.0
+
