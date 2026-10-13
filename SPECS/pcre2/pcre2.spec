@@ -1,7 +1,7 @@
 Summary:        PCRE2 - Perl-Compatible Regular Experessions
 Name:           pcre2
 Version:        10.40
-Release:        4%{?dist}
+Release:        5%{?dist}
 Url:            https://github.com/PhilipHazel/pcre2/
 License:        BSD
 Group:          Development/Tools
@@ -11,7 +11,9 @@ Distribution:   Photon
 Source0: https://github.com/PhilipHazel/pcre2/releases/download/pcre2-%{version}/pcre2-%{version}.tar.gz
 %define sha512 %{name}=679c6f540571850adec880934812e4f26f08ad858c776f10d1ed68ed3c0d4f91f6e1b53d781b53340af43a22c521e585cfc908f3659013c630a320e4fb246dc2
 
-Patch0: diagnose-negative-repeat-value-in-pcre2test-subj-line.patch
+Patch0: CVE-2022-41409.patch
+Patch1: CVE-2026-89157.patch
+Patch2: CVE-2026-89161.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -96,6 +98,8 @@ This package contains minimal set of shared pcre libraries.
 %{_libdir}/*.so*
 
 %changelog
+* Tue Oct 13 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.40-5
+- Fix CVE-2026-89157, CVE-2026-89161
 * Fri Nov 24 2023 Shreenidhi Shedi <sshedi@vmware.com> 10.40-4
 - Enable jit support, needed by syslog-ng
 * Mon Jul 24 2023 Brennan Lamoreaux <blamoreaux@vmware.com> 10.40-3
