@@ -123,3 +123,8 @@ Patch3103: 0001-nfsd-convert-nfsd_net-boolean-flags-to-unsigned-long.patch
 Patch3104: 0001-nfsd-fix-fcache_disposal-UAF-by-inlining-dispose-sta.patch
 Patch3105: 0001-wifi-cfg80211-stop-PMSR-before-P2P-and-NAN-teardown.patch
 Patch3106: 0002-nfsd-use-test_and_clear_bit-for-somebody_reclaimed-to.patch
+# Fixes CVE-2026-72355, CVE-2026-80670, CVE-2026-89637
+Patch3107: 0001-perf-stat-Bounds-check-CPU-index-in-topology-aggrega.patch
+Patch3108: 0001-smb-client-fix-UAF-and-buffer-leak-in-cifs_check_tra.patch
+Patch3109: 0002-perf-stat-Introduce-perf_env__get_cpu_topology-to-gu.patch
+Patch3110: 0003-perf-tools-Use-perf_env__get_cpu_topology-in-machine.patch

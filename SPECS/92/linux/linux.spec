@@ -80,7 +80,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.113
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -1031,6 +1031,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Fri Oct 23 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.113-4
+- Fixes CVE-2026-72355, CVE-2026-80670, CVE-2026-89637
 * Thu Oct 22 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.113-3
 - Drop 0003-of-overlay-Correct-symbol-path-fixups.patch, superseded by upstream 21c89ff1fc86
 * Thu Oct 22 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.12.113-2

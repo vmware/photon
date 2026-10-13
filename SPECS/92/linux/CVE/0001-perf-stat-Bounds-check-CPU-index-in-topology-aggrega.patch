@@ -1,0 +1,100 @@
+From 278e30717c356e5e3078e5a2a6bcc6401fba9801 Mon Sep 17 00:00:00 2001
+From: Arnaldo Carvalho de Melo <acme@redhat.com>
+Date: Fri, 5 Jun 2026 10:59:11 -0300
+Subject: [PATCH] perf stat: Bounds-check CPU index in topology aggregation
+ callbacks
+
+[ Upstream commit 52e69b1c5b606b513d403dd4addc784c27a0c8e2 ]
+
+Six perf_env__get_*_aggr_by_cpu() functions access env->cpu[cpu.cpu]
+after only checking cpu.cpu != -1.  env->cpu[] is allocated with
+env->nr_cpus_avail entries, so a CPU index from an untrusted perf.data
+file that exceeds that count causes an out-of-bounds heap read.
+
+Replace the != -1 guard with >= 0 && < env->nr_cpus_avail in all six
+functions.  The >= 0 check also catches -1 and any other negative values
+that could bypass the old check.
+
+Affected functions:
+  - perf_env__get_socket_aggr_by_cpu()
+  - perf_env__get_die_aggr_by_cpu()
+  - perf_env__get_cache_aggr_by_cpu()
+  - perf_env__get_cluster_aggr_by_cpu()
+  - perf_env__get_core_aggr_by_cpu()
+  - perf_env__get_cpu_aggr_by_cpu()
+
+Fixes: 68d702f7a120 ("perf stat report: Add support to initialize aggr_map from file")
+Reported-by: sashiko-bot <sashiko-bot@kernel.org>
+Cc: Ian Rogers <irogers@google.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Assisted-by: Claude:claude-opus-4.6
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ tools/perf/builtin-stat.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
+
+diff --git a/tools/perf/builtin-stat.c b/tools/perf/builtin-stat.c
+index e8a75cb198b1..7437c1073211 100644
+--- a/tools/perf/builtin-stat.c
++++ b/tools/perf/builtin-stat.c
+@@ -1564,7 +1564,8 @@ static struct aggr_cpu_id perf_env__get_socket_aggr_by_cpu(struct perf_cpu cpu,
+ 	struct perf_env *env = data;
+ 	struct aggr_cpu_id id = aggr_cpu_id__empty();
+ 
+-	if (cpu.cpu != -1)
++	/* env->cpu[] has env->nr_cpus_avail entries; reject untrusted indices */
++	if (cpu.cpu >= 0 && cpu.cpu < env->nr_cpus_avail)
+ 		id.socket = env->cpu[cpu.cpu].socket_id;
+ 
+ 	return id;
+@@ -1575,7 +1576,7 @@ static struct aggr_cpu_id perf_env__get_die_aggr_by_cpu(struct perf_cpu cpu, voi
+ 	struct perf_env *env = data;
+ 	struct aggr_cpu_id id = aggr_cpu_id__empty();
+ 
+-	if (cpu.cpu != -1) {
++	if (cpu.cpu >= 0 && cpu.cpu < env->nr_cpus_avail) {
+ 		/*
+ 		 * die_id is relative to socket, so start
+ 		 * with the socket ID and then add die to
+@@ -1631,7 +1632,7 @@ static struct aggr_cpu_id perf_env__get_cache_aggr_by_cpu(struct perf_cpu cpu,
+ 	struct perf_env *env = data;
+ 	struct aggr_cpu_id id = aggr_cpu_id__empty();
+ 
+-	if (cpu.cpu != -1) {
++	if (cpu.cpu >= 0 && cpu.cpu < env->nr_cpus_avail) {
+ 		u32 cache_level = (perf_stat.aggr_level) ?: stat_config.aggr_level;
+ 
+ 		id.socket = env->cpu[cpu.cpu].socket_id;
+@@ -1648,7 +1649,7 @@ static struct aggr_cpu_id perf_env__get_cluster_aggr_by_cpu(struct perf_cpu cpu,
+ 	struct perf_env *env = data;
+ 	struct aggr_cpu_id id = aggr_cpu_id__empty();
+ 
+-	if (cpu.cpu != -1) {
++	if (cpu.cpu >= 0 && cpu.cpu < env->nr_cpus_avail) {
+ 		id.socket = env->cpu[cpu.cpu].socket_id;
+ 		id.die = env->cpu[cpu.cpu].die_id;
+ 		id.cluster = env->cpu[cpu.cpu].cluster_id;
+@@ -1662,7 +1663,7 @@ static struct aggr_cpu_id perf_env__get_core_aggr_by_cpu(struct perf_cpu cpu, vo
+ 	struct perf_env *env = data;
+ 	struct aggr_cpu_id id = aggr_cpu_id__empty();
+ 
+-	if (cpu.cpu != -1) {
++	if (cpu.cpu >= 0 && cpu.cpu < env->nr_cpus_avail) {
+ 		/*
+ 		 * core_id is relative to socket, die and cluster, we need a
+ 		 * global id. So we set socket, die id, cluster id and core id.
+@@ -1681,7 +1682,7 @@ static struct aggr_cpu_id perf_env__get_cpu_aggr_by_cpu(struct perf_cpu cpu, voi
+ 	struct perf_env *env = data;
+ 	struct aggr_cpu_id id = aggr_cpu_id__empty();
+ 
+-	if (cpu.cpu != -1) {
++	if (cpu.cpu >= 0 && cpu.cpu < env->nr_cpus_avail) {
+ 		/*
+ 		 * core_id is relative to socket and die,
+ 		 * we need a global id. So we set
+-- 
+2.53.0
+

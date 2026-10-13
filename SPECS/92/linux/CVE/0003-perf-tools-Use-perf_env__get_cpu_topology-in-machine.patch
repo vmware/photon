@@ -1,0 +1,68 @@
+From fb48c4e527fc5b471b7eca79155d42658cd63580 Mon Sep 17 00:00:00 2001
+From: Arnaldo Carvalho de Melo <acme@redhat.com>
+Date: Sat, 6 Jun 2026 20:57:49 -0300
+Subject: [PATCH] perf tools: Use perf_env__get_cpu_topology() in
+ machine__resolve()
+
+[ Upstream commit 5484b43a0ec8231c36fba6ead654cb72dbba8b8f ]
+
+machine__resolve() accesses env->cpu[al->cpu].socket_id after checking
+al->cpu >= 0 and env->cpu != NULL, but without validating al->cpu
+against env->nr_cpus_avail.  Since al->cpu comes from the untrusted
+perf.data sample, a crafted file with a large CPU index causes an
+out-of-bounds heap read.
+
+Use perf_env__get_cpu_topology() which validates both NULL and bounds.
+Also bounds-check al->cpu before the cast to struct perf_cpu (int16_t):
+without this, values like 65536 silently truncate to 0, bypassing the
+accessor's internal check and returning CPU 0's topology.
+
+Fixes: 0c4c4debb0adda4c ("perf tools: Add processor socket info to hist_entry and addr_location")
+Reported-by: sashiko-bot <sashiko-bot@kernel.org>
+Reviewed-by: Ian Rogers <irogers@google.com>
+Cc: Kan Liang <kan.liang@intel.com>
+Cc: Ian Rogers <irogers@google.com>
+Assisted-by: Claude:claude-opus-4.6
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ tools/perf/util/event.c | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
+
+diff --git a/tools/perf/util/event.c b/tools/perf/util/event.c
+index aac96d5d1917..1e5085817e82 100644
+--- a/tools/perf/util/event.c
++++ b/tools/perf/util/event.c
+@@ -12,6 +12,7 @@
+ #include <linux/zalloc.h>
+ #include "cpumap.h"
+ #include "dso.h"
++#include "env.h"
+ #include "event.h"
+ #include "debug.h"
+ #include "hist.h"
+@@ -763,8 +764,18 @@ int machine__resolve(struct machine *machine, struct addr_location *al,
+ 	if (al->cpu >= 0) {
+ 		struct perf_env *env = machine->env;
+ 
+-		if (env && env->cpu)
+-			al->socket = env->cpu[al->cpu].socket_id;
++		/*
++		 * Bounds-check al->cpu (s32) before casting to struct perf_cpu
++		 * (int16_t): without this, e.g. 65536 truncates to 0 and silently
++		 * returns CPU 0's topology.  Can go once perf_cpu.cpu is widened.
++		 */
++		if (env && al->cpu < env->nr_cpus_avail) {
++			struct cpu_topology_map *topo;
++
++			topo = perf_env__get_cpu_topology(env, (struct perf_cpu){ al->cpu });
++			if (topo)
++				al->socket = topo->socket_id;
++		}
+ 	}
+ 
+ 	if (al->map) {
+-- 
+2.53.0
+
