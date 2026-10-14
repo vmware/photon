@@ -5,7 +5,7 @@
 
 Name:           rubygem-fluentd
 Version:        1.18.0
-Release:        1.1.1%{?dist}
+Release:        1.1.2%{?dist}
 Summary:        An open source data collector designed to scale and simplify log management
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -72,6 +72,8 @@ It can collect, process and ship many kinds of data in near real-time.
 %{gemdir}
 
 %changelog
+* Wed Oct 14 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 1.18.0-1.1.2
+- Bump release for rubygem-tzinfo-data upgrade
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.18.0-1.1.1
 - Adjusted to build for subrelease 90
 * Fri Feb 13 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.18.0-1.1

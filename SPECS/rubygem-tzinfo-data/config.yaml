@@ -1,12 +1,12 @@
 sources:
-- archive: tzinfo-data-1.2025.3.gem
-  archive_sha512sum: 384b274b66910f4e1d5e9c9aa86e7513a88c794d8e790b8966fcb2d433314479fb5e9223be9ea32da9aee28a10e4ec74e2d822bc177fcd7f8caa00567d647166
+- archive: tzinfo-data-1.2026.5.gem
+  archive_sha512sum: 68ce9bbad24578ce44bcd5b3b44794065d69fb0ae3e26b34e80cd4c03c889288b5e31b4b30a02f50d97c7cb48996692c529929f347a5a381e478dd319656fe18
   skip_validation: true
   spdx:
     package:
       detailed_description: 'TZInfo::Data contains data from the IANA Time Zone database
         packaged as Ruby modules for use with TZInfo. '
-      home_page: https://rubygems.org/gems/tzinfo-data/versions/1.2025.3
+      home_page: https://rubygems.org/gems/tzinfo-data/versions/1.2026.5
       license_concluded: MIT
       license_declared: MIT
       short_summary: data from the IANA Time Zone database packaged as Ruby modules
