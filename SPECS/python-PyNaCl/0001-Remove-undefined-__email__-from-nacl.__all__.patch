@@ -1,0 +1,29 @@
+From 003d3f6a8fa1b1046a6978dda69d6a7f91813ff8 Mon Sep 17 00:00:00 2001
+From: Prashant S Chauhan <prashant.singh-chauhan@broadcom.com>
+Date: Tue, 13 Oct 2026 12:03:12 +0000
+Subject: [PATCH] Remove undefined __email__ from nacl.__all__
+
+__email__ was removed from nacl/__init__.py but left in __all__, so
+'from nacl import *' raises AttributeError: module 'nacl' has no
+attribute '__email__'. Drop it from __all__.
+
+Signed-off-by: Prashant S Chauhan <prashant.singh-chauhan@broadcom.com>
+---
+ src/nacl/__init__.py | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/src/nacl/__init__.py b/src/nacl/__init__.py
+index 83aaacf..d78e9e8 100644
+--- a/src/nacl/__init__.py
++++ b/src/nacl/__init__.py
+@@ -16,7 +16,6 @@
+ __all__ = [
+     "__uri__",
+     "__version__",
+-    "__email__",
+ ]
+
+ __uri__ = "https://github.com/pyca/pynacl/"
+-- 
+2.53.0
+

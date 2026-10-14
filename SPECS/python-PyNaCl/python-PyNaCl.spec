@@ -1,19 +1,27 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} >= 92
 
 Name:           python3-PyNaCl
-Version:        1.5.0
-Release:        5%{?dist}
+Version:        1.6.2
+Release:        1%{?dist}
 Summary:        PyNaCl is a Python binding to libsodium
 Group:          Development/Languages/Python
 Url:            https://pypi.org/project/PyNaCl
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://pypi.python.org/packages/source/e/PyNaCl/PyNaCl-%{version}.tar.gz
+
+Source0: https://github.com/pyca/pynacl/archive/refs/tags/%{version}.tar.gz#/PyNaCl-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0: 0001-Remove-undefined-__email__-from-nacl.__all__.patch
+
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
+BuildRequires:  python3-wheel
+BuildRequires:  python3-build
+BuildRequires:  python3-installer
+BuildRequires:  python3-packaging
 BuildRequires:  python3-cffi
 BuildRequires:  python3-xml
 BuildRequires:  curl-devel
@@ -24,22 +32,25 @@ Requires:       python3-libs
 Good password hashing for your software and your servers.
 
 %prep
-%autosetup -n PyNaCl-%{version}
+%autosetup -p1 -n pynacl-%{version}
 
 %build
-%py3_build
+%py3_build_wheel
 
 %install
-%py3_install
+%py3_install_wheel
+%{py_byte_compile_and_ghost}
 
 %check
 python3 setup.py test
 
-%files
+%files -f %{py_ghost_filelist}
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+* Tue Oct 13 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.6.2-1
+- Upgrade to 1.6.2
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.5.0-5
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.5.0-4

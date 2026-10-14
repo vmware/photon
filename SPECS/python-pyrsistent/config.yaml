@@ -1,7 +1,13 @@
 sources:
-- archive: pyrsistent-0.18.1.tar.gz
-  archive_sha512sum: 353ad6e9165e1afdde37730a9289cf8dde28491abb688d702a8c8f5279e24f5ce387a5d00ac4a077322299f9c1a535781bcacdcd1cb914ddb317b3ca9641778b
-  skip_validation: true
+- archive: pyrsistent-0.21.0.tar.gz
+  archive_sha512sum: 441e3980f730c60c54aeea076ac8d6c7f85e27f3bb7778c68aa8d066418f827b69dff42ca7a7c85687743ea6df89905c829945907fbc973f457d8755aa5300e1
+  archive_type: upstream
+  name: pyrsistent-0.21.0
+  url: https://github.com/tobgu/pyrsistent/archive/refs/tags/v0.21.0.tar.gz
+  repo_url: https://github.com/tobgu/pyrsistent
+  commit_id: a6c9c18981168820fd8acaafc783946ce638b7dc
+  skip_list: []
+  missing: []
   spdx:
     package:
       detailed_description: 'Pyrsistent is a number of persistent collections (by
@@ -19,7 +25,7 @@ sources:
         through path copying. It aims at taking these concepts and make them as pythonic
         as possible so that they can be easily integrated into any python program
         without hassle. '
-      home_page: https://pypi.org/project/pyrsistent
+      home_page: https://github.com/tobgu/pyrsistent
       license_concluded: MIT AND BSD-3-Clause
       license_declared: MIT AND BSD-3-Clause
       short_summary: Persistent/Functional/Immutable data structures

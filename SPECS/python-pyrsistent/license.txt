@@ -1,1 +1,1 @@
-License: MIT AND BSD-3-Clause
+License: BSD-3-Clause AND MIT

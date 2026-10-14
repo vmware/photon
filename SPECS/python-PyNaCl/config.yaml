@@ -1,11 +1,17 @@
 sources:
-- archive: PyNaCl-1.5.0.tar.gz
-  archive_sha512sum: cea3e4556432588630382abae6debf9203c7f55da286509da547a7921e4dbad98c915743625c68e5f7187fcaf6d4cdaf7ed2ed3ba60bd4c10ae6e3f88608dc65
-  skip_validation: true
+- archive: PyNaCl-1.6.2.tar.gz
+  archive_sha512sum: e1b5871fa6221cb0ec6928fdc7ab6c5900ba0e41df1ac1e7b8dca8b8ea8c32bb7db6c9d2aad0579fd4ed09f5c27800637c6296ef6e0d7a0a804cdc86c796f59d
+  archive_type: upstream
+  name: pynacl-1.6.2
+  url: https://github.com/pyca/pynacl/archive/refs/tags/1.6.2.tar.gz
+  repo_url: https://github.com/pyca/pynacl
+  commit_id: ecf41f55a3d8f1e10ce89c61c4b4d67f3f4467cf
+  skip_list: []
+  missing: []
   spdx:
     package:
       detailed_description: 'Good password hashing for your software and your servers. '
-      home_page: https://pypi.org/project/PyNaCl
+      home_page: https://github.com/pyca/pynacl
       license_concluded: GPL-3.0-or-later WITH Libtool-exception AND Apache-2.0 AND
         FSFULLR AND GPL-2.0-or-later WITH Autoconf-exception-generic AND X11 AND MIT
         AND FSFUL AND BSD-2-Clause AND ISC AND CC0-1.0 AND GPL-2.0-or-later WITH Libtool-exception

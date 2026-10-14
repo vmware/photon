@@ -1,20 +1,24 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} >= 92
 
 Summary:        Persistent/Functional/Immutable data structures
 Name:           python3-pyrsistent
-Version:        0.18.1
-Release:        5%{?dist}
+Version:        0.21.0
+Release:        1%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.org/project/pyrsistent
-Source0:        https://files.pythonhosted.org/packages/9f/0d/cbca4d0bbc5671822a59f270e4ce3f2195f8a899c97d0d5abb81b191efb5/pyrsistent-%{version}.tar.gz
+Source0:        https://github.com/tobgu/pyrsistent/archive/refs/tags/v%{version}.tar.gz#/pyrsistent-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
+BuildRequires:  python3-wheel
+BuildRequires:  python3-build
+BuildRequires:  python3-installer
+BuildRequires:  python3-packaging
 BuildRequires:  python3-xml
 BuildRequires:  python3-hypothesis
 BuildRequires:  python3-attrs
@@ -42,19 +46,22 @@ and make them as pythonic as possible so that they can be easily integrated into
 %autosetup -n pyrsistent-%{version}
 
 %build
-%py3_build
+%py3_build_wheel
 
 %install
-%py3_install
+%py3_install_wheel
+%{py_byte_compile_and_ghost}
 
 %check
 python3 setup.py test
 
-%files
+%files -f %{py_ghost_filelist}
 %defattr(-,root,root)
 %{python3_sitelib}/*
 
 %changelog
+* Tue Oct 13 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.21.0-1
+- Upgrade to 0.21.0
 * Tue Sep 22 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.18.1-5
 - Remove stale python3-six dependency
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.18.1-4
