@@ -1,15 +1,15 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} >= 92
 
 Summary:        A port of the caching algorithms in httplib2 for use with requests session object.
 Name:           python3-CacheControl
-Version:        0.12.11
-Release:        4%{?dist}
+Version:        0.14.4
+Release:        1%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://github.com/ionrock/cachecontrol
+Url:            https://github.com/psf/cachecontrol
 
-Source0: CacheControl-%{version}.tar.gz
+Source0: https://github.com/psf/cachecontrol/archive/refs/tags/v%{version}.tar.gz#/cachecontrol-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -17,7 +17,10 @@ Source1: license.txt
 # Note: If you are fixing a CVE here, please check for the same in python3-pip
 
 BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
+BuildRequires:  python3-uv-build
+BuildRequires:  python3-build
+BuildRequires:  python3-installer
+BuildRequires:  python3-packaging
 BuildRequires:  python3-xml
 
 Requires:       python3-requests
@@ -31,13 +34,14 @@ It was written because httplib2's better support for caching is often mitigated 
 The same is true of requests in terms of caching.
 
 %prep
-%autosetup -p1 -n CacheControl-%{version}
+%autosetup -p1 -n cachecontrol-%{version}
 
 %build
-%py3_build
+%py3_build_wheel
 
 %install
-%py3_install
+%py3_install_wheel
+%{py_byte_compile_and_ghost}
 mv %{buildroot}%{_bindir}/doesitcache %{buildroot}%{_bindir}/doesitcache3
 
 %if 0%{?with_check}
@@ -45,12 +49,14 @@ mv %{buildroot}%{_bindir}/doesitcache %{buildroot}%{_bindir}/doesitcache3
 python3 setup.py test
 %endif
 
-%files
+%files -f %{py_ghost_filelist}
 %defattr(-,root,root)
 %{python3_sitelib}/*
 %{_bindir}/doesitcache3
 
 %changelog
+* Wed Oct 14 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.14.4-1
+- Upgrade to 0.14.4
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.12.11-4
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.12.11-3

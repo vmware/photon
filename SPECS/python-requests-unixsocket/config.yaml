@@ -1,12 +1,18 @@
 sources:
-- archive: requests-unixsocket-0.3.0.tar.gz
-  archive_sha512sum: 21c887b0c3fa526a2debb3960e0ea4dc3b3015cdd517459b6484501176321408d1b4c87dd2840c7d8b71d08fa9114f655ae03f8bc9ff1fca33c914900ef82f5b
-  skip_validation: true
+- archive: requests-unixsocket-0.4.1.tar.gz
+  archive_sha512sum: 0bc1134069da4e64f23870b96cad2e1807af07f8f9092736c35779dd49c0a71b775877de58430a54f7f8dfdcd18feb42e9978831c171ad91f4bd0aed10afefc6
+  archive_type: upstream
+  name: requests-unixsocket-0.4.1
+  url: https://github.com/msabramo/requests-unixsocket/archive/refs/tags/v0.4.1.tar.gz
+  repo_url: https://github.com/msabramo/requests-unixsocket
+  commit_id: c810a233ca79258037cebe8a9684482f712095d3
+  skip_list: [.git_archival.txt]
+  missing: []
   spdx:
     package:
       detailed_description: 'Requests is an Apache2 Licensed HTTP library, written
         in Python, for human beings. '
-      home_page: https://pypi.org/project/requests-unixsocket
+      home_page: https://github.com/msabramo/requests-unixsocket
       license_concluded: Apache-2.0
       license_declared: Apache-2.0
       short_summary: Use requests to talk HTTP via a UNIX domain socket

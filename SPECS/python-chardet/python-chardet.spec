@@ -1,21 +1,26 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} >= 92
 
 Summary:        A Universal Character Encoding Detector in Python
 Name:           python3-chardet
-Version:        5.0.0
-Release:        5%{?dist}
-Url:            https://pypi.org/project/chardet
+Version:        7.6.0
+Release:        1%{?dist}
+Url:            https://github.com/chardet/chardet
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://github.com/chardet/chardet/archive/chardet-%{version}.tar.gz
+Source0: https://github.com/chardet/chardet/archive/refs/tags/%{version}.tar.gz#/chardet-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
 
 BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
+BuildRequires:  python3-build
+BuildRequires:  python3-installer
+BuildRequires:  python3-packaging
+BuildRequires:  python3-hatchling
+BuildRequires:  python3-hatch-vcs
+BuildRequires:  python3-setuptools_scm
 BuildRequires:  python3-xml
 
 %if 0%{?with_check}
@@ -23,7 +28,6 @@ BuildRequires:  python3-pytest
 %endif
 
 Requires:       python3
-Requires:       python3-setuptools
 
 BuildArch:      noarch
 
@@ -32,28 +36,28 @@ chardet is a universal character encoding detector in Python.
 
 %prep
 %autosetup -p1 -n chardet-%{version}
-# Remove files to handle unintended inclusions
-%if 0%{?with_check} == 0
-rm tests/ascii/*
-%endif
 
 %build
-%py3_build
+export SETUPTOOLS_SCM_PRETEND_VERSION=%{version}
+%py3_build_wheel
 
 %install
-%py3_install
+%py3_install_wheel
+%{py_byte_compile_and_ghost}
 
 %if 0%{?with_check}
 %check
-%pytest -v
+PYTHONPATH=%{buildroot}%{python3_sitelib} %pytest -v
 %endif
 
-%files
+%files -f %{py_ghost_filelist}
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 %{_bindir}/chardetect
 
 %changelog
+* Wed Oct 14 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 7.6.0-1
+- Upgrade to 7.6.0
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.0.0-5
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.0.0-4

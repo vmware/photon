@@ -1,0 +1,14 @@
+sources:
+- archive: chardet-5.0.0.tar.gz
+  archive_sha512sum: 3853248584d53d977abe0e6ab856e1526fd7360d9b94b4f08d03895da80ba9efac8882dbd3f919f0d52b0699c0d7fd68edb223c37512685976c6f2b212fbe0ff
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'chardet is a universal character encoding detector in
+        Python. '
+      home_page: https://pypi.org/project/chardet
+      license_concluded: LGPL-2.1-or-later AND CC-BY-SA-2.5 AND LGPL-2.1-only AND
+        LGPL-2.0-or-later
+      license_declared: LGPL-2.1-or-later AND CC-BY-SA-2.5 AND LGPL-2.1-only AND LGPL-2.0-or-later
+      short_summary: A Universal Character Encoding Detector in Python
+      supplier: 'Organization: Broadcom, Inc.'

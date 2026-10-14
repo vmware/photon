@@ -1,0 +1,13 @@
+sources:
+- archive: requests-toolbelt-0.10.1.tar.gz
+  archive_sha512sum: e4dfc58bd9d84f3590582853345602ba4e0dcb292733cc3c5d92057f5fd1d414bc1058d06d3c825d6f9eb802281592515f24473c6e8a59c91eb8836ad31e45d7
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: "This is just a collection of utilities for python-requests,\
+        \ but don\u2019t really\\ belong in requests proper. "
+      home_page: https://toolbelt.readthedocs.io
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: Utility belt for advanced users of python-requests
+      supplier: 'Organization: Broadcom, Inc.'

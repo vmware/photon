@@ -1,0 +1,30 @@
+sources:
+- archive: uv-build-0.9.30.tar.gz
+  archive_sha512sum: 15484325d652e07a23b29284f25d496920819609d2375c5e91b8ae9fba7dc084d5ade22fb5610237a2a92b69a088fee6028f8f2dbb2ba113393fca1687b99062
+  archive_type: upstream
+  version: 0.9.30
+  name: uv-0.9.30
+  url: https://github.com/astral-sh/uv/archive/refs/tags/0.9.30.tar.gz
+  repo_url: https://github.com/astral-sh/uv
+  commit_id: ea4560831e503c6ce34d18739476a71ac6e9a9de
+  spdx:
+    package:
+      detailed_description: 'An extremely fast Python package and project manager,
+        written in Rust.'
+      home_page: https://github.com/astral-sh/uv
+      license_concluded: Apache-2.0 OR MIT
+      license_declared: Apache-2.0 OR MIT
+      short_summary: The uv build backend
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: python3-uv-build-registry-0.9.30-1.ph5.tar.gz
+  archive_sha512sum: 3037c87b00d52e4197ed3d4d29288629b4520048e8a78430f9285489e0d08a4e8cbb016996b259864bad6d1d1e2e5b5da3a11de2ad848d5a6e238ad2e2b564bd
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Contains vendored cargo registry sources needed to do
+        an offline build'
+      home_page: https://github.com/vmware/photon
+      license_concluded: Apache-2.0 OR MIT
+      license_declared: Apache-2.0 OR MIT
+      short_summary: Vendored cargo registry sources
+      supplier: 'Organization: Broadcom, Inc.'

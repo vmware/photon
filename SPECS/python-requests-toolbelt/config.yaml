@@ -1,7 +1,13 @@
 sources:
-- archive: requests-toolbelt-0.10.1.tar.gz
-  archive_sha512sum: e4dfc58bd9d84f3590582853345602ba4e0dcb292733cc3c5d92057f5fd1d414bc1058d06d3c825d6f9eb802281592515f24473c6e8a59c91eb8836ad31e45d7
-  skip_validation: true
+- archive: requests-toolbelt-1.0.0.tar.gz
+  archive_sha512sum: 1ee5d5dbb0d140796c81d42c051ccfab8810bf5ec511b32c9a54b4adccbab460f3108acdfe5a65b3cb68377586ff0f55206bf231e64651aaea077feda7984953
+  archive_type: upstream
+  name: toolbelt-1.0.0
+  url: https://github.com/requests/toolbelt/archive/refs/tags/1.0.0.tar.gz
+  repo_url: https://github.com/requests/toolbelt
+  commit_id: b7d1a1fcdda9ebcd9afe5011690ab860fce780c2
+  skip_list: []
+  missing: []
   spdx:
     package:
       detailed_description: "This is just a collection of utilities for python-requests,\

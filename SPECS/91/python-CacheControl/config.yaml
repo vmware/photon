@@ -1,0 +1,16 @@
+sources:
+- archive: CacheControl-0.12.11.tar.gz
+  archive_sha512sum: 6a39e8fd2ebcca776cad533a79f107897aaffbe68b561f89301ef824d2400f8c36ec4e52682b7cf14734f9f77ab27e251202c71036b43422d81126f48cc27834
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'CacheControl is a port of the caching algorithms in httplib2
+        for use with requests session object. It was written because httplib2''s better
+        support for caching is often mitigated by its lack of threadsafety. The same
+        is true of requests in terms of caching. '
+      home_page: https://github.com/ionrock/cachecontrol
+      license_concluded: Apache-2.0
+      license_declared: Apache-2.0
+      short_summary: A port of the caching algorithms in httplib2 for use with requests
+        session object.
+      supplier: 'Organization: Broadcom, Inc.'
