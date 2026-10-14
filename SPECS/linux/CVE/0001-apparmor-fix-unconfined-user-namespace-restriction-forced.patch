@@ -1,0 +1,147 @@
+From 08c2f7c8d4b1434cfae006f3daf4d1bce330b57b Mon Sep 17 00:00:00 2001
+From: John Johansen <john.johansen@canonical.com>
+Date: Fri, 8 May 2026 22:30:07 -0700
+Subject: [PATCH] apparmor: fix unconfined user namespace restriction forced
+ stack
+
+[ Upstream commit 08c2f7c8d4b1434cfae006f3daf4d1bce330b57b ]
+
+If a task is already confined by a stack the unprivileged transition
+restriction on unconfined is not correctly, applied. This results in
+an escape if two transitions through an unconfined profile can be
+executed.
+
+Fix this by pushing the check into the per profile label build. The
+check will always be done against unconfined and result in a stack of
+just the unconfined component when necessary.
+
+Fixes: 2d9da9b188b8 ("apparmor: allow restricting unprivileged change_profile")
+Signed-off-by: John Johansen <john.johansen@canonical.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[Shivani: Taken from the stable-queue 6.12 backport
+  (queue-6.12/apparmor-fix-unconfined-user-namespace-restriction-f.patch).
+  It applies cleanly to v6.12.112, no adaptation needed. ]
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
+---
+ security/apparmor/domain.c | 80 +++++++++++++++++++++++++++++++---------------
+ 1 file changed, 54 insertions(+), 26 deletions(-)
+
+diff --git a/security/apparmor/domain.c b/security/apparmor/domain.c
+index ced513197ed5..8f5c240a3bbb 100644
+--- a/security/apparmor/domain.c
++++ b/security/apparmor/domain.c
+@@ -812,6 +812,52 @@ static int profile_onexec(const struct cred *subj_cred,
+ 
+ /* ensure none ns domain transitions are correctly applied with onexec */
+ 
++static bool is_profile_priv_restricted_to_stack(const struct cred *subj_cred,
++						struct aa_profile *profile)
++{
++	if (profile_unconfined(profile) && profile == profile->ns->unconfined &&
++	    aa_unprivileged_unconfined_restricted &&
++	    /* cap_capable returns false (0) if true, hence true here means
++	     * doesn't have capability and the stack will be restricted
++	     */
++	    cap_capable(current_cred(), &init_user_ns, CAP_MAC_OVERRIDE,
++			CAP_OPT_NOAUDIT))
++		return true;
++	return false;
++}
++
++static const char *stack_msg = "change_profile unprivileged unconfined converted to stacking";
++
++static struct aa_label *priv_restricted_transition(const struct cred *subj_cred,
++						   struct aa_profile *profile,
++						   const char *op, u32 request,
++						   const char *name,
++						   struct aa_label *transition,
++						   gfp_t gfp)
++{
++	if (!is_profile_priv_restricted_to_stack(subj_cred, profile))
++		return aa_get_newest_label(transition);
++
++	/* transition allowed but only via stack */
++	struct aa_label *target = aa_label_merge(&profile->label,
++						   transition, gfp);
++	if (!target)
++		return ERR_PTR(-ENOMEM);
++
++	/* doing this here is less than optimal but good enough until the
++	 * fs mediation rework lands
++	 */
++	struct aa_perms perms = {
++		.allow = request,
++		.audit = request,
++	};
++	aa_audit_file(subj_cred, profile, &perms, op,
++		      request, name, NULL, target,
++		      subj_cred->euid, stack_msg, 0);
++
++	return target;
++}
++
+ static struct aa_label *handle_onexec(const struct cred *subj_cred,
+ 				      struct aa_label *label,
+ 				      struct aa_label *onexec, bool stack,
+@@ -835,7 +881,10 @@ static struct aa_label *handle_onexec(const struct cred *subj_cred,
+ 		if (error)
+ 			return ERR_PTR(error);
+ 		new = fn_label_build_in_ns(label, profile, GFP_KERNEL,
+-				aa_get_newest_label(onexec),
++				priv_restricted_transition(subj_cred, profile,
++						OP_CHANGE_ONEXEC, AA_MAY_ONEXEC,
++						bprm->filename, onexec,
++						GFP_KERNEL),
+ 				profile_transition(subj_cred, profile, bprm,
+ 						   buffer,
+ 						   cond, unsafe));
+@@ -1345,8 +1394,6 @@ static int change_profile_perms_wrapper(const char *op, const char *name,
+ 	return error;
+ }
+ 
+-static const char *stack_msg = "change_profile unprivileged unconfined converted to stacking";
+-
+ /**
+  * aa_change_profile - perform a one-way profile transition
+  * @fqname: name of profile may include namespace (NOT NULL)
+@@ -1406,28 +1453,6 @@ int aa_change_profile(const char *fqname, int flags)
+ 			op = OP_CHANGE_PROFILE;
+ 	}
+ 
+-	/* This should move to a per profile test. Requires pushing build
+-	 * into callback
+-	 */
+-	if (!stack && unconfined(label) &&
+-	    label == &labels_ns(label)->unconfined->label &&
+-	    aa_unprivileged_unconfined_restricted &&
+-	    /* TODO: refactor so this check is a fn */
+-	    cap_capable(current_cred(), &init_user_ns, CAP_MAC_OVERRIDE,
+-			CAP_OPT_NOAUDIT)) {
+-		/* regardless of the request in this case apparmor
+-		 * stacks against unconfined so admin set policy can't be
+-		 * by-passed
+-		 */
+-		stack = true;
+-		perms.audit = request;
+-		(void) fn_for_each_in_ns(label, profile,
+-				aa_audit_file(subj_cred, profile, &perms, op,
+-					      request, auditname, NULL, target,
+-					      GLOBAL_ROOT_UID, stack_msg, 0));
+-		perms.audit = 0;
+-	}
+-
+ 	if (*fqname == '&') {
+ 		stack = true;
+ 		/* don't have label_parse() do stacking */
+@@ -1498,7 +1523,10 @@ int aa_change_profile(const char *fqname, int flags)
+ 	/* stacking is always a subset, so only check the nonstack case */
+ 	if (!stack) {
+ 		new = fn_label_build_in_ns(label, profile, GFP_KERNEL,
+-					   aa_get_label(target),
++				priv_restricted_transition(subj_cred, profile,
++							   op, request,
++							   auditname, target,
++							   GFP_KERNEL),
+ 					   aa_get_label(&profile->label));
+ 		if (IS_ERR_OR_NULL(new))
+ 			goto build_fail;

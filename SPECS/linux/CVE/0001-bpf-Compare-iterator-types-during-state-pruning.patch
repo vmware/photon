@@ -1,0 +1,39 @@
+From 83608e303b95d07afba1c15da0b5d9e513c2f15a Mon Sep 17 00:00:00 2001
+From: Ning Ding <dingning04@gmail.com>
+Date: Mon, 10 Aug 2026 20:59:54 -0700
+Subject: [PATCH] bpf: Compare iterator types during state pruning
+
+[ Upstream commit 83608e303b95d07afba1c15da0b5d9e513c2f15a ]
+
+An iterator stack slot can be MEM_RCU or PTR_UNTRUSTED. These states
+must not be equal, or the verifier can prune an unsafe path.
+
+Compare the pointer type for STACK_ITER slots.
+
+Fixes: dfab99df147b ("bpf: teach the verifier to enforce css_iter and task_iter in RCU CS")
+Signed-off-by: Ning Ding <dingning04@gmail.com>
+Acked-by: Eduard Zingerman <eddyz87@gmail.com>
+Link: https://patch.msgid.link/20260811035955.132989-2-dingning04@gmail.com
+Signed-off-by: Eduard Zingerman <eddyz87@gmail.com>
+[Shivani: Backported for CVE-2026-90217. kernel/bpf/states.c does not
+  exist in 6.12; the same one-line change was applied to stacksafe() in
+  kernel/bpf/verifier.c. ]
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
+---
+ kernel/bpf/verifier.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 2bcd098f774b..894ec34f704b 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -17954,7 +17954,8 @@ static bool stacksafe(struct bpf_verifier_env *env, struct bpf_func_state *old,
+ 			 * infinite loop check triggering, see
+ 			 * iter_active_depths_differ()
+ 			 */
+-			if (old_reg->iter.btf != cur_reg->iter.btf ||
++			if (old_reg->type != cur_reg->type ||
++			    old_reg->iter.btf != cur_reg->iter.btf ||
+ 			    old_reg->iter.btf_id != cur_reg->iter.btf_id ||
+ 			    old_reg->iter.state != cur_reg->iter.state ||
+ 			    /* ignore {old_reg,cur_reg}->iter.depth, see above */

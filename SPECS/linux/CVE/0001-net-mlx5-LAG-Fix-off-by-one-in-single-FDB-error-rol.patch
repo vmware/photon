@@ -1,0 +1,43 @@
+From 0f0e4ae6975c773f7854fc48932a267f6c79088f Mon Sep 17 00:00:00 2001
+From: Shay Drory <shayd@nvidia.com>
+Date: Tue, 30 Jun 2026 14:29:15 +0300
+Subject: [PATCH] net/mlx5: LAG, Fix off-by-one in single-FDB error rollback
+
+[ Upstream commit 0f0e4ae6975c773f7854fc48932a267f6c79088f ]
+
+On failure at index i, the reverse cleanup loop in
+mlx5_lag_create_single_fdb() starts from i, so the failed index
+itself is rolled back. That can operate on uninitialized state or
+double-tear-down a rule the add_one path already self-rolled-back.
+
+Start the rollback from i - 1 so only successfully-installed entries
+are undone.
+
+Fixes: ddbb5ddc43ad ("net/mlx5: LAG, Refactor lag logic")
+Signed-off-by: Shay Drory <shayd@nvidia.com>
+Reviewed-by: Mark Bloch <mbloch@nvidia.com>
+Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
+Link: https://patch.msgid.link/20260630112917.698313-2-tariqt@nvidia.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+[Shivani: Backported for CVE-2026-72345. v6.12 has no lag/shared_fdb.c;
+  the single-FDB rollback loop lives in mlx5_lag_create_single_fdb() in
+  lag/lag.c, so the same i - 1 start index is applied there, using the
+  mlx5_ldev_for_each_reverse() macro]
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
+---
+ drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c b/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c
+index 8f6c8a60a1dd..fa21a2bb550b 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c
+@@ -603,7 +603,7 @@ static int mlx5_lag_create_single_fdb(struct mlx5_lag *ldev)
+ 	}
+ 	return 0;
+ err:
+-	mlx5_ldev_for_each_reverse(j, i, 1, ldev)
++	mlx5_ldev_for_each_reverse(j, i - 1, 1, ldev)
+ 		mlx5_eswitch_offloads_single_fdb_del_one(master_esw,
+ 							 ldev->pf[j].dev->priv.eswitch);
+ 	return err;

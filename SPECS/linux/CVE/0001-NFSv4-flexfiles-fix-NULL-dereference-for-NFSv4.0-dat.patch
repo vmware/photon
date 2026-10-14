@@ -1,0 +1,82 @@
+From 2b03ebbf8d5e8f6af4ecd6c65375232dd1ec32cc Mon Sep 17 00:00:00 2001
+From: Jeuk Kim <jeuk20.kim@gmail.com>
+Date: Wed, 8 Jul 2026 16:44:32 +0900
+Subject: [PATCH] NFSv4/flexfiles: fix NULL dereference for NFSv4.0 data servers
+
+[ Upstream commit 2b03ebbf8d5e8f6af4ecd6c65375232dd1ec32cc ]
+
+flexfiles accepts NFSv4.0 data servers, but two NFSv4 code paths assume
+the data server client has a session. Unlike NFSv4.1+, an NFSv4.0 client
+has no session (clp->cl_session is NULL; it uses clp->cl_slot_tbl), so
+I/O to a v4.0 flexfiles DS oopses:
+
+  - nfs4_init_ds_session() dereferences clp->cl_session->session_state
+    while seeding the DS lease. It also only seeds cl_lease_time when
+    NFS4_SESSION_INITING is set; without a session that never happens, so
+    cl_lease_time stays 0 and nfs4_renew_state() busy-loops, requeuing
+    every 5 seconds. Seed the lease whenever there is no session and
+    return before touching session state.
+
+  - ff_layout_async_handle_error_v4() dereferences
+    clp->cl_session->fc_slot_table on every DS I/O error. Fall back to the
+    v4.0 transport slot table (clp->cl_slot_tbl) when there is no session.
+
+Fixes: a7878ca14008 ("nfs: flexfilelayout: remove v3-only data server limitation")
+Signed-off-by: Jeuk Kim <jeuk20.kim@samsung.com>
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+[Shivani: Backported for CVE-2026-90149. Context adapted in
+  flexfilelayout.c: 6.12 has no dss_id argument to FF_LAYOUT_DEVID_NODE,
+  so the hunk only differs in context; the nfs4session.c hunk applies
+  as-is. ]
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
+---
+ fs/nfs/flexfilelayout/flexfilelayout.c |  3 ++-
+ fs/nfs/nfs4session.c                   | 16 +++++++++++-----
+ 2 files changed, 13 insertions(+), 6 deletions(-)
+
+diff --git a/fs/nfs/flexfilelayout/flexfilelayout.c b/fs/nfs/flexfilelayout/flexfilelayout.c
+index 7de5575f4bee..61705e7f0be7 100644
+--- a/fs/nfs/flexfilelayout/flexfilelayout.c
++++ b/fs/nfs/flexfilelayout/flexfilelayout.c
+@@ -1154,7 +1154,8 @@ static int ff_layout_async_handle_error_v4(struct rpc_task *task,
+ 	struct pnfs_layout_hdr *lo = lseg->pls_layout;
+ 	struct inode *inode = lo->plh_inode;
+ 	struct nfs4_deviceid_node *devid = FF_LAYOUT_DEVID_NODE(lseg, idx);
+-	struct nfs4_slot_table *tbl = &clp->cl_session->fc_slot_table;
++	struct nfs4_slot_table *tbl = nfs4_has_session(clp) ?
++		&clp->cl_session->fc_slot_table : clp->cl_slot_tbl;
+ 
+ 	switch (op_status) {
+ 	case NFS4_OK:
+diff --git a/fs/nfs/nfs4session.c b/fs/nfs/nfs4session.c
+index 5db460476bf2..c59e710eb7cc 100644
+--- a/fs/nfs/nfs4session.c
++++ b/fs/nfs/nfs4session.c
+@@ -634,16 +634,22 @@ int nfs4_init_ds_session(struct nfs_client *clp, unsigned long lease_time)
+ 	int ret;
+ 
+ 	spin_lock(&clp->cl_lock);
+-	if (test_and_clear_bit(NFS4_SESSION_INITING, &session->session_state)) {
+-		/*
+-		 * Do not set NFS_CS_CHECK_LEASE_TIME instead set the
+-		 * DS lease to be equal to the MDS lease.
+-		 */
++	/*
++	 * Do not set NFS_CS_CHECK_LEASE_TIME instead set the
++	 * DS lease to be equal to the MDS lease.
++	 *
++	 * A v4.0 DS has no session, so seed the lease every time.
++	 */
++	if (!session ||
++	    test_and_clear_bit(NFS4_SESSION_INITING, &session->session_state)) {
+ 		clp->cl_lease_time = lease_time;
+ 		clp->cl_last_renewal = jiffies;
+ 	}
+ 	spin_unlock(&clp->cl_lock);
+ 
++	if (!session)
++		return 0;
++
+ 	ret = nfs41_check_session_ready(clp);
+ 	if (ret)
+ 		return ret;

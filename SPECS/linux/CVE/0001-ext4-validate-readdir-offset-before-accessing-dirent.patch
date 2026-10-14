@@ -1,0 +1,134 @@
+From bc4b7b0414c33b2c8898eb04386df0d21a13dad8 Mon Sep 17 00:00:00 2001
+From: Yao Kai <yaokai34@huawei.com>
+Date: Mon, 6 Jul 2026 12:13:13 +0800
+Subject: [PATCH] ext4: validate readdir offset before accessing dirent
+
+[ Upstream commit bc4b7b0414c33b2c8898eb04386df0d21a13dad8 ]
+
+A corrupted directory can trigger the following KASAN report when
+ext4_readdir() resumes from an invalid position:
+
+  BUG: KASAN: use-after-free in __ext4_check_dir_entry+0x5ef/0x820
+  Read of size 2 at addr ffff88810a646000 by task repro_linear/509
+
+  Call Trace:
+   <TASK>
+   dump_stack_lvl+0x53/0x70
+   print_report+0xd0/0x630
+   kasan_report+0xce/0x100
+   __ext4_check_dir_entry+0x5ef/0x820
+   ext4_readdir+0xcde/0x2b70
+   iterate_dir+0x1a1/0x520
+   __x64_sys_getdents64+0x12b/0x220
+   do_syscall_64+0xf9/0x540
+   entry_SYSCALL_64_after_hwframe+0x77/0x7f
+   </TASK>
+
+KASAN reports use-after-free because the out-of-bounds access lands in an
+adjacent freed page. The directory buffer itself is still referenced.
+
+ext4_dir_llseek() invalidates the directory cookie so that ext4_readdir()
+rescans directory entries from the start of the block. The rescan checks
+only the lower bound of rec_len before advancing. A corrupted rec_len can
+therefore place the offset where the block has insufficient space for a
+complete directory entry. The rescan itself may dereference that truncated
+entry, or the main loop may pass it to __ext4_check_dir_entry(). The latter
+reads de->rec_len before validating the range. For example:
+
+  block offset  0                           4092  4096
+                |---- de1.rec_len = 4092 -----|----|
+                                               de2.inode
+                                                    | de2.rec_len
+                                                    ^ OOB, reported as UAF
+
+de2 starts at offset 4092 in this 4 KiB block. Its four-byte inode fits in
+the block, but its rec_len starts at offset 4096 and crosses the boundary.
+
+The minimum safe length is inode-dependent. Encrypted and casefolded
+directory entries need eight additional hash bytes, while a valid metadata
+checksum tail is only 12 bytes.
+
+Cache the metadata checksum feature state and derive the minimum directory
+entry length from the on-disk format. Use it to bound both the rescan and
+the offset passed to the main loop. Report an offset in a truncated block
+tail and skip the remainder of the block, while continuing to accept an
+offset exactly at the block boundary.
+
+Reported-by: syzbot+5322c5c260eb44d209ed@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=5322c5c260eb44d209ed
+Fixes: ac27a0ec112a ("[PATCH] ext4: initial copy of files from ext3")
+Signed-off-by: Yao Kai <yaokai34@huawei.com>
+Reviewed-by: Zhihao Cheng <chengzhihao1@huawei.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Reviewed-by: Zhang Yi <yi.zhang@huawei.com>
+Link: https://patch.msgid.link/20260706041313.708346-1-yaokai34@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+[Shivani: Backported for CVE-2026-92499. 6.12 uses ext4_has_metadata_csum(sb)
+  where upstream uses ext4_has_feature_metadata_csum(sb), so has_csum is
+  initialised from ext4_has_metadata_csum(sb), the same helper the existing
+  INDEX-flag check in 6.12 uses. As in upstream, that check is converted to
+  use has_csum. The rest matches upstream. ]
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
+---
+ fs/ext4/dir.c | 20 ++++++++++++++++++--
+ 1 file changed, 18 insertions(+), 2 deletions(-)
+
+diff --git a/fs/ext4/dir.c b/fs/ext4/dir.c
+index b278b5703c19..265e544cc348 100644
+--- a/fs/ext4/dir.c
++++ b/fs/ext4/dir.c
+@@ -137,6 +137,7 @@ static int ext4_readdir(struct file *file, struct dir_context *ctx)
+ 	struct buffer_head *bh = NULL;
+ 	struct fscrypt_str fstr = FSTR_INIT(NULL, 0);
+ 	struct dir_private_info *info = file->private_data;
++	bool has_csum = ext4_has_metadata_csum(sb);
+ 
+ 	err = fscrypt_prepare_readdir(inode);
+ 	if (err)
+@@ -148,7 +149,7 @@ static int ext4_readdir(struct file *file, struct dir_context *ctx)
+ 			return err;
+ 
+ 		/* Can we just clear INDEX flag to ignore htree information? */
+-		if (!ext4_has_metadata_csum(sb)) {
++		if (!has_csum) {
+ 			/*
+ 			 * We don't set the inode dirty flag since it's not
+ 			 * critical that it gets flushed back to the disk.
+@@ -234,7 +235,10 @@ static int ext4_readdir(struct file *file, struct dir_context *ctx)
+ 		 * dirent right now.  Scan from the start of the block
+ 		 * to make sure. */
+ 		if (!inode_eq_iversion(inode, info->cookie)) {
+-			for (i = 0; i < sb->s_blocksize && i < offset; ) {
++			for (i = 0;
++			     i <= sb->s_blocksize -
++				  ext4_dir_rec_len(1, has_csum ? NULL : inode) &&
++			     i < offset;) {
+ 				de = (struct ext4_dir_entry_2 *)
+ 					(bh->b_data + i);
+ 				/* It's too expensive to do a full
+@@ -256,6 +260,17 @@ static int ext4_readdir(struct file *file, struct dir_context *ctx)
+ 			info->cookie = inode_query_iversion(inode);
+ 		}
+ 
++		if (unlikely(offset < sb->s_blocksize &&
++			     offset > sb->s_blocksize -
++			     ext4_dir_rec_len(1, has_csum ? NULL : inode))) {
++			EXT4_ERROR_FILE(file, bh->b_blocknr,
++					"bad entry in directory: %s - offset=%u, size=%lu",
++					"directory entry too close to block end",
++					offset, sb->s_blocksize);
++			ctx->pos = round_up(ctx->pos, sb->s_blocksize);
++			goto next_block;
++		}
++
+ 		while (ctx->pos < inode->i_size
+ 		       && offset < sb->s_blocksize) {
+ 			de = (struct ext4_dir_entry_2 *) (bh->b_data + offset);
+@@ -311,6 +326,7 @@ static int ext4_readdir(struct file *file, struct dir_context *ctx)
+ 			ctx->pos += ext4_rec_len_from_disk(de->rec_len,
+ 						sb->s_blocksize);
+ 		}
++next_block:
+ 		if ((ctx->pos < inode->i_size) && !dir_relax_shared(inode))
+ 			goto done;
+ 		brelse(bh);

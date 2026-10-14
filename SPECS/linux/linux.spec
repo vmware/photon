@@ -80,7 +80,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.113
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -1032,6 +1032,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Oct 22 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.12.113-2
+- Fixes CVE-2026-72345, CVE-2026-89682, CVE-2026-90149, CVE-2026-90217, CVE-2026-90231, CVE-2026-90240, CVE-2026-90343, CVE-2026-92499, CVE-2026-93221
 * Mon Oct 19 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.12.113-1
 - Update to version 6.12.113
 * Mon Oct 19 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.112-7

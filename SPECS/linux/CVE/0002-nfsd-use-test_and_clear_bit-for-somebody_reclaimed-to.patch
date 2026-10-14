@@ -1,0 +1,45 @@
+From 0a5a548861ab09e79a6b3062ac17e410323af3cd Mon Sep 17 00:00:00 2001
+From: Jeff Layton <jlayton@kernel.org>
+Date: Thu, 11 Jun 2026 16:00:56 -0400
+Subject: [PATCH] nfsd: use test_and_clear_bit for somebody_reclaimed to
+ prevent lost update
+
+[ Upstream commit 0a5a548861ab09e79a6b3062ac17e410323af3cd ]
+
+clients_still_reclaiming() uses separate test_bit() and clear_bit()
+calls on NFSD_NET_SOMEBODY_RECLAIMED. A concurrent set_bit() from
+the OPEN or LOCK reclaim path arriving between the test and clear
+is silently lost, causing the next laundromat tick to end grace
+prematurely.
+
+Replace with test_and_clear_bit() to make the read-and-clear atomic.
+
+Fixes: 8c67a210c90c ("nfsd: convert nfsd_net boolean flags to unsigned long flags word")
+Cc: stable@vger.kernel.org
+Assisted-by: Claude:claude-opus-4-8
+Signed-off-by: Jeff Layton <jlayton@kernel.org>
+Link: https://patch.msgid.link/20260611-nfsd-testing-v2-13-5b90e276f2d9@kernel.org
+Signed-off-by: Chuck Lever <cel@kernel.org>
+[Shivani: Backported as a follow-up fix to the nfsd_net flags conversion
+  patch (CVE-2026-93221). No adaptation needed; the upstream diff
+  applies as-is on top of that patch. ]
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
+---
+ fs/nfsd/nfs4state.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/fs/nfsd/nfs4state.c b/fs/nfsd/nfs4state.c
+index c9a55105fa8e..ecde340ae494 100644
+--- a/fs/nfsd/nfs4state.c
++++ b/fs/nfsd/nfs4state.c
+@@ -6552,9 +6552,8 @@ static bool clients_still_reclaiming(struct nfsd_net *nn)
+ 		if (atomic_read(&nn->nr_reclaim_complete) == size)
+ 			return false;
+ 	}
+-	if (!test_bit(NFSD_NET_SOMEBODY_RECLAIMED, &nn->flags))
++	if (!test_and_clear_bit(NFSD_NET_SOMEBODY_RECLAIMED, &nn->flags))
+ 		return false;
+-	clear_bit(NFSD_NET_SOMEBODY_RECLAIMED, &nn->flags);
+ 	/*
+ 	 * If we've given them *two* lease times to reclaim, and they're
+ 	 * still not done, give up:

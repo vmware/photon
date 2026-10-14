@@ -112,3 +112,14 @@ Patch3093: 0001-netfilter-nf_tables-avoid-false-positive-lockdep-flowtables.patc
 Patch3094: 0002-netfilter-nf_tables-avoid-false-positive-lockdep-basechain.patch
 Patch3095: 0003-netfilter-nf_tables-use-list_del_rcu-for-netlink-hoo.patch
 Patch3096: 0004-netfilter-nf_tables-add-hook-transactions-for-device.patch
+# Fixes CVE-2026-72345, CVE-2026-89682, CVE-2026-90149, CVE-2026-90217, CVE-2026-90231, CVE-2026-90240, CVE-2026-90343, CVE-2026-92499, CVE-2026-93221
+Patch3097: 0001-NFSv4-flexfiles-fix-NULL-dereference-for-NFSv4.0-dat.patch
+Patch3098: 0001-apparmor-fix-unconfined-user-namespace-restriction-forced.patch
+Patch3099: 0001-bpf-Compare-iterator-types-during-state-pruning.patch
+Patch3100: 0001-ext4-validate-readdir-offset-before-accessing-dirent.patch
+Patch3101: 0001-iommu-vt-d-Flush-context-cache-with-correct-SID-when.patch
+Patch3102: 0001-net-mlx5-LAG-Fix-off-by-one-in-single-FDB-error-rol.patch
+Patch3103: 0001-nfsd-convert-nfsd_net-boolean-flags-to-unsigned-long.patch
+Patch3104: 0001-nfsd-fix-fcache_disposal-UAF-by-inlining-dispose-sta.patch
+Patch3105: 0001-wifi-cfg80211-stop-PMSR-before-P2P-and-NAN-teardown.patch
+Patch3106: 0002-nfsd-use-test_and_clear_bit-for-somebody_reclaimed-to.patch
