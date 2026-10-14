@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} == 91
 %global debug_package %{nil}
 
 Name:           docker-pycreds3
