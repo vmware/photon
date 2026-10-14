@@ -4,7 +4,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        8.9p1
-Release:        16%{?dist}
+Release:        17%{?dist}
 License:        BSD
 URL:            https://www.openssh.com
 Group:          System Environment/Security
@@ -51,6 +51,7 @@ Patch25: CVE-2026-59999.patch
 Patch26: CVE-2026-60000.patch
 Patch27: CVE-2026-60001.patch
 Patch28: CVE-2026-60002.patch
+Patch29: upstream-Further-restrict-the-characters-allowed-in-.patch
 
 # Add couple more syscalls to seccomp filter to support glibc-2.31
 BuildRequires:  openssl-devel
@@ -233,6 +234,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/sshd@.service
 
 %changelog
+* Wed Oct 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.9p1-17
+- Further restrict characters allowed in cli supplied user name
 * Thu Jul 30 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.9p1-16
 - CVE fixes, CVE-2026-59995 through CVE-2026-60002
 * Wed Apr 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.9p1-15
