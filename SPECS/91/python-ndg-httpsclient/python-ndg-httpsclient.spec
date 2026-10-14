@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} == 91
 
 Name:           python3-ndg-httpsclient
 Version:        0.5.1
