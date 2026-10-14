@@ -15,7 +15,7 @@
 
 Summary:        Go
 Name:           go
-Version:        1.26.10
+Version:        1.26.11
 Release:        1%{?dist}
 URL:            https://golang.org
 Group:          System Environment/Security
@@ -124,6 +124,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+* Wed Nov 11 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.26.11-1
+- Upgrade to 1.26.11
 * Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 1.26.10-1
 - Upgrade to 1.26.10
 - Fixes CVE-2026-111943: crypto/x509 distrusts compromised eMudhra intermediate CA keys
