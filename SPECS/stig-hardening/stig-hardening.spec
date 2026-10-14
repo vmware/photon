@@ -6,7 +6,7 @@ Summary:        VMware Photon OS 5.0 STIG Readiness Guide Ansible Playbook
 Name:           stig-hardening
 #Version x.y.z corresponds v<x>r<y>-z tag in the repo. Eg 1.1.1 = v1r1-1
 Version:        3.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://github.com/vmware/dod-compliance-and-automation/tree/master/photon/5.0/ansible/vmware-photon-5.0-stig-ansible-hardening
 Group:          Productivity/Security
 Vendor:         VMware, Inc.
@@ -21,6 +21,8 @@ Source0: https://packages.broadcom.com/photon/photon_sources/1.0/%{srcname}.tar.
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0: fix-selinux-relabel-first-boot.patch
 
 Requires: ansible >= 2.20.1
 Requires: ansible-community-general
@@ -43,6 +45,7 @@ ls
 cp -a *.md \
   *.yml \
   defaults \
+  files \
   handlers \
   meta \
   tasks \
@@ -56,6 +59,8 @@ popd
 %{_datadir}/ansible/
 
 %changelog
+* Tue Nov 10 2026 Daniel Casota <dcasota@gmail.com> 3.4-3
+- Add first-boot SELinux relabel
 * Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.4-2
 - extend release to 91
 * Fri Oct 09 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.4-1
