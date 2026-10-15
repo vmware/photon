@@ -16,7 +16,7 @@
 Summary:        Go
 Name:           go
 Version:        1.24.13
-Release:        2.2.1%{?dist}
+Release:        2.2.2%{?dist}
 URL:            https://golang.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -33,8 +33,7 @@ Source0: https://go.dev/dl/%{name}%{version}.linux-amd64.tar.gz
 Source1: license.txt
 %include %{SOURCE1}
 
-Requires: glibc
-Requires: gcc
+Source2: go-zoneinfo-2026e.zip
 
 Patch0: CVE-2026-27142.patch
 Patch1: CVE-2026-32289.patch
@@ -42,11 +41,16 @@ Patch2: CVE-2026-27144.patch
 Patch3: CVE-2026-32288.patch
 Patch4: CVE-2026-27143.patch
 
+Requires: glibc
+Requires: gcc
+
 %description
 Go is an open source programming language that makes it easy to build simple, reliable, and efficient software.
 
 %prep
 %autosetup -p1 -n %{name}
+
+cp -fv %{SOURCE2} lib/time/zoneinfo.zip
 
 mkdir -p %{goroot}
 test -e bin/go && mv bin %{goroot} || :
@@ -126,6 +130,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+* Wed Oct 14 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 1.24.13-2.2.2
+- Update tzdata to 2026e
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.24.13-2.2.1
 - Adjusted to build for subrelease 90
 * Mon Apr 20 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.24.13-2.2

@@ -51,3 +51,15 @@ sources:
         CC-BY-4.0
       short_summary: Go
       supplier: 'Organization: Broadcom, Inc.'
+
+- archive: go-zoneinfo-2026e.zip
+  archive_sha512sum: 0267c30a64dfb90b134b949822aab8f208f526eec846c92ae4e499c922d364845a25cd7841e9e4b54e279ed0eeee813c5a039282b47ea642a34611a304feb872
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: Golang zoneinfo-2026e
+      home_page: https://packages.broadcom.com/photon/photon_sources/1.0
+      license_concluded: BSD-3-Clause
+      license_declared: BSD-3-Clause
+      short_summary: Golang zoneinfo-2026e
+      supplier: 'Organization: Broadcom, Inc.'

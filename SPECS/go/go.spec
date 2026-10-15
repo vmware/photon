@@ -16,7 +16,7 @@
 Summary:        Go
 Name:           go
 Version:        1.26.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://golang.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -33,6 +33,8 @@ Source0: https://go.dev/dl/%{name}%{version}.linux-amd64.tar.gz
 Source1: license.txt
 %include %{SOURCE1}
 
+Source2: go-zoneinfo-2026e.zip
+
 Requires: glibc
 Requires: gcc
 
@@ -41,6 +43,8 @@ Go is an open source programming language that makes it easy to build simple, re
 
 %prep
 %autosetup -p1 -n %{name}
+
+cp -fv %{SOURCE2} lib/time/zoneinfo.zip
 
 mkdir -p %{goroot}
 test -e bin/go && mv bin %{goroot} || :
@@ -120,6 +124,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+* Wed Oct 14 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 1.26.8-2
+- Update tzdata to 2026e
 * Mon Sep 07 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.26.8-1
 - Upgrade to 1.26.8
 * Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.26.5-2
