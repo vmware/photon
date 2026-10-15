@@ -1,0 +1,33 @@
+From 2564824e102f916ea06d748f51afbed8bf33c8c8 Mon Sep 17 00:00:00 2001
+From: Timothy E Baldwin <T.E.Baldwin99@members.leeds.ac.uk>
+Date: Thu, 30 Jul 2020 19:42:28 +0100
+Subject: [PATCH] Fix Test - /proc mismatches pid namespace
+
+[ Upstream commit 2564824e102f916ea06d748f51afbed8bf33c8c8 ]
+
+`--bind /proc /proc` and `--unshare-all` results in `/proc` being
+for the wrong pid namespace causing `namespace_ids_read` to fail,
+either reading the wrong process dying with an error.
+
+For example try: unshare -rpfm --mount-proc make check
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ tests/test-run.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tests/test-run.sh b/tests/test-run.sh
+index 702c480..faef316 100755
+--- a/tests/test-run.sh
++++ b/tests/test-run.sh
+@@ -178,7 +178,7 @@ if test -n "${bwrap_is_suid:-}"; then
+     echo "ok - # SKIP no --cap-add support"
+     echo "ok - # SKIP no --cap-add support"
+ else
+-    BWRAP_RECURSE="$BWRAP --unshare-all --uid 0 --gid 0 --cap-add ALL --bind / / --bind /proc /proc"
++    BWRAP_RECURSE="$BWRAP --unshare-user --uid 0 --gid 0 --cap-add ALL --bind / / --bind /proc /proc"
+     $BWRAP_RECURSE -- $BWRAP --unshare-all --bind / / --bind /proc /proc echo hello > recursive_proc.txt
+     assert_file_has_content recursive_proc.txt "hello"
+     echo "ok - can mount /proc recursively"
+-- 
+2.53.0
+

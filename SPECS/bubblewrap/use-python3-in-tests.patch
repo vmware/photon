@@ -1,0 +1,27 @@
+From 086a2506551732a23adc6b8f43048b3582987e2f Mon Sep 17 00:00:00 2001
+From: Martin Krajnak <mkrajnak@redhat.com>
+Date: Fri, 17 Jan 2020 12:11:15 +0100
+Subject: [PATCH] tests: Use python3 for lockf-n.py
+
+[ Upstream commit 086a2506551732a23adc6b8f43048b3582987e2f ]
+
+---
+ tests/test-run.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tests/test-run.sh b/tests/test-run.sh
+index a01f41c..535e9b6 100755
+--- a/tests/test-run.sh
++++ b/tests/test-run.sh
+@@ -226,7 +226,7 @@ fi
+ # Test --die-with-parent
+ 
+ cat >lockf-n.py <<EOF
+-#!/usr/bin/env python
++#!/usr/bin/env python3
+ import struct,fcntl,sys
+ path = sys.argv[1]
+ if sys.argv[2] == 'wait':
+-- 
+2.53.0
+
