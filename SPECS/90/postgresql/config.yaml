@@ -47,14 +47,14 @@ sources:
       short_summary: PostgreSQL database engine
       supplier: 'Organization: Broadcom, Inc.'
 
-- archive: postgresql-15.17.tar.bz2
-  skip_validation: true
-  archive_sha512sum: 032f27f4028ee8be10f7540edd0174b5e354a2a38f4f228414539178d1bbc542c4b9c599e376685fa9de78a2d918b9ce74997908e7e5c0204b3da88bc4661e2b
-  name: postgresql-15.17
-  version: '15.17'
-  url: http://ftp.postgresql.org/pub/source/v15.17/postgresql-15.17.tar.bz2
+- archive: postgres-REL_15_19.tar.gz
+  archive_sha512sum: e88936cc56b93addae5628d6e8d55db808931d5efc7f9c1c165183a47080c7a69a36c8ad4681fd5c3be016c1a354ef8aad6678004058e16d3014b80dc1b4deb8
+  archive_type: upstream
+  name: postgres-REL_15_19
+  version: '15.19'
+  url: https://github.com/postgres/postgres/archive/refs/tags/REL_15_19.tar.gz
   repo_url: https://github.com/postgres/postgres.git
-  commit_id: 3eb6f61958ac5027a18791a828a0c7a47accf211
+  commit_id: 2ff1375b5dd8bf09d8cb0e795974528180fd75ca
   missing: []
   spdx:
     package:
@@ -65,14 +65,14 @@ sources:
       short_summary: PostgreSQL database engine
       supplier: 'Organization: Broadcom, Inc.'
 
-- archive: postgresql-16.13.tar.bz2
-  skip_validation: true
-  archive_sha512sum: 3ea11b81ce55be5c3c169f0c94ddfa9debae6b3cbe7407086ba3a602fad7668900c2838d4d4488c671b2ccc670a9cd288ece90e42ecf8de953df6b4e103d286d
-  name: postgresql-16.13
-  version: '16.13'
-  url: http://ftp.postgresql.org/pub/source/v16.13/postgresql-16.13.tar.bz2
+- archive: postgres-REL_16_15.tar.gz
+  archive_sha512sum: 25119b44c4e1b8642f13b971d8a4be1b119f75a581af3da8b6a4369d03ccc7522b5bb96e9c06ce83ac9914b312264fcedd3b8f8c585743aad3ec630a0eb1addf
+  name: postgres-REL_16_15
+  version: '16.15'
+  url: https://github.com/postgres/postgres/archive/refs/tags/REL_16_15.tar.gz
   repo_url: https://github.com/postgres/postgres.git
-  commit_id: 776479eed63aac4185e57adaf7db1ce0810a4d3e
+  commit_id: 7d3e000c5961a544302072058a1184e9a588837b
+  archive_type: upstream
   missing: []
   spdx:
     package:
@@ -83,14 +83,14 @@ sources:
       short_summary: PostgreSQL database engine
       supplier: 'Organization: Broadcom, Inc.'
 
-- archive: postgresql-17.9.tar.bz2
-  skip_validation: true
-  archive_sha512sum: 2b9c9ca9d765704895ec4af4107accead2ba3f3ce8bc87eed29fd020cf97b53a49a7d3eb9fa1242a7c430fe2f7e1be726f1ad67557ded2fe8b31b9d8fe659fbf
-  name: postgresql-17.9
-  version: '17.9'
-  url: http://ftp.postgresql.org/pub/source/v17.9/postgresql-17.9.tar.bz2
+- archive: postgres-REL_17_11.tar.gz
+  archive_sha512sum: 8b5cf7463eb4bfeb23278e51391f57ab87fbad2e3e989759938b5adf6500013af5ce9ede890fd1ba5878902c31fef574aa0c8bdb672cc0a2031cc1a5e3bb8032
+  archive_type: upstream
+  name: postgres-REL_17_11
+  version: '17.11'
+  url: https://github.com/postgres/postgres/archive/refs/tags/REL_17_11.tar.gz
   repo_url: https://github.com/postgres/postgres.git
-  commit_id: 6d396980fc5aed4f1a525e0bd75cb16b25ed40ca
+  commit_id: 083ac033419f690758508e08c1736089384bbee8
   missing: []
   spdx:
     package:

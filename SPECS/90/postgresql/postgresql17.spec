@@ -2,6 +2,7 @@
 
 %define srcname         postgresql
 %global pgmajorversion  17
+%define src_rel         postgres-REL_%{pgmajorversion}_11
 %global _pgbaseinstdir  %{_usr}/pgsql/%{pgmajorversion}
 %global _pgbindir       %{_pgbaseinstdir}/bin
 %global _pglibdir       %{_pgbaseinstdir}/lib/%{srcname}
@@ -14,14 +15,14 @@
 
 Summary:        PostgreSQL database engine
 Name:           postgresql17
-Version:        17.9
-Release:        1.1.1%{?dist}
+Version:        17.11
+Release:        0.0.1%{?dist}
 URL:            www.postgresql.org
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: http://ftp.postgresql.org/pub/source/v%{version}/%{srcname}-%{version}.tar.bz2
+Source0: http://ftp.postgresql.org/pub/source/v%{version}/%{src_rel}.tar.gz
 
 Source1: %{srcname}.tmpfiles.d
 Source2: %{srcname}.service
@@ -213,7 +214,7 @@ system. The %{name}-pltcl package contains the PL/Tcl language
 for the backend.
 
 %prep
-%autosetup -p1 -n %{srcname}-%{version}
+%autosetup -p1 -n %{src_rel}
 
 %build
 sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/%{srcname}@' src/include/pg_config_manual.h
@@ -747,6 +748,9 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Thu Oct 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 17.11-0.0.1
+- Upgrade to v17.11
+- Build using github tagged source
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 17.9-1.1.1
 - Adjusted to build for subrelease 90
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 17.9-1.1
