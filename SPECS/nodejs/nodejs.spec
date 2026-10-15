@@ -3,7 +3,7 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
 Version:        24.19.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -13,6 +13,9 @@ Source0: https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
+
+# From https://github.com/nodejs/node/pull/66419
+Source2: nodejs-tz-2026e-icudt78l.dat.bz2
 
 BuildRequires:  (coreutils or coreutils-selinux)
 BuildRequires:  zlib-devel
@@ -48,6 +51,8 @@ for developing applications that use nodejs.
 
 %prep
 %autosetup -p1 -n node-v%{version}
+
+cp -fv %{SOURCE2} deps/icu-small/source/data/in/icudt78l.dat.bz2
 
 rm -r deps/zlib \
       deps/zstd \
@@ -110,6 +115,8 @@ done
 %{_docdir}/node/gdbinit
 
 %changelog
+* Thu Oct 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 24.19.0-3
+- Update timezone to 2026e
 * Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 24.19.0-2
 - Extend to build for 91 and above
 * Tue Aug 04 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 24.19.0-1

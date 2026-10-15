@@ -121,3 +121,15 @@ sources:
         AND copyleft-next-0.3.1 AND curl AND etalab-2.0 AND libselinux-1.0 AND snprintf
       short_summary: A JavaScript runtime built on Chrome's V8 JavaScript engine.
       supplier: 'Organization: Broadcom, Inc.'
+
+- archive: nodejs-tz-2026e-icudt78l.dat.bz2
+  archive_sha512sum: 56d676c280fe174599721cf07ea7d7728c10569627f2520b09f0680dade8c47af596c1b727f7594fc2120e2d427ded57fcc1dff23c530e621512b83a4792fcc7
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: NodeJS 2026e timezone data file
+      home_page: https://packages-prod.broadcom.com/photon/photon_sources/1.0
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: NodeJS 2026e timezone data file
+      supplier: 'Organization: Broadcom, Inc.'
