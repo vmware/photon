@@ -1,6 +1,6 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
-Version:        22.23.0
+Version:        22.23.3
 Release:        1%{?dist}
 License:        MIT
 Group:          Applications/System
@@ -9,7 +9,11 @@ Distribution:   Photon
 URL:            https://github.com/nodejs/node
 
 Source0: https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.gz
-%define sha512  node=3526f1719a6d82590709a7b749dca552dc06399d427112a6b481ff3c272dc8589ab97b88a299d5fc8adabb2e53af673c1d54ae7d97e2f275b13defc5a09df88c
+%define sha512 node=04ad549da8175d7d13b7b2b8bb19b3c7f176c7f5f5effe4374171bd0fc28a169b8cadeb2e6f67e1bba10a270c3ea80be2684e65c3af7b504af940fb453e6ee29
+
+# From https://github.com/nodejs/node/pull/66419
+Source1: nodejs-tz-2026e-icudt78l.dat.bz2
+%define sha512 nodejs-tz-2026e-icudt78l=56d676c280fe174599721cf07ea7d7728c10569627f2520b09f0680dade8c47af596c1b727f7594fc2120e2d427ded57fcc1dff23c530e621512b83a4792fcc7
 
 BuildRequires:  (coreutils or coreutils-selinux)
 BuildRequires:  zlib-devel
@@ -43,6 +47,8 @@ for developing applications that use nodejs.
 
 %prep
 %autosetup -p1 -n node-v%{version}
+
+cp -fv %{SOURCE1} deps/icu-small/source/data/in/icudt78l.dat.bz2
 
 rm -r deps/zlib \
       deps/nghttp2
@@ -98,6 +104,9 @@ done
 %{_docdir}/node/gdbinit
 
 %changelog
+* Thu Oct 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 22.23.3-1
+- Upgrade to v22.23.3
+- Update timezone to 2026e
 * Tue Jun 23 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 22.23.0-1
 - Fix CVE-2026-48937
 * Thu Apr 09 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 22.22.2-1
