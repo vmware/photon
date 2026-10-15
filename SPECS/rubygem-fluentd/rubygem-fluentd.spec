@@ -4,7 +4,7 @@
 
 Name: rubygem-fluentd
 Version:        1.15.3
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        An open source data collector designed to scale and simplify log management
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -58,6 +58,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Thu Oct 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.15.3-4
+-   Bump version as a part of tzinfo-data upgrade
 *   Mon Mar 09 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.15.3-3
 -   Remove rubygem-webrick from Requires, since it is only provided by ruby-2.7.4
 *   Mon Nov 10 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.15.3-2
