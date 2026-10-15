@@ -128,3 +128,7 @@ Patch3107: 0001-perf-stat-Bounds-check-CPU-index-in-topology-aggrega.patch
 Patch3108: 0001-smb-client-fix-UAF-and-buffer-leak-in-cifs_check_tra.patch
 Patch3109: 0002-perf-stat-Introduce-perf_env__get_cpu_topology-to-gu.patch
 Patch3110: 0003-perf-tools-Use-perf_env__get_cpu_topology-in-machine.patch
+# Fixes CVE-2026-80738, CVE-2026-89654
+Patch3111: 0001-bpf-Check-sk_state-before-sk_protocol-in-bpf_tcp_-_s.patch
+Patch3112: 0001-ceph-fix-UAF-in-check_new_map-on-session-freed-durin.patch
+Patch3113: 0002-ceph-fix-use-after-free-in-check_new_map-after-early.patch

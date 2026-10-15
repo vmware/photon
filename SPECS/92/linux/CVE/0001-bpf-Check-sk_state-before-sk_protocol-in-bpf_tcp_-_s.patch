@@ -1,0 +1,57 @@
+From 6ee1ce2d70f5e5139677f4a33dcdbc2c247f28df Mon Sep 17 00:00:00 2001
+From: Luxiao Xu <rakukuip@gmail.com>
+Date: Tue, 4 Aug 2026 22:29:01 +0800
+Subject: [PATCH 2/3] bpf: Check sk_state before sk_protocol in
+ bpf_tcp_*_syncookie
+
+[ Upstream commit 31a420a822ff92e2090bd5d65efe8e34e2d6d9b8 ]
+
+bpf_tcp_gen_syncookie and bpf_tcp_check_syncookie accept a socket pointer
+'sk' with argument type ARG_PTR_TO_BTF_ID_SOCK_COMMON. However, they access
+sk->sk_protocol without validating whether 'sk' represents a full socket.
+
+Fix this issue by checking sk->sk_state != TCP_LISTEN before inspecting
+sk->sk_protocol in both bpf_tcp_gen_syncookie and bpf_tcp_check_syncookie.
+Since mini-sockets are never in the TCP_LISTEN state, the condition
+short-circuits and prevents dereferencing fullsock-specific fields.
+
+Fixes: 399040847084 ("bpf: add helper to check for a valid SYN cookie")
+Fixes: 70d66244317e ("bpf: add bpf_tcp_gen_syncookie helper")
+Reported-by: Vega <vega@nebusec.ai>
+Signed-off-by: Luxiao Xu <rakukuip@gmail.com>
+Signed-off-by: Ren Wei <enjou1224z@gmail.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Reviewed-by: Kuniyuki Iwashima <kuniyu@google.com>
+Link: https://lore.kernel.org/bpf/6218aa3534d0d2d3f448fde70a8dc2769d7a8201.1785823138.git.rakukuip@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
+---
+ net/core/filter.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/net/core/filter.c b/net/core/filter.c
+index a680cf27ad82..ce290de4b165 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -7475,7 +7475,7 @@ BPF_CALL_5(bpf_tcp_check_syncookie, struct sock *, sk, void *, iph, u32, iph_len
+ 		return -EINVAL;
+ 
+ 	/* sk_listener() allows TCP_NEW_SYN_RECV, which makes no sense here. */
+-	if (sk->sk_protocol != IPPROTO_TCP || sk->sk_state != TCP_LISTEN)
++	if (sk->sk_state != TCP_LISTEN || sk->sk_protocol != IPPROTO_TCP)
+ 		return -EINVAL;
+ 
+ 	if (!READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_syncookies))
+@@ -7548,7 +7548,7 @@ BPF_CALL_5(bpf_tcp_gen_syncookie, struct sock *, sk, void *, iph, u32, iph_len,
+ 	if (unlikely(!sk || th_len < sizeof(*th) || th_len != th->doff * 4))
+ 		return -EINVAL;
+ 
+-	if (sk->sk_protocol != IPPROTO_TCP || sk->sk_state != TCP_LISTEN)
++	if (sk->sk_state != TCP_LISTEN || sk->sk_protocol != IPPROTO_TCP)
+ 		return -EINVAL;
+ 
+ 	if (!READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_syncookies))
+-- 
+2.43.0
+

@@ -1,0 +1,129 @@
+From 1d996ad1fc71d9fe03cfe2cde037e5e6affe1ea0 Mon Sep 17 00:00:00 2001
+From: Max Kellermann <max.kellermann@ionos.com>
+Date: Fri, 4 Sep 2026 17:03:02 +0200
+Subject: [PATCH] ceph: fix use-after-free in check_new_map() after early
+ session put
+
+check_new_map() drops mdsc->mutex while it locks a session, prepares a
+reconnect, or kicks flushing caps.  A concurrent teardown can call
+__unregister_session() in that window and drop the sessions[]
+reference. When check_new_map() reacquires mdsc->mutex, its temporary
+reference may therefore be the only reference keeping the local
+variable `s` alive.
+
+Commit ee611a750955 ("ceph: fix UAF in check_new_map() on session freed
+during unlock") addressed this by taking a temporary reference around
+each unlock window, but it drops that reference as soon as mdsc->mutex
+is reacquired, while `s` is still in use:
+
+  ceph_get_mds_session(s);
+  mutex_unlock(&mdsc->mutex);
+  mutex_lock(&s->s_mutex);
+  mutex_lock(&mdsc->mutex);
+  ceph_put_mds_session(s);    /* may drop the last reference */
+  ceph_con_close(&s->s_con);  /* use-after-free */
+  mutex_unlock(&s->s_mutex);  /* use-after-free */
+  s->s_state = CEPH_MDS_SESSION_RESTARTING;
+
+If the session was unregistered during the window, the sessions[]
+reference is already gone, so this ceph_put_mds_session() frees it.
+
+Additionally, the session could be freed while its s_mutex is locked,
+which trips the WARN_ON(mutex_is_locked(&s->s_mutex)) in
+ceph_put_mds_session() and then unlocks freed memory.
+
+Fix this by holding a single reference for the whole loop iteration:
+look the session up with __ceph_lookup_mds_session(), which returns it
+with a reference held, and release that reference on every exit from
+the loop body.  This subsumes the per-window get/put pairs, so remove
+them.
+
+Fixes: ee611a750955 ("ceph: fix UAF in check_new_map() on session freed during unlock")
+Cc: stable@vger.kernel.org
+Signed-off-by: Max Kellermann <max.kellermann@ionos.com>
+Link: https://lore.kernel.org/all/20260904150304.49104-2-max.kellermann@ionos.com/
+
+[ Not yet in mainline (posted as [PATCH v4 1/3], pending in ceph-client).
+  Follow-up fix for CVE-2026-89654 / ee611a750955. Applies as posted. ]
+Signed-off-by: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
+---
+ fs/ceph/mds_client.c | 13 ++++---------
+ 1 file changed, 4 insertions(+), 9 deletions(-)
+
+diff --git a/fs/ceph/mds_client.c b/fs/ceph/mds_client.c
+index 7650a89b885e..04c899df4589 100644
+--- a/fs/ceph/mds_client.c
++++ b/fs/ceph/mds_client.c
+@@ -5136,9 +5136,9 @@ static void check_new_map(struct ceph_mds_client *mdsc,
+ 	}
+ 
+ 	for (i = 0; i < oldmap->possible_max_rank && i < mdsc->max_sessions; i++) {
+-		if (!mdsc->sessions[i])
++		s = __ceph_lookup_mds_session(mdsc, i);
++		if (!s)
+ 			continue;
+-		s = mdsc->sessions[i];
+ 		oldstate = ceph_mdsmap_get_state(oldmap, i);
+ 		newstate = ceph_mdsmap_get_state(newmap, i);
+ 
+@@ -5151,7 +5151,6 @@ static void check_new_map(struct ceph_mds_client *mdsc,
+ 
+ 		if (i >= newmap->possible_max_rank) {
+ 			/* force close session for stopped mds */
+-			ceph_get_mds_session(s);
+ 			__unregister_session(mdsc, s);
+ 			__wake_requests(mdsc, &s->s_waiting);
+ 			mutex_unlock(&mdsc->mutex);
+@@ -5172,15 +5171,14 @@ static void check_new_map(struct ceph_mds_client *mdsc,
+ 			   ceph_mdsmap_get_addr(newmap, i),
+ 			   sizeof(struct ceph_entity_addr))) {
+ 			/* just close it */
+-			ceph_get_mds_session(s);
+ 			mutex_unlock(&mdsc->mutex);
+ 			mutex_lock(&s->s_mutex);
+ 			mutex_lock(&mdsc->mutex);
+-			ceph_put_mds_session(s);
+ 			ceph_con_close(&s->s_con);
+ 			mutex_unlock(&s->s_mutex);
+ 			s->s_state = CEPH_MDS_SESSION_RESTARTING;
+ 		} else if (oldstate == newstate) {
++			ceph_put_mds_session(s);
+ 			continue;  /* nothing new with this mds */
+ 		}
+ 
+@@ -5191,7 +5189,6 @@ static void check_new_map(struct ceph_mds_client *mdsc,
+ 		    newstate >= CEPH_MDS_STATE_RECONNECT) {
+ 			int rc;
+ 
+-			ceph_get_mds_session(s);
+ 			mutex_unlock(&mdsc->mutex);
+ 			clear_bit(i, targets);
+ 			rc = send_mds_reconnect(mdsc, s);
+@@ -5200,7 +5197,6 @@ static void check_new_map(struct ceph_mds_client *mdsc,
+ 					       "mds%d reconnect failed: %d\n",
+ 					       i, rc);
+ 			mutex_lock(&mdsc->mutex);
+-			ceph_put_mds_session(s);
+ 		}
+ 
+ 		/*
+@@ -5213,15 +5209,14 @@ static void check_new_map(struct ceph_mds_client *mdsc,
+ 				pr_info_client(cl, "mds%d recovery completed\n",
+ 					       s->s_mds);
+ 			kick_requests(mdsc, i);
+-			ceph_get_mds_session(s);
+ 			mutex_unlock(&mdsc->mutex);
+ 			mutex_lock(&s->s_mutex);
+ 			mutex_lock(&mdsc->mutex);
+-			ceph_put_mds_session(s);
+ 			ceph_kick_flushing_caps(mdsc, s);
+ 			mutex_unlock(&s->s_mutex);
+ 			wake_up_session_caps(s, RECONNECT);
+ 		}
++		ceph_put_mds_session(s);
+ 	}
+ 
+ 	/*
+-- 
+2.43.0
+
