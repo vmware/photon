@@ -1,7 +1,13 @@
 sources:
-- archive: xmltodict-0.13.0.tar.gz
-  archive_sha512sum: a7c12efa3c8d9b30a36a4b0ed2a8215f9833728d7988e74ef36458790a786c4c7517e536e8a82939623069716cdff258da5aab378a74f884a0fa245e7951f0bf
-  skip_validation: true
+- archive: xmltodict-1.0.4.tar.gz
+  archive_sha512sum: 8d0543d3bde5fee4181f49749613ae9a1d40a8018e7fdb0cc8e66554c4225b65a2bc56e6b44b02d7032e3be3665bb947b8dbff2b5421392cd60ade77e07a204e
+  archive_type: upstream
+  name: xmltodict-1.0.4
+  url: https://github.com/martinblech/xmltodict/archive/refs/tags/v1.0.4.tar.gz
+  repo_url: https://github.com/martinblech/xmltodict
+  commit_id: 8d7f1fdb2251b5dc3b98df447850cb8229defc32
+  skip_list: []
+  missing: []
   spdx:
     package:
       detailed_description: 'Python module that makes working with XML feel like you

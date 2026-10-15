@@ -1,26 +1,29 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} >= 92
 
 Summary:        A library for retrieving information onrunning processes and system utilization
 Name:           python3-psutil
-Version:        5.9.1
-Release:        4%{?dist}
+Version:        7.2.2
+Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/psutil
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://files.pythonhosted.org/packages/source/p/psutil/psutil-%{version}.tar.gz
+Source0: https://github.com/giampaolo/psutil/archive/refs/tags/v%{version}.tar.gz#/psutil-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
-%if 0%{?with_check}
-Patch0:         fix-make-check-psutil.patch
-%endif
-BuildRequires:  python3
 BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
+BuildRequires:  python3-build
+BuildRequires:  python3-installer
+BuildRequires:  python3-packaging
+
+%if 0%{?with_check}
+BuildRequires:  python3-pytest
+BuildRequires:  python3-requests
+%endif
+
 Requires:       python3
-Requires:       python3-libs
 
 %description
 psutil (process and system utilities) is a cross-platform library for retrieving information on running processes and system utilization (CPU, memory, disks, network, sensors) in Python. It is useful mainly for system monitoring, profiling and limiting process resources and management of running processes. It implements many functionalities offered by command line tools such as: ps, top, lsof, netstat, ifconfig, who, df, kill, free, nice, ionice, iostat, iotop, uptime, pidof, tty, taskset, pmap. It currently supports Linux, Windows, OSX, Sun Solaris, FreeBSD, OpenBSD and NetBSD, both 32-bit and 64-bit architectures, with Python versions from 2.6 to 3.6 (users of Python 2.4 and 2.5 may use 2.1.3 version). PyPy is also known to work.
@@ -29,19 +32,24 @@ psutil (process and system utilities) is a cross-platform library for retrieving
 %autosetup -n psutil-%{version} -p1
 
 %build
-%py3_build
+%py3_build_wheel
 
 %install
-%py3_install
+%py3_install_wheel
+%{py_byte_compile_and_ghost}
 
+%if 0%{?with_check}
 %check
-make test CI_TESTING=1 PYTHON=%{__python3} PYTHONPATH=%{buildroot}/%{python3_sitelib} %{?_smp_mflags}
+PYTHONSAFEPATH=1 make test CI_TESTING=1 PYTHON=%{__python3} PYTHONPATH=%{buildroot}/%{python3_sitelib} ARGS='-o addopts= --import-mode=append' %{?_smp_mflags}
+%endif
 
-%files
+%files -f %{py_ghost_filelist}
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+* Thu Oct 15 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 7.2.2-1
+- Upgrade to 7.2.2
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.9.1-4
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.9.1-3

@@ -1,21 +1,23 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} >= 92
 
 Name:           python3-jsonpointer
-Version:        2.3
-Release:        4%{?dist}
+Version:        3.2.1
+Release:        1%{?dist}
 Summary:        Applying JSON Patches in Python
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/packages/source/j/jsonpointer/jsonpointer-%{version}.tar.gz
-Source0: https://github.com/stefankoegl/python-json-pointer/archive/refs/tags/jsonpointer-%{version}.tar.gz
+Source0: https://github.com/stefankoegl/python-json-pointer/archive/refs/tags/v%{version}.tar.gz#/jsonpointer-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
 
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
-BuildRequires: python3-xml
+BuildRequires: python3-build
+BuildRequires: python3-installer
+BuildRequires: python3-packaging
 
 Requires: python3
 
@@ -25,23 +27,26 @@ BuildArch:      noarch
 Library to apply JSON Patches according to RFC 6902.
 
 %prep
-%autosetup -p1 -n jsonpointer-%{version}
+%autosetup -p1 -n python-json-pointer-%{version}
 
 %build
-%py3_build
+%py3_build_wheel
 
 %install
-%py3_install
+%py3_install_wheel
+%{py_byte_compile_and_ghost}
 
 %check
 python3 tests.py
 
-%files
+%files -f %{py_ghost_filelist}
 %defattr(-,root,root,-)
 %{_bindir}/jsonpointer
 %{python3_sitelib}/*
 
 %changelog
+* Thu Oct 15 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.2.1-1
+- Upgrade to 3.2.1
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.3-4
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.3-3

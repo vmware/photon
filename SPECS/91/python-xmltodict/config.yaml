@@ -1,0 +1,13 @@
+sources:
+- archive: xmltodict-0.13.0.tar.gz
+  archive_sha512sum: a7c12efa3c8d9b30a36a4b0ed2a8215f9833728d7988e74ef36458790a786c4c7517e536e8a82939623069716cdff258da5aab378a74f884a0fa245e7951f0bf
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Python module that makes working with XML feel like you
+        are working with JSON '
+      home_page: https://github.com/martinblech/xmltodict
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Python to transform XML to JSON
+      supplier: 'Organization: Broadcom, Inc.'

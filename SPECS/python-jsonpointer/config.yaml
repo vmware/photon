@@ -1,11 +1,17 @@
 sources:
-- archive: jsonpointer-2.3.tar.gz
-  archive_sha512sum: e04da474a5ec376d1cd2c764c2d7a11ac296450df199449994cb1dedf02a49df3ae3a4e75b2963370dba1da166464602b849a79609f7a98d8246dab0b342c819
-  skip_validation: true
+- archive: jsonpointer-3.2.1.tar.gz
+  archive_sha512sum: adc5d21967ab29552c1bfd9fc41b368b88b35c7c5978ad9f737db98561dba608dad36bbf7e60abed1fafa44c6858f7ee6128c77e7766728898538cd0d5cba4e6
+  archive_type: upstream
+  name: python-json-pointer-3.2.1
+  url: https://github.com/stefankoegl/python-json-pointer/archive/refs/tags/v3.2.1.tar.gz
+  repo_url: https://github.com/stefankoegl/python-json-pointer
+  commit_id: f2641f09b20dfde10f068e492531f4d914427110
+  skip_list: []
+  missing: []
   spdx:
     package:
       detailed_description: 'Library to apply JSON Patches according to RFC 6902. '
-      home_page: https://pypi.python.org/packages/source/j/jsonpointer/jsonpointer-2.3.tar.gz
+      home_page: https://github.com/stefankoegl/python-json-pointer
       license_concluded: BSD-3-Clause
       license_declared: BSD-3-Clause
       short_summary: Applying JSON Patches in Python
