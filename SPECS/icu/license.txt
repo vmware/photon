@@ -1,1 +1,1 @@
-License: BSD-2-Clause AND GPL-2.0-or-later WITH Autoconf-exception-generic AND BSD-3-Clause AND ICU AND NAIST-2003 AND Unicode-3.0 AND Unicode-DFS-2016 AND FSFAP AND NTP AND FSFUL AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND FSFULLRWD
+License: Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND FSFUL AND FSFULLRWD AND GPL-2.0-or-later AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND ICU AND MIT AND MIT-0 AND NAIST-2003 AND NGPL AND NTP AND Unicode-3.0 AND Unicode-DFS-2016

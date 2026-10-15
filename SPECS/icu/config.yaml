@@ -1,14 +1,30 @@
 sources:
-- archive: icu4c-76_1-src.tgz
-  archive_sha512sum: b702ab62fb37a1574d5f4a768326d0f8fa30d9db5b015605b5f8215b5d8547f83d84880c586d3dcc7b6c76f8d47ef34e04b0f51baa55908f737024dd79a42a6c
+- archive: icu4c-78.3-sources.tgz
+  archive_sha512sum: 04a49455e1489030c520a4bfd2664fa2171e7938d08f2acdbbcb1fda976639fd8b1f0704f2eec89ba59a7b6d118ceaab6ec5a096e40d9085a0895d91ce225245
   archive_type: upstream
-  skip_validation: false
-  name: icu/source
-  version: "76.1"
-  url: https://github.com/unicode-org/icu/releases/download/release-76-1/icu4c-76_1-src.tgz
+  name: icu
+  url: https://github.com/unicode-org/icu/releases/download/release-78.3/icu4c-78.3-sources.tgz
   repo_url: https://github.com/unicode-org/icu
-  commit_id: 8eca245c7484ac6cc179e3e5f7c1ea7680810f39
-  missing: ['.github', 'currency', '.gitignore', 'pkgdata', 'gencnval', 'extra', 'install-sh', 'escapesrc', 'gencfu', 'README.md', 'test', '.gitattributes', 'layoutex', 'SECURITY.md', 'genren', 'data', 'KEYS', 'gennorm2', 'release', 'icupkg', 'trac', 'memcheck', 'icuexportdata', 'configure', 'runConfigureICU', 'python', 'stubdata', 'unicodetools', 'config.sub', 'configure.ac', 'Makefile.in', '.bazelrc', 'LICENSE', 'gensprep', 'icu4c', 'samples', 'i18n', 'config.guess', 'toolutil', 'common', 'cldr', 'gencolusb', 'WORKSPACE', 'genccode', 'colprobe', 'vendor', 'unicode', 'Doxyfile.in', 'ctestfw', 'io', '.bazeliskrc', 'icu4j', 'aclocal.m4', 'icuinfo', 'gencmn', 'CONTRIBUTING.md', 'gentest', 'images', 'allinone', 'acinclude.m4', 'config', 'docs', 'scripts', 'genbrk', '.clang-format', 'commit-checker', 'mkinstalldirs', 'tzcode', 'testdata', 'multi', '.cpyskip.txt', 'icuswap', 'icudefs.mk.in', 'genrb', 'makeconv', 'gendict']
+  commit_id: 21d1eb0f306e1141c10931e914dfc038c06121da
+  skip_list: []
+  missing: ['.gitattributes', 'APIChangeReport.html', 'packaging', 'source', 'icu4j', '.github', 'KEYS', 'build_qnx', 'license.html', '.gitignore', 'vendor', 'icu4c.css', 'WORKSPACE', 'CONTRIBUTING.md', 'readme.html', '.bazeliskrc', 'tools', '.cpyskip.txt', 'README.md', '.bazelrc', 'icu4c', 'APIChangeReport.md', 'docs', 'SECURITY.md', 'as_is']
+  spdx:
+    package:
+      detailed_description: 'The International Components for Unicode (ICU) package
+        is a mature, widely used set of C/C++ libraries providing Unicode and Globalization
+        support for software applications. '
+      home_page: http://www.icu-project.org
+      license_concluded: NGPL AND FSFULLRWD AND FSFUL AND ICU AND Unicode-3.0 AND
+        NAIST-2003 AND BSD-3-Clause AND BSD-2-Clause AND FSFAP AND GPL-2.0-or-later
+        WITH Autoconf-exception-generic AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND Unicode-DFS-2016
+      license_declared: NGPL AND FSFULLRWD AND FSFUL AND ICU AND Unicode-3.0 AND NAIST-2003
+        AND BSD-3-Clause AND BSD-2-Clause AND FSFAP AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND Unicode-DFS-2016
+      short_summary: International Components for Unicode
+      supplier: 'Organization: Broadcom, Inc.'
+- archive: icu4c-78.3-data.zip
+  archive_sha512sum: d584523acb319be1e05489469cda580fb2929f0950c176a59244ef6565faf44f3506fd25d145dce6d8b57be3ff432af033e9ea6d324d2d3538944c5313edf327
   spdx:
     package:
       detailed_description: 'The International Components for Unicode (ICU) package

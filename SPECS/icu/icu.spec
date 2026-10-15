@@ -2,19 +2,26 @@
 
 Summary:        International Components for Unicode
 Name:           icu
-Version:        76.1
-Release:        2%{?dist}
+Version:        78.3
+Release:        1%{?dist}
 URL:            http://www.icu-project.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://github.com/unicode-org/icu/archive/refs/tags/%{name}4c-76_1-src.tgz
+Source0: https://github.com/unicode-org/icu/releases/download/release-%{version}/%{name}4c-%{version}-sources.tgz
+
+# ICU data sources, the sources tarball only has the prebuilt data (icudt78l.dat)
+Source2: https://github.com/unicode-org/icu/releases/download/release-%{version}/%{name}4c-%{version}-data.zip
 
 Source1: license.txt
 %include %{SOURCE1}
 
-Patch0: CVE-2025-5222.patch
+# tz database 2026e, from maint-78 (ICU-23249, https://github.com/unicode-org/icu/pull/4248)
+Patch0: icu-tz-2026e.patch
+
+# configure uses python to generate the data build rules, also used to extract the data zip
+BuildRequires:  python3
 
 %description
 The International Components for Unicode (ICU) package is a mature,
@@ -27,7 +34,13 @@ Requires:       %{name} = %{version}-%{release}
 It contains the libraries and header files to create applications.
 
 %prep
-%autosetup -p1 -n %{name}/source
+%autosetup -N -n %{name}/source
+# build the data from sources instead of using the prebuilt one
+rm data/in/icudt*.dat
+python3 -m zipfile -e %{SOURCE2} .
+# the files in the data zip have CRLF line endings, convert them to LF so the tz patch applies
+sed -i 's/\r$//' data/misc/zoneinfo64.txt data/misc/metaZones.txt data/misc/timezoneTypes.txt
+%autopatch -p1
 
 %build
 %configure
@@ -52,6 +65,8 @@ It contains the libraries and header files to create applications.
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Wed Oct 14 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 78.3-1
+- Upgrade to v78.3 and update tz data to 2026e, remove CVE-2025-5222 patch (fixed upstream)
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 76.1-2
 - Extended to build for subrelease 91 and above
 * Mon Feb 16 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 76.1-1

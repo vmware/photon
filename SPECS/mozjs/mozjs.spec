@@ -5,7 +5,7 @@
 Summary:       SpiderMonkey JavaScript library
 Name:          mozjs
 Version:       140.7.0
-Release:       3%{?dist}
+Release:       4%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 URL:           https://spidermonkey.dev
@@ -31,7 +31,6 @@ BuildRequires: python3-devel
 BuildRequires: python3-setuptools
 BuildRequires: zlib-devel
 BuildRequires: clang-devel
-BuildRequires: icu-devel >= 76.1
 BuildRequires: rust
 BuildRequires: autoconf
 BuildRequires: nss-devel
@@ -39,7 +38,6 @@ BuildRequires: readline-devel
 BuildRequires: python3-curses
 BuildRequires: cbindgen
 
-Requires:      icu >= 76.1
 Requires:      python3
 
 Provides:      mozjs60
@@ -83,8 +81,9 @@ export AC_MACRODIR=$PWD/build/autoconf/
 
 cd js/src
 
+# ICU is only used by the Intl API, which is disabled with --without-intl-api,
+# so neither build nor runtime ICU dependency is needed.
 %configure \
-  --with-system-icu \
   --with-system-nss \
   --with-system-zlib \
   --disable-tests \
@@ -147,6 +146,8 @@ find %{buildroot} -name '*.la' -delete
 %{_includedir}/%{name}-%{major}
 
 %changelog
+* Wed Oct 14 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 140.7.0-4
+- Drop icu dependency, it is not used with --without-intl-api
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 140.7.0-3
 - Extended to build for subrelease 91 and above
 * Mon Mar 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 140.7.0-2

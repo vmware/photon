@@ -6,7 +6,7 @@ sources:
     package:
       detailed_description: 'The International Components for Unicode (ICU) package
         is a mature, widely used set of C/C++ libraries providing Unicode and Globalization
-        support for software applications. '
+        support for software applications.'
       home_page: http://www.icu-project.org
       license_concluded: NGPL AND FSFULLRWD AND FSFUL AND ICU AND Unicode-3.0 AND
         NAIST-2003 AND BSD-3-Clause AND BSD-2-Clause AND FSFAP AND GPL-2.0-or-later

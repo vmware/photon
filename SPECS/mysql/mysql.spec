@@ -3,7 +3,7 @@
 Summary:        MySQL.
 Name:           mysql
 Version:        8.4.11
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -185,6 +185,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Wed Oct 14 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 8.4.11-4
+- Rebuild with icu 78.3
 * Thu Aug 20 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.4.11-3
 - Remove rpcsvc-proto dependency
 * Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 8.4.11-2

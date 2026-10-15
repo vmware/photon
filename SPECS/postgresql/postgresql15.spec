@@ -16,7 +16,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql15
 Version:        15.19
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            www.postgresql.org
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -746,6 +746,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Wed Oct 14 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 15.19-2
+- Rebuild with icu 78.3
 * Wed Aug 12 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.19-1
 - Upgrade to v15.19
 - Build using github tagged source
