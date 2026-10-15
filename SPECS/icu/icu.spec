@@ -1,7 +1,7 @@
 Summary:    International Components for Unicode
 Name:       icu
 Version:    70.1
-Release:    5%{?dist}
+Release:    6%{?dist}
 License:    MIT and UCD and Public Domain
 URL:        http://www.icu-project.org
 Group:      System Environment/Libraries
@@ -13,6 +13,14 @@ Source0:    http://download.icu-project.org/files/%{name}4c/%{version}/%{name}4c
 
 # tz database 2026e, zoneinfo64.txt from unicode-org/icu maint-78 (ICU-23249)
 Source1:    zoneinfo64.txt
+
+# Metazone data matching the zoneinfo64.txt above. It has to be replaced together
+# with it: metaZones.res maps a zone and instant to a metazone, and the metazone is
+# what supplies the display name. Pairing a 2026e zoneinfo64.res with ICU 70's
+# metaZones.res names historical timestamps in zones such as America/Cancun and
+# America/Pangnirtung after a metazone whose offset no longer matches, so formatting
+# and then parsing such a timestamp shifts it by an hour.
+Source2:    metaZones.txt
 
 Patch0: CVE-2025-5222.patch
 
@@ -34,12 +42,15 @@ It contains the libraries and header files to create applications.
 make %{?_smp_mflags}
 
 # The release tarball ships prebuilt data (data/in/icudt70l.dat) with an old tz.
-# Replace zoneinfo64.res in it with one generated from tz 2026e and rebuild the data.
+# Replace zoneinfo64.res and metaZones.res in it with ones generated from tz 2026e
+# and rebuild the data. timezoneTypes.res is deliberately left alone: maint-78 drops
+# the CST6CDT/EST5EDT/MST7MDT/PST8PDT aliases that ICU 70 still publishes.
 export LD_LIBRARY_PATH=$PWD/lib
 mkdir tzout
-cp %{SOURCE1} .
-bin/genrb -s . -d tzout zoneinfo64.txt
+cp %{SOURCE1} %{SOURCE2} .
+bin/genrb -s . -d tzout zoneinfo64.txt metaZones.txt
 bin/icupkg -s tzout -a zoneinfo64.res data/in/icudt70l.dat
+bin/icupkg -s tzout -a metaZones.res data/in/icudt70l.dat
 touch data/in/icudt70l.dat
 make %{?_smp_mflags}
 
@@ -62,6 +73,8 @@ make %{?_smp_mflags} DESTDIR=%{buildroot} install
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Thu Oct 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 70.1-6
+- Update metazone data along with the 2026e tz data
 * Thu Oct 15 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 70.1-5
 - Update tz data to 2026e
 * Mon Aug 04 2025 Mukul Sikka <mukul.sikka@broadcom.com> 70.1-4
