@@ -15,7 +15,7 @@
 Summary:        Go
 Name:           go
 Version:        1.22.12
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD
 URL:            https://golang.org
 Group:          System Environment/Security
@@ -32,6 +32,9 @@ Source0: https://go.dev/dl/%{name}%{version}.linux-amd64.tar.gz
 %define sha512  %{name}=fea45cd805377021ac8b5ce8e55f091cdfd3d58ab923968d027801cc49ed02f639e5428cdb78ce0bcff04a30edf67083404c4a96b5edb43644948dfbb8083341
 %endif
 
+Source1: go-zoneinfo-2026e.zip
+%define sha512 go-zoneinfo-2026e=0267c30a64dfb90b134b949822aab8f208f526eec846c92ae4e499c922d364845a25cd7841e9e4b54e279ed0eeee813c5a039282b47ea642a34611a304feb872
+
 Patch0: CVE-2025-22871.patch
 Patch1: CVE-2025-68121-1.patch
 Patch2: CVE-2025-68121-2.patch
@@ -45,6 +48,8 @@ Go is an open source programming language that makes it easy to build simple, re
 
 %prep
 %autosetup -p1 -n %{name}
+
+cp -fv %{SOURCE1} lib/time/zoneinfo.zip
 
 mkdir -p %{goroot}
 test -e bin/go && mv bin %{goroot} || :
@@ -134,6 +139,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+* Thu Oct 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.22.12-4
+- Update tzdata to 2026e
 * Tue Mar 10 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.22.12-3
 - Fix CVE-2026-27142
 * Thu Feb 19 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.22.12-2
