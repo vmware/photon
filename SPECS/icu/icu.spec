@@ -1,7 +1,7 @@
 Summary:    International Components for Unicode
 Name:       icu
 Version:    70.1
-Release:    4%{?dist}
+Release:    5%{?dist}
 License:    MIT and UCD and Public Domain
 URL:        http://www.icu-project.org
 Group:      System Environment/Libraries
@@ -10,6 +10,9 @@ Distribution:   Photon
 
 Source0:    http://download.icu-project.org/files/%{name}4c/%{version}/%{name}4c-70_1-src.tgz
 %define sha512 %{name}=0b26ae7207155cb65a8fdb25f7b2fa4431e74b12bccbed0884a17feaae3c96833d12451064dd152197fd6ea5fd3adfd95594284a463e66c82e0d860f645880c9
+
+# tz database 2026e, zoneinfo64.txt from unicode-org/icu maint-78 (ICU-23249)
+Source1:    zoneinfo64.txt
 
 Patch0: CVE-2025-5222.patch
 
@@ -28,6 +31,16 @@ It contains the libraries and header files to create applications.
 
 %build
 %configure
+make %{?_smp_mflags}
+
+# The release tarball ships prebuilt data (data/in/icudt70l.dat) with an old tz.
+# Replace zoneinfo64.res in it with one generated from tz 2026e and rebuild the data.
+export LD_LIBRARY_PATH=$PWD/lib
+mkdir tzout
+cp %{SOURCE1} .
+bin/genrb -s . -d tzout zoneinfo64.txt
+bin/icupkg -s tzout -a zoneinfo64.res data/in/icudt70l.dat
+touch data/in/icudt70l.dat
 make %{?_smp_mflags}
 
 %install
@@ -49,6 +62,8 @@ make %{?_smp_mflags} DESTDIR=%{buildroot} install
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Thu Oct 15 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 70.1-5
+- Update tz data to 2026e
 * Mon Aug 04 2025 Mukul Sikka <mukul.sikka@broadcom.com> 70.1-4
 - Fix for CVE-2025-5222
 * Mon Oct 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 70.1-3
