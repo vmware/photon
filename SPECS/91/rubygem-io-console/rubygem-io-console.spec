@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} == 91
 %global debug_package %{nil}
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name io-console
