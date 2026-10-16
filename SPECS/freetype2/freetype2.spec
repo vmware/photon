@@ -1,7 +1,7 @@
 Summary:        software font engine.
 Name:           freetype2
 Version:        2.13.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.freetype.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -14,6 +14,7 @@ Source1: license.txt
 
 Patch0: CVE-2026-23865-1.patch
 Patch1: CVE-2026-23865-2.patch
+Patch2: CVE-2026-95512.patch
 
 BuildRequires:  libtool
 BuildRequires:  zlib-devel
@@ -61,6 +62,8 @@ make -k check %{?_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Thu Oct 15 2026 Mukul Sikka <mukul.sikka@broadcom.com> 2.13.3-3
+- Patched for CVE-2026-95512
 * Mon Jun 15 2026 Mukul Sikka <mukul.sikka@broadcom.com> 2.13.3-2
 - Fix CVE-2026-23865
 * Tue Apr 08 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.13.3-1
