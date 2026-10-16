@@ -1,7 +1,15 @@
 sources:
-- archive: PyJWT-2.8.0.tar.gz
-  archive_sha512sum: 9d631c20c5207d5ab3137c9d56825f9e197688181abae4f3d6aac766530a35e07a2dfd5e3ba6e530dd5a29a27f54e961cb01075f3bc831b73816aa7c357eb0d4
-  skip_validation: true
+- archive: PyJWT-2.15.1.tar.gz
+  archive_sha512sum: c78d94e0e72717779dc8e565d322092b293e640a37076a47e9deef007aecc339cb6b2af9135afdc0a661f1c54b4a5da1843892ff99fbc352230811ee215d5c64
+  archive_type: upstream
+  name: pyjwt-2.15.1
+  version: 2.15.1
+  url: https://github.com/jpadilla/pyjwt/archive/refs/tags/2.15.1.tar.gz
+  repo_url: https://github.com/jpadilla/pyjwt
+  commit_id: 7d5ef55e42ce42221f58dc49943e92ccad1fa66a
+  skip_validation: false
+  skip_list: []
+  missing: []
   spdx:
     package:
       detailed_description: 'A Python implementation of JSON Web Token draft 01. This
