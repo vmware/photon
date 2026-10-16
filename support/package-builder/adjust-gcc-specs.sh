@@ -65,7 +65,7 @@ if [ $USE_PIE -eq 1 ]; then
   CC1_EXTRA="$CC1_EXTRA %{fno-pie|fno-PIE|fpic|fPIC|fPIE|shared:;:-fpie}"
   CC1PLUS_EXTRA="$CC1PLUS_EXTRA %{fno-pie|fno-PIE|fpic|fPIC|fPIE|shared:;:-fpie}"
   # pie flag requires shared libgcc_s during linking.
-  LIBGCC_EXTRA="$LIBGCC_EXTRA %{!static:--as-needed -lgcc_s --no-as-needed}"
+  LIBGCC_EXTRA="$LIBGCC_EXTRA %{!static:%{!static-pie:--as-needed -lgcc_s --no-as-needed}}"
   LINK_EXTRA="$LINK_EXTRA %{r|nostdlib|fno-pie|fno-PIE|fno-pic|fno-PIC|shared|static:;:-pie}"
 fi
 
