@@ -7,8 +7,8 @@
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
 Epoch:          1
-Version:        1.30.4
-Release:        2%{?dist}
+Version:        1.30.6
+Release:        1%{?dist}
 URL:            http://nginx.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -203,6 +203,8 @@ rm -rf %{buildroot}
 %{dyn_modules_dir}/ngx_stream_ssl_preread_module.so
 
 %changelog
+* Thu Oct 15 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.30.6-1
+- Upgrade to 1.30.6; fixes CVE-2026-90439
 * Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.30.4-2
 - Extend to build for 91 and above
 * Mon Jul 20 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.30.4-1
