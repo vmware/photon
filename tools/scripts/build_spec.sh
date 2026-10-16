@@ -173,7 +173,10 @@ if [[ -n "$SNAPSHOT_LIST" ]]; then
   # Tag the cached template image with the snapshot list + baseurl so
   # different sources/snapshots never share a template, while repeat builds
   # against the same pin still reuse it.
-  CONTAINER_IMG="photon_build_spec:$VERSION-snapshot-$(echo "$SNAPSHOT_LIST|$SNAPSHOT_BASEURL" | md5sum | cut -c1-12)"
+  SNAPSHOT_HASH=$(sha256sum < "$SNAPSHOT_LIST" | cut -d ' ' -f1)
+  # Invalidate templates created before build tools were snapshot-pinned.
+  SNAPSHOT_CACHE_VERSION=2
+  CONTAINER_IMG="photon_build_spec:$VERSION-snapshot-$(echo "$SNAPSHOT_HASH|$SNAPSHOT_BASEURL|$SNAPSHOT_CACHE_VERSION" | md5sum | cut -c1-12)"
 elif [[ -n "$SUBRELEASE" ]]; then
   CONTAINER_IMG="photon_build_spec:$VERSION-$SUBRELEASE"
 else
@@ -297,23 +300,9 @@ create_sandbox() {
     --privileged -d --name $CONTAINER --network="host" \
     "$DKR_IMG" tail -f /dev/null
 
-  # replace toybox with coreutils and install default build tools
-  run "Replace toybox with coreutils" in_sandbox tdnf remove -y toybox
-
-  run "Upgrade Packages" in_sandbox tdnf upgrade --refresh -y
-
-  run "Install default build tools" \
-    in_sandbox tdnf install -y rpm-build build-essential gmp-devel \
-      mpfr-devel tar sed findutils file gzip patch bzip2 createrepo python3
-
-  in_sandbox "mkdir -p $TOPDIR/LOCAL_RPMS"
-
-  run "Create local repo in sandbox" echo -e "[local]\nname=VMWare Photon Linux Local\nbaseurl=file://$TOPDIR/LOCAL_RPMS\nenabled=1\ngpgcheck=0\nskip_if_unavailable=1\npriority=10" | sed 1d | docker exec -i $CONTAINER sh -c 'cat > /etc/yum.repos.d/local.repo'
-
   if [[ -n "$SNAPSHOT_LIST" ]]; then
-    # Disable every default repo (now including the local repo just created
-    # above) so the snapshot pin below ends up the only enabled repo - no
-    # priority=10 local repo left that could silently win over the pin.
+    # Pin before upgrading or installing any build tools. Disable all other
+    # repositories so they cannot supply packages outside the snapshot.
     run "Disable default repos for snapshot pin" \
       docker exec -i $CONTAINER sh -c "sed -i 's/^enabled=1/enabled=0/' /etc/yum.repos.d/*.repo"
 
@@ -333,6 +322,24 @@ create_sandbox() {
       docker cp "$snapshot_repo_tmp" "$CONTAINER:/etc/yum.repos.d/photon.repo"
     rm -f "$snapshot_repo_tmp"
   fi
+
+  if [[ -n "$SNAPSHOT_LIST" ]]; then
+    # The base image can contain packages newer than this snapshot.
+    run "Synchronize base image to snapshot" in_sandbox tdnf distro-sync --refresh -y
+  fi
+
+  # replace toybox with coreutils and install default build tools
+  run "Replace toybox with coreutils" in_sandbox tdnf remove -y toybox
+
+  run "Upgrade Packages" in_sandbox tdnf upgrade --refresh -y
+
+  run "Install default build tools" \
+    in_sandbox tdnf install -y rpm-build build-essential gmp-devel \
+      mpfr-devel tar sed findutils file gzip patch bzip2 createrepo python3
+
+  in_sandbox "mkdir -p $TOPDIR/LOCAL_RPMS"
+
+  run "Create local repo in sandbox" echo -e "[local]\nname=VMWare Photon Linux Local\nbaseurl=file://$TOPDIR/LOCAL_RPMS\nenabled=$([[ -n "$SNAPSHOT_LIST" ]] && echo 0 || echo 1)\ngpgcheck=0\nskip_if_unavailable=1\npriority=10" | sed 1d | docker exec -i $CONTAINER sh -c 'cat > /etc/yum.repos.d/local.repo'
 
   run "Create build template image for future use" docker commit "$(docker ps -q -f "name=$CONTAINER")" $CONTAINER_IMG
 }
