@@ -131,13 +131,10 @@ class KernelSpecProcessor:
         return base_match or matches[0]
 
     def __delete_older_specs(self):
-        for pattern, value in  self.spec_map.items():
-            k_specs = []
-            if 'kernels' in pattern:
-                pattern = "*drivers-intel-*"
-            else:
-                # Only match our own generated output, not a hand-written "<pattern>.spec".
-                pattern = f"{pattern}-*"
+        for pattern in self.spec_map:
+            # Match only this package's generated output, including non-Intel
+            # drivers, and preserve a hand-written "<pattern>.spec".
+            pattern = f"{pattern.replace('kernels', '*')}-*"
             k_specs = self.__find_spec_files(pattern)
             for spec_file in k_specs:
                 spec_file.unlink()
@@ -198,10 +195,53 @@ class KernelSpecProcessor:
                          .replace("%{KERNEL_FLAVOUR}", linux_flavour) \
                          .replace("%{PKG_VERSION}", pkg_version)
 
+        # The template gate controls selection; the output must follow the
+        # kernel it was generated against, including literal template gates.
+        content, count = re.subn(
+            r"^[ \t]*%(?:global|define)[ \t]+build_if[ \t]+[^\r\n]*",
+            lambda _: f"%global build_if {build_for_value}",
+            content, count=1, flags=re.MULTILINE,
+        )
+        if not count:
+            content = f"%global build_if {build_for_value}\n" + content
+
         target_dir = os.path.dirname(spec_file)
         target_file = os.path.join(target_dir, target_fn)
         with open(target_file, "w") as file:
             file.write(content)
+
+    # Retain kernel-indexed mappings during the cross-branch JSON migration.
+    def __supported_versions(self, mapping, kernel_version, flavour):
+        if kernel_version in mapping:
+            return dict.fromkeys(mapping[kernel_version].get(flavour, []))
+
+        versions = []
+        for version, rule in mapping.items():
+            if version.startswith("v"):
+                continue
+            minimum = rule.get("subrelease_min", 0)
+            maximum = rule.get("subrelease_max", sys.maxsize)
+            if (type(minimum) is not int or type(maximum) is not int
+                    or minimum > maximum):
+                raise ValueError(f"Invalid subrelease range for driver {version}")
+            subreleases = rule.get("subreleases")
+            if "subreleases" in rule and (
+                    not isinstance(subreleases, list)
+                    or any(type(value) is not int for value in subreleases)):
+                raise ValueError(f"Invalid subrelease list for driver {version}")
+            if ("subrelease_min" in rule or "subrelease_max" in rule
+                    or "subreleases" in rule):
+                if self.current_subrelease is None:
+                    raise ValueError("Driver ranges require a Photon subrelease")
+                if not minimum <= self.current_subrelease <= maximum:
+                    continue
+                if (subreleases is not None
+                        and self.current_subrelease not in subreleases):
+                    continue
+            if (kernel_version in rule["kernel_versions"]
+                    and flavour in rule["flavours"]):
+                versions.append(version)
+        return versions
 
     # Create specs based on the provided package name
     def create_specs(self):
@@ -231,14 +271,13 @@ class KernelSpecProcessor:
                     spec_name = spec_name.replace("kernels", linux_flavour)
 
                     target_fn = f"{spec_name.replace('.spec.in', '')}-{kver}.spec"
-                    # Check if driver-specific processing is required
-                    if major_linux_version in value:
-                        if linux_flavour in value[major_linux_version]:
-                            supported_linux_version = set(value[major_linux_version][linux_flavour])
-                            for sp_version in supported_linux_version:
-                                target_fn = f"{spec_name}-{sp_version}-{kver}.spec"
-                                self.__process_spec_file(sp, kver, krel_arr[i], ksubrel, build_for_value,
-                                                       target_fn, linux_flavour, sp_version)
+                    supported_versions = self.__supported_versions(
+                        value, major_linux_version, linux_flavour
+                    )
+                    for sp_version in supported_versions:
+                        target_fn = f"{spec_name}-{sp_version}-{kver}.spec"
+                        self.__process_spec_file(sp, kver, krel_arr[i], ksubrel, build_for_value,
+                                                 target_fn, linux_flavour, sp_version)
 
 
 # Main logic for processing specs
