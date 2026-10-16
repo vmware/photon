@@ -1,0 +1,110 @@
+From bd94e00713f6ca4818ea1a20f65111f2926c343d Mon Sep 17 00:00:00 2001
+From: Florian Westphal <fw@strlen.de>
+Date: Mon, 4 Nov 2024 10:41:15 +0100
+Subject: [PATCH] netfilter: nf_tables: avoid false-positive lockdep splats
+ with flowtables
+
+commit b3e8f29d6b45e865bab9a9964709ff7413e33e85 upstream.
+
+The transaction mutex prevents concurrent add/delete, its ok to iterate
+those lists outside of rcu read side critical sections.
+
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ include/net/netfilter/nf_tables.h |  3 ++-
+ net/netfilter/nf_tables_api.c     | 15 +++++++++------
+ net/netfilter/nft_flow_offload.c  |  4 ++--
+ 3 files changed, 13 insertions(+), 9 deletions(-)
+
+diff --git a/include/net/netfilter/nf_tables.h b/include/net/netfilter/nf_tables.h
+index f4b59915a49c..f716ca7d4cf4 100644
+--- a/include/net/netfilter/nf_tables.h
++++ b/include/net/netfilter/nf_tables.h
+@@ -1476,7 +1476,8 @@ struct nft_flowtable {
+ 	struct nf_flowtable		data;
+ };
+ 
+-struct nft_flowtable *nft_flowtable_lookup(const struct nft_table *table,
++struct nft_flowtable *nft_flowtable_lookup(const struct net *net,
++					   const struct nft_table *table,
+ 					   const struct nlattr *nla,
+ 					   u8 genmask);
+ 
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index d8b5874e2741..076ec8619675 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -8299,12 +8299,14 @@ static const struct nla_policy nft_flowtable_policy[NFTA_FLOWTABLE_MAX + 1] = {
+ 	[NFTA_FLOWTABLE_FLAGS]		= { .type = NLA_U32 },
+ };
+ 
+-struct nft_flowtable *nft_flowtable_lookup(const struct nft_table *table,
++struct nft_flowtable *nft_flowtable_lookup(const struct net *net,
++					   const struct nft_table *table,
+ 					   const struct nlattr *nla, u8 genmask)
+ {
+ 	struct nft_flowtable *flowtable;
+ 
+-	list_for_each_entry_rcu(flowtable, &table->flowtables, list) {
++	list_for_each_entry_rcu(flowtable, &table->flowtables, list,
++				lockdep_commit_lock_is_held(net)) {
+ 		if (!nla_strcmp(nla, flowtable->name) &&
+ 		    nft_active_genmask(flowtable, genmask))
+ 			return flowtable;
+@@ -8679,7 +8681,7 @@ static int nf_tables_newflowtable(struct sk_buff *skb,
+ 		return PTR_ERR(table);
+ 	}
+ 
+-	flowtable = nft_flowtable_lookup(table, nla[NFTA_FLOWTABLE_NAME],
++	flowtable = nft_flowtable_lookup(net, table, nla[NFTA_FLOWTABLE_NAME],
+ 					 genmask);
+ 	if (IS_ERR(flowtable)) {
+ 		err = PTR_ERR(flowtable);
+@@ -8874,7 +8876,7 @@ static int nf_tables_delflowtable(struct sk_buff *skb,
+ 		flowtable = nft_flowtable_lookup_byhandle(table, attr, genmask);
+ 	} else {
+ 		attr = nla[NFTA_FLOWTABLE_NAME];
+-		flowtable = nft_flowtable_lookup(table, attr, genmask);
++		flowtable = nft_flowtable_lookup(net, table, attr, genmask);
+ 	}
+ 
+ 	if (IS_ERR(flowtable)) {
+@@ -8939,7 +8941,8 @@ static int nf_tables_fill_flowtable_info(struct sk_buff *skb, struct net *net,
+ 	if (!hook_list)
+ 		hook_list = &flowtable->hook_list;
+ 
+-	list_for_each_entry_rcu(hook, hook_list, list) {
++	list_for_each_entry_rcu(hook, hook_list, list,
++				lockdep_commit_lock_is_held(net)) {
+ 		if (nla_put_string(skb, NFTA_DEVICE_NAME, hook->ops.dev->name))
+ 			goto nla_put_failure;
+ 	}
+@@ -9081,7 +9084,7 @@ static int nf_tables_getflowtable(struct sk_buff *skb,
+ 		return PTR_ERR(table);
+ 	}
+ 
+-	flowtable = nft_flowtable_lookup(table, nla[NFTA_FLOWTABLE_NAME],
++	flowtable = nft_flowtable_lookup(net, table, nla[NFTA_FLOWTABLE_NAME],
+ 					 genmask);
+ 	if (IS_ERR(flowtable)) {
+ 		NL_SET_BAD_ATTR(extack, nla[NFTA_FLOWTABLE_NAME]);
+diff --git a/net/netfilter/nft_flow_offload.c b/net/netfilter/nft_flow_offload.c
+index 7dbbd892e197..b148bd77010e 100644
+--- a/net/netfilter/nft_flow_offload.c
++++ b/net/netfilter/nft_flow_offload.c
+@@ -422,8 +422,8 @@ static int nft_flow_offload_init(const struct nft_ctx *ctx,
+ 	if (!tb[NFTA_FLOW_TABLE_NAME])
+ 		return -EINVAL;
+ 
+-	flowtable = nft_flowtable_lookup(ctx->table, tb[NFTA_FLOW_TABLE_NAME],
+-					 genmask);
++	flowtable = nft_flowtable_lookup(ctx->net, ctx->table,
++					 tb[NFTA_FLOW_TABLE_NAME], genmask);
+ 	if (IS_ERR(flowtable))
+ 		return PTR_ERR(flowtable);
+ 
+-- 
+2.53.0
+

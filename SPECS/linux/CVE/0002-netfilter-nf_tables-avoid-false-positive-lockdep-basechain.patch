@@ -1,0 +1,54 @@
+From 87cbd61beb5e4d8a44895b88830781d333afb20a Mon Sep 17 00:00:00 2001
+From: Florian Westphal <fw@strlen.de>
+Date: Mon, 4 Nov 2024 10:41:17 +0100
+Subject: [PATCH] netfilter: nf_tables: avoid false-positive lockdep splats
+ with basechain hook
+
+commit 3567146b94afcd69d4916c880eb5b1b0e3797397 upstream.
+
+Like previous patches: iteration is ok if the list cannot be altered in
+parallel.
+
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ net/netfilter/nf_tables_api.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index 076ec8619675..1d4ff62c3c10 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -1795,7 +1795,8 @@ static int nft_dump_stats(struct sk_buff *skb, struct nft_stats __percpu *stats)
+ 	return -ENOSPC;
+ }
+ 
+-static int nft_dump_basechain_hook(struct sk_buff *skb, int family,
++static int nft_dump_basechain_hook(struct sk_buff *skb,
++				   const struct net *net, int family,
+ 				   const struct nft_base_chain *basechain,
+ 				   const struct list_head *hook_list)
+ {
+@@ -1820,7 +1821,8 @@ static int nft_dump_basechain_hook(struct sk_buff *skb, int family,
+ 		if (!hook_list)
+ 			hook_list = &basechain->hook_list;
+ 
+-		list_for_each_entry_rcu(hook, hook_list, list) {
++		list_for_each_entry_rcu(hook, hook_list, list,
++					lockdep_commit_lock_is_held(net)) {
+ 			if (!first)
+ 				first = hook;
+ 
+@@ -1866,7 +1868,7 @@ static int nf_tables_fill_chain_info(struct sk_buff *skb, struct net *net,
+ 		const struct nft_base_chain *basechain = nft_base_chain(chain);
+ 		struct nft_stats __percpu *stats;
+ 
+-		if (nft_dump_basechain_hook(skb, family, basechain, hook_list))
++		if (nft_dump_basechain_hook(skb, net, family, basechain, hook_list))
+ 			goto nla_put_failure;
+ 
+ 		if (nla_put_be32(skb, NFTA_CHAIN_POLICY,
+-- 
+2.53.0
+

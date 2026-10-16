@@ -110,3 +110,8 @@ Patch3090: 0001-SUNRPC-Reject-short-RFC-4121-MIC-tokens-in-gss_krb5.patch
 Patch3091: 0001-btrfs-lzo-reject-inline-extents-without-valid-heade.patch
 # Fixes CVE-2026-80634
 Patch3092: 0001-netfilter-flowtable-avoid-num_encaps-underflow-on-br.patch
+# Fixes CVE-2026-63858
+Patch3093: 0001-netfilter-nf_tables-avoid-false-positive-lockdep-flowtables.patch
+Patch3094: 0002-netfilter-nf_tables-avoid-false-positive-lockdep-basechain.patch
+Patch3095: 0003-netfilter-nf_tables-use-list_del_rcu-for-netlink-hoo.patch
+Patch3096: 0004-netfilter-nf_tables-add-hook-transactions-for-device.patch

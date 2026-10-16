@@ -80,7 +80,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.112
-Release:        6%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        7%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -1032,6 +1032,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Oct 19 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.112-7
+- Fixes CVE-2026-63858
 * Tue Oct 13 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.112-6
 - Bring back the unrolled loop for small user copies on CPUs without FSRM
 * Tue Oct 13 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.12.112-5
