@@ -1,11 +1,11 @@
 sources:
-- archive: wireshark-4.6.8.tar.xz
+- archive: wireshark-4.6.9.tar.xz
   archive_type: upstream
-  archive_sha512sum: 4692bd15bebd67475502b6afe106e3be85b90add16f932d7e58c4426fd62b5886e96daa522aafd9ee4a8300bf3e091a738b5b1fa20e3e0721d0d0f3be216f3c8
-  name: wireshark-4.6.8
+  archive_sha512sum: dde86fafc38132c834fb28865f66351aa7cdaccaabc7612731fd418014cf8624471a2a20a5b3a6546bf4b1c397f04d35271bd92a6e4680d63caeabee90cab6aa
+  name: wireshark-4.6.9
   repo_url: https://github.com/wireshark/wireshark
-  url: https://www.wireshark.org/download/src/wireshark-4.6.8.tar.xz
-  commit_id: e677bf052328efc1ed897a547fa161836a0e4ff7
+  url: https://www.wireshark.org/download/src/wireshark-4.6.9.tar.xz
+  commit_id: 2d548b197c7582332f143c15259e1650aff7cc26
   missing:
   - .gitattributes
   - .gitignore
@@ -15,7 +15,7 @@ sources:
   - git-export-release.sh.in
   license_manual_review:
   - file_paths:
-    - wireshark-4.6.8/tools/licensecheck.pl
+    - wireshark-4.6.9/tools/licensecheck.pl
     sha256sum: f9e39193d33e3e091f4908f1cf1ef749e427b1e59770a90d4120769e7a1a4fec
     spdx_exp: GPL-2.0-or-later
   spdx:

@@ -1,7 +1,7 @@
 %global build_if %{photon_subrelease} >= 91
 Summary:        Wireshark is the world's foremost protocol analyzer
 Name:           wireshark
-Version:        4.6.8
+Version:        4.6.9
 Release:        1%{?dist}
 URL:            http://www.wireshark.org
 Group:          Networking
@@ -103,6 +103,8 @@ rm -rf %{buildroot}%{_mandir} \
 %{_libdir}/lib*.so
 
 %changelog
+* Thu Oct 15 2026 Mukul Sikka <mukul.sikka@broadcom.com> 4.6.9-1
+- Upgrade to v4.6.9; fixes CVE-2026-96417, CVE-2026-96415
 * Fri Sep 04 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.6.8-1
 - Upgrade to v4.6.8; fixes CVE-2026-15163, CVE-2026-15169,
   CVE-2026-76879, CVE-2026-76880, CVE-2026-76886, CVE-2026-76888,
