@@ -1,0 +1,31 @@
+From 5f7a98842cf026709f3ed91819e10f5f3e78c03b Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Sun, 18 Oct 2026 20:59:57 +0530
+Subject: [PATCH] fix(photon): use libexec path for ds-identify
+
+Add Photon OS to the generator's /usr/libexec distro list so it finds
+ds-identify where Meson installs it with prefix=/usr and
+libexecdir=libexec.
+
+Co-authored-by: Codex <codex@openai.com>
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ systemd/cloud-init-generator.tmpl | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/systemd/cloud-init-generator.tmpl b/systemd/cloud-init-generator.tmpl
+index 888bad535..312a69054 100644
+--- a/systemd/cloud-init-generator.tmpl
++++ b/systemd/cloud-init-generator.tmpl
+@@ -21,7 +21,7 @@ CLOUD_SYSTEM_TARGET="/usr/lib/systemd/system/cloud-init.target"
+ CLOUD_SYSTEM_TARGET="/lib/systemd/system/cloud-init.target"
+ {% endif %}
+ {% if variant in ["almalinux", "azurelinux", "centos", "cloudlinux", "eurolinux", "fedora",
+-                  "miraclelinux", "openeuler", "OpenCloudOS", "openmandriva", "rhel", "rocky", "TencentOS", "virtuozzo"] %}
++                  "miraclelinux", "openeuler", "OpenCloudOS", "openmandriva", "photon", "rhel", "rocky", "TencentOS", "virtuozzo"] %}
+     dsidentify="/usr/libexec/cloud-init/ds-identify"
+ {% elif variant == "benchmark" %}
+     dsidentify="/bin/true"
+-- 
+2.56.0
+
