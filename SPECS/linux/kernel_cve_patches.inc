@@ -28,7 +28,6 @@ Patch3018: 0001-nouveau-gsp-drop-WARN_ON-in-ACPI-probes.patch
 Patch3019: 0002-ALSA-usb-audio-Use-the-right-limit-for-PCM-OOB-check.patch
 # Fixes CVE-2025-40158, CVE-2025-68745, CVE-2026-63872, CVE-2026-64076, CVE-2026-64077
 Patch3020: 0001-esp-fix-page-frag-reference-leak-on-skb_to_sgvec-failure.patch
-Patch3021: 0001-ipv6-use-RCU-in-ip6_output.patch
 Patch3022: 0001-netfilter-bridge-eb_tables-close-module-init-race.patch
 Patch3023: 0001-netfilter-ebtables-move-to-two-stage-removal-scheme.patch
 Patch3024: 0001-scsi-qla2xxx-Clear-cmds-after-chip-reset.patch
@@ -59,8 +58,6 @@ Patch3047: 0001-bpf-Guard-conntrack-opts-error-writes.patch
 Patch3049: 0001-bnxt-fix-head-underflow-on-XDP-head-grow.patch
 Patch3050: 0001-net-serialize-netif_running-check-in-enqueue_to_backlog.patch
 Patch3051: 0001-netfs-Fix-netfs_create_write_req-to-handle-async-cac.patch
-# Fixes CVE-2026-64160
-Patch3054: 0001-cifs-Fix-handling-of-a-beyond-EOF-DIO-unbuffered-rea.patch
 Patch3055: 0002-filemap-Add-folio_next_pos.patch
 Patch3056: 0003-netfs-Fix-potential-for-tearing-in-remote_i_size-and.patch
 Patch3057: 0004-cifs-Fix-undefined-variables.patch
