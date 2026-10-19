@@ -32,7 +32,7 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        6.1.189
+Version:        6.1.190
 Release:        1%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -580,6 +580,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Oct 19 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.1.190-1
+- Update to version 6.1.190
 * Wed Oct 07 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.189-1
 - Update to version 6.1.189
 - Drop 0002-p9fs_dir_readdir-offset-support.patch, superseded by upstream

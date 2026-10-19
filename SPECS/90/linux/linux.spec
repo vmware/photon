@@ -49,7 +49,7 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.1.189
+Version:        6.1.190
 Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -995,6 +995,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Mon Oct 19 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.1.190-1
+- Update to version 6.1.190
 * Wed Oct 07 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.1.189-1
 - Update to version 6.1.189
 * Fri Sep 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.183-2

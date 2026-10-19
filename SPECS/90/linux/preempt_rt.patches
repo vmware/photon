@@ -72,4 +72,4 @@ Patch368: 0068-Linux-6.1.167-rt62-REBASE.patch
 Patch370: 0070-kvm-vmx-guard-regparm-0-on-vmread_error_trampoline-f.patch
 Patch371: 0071-Linux-6.1.177-rt65-REBASE.patch
 Patch372: 0072-ksysfs-replace-sprintf-with-sysfs_emit.patch
-Patch373: 0073-Linux-6.1.189-rt69-REBASE.patch
+Patch373: 0073-Linux-6.1.190-rt70-REBASE.patch
