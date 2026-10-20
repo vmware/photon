@@ -1,7 +1,7 @@
 Summary:        Security client
 Name:           nss
 Version:        3.78
-Release:        13%{?dist}
+Release:        14%{?dist}
 URL:            https://firefox-source-docs.mozilla.org/security/nss/index.html
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -11,6 +11,9 @@ Source0: http://ftp.mozilla.org/pub/security/nss/releases/NSS_3_78_RTM/src/%{nam
 
 Source1: license.txt
 %include %{SOURCE1}
+
+# Mozilla root store (lib/ckfw/builtins/certdata.txt) from upstream NSS tip
+Source2: certdata.txt
 
 # taken from:
 # http://lfs.linux-sysadmin.com/patches/downloads/nss/nss-3.78-standalone-1.patch
@@ -59,6 +62,12 @@ This package contains minimal set of shared %{name} libraries.
 
 %prep
 %autosetup -p1
+
+# Refresh the built-in root store: drops eMudhra emSign roots (C1, C3, G3)
+cp %{SOURCE2} %{name}/lib/ckfw/builtins/certdata.txt
+sed -i -e 's/^\(#define NSS_BUILTINS_LIBRARY_VERSION_MINOR\) .*/\1 92/' \
+       -e 's/^\(#define NSS_BUILTINS_LIBRARY_VERSION\) ".*"/\1 "2.92"/' \
+       %{name}/lib/ckfw/builtins/nssckbi.h
 
 %build
 %ifarch aarch64
@@ -139,6 +148,9 @@ sudo -u test ./all.sh && userdel test -r -f
 %{_libdir}/libsoftokn3.chk
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 3.78-14
+- Update built-in root store (certdata.txt) to upstream NSS tip, drops
+- eMudhra emSign Root CA - C1, C3 and G3
 * Tue Aug 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.78-13
 - Fix CVE-2026-16389
 * Wed Mar 18 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.78-12
