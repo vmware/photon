@@ -15,7 +15,7 @@
 Summary:        Go
 Name:           go
 Version:        1.22.12
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        BSD
 URL:            https://golang.org
 Group:          System Environment/Security
@@ -39,6 +39,7 @@ Patch0: CVE-2025-22871.patch
 Patch1: CVE-2025-68121-1.patch
 Patch2: CVE-2025-68121-2.patch
 Patch3: CVE-2026-27142.patch
+Patch4: CVE-2026-111943.patch
 
 Requires:       glibc
 Requires:       gcc
@@ -139,6 +140,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 1.22.12-5
+- Fix CVE-2026-111943: crypto/x509 distrusts compromised eMudhra intermediate CA keys
 * Thu Oct 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.22.12-4
 - Update tzdata to 2026e
 * Tue Mar 10 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.22.12-3

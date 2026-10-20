@@ -5,7 +5,7 @@
 Summary:        Containerd
 Name:           containerd
 Version:        1.6.8
-Release:        18%{?dist}
+Release:        19%{?dist}
 License:        ASL 2.0
 URL:            https://containerd.io/docs
 Group:          Applications/File
@@ -139,6 +139,8 @@ make %{?_smp_mflags} integration
 %{_mandir}/man8/*
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 1.6.8-19
+- Bump version as a part of go upgrade
 * Fri Feb 13 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.6.8-18
 - Disable AppArmor by default in CRI config (disable_apparmor = true)
 - Bump up as part of go upgrade

@@ -3,7 +3,7 @@
 Summary:        CoreDNS
 Name:           coredns
 Version:        1.14.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License 2.0
 URL:            https://github.com/%{name}/%{name}
 Group:          Development/Tools
@@ -36,6 +36,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/%{name}
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 1.14.3-2
+- Bump version as a part of go upgrade
 * Tue May 26 2026 Dweep Advani <dweep.advani@broadcom.com> 1.14.3-1
 - Upgrade to 1.14.3 to fix CVE-2026-32934/2936/3190/3489
 * Fri Mar 13 2026 Dweep Advani <dweep.advani@broadcom.com> 1.11.1-11

@@ -1,7 +1,7 @@
 Summary:    Linux-native fakeroot using user namespaces
 Name:       rootlesskit
 Version:    1.0.1
-Release:    17%{?dist}
+Release:    18%{?dist}
 Group:      Tools/Docker
 License:    Apache
 URL:        https://github.com/rootless-containers/rootlesskit
@@ -42,6 +42,8 @@ export BINDIR=%{_bindir}
 %{_bindir}/rootlessctl
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 1.0.1-18
+- Bump version as a part of go upgrade
 * Mon Nov 10 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.0.1-17
 - Bump up as part of go upgrade
 * Thu Sep 19 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.0.1-16

@@ -16,7 +16,7 @@
 
 Summary:        Go
 Name:           go1.26
-Version:        1.26.3
+Version:        1.26.10
 Release:        1%{?dist}
 URL:            https://golang.org
 License:        BSD
@@ -26,12 +26,12 @@ Distribution:   Photon
 
 %ifarch aarch64
 Source0: https://go.dev/dl/%{pkg_name}%{version}.linux-arm64.tar.gz
-%define sha512 go=443ebe1f87b426cf21954048d1fee8a122e3f082fb285eae3ef7ba8f793a8efcd5599f46f85777560f38de573011a6dba4a1a6effc457c4367f34d621a66f976
+%define sha512 go=7d6aa72a27027fd032189d651354a93fad837d4ca3bae032e067d55e2d1ee78b3ddae7588324c93b367f4167182addd482632fd42b77780135707f6e0f669c1d
 %endif
 
 %ifarch x86_64
 Source0: https://go.dev/dl/%{pkg_name}%{version}.linux-amd64.tar.gz
-%define sha512 go=cc49ca9764b1dff5983d7635bc6e8f9fe71754bf48ec310a43512cef6103c4a88ed446e9b759742affa9bbcac507957fb9993011cb94343b88ba938c17632c28
+%define sha512 go=fff91a8d62212b2b8f66f2a7029173eb6ce6e13767f04e7ec321cb1682d16b843fc3499370c56b385c47303b65f4f6a64b4a745adb3eb4adde2438284fa873b7
 %endif
 
 Requires: glibc
@@ -123,6 +123,9 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 1.26.10-1
+- Upgrade to 1.26.10
+- Fixes CVE-2026-111943: crypto/x509 distrusts compromised eMudhra intermediate CA keys
 * Thu Jul 09 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.26.3-1
 - Initial version.
 - This version of go will help in building newer version of go dependent packages

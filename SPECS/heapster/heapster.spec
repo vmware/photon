@@ -1,7 +1,7 @@
 Summary:    Heapster enables Container Cluster Monitoring and Performance Analysis.
 Name:       heapster
 Version:    1.5.4
-Release:        29%{?dist}
+Release:        30%{?dist}
 License:    Apache 2.0
 URL:        https://github.com/wavefrontHQ/cadvisor
 Group:      Development/Tools
@@ -30,11 +30,11 @@ Heapster collects and interprets various signals like compute resource usage, li
 %setup -q
 
 pushd vendor/golang.org/x/net
-%autopatch -p1 -M1
+%autopatch -p1 -m0 -M1
 popd
-%patch2 -p1
+%patch -p1 2
 %if 0%{?with_check}
-%patch3 -p1
+%patch -p1 3
 %endif
 
 %build
@@ -64,6 +64,8 @@ make test-unit %{?_smp_mflags}
 %{_bindir}/eventer
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 1.5.4-30
+- Bump version as a part of go upgrade
 * Mon Nov 10 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.5.4-29
 - Bump up as part of go upgrade
 * Mon Oct 21 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.5.4-28

@@ -3,7 +3,7 @@
 
 Name:           docker-compose
 Version:        2.33.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Multi-container orchestration for Docker
 Group:          Application/File
 Vendor:         VMware, Inc.
@@ -56,6 +56,8 @@ rm -rf %{buildroot}
 %{plugins_dir}/%{name}
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 2.33.1-4
+- Bump version as a part of go upgrade
 * Mon Nov 10 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.33.1-3
 - Bump up as part of go upgrade
 * Wed Nov 05 2025 Mukul Sikka <mukul.sikka@broadcom.com> 2.33.1-2

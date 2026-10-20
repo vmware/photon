@@ -13,7 +13,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.27.16
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Group:          Development/Tools
@@ -218,6 +218,8 @@ fi
 %{_bindir}/pause-%{archname}
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 1.27.16-4
+- Bump version as a part of go upgrade
 * Mon Nov 10 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.27.16-3
 - Bump up as part of go upgrade
 * Mon Oct 27 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.27.16-2

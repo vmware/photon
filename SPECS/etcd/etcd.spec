@@ -1,7 +1,7 @@
 Summary:        Distributed reliable key-value store
 Name:           etcd
 Version:        3.5.30
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License
 URL:            https://github.com/etcd-io/etcd/
 Group:          System Environment/Security
@@ -85,6 +85,8 @@ rm -rf %{buildroot}/*
 %endif
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 3.5.30-2
+- Bump version as a part of go upgrade
 * Wed May 06 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.5.30-1
 - Version upgrade to 3.5.30
 - Fixes CVE-2026-33413 and CVE-2026-33343
