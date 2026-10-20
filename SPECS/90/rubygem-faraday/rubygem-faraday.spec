@@ -6,7 +6,7 @@
 Summary:        HTTP/REST API client library.
 Name:           rubygem-faraday
 Version:        2.14.1
-Release:        1.1.1%{?dist}
+Release:        1.1.2%{?dist}
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -16,6 +16,8 @@ Source0: https://rubygems.org/downloads/%{gem_name}-%{version}.gem
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0: CVE-2026-54297.patch
 
 BuildRequires: ruby-devel
 BuildRequires: rubygem-faraday-net_http
@@ -28,6 +30,7 @@ HTTP/REST API client library.
 
 %prep
 %gem_unpack %{SOURCE0}
+%autopatch -p1
 
 %build
 %gem_build
@@ -43,6 +46,8 @@ rm -rf %{buildroot}/*
 %{gemdir}
 
 %changelog
+* Thu Oct 22 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.14.1-1.1.2
+- Fix CVE-2026-54297
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.14.1-1.1.1
 - Adjusted to build for subrelease 90
 * Fri Feb 13 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.14.1-1.1
