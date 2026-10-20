@@ -2,8 +2,8 @@
 
 Summary:        Python package for providing Mozilla's CA Bundle
 Name:           python3-certifi
-Version:        2023.11.17
-Release:        5%{?dist}
+Version:        2026.10.19
+Release:        1%{?dist}
 URL:            https://github.com/certifi
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -11,13 +11,10 @@ Distribution:   Photon
 
 BuildArch:      noarch
 
-Source0:        https://github.com/certifi/python-certifi/archive/certifi-%{version}.tar.gz
+Source0:        https://github.com/certifi/python-certifi/archive/refs/tags/%{version}.tar.gz#/certifi-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
-
-# Note: If you are fixing a CVE here, please check for the same in python3-pip
-Patch0:         CVE-2024-39689.patch
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -51,6 +48,8 @@ SSL certificates while verifying the identity of TLS hosts
 %{python3_sitelib}/*
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 2026.10.19-1
+- Update to 2026.10.19, drops eMudhra intermediate CA roots (Comodo AAA, emSign G3)
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2023.11.17-5
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2023.11.17-4
