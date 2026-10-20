@@ -1,15 +1,15 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} >= 92
 
 Summary:       A Python module for decorators, wrappers and monkey patching
 Name:          python3-wrapt
-Version:       1.14.1
-Release:       4%{?dist}
+Version:       2.5.1
+Release:       1%{?dist}
 Group:         Development/Tools/Python
 URL:           https://github.com/GrahamDumpleton/wrapt
 Vendor:        VMware, Inc.
 Distribution:  Photon
 
-Source0:       https://files.pythonhosted.org/packages/11/eb/e06e77394d6cf09977d92bff310cb0392930c08a338f99af6066a5a98f92/wrapt-%{version}.tar.gz
+Source0: https://github.com/GrahamDumpleton/wrapt/archive/refs/tags/%{version}.tar.gz#/wrapt-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -17,6 +17,10 @@ Source1: license.txt
 BuildRequires: gcc
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
+BuildRequires: python3-wheel
+BuildRequires: python3-build
+BuildRequires: python3-installer
+BuildRequires: python3-packaging
 Requires: python3
 
 %description
@@ -27,19 +31,21 @@ of function wrappers and decorator functions.
 %autosetup -p1 -n wrapt-%{version}
 
 %build
-%py3_build
+%py3_build_wheel
 
 %install
-%py3_install
+%py3_install_wheel
+%{py_byte_compile_and_ghost}
 
-%files
+%files -f %{py_ghost_filelist}
 %defattr(-,root,root,-)
-%doc README.rst
+%doc README.md
 %license LICENSE
-%{python3_sitearch}/wrapt
-%{python3_sitearch}/wrapt-%{version}-py%{python3_version}.egg-info
+%{python3_sitearch}/*
 
 %changelog
+* Tue Oct 20 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.5.1-1
+- Upgrade to 2.5.1
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.14.1-4
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.14.1-3
