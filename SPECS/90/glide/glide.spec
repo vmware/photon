@@ -5,7 +5,7 @@
 Summary:        Vendor Package Management for Goland
 Name:           glide
 Version:        0.13.3
-Release:        23.1%{?dist}
+Release:        23.2%{?dist}
 URL:            https://github.com/Masterminds/glide
 Source0:        https://github.com/Masterminds/glide/archive/refs/tags/%{name}-%{version}.tar.gz
 
@@ -59,6 +59,8 @@ popd
 %{_bindir}/glide
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 0.13.3-23.2
+- Bump version as a part of go upgrade
 * Tue May 26 2026 Mukul Sikka <mukul.sikka@broadcom.com> 0.13.3-23.1
 - Maintain for photon_subrelease <= 90
 * Wed Feb 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.13.3-23

@@ -6,7 +6,7 @@
 Summary:        A tool that inspect which pages of a file or files are being cached by the Linux kernel
 Name:           pcstat
 Version:        2.0
-Release:        2.1%{?dist}
+Release:        2.2%{?dist}
 URL:            https://github.com/tobert/%{name}
 Group:          Development/Debuggers
 Vendor:         VMware, Inc.
@@ -41,6 +41,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/%{name}
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 2.0-2.2
+- Bump version as a part of go upgrade
 * Tue May 26 2026 Mukul Sikka <mukul.sikka@broadcom.com> 2.0-2.1
 - Maintain for photon_subrelease <= 90
 * Wed Feb 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.0-2

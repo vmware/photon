@@ -7,7 +7,7 @@
 Summary:        Configures network interfaces in cloud enviroment
 Name:           cloud-network-setup
 Version:        0.2.2
-Release:        17.1%{?dist}
+Release:        17.2%{?dist}
 Group:          Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -88,6 +88,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/cloud-network.service
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 0.2.2-17.2
+- Bump version as a part of go upgrade
 * Tue May 26 2026 Mukul Sikka <mukul.sikka@broadcom.com> 0.2.2-17.1
 - Maintain for photon_subrelease <= 90
 * Tue Feb 24 2026 Oliver Kurth <oliver.kurth@broadcom.com> 0.2.2-17

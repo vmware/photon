@@ -6,7 +6,7 @@
 
 Name:           influxdb
 Version:        1.12.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        InfluxDB is an open source time series database
 URL:            https://influxdata.com
 Vendor:         VMware, Inc.
@@ -128,6 +128,8 @@ done
 %{_sysusersdir}/%{name}.conf
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 1.12.4-3
+- Bump version as a part of go upgrade
 * Tue Jun 30 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.12.4-2
 - Use vendored sources for libflux
 * Wed Jun 03 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.12.4-1

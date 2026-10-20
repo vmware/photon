@@ -7,7 +7,7 @@
 Summary:       BGP implementation in Go
 Name:          gobgp
 Version:       4.5.0
-Release:       2%{?dist}
+Release:       3%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 URL:           https://github.com/osrg/gobgp
@@ -56,6 +56,8 @@ install -v -m755 -D -t %{buildroot}%{_bindir} bin/gobgp bin/gobgpd
 %license src/%{gopath_comp_gobgp}/LICENSE
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 4.5.0-3
+- Bump version as a part of go upgrade
 * Mon Jun 08 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.5.0-2
 - Add ca-certificates to build requires
 * Fri May 22 2026 Mukul Sikka <mukul.sikka@broadcom.com> 4.5.0-1

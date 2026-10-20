@@ -4,7 +4,7 @@
 Summary:        Kubernetes security benchmarking tool
 Name:           kube-bench
 Version:        0.13.0
-Release:        2.1%{?dist}
+Release:        2.2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/aquasecurity/%{name}
@@ -45,6 +45,8 @@ make tests %{?_smp_mflags}
 %exclude %dir %{_libdir}/debug
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 0.13.0-2.2
+- Bump version as a part of go upgrade
 * Tue May 26 2026 Mukul Sikka <mukul.sikka@broadcom.com> 0.13.0-2.1
 - Maintain for photon_subrelease <= 90
 * Wed Feb 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.13.0-2

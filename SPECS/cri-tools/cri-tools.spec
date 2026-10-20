@@ -5,7 +5,7 @@
 Summary:        CRI tools
 Name:           cri-tools
 Version:        1.36.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://github.com/kubernetes-incubator/cri-tools
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -51,6 +51,8 @@ make test-e2e %{?_smp_mflags}
 %exclude %{_bindir}/critest
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 1.36.0-2
+- Bump version as a part of go upgrade
 * Thu May 21 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.36.0-1
 - Upgrade to v1.36.0
 * Wed Feb 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.34.0-2

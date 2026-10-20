@@ -10,7 +10,7 @@
 Summary:       Google Compute Engine guest environment
 Name:          google-guest-agent
 Version:       20250122.00
-Release:       5.1%{?dist}
+Release:       5.2%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 URL:           https://github.com/GoogleCloudPlatform/guest-agent
@@ -91,6 +91,8 @@ install -p -m 0644 90-%{name}.preset %{buildroot}%{_presetdir}/90-%{name}.preset
 %{_presetdir}/90-%{name}.preset
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 20250122.00-5.2
+- Bump version as a part of go upgrade
 * Tue May 26 2026 Mukul Sikka <mukul.sikka@broadcom.com> 20250122.00-5.1
 - Maintain for photon_subrelease <= 90
 * Wed Feb 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 20250122.00-5

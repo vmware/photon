@@ -7,7 +7,7 @@
 Summary:        Containerd
 Name:           containerd
 Version:        2.1.5
-Release:        2.1.1%{?dist}
+Release:        2.1.2%{?dist}
 URL:            https://containerd.io/docs
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -143,6 +143,8 @@ make %{?_smp_mflags} integration
 %{_mandir}/man8/*
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 2.1.5-2.1.2
+- Bump version as a part of go upgrade
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.1.5-2.1.1
 - Adjusted to build for subrelease 90
 * Fri Feb 13 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.1.5-2.1

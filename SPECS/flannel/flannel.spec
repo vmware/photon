@@ -5,7 +5,7 @@
 Summary:        Overlay network for containers based on etcd
 Name:           flannel
 Version:        0.28.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://github.com/coreos/flannel
 Source0:        https://github.com/coreos/flannel/archive/%{name}-%{version}.tar.gz
 
@@ -97,6 +97,8 @@ GOPATH=%{_builddir} make test %{?_smp_mflags}
 %config(noreplace) %{_sysconfdir}/flannel/flanneld.conf
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 0.28.4-3
+- Bump version as a part of go upgrade
 * Fri May 22 2026 Ajay Kaher <ajay.kaher@broadcom.com> 0.28.4-2
 - Drop unzip BuildRequires; not needed for tar.gz source
 * Fri May 22 2026 Mukul Sikka <mukul.sikka@broadcom.com> 0.28.4-1

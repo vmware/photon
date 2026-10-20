@@ -9,7 +9,7 @@
 Summary:        CoreDNS
 Name:           coredns
 Version:        1.11.1
-Release:        16.1%{?dist}
+Release:        16.2%{?dist}
 URL:            https://github.com/%{name}/%{name}
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -48,6 +48,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/%{name}
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 1.11.1-16.2
+- Bump version as a part of go upgrade
 * Tue May 26 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.11.1-16.1
 - Maintain for photon_subrelease <= 90
 * Fri Mar 13 2026 Dweep Advani <dweep.advani@broadcom.com> 1.11.1-16

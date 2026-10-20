@@ -6,7 +6,7 @@
 Summary:       Git extension for versioning large files
 Name:          git-lfs
 Version:       3.7.1
-Release:       4%{?dist}
+Release:       5%{?dist}
 URL:           https://github.com/git-lfs/git-lfs/archive/v%{version}.tar.gz
 Source0:       https://github.com/git-lfs/git-lfs/archive/refs/tags/%{name}-%{version}.tar.gz
 
@@ -53,6 +53,8 @@ rm -rf %{buildroot}
 %{_bindir}/git-lfs
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 3.7.1-5
+- Bump version as a part of go upgrade
 * Tue Jun 23 2026 Mukul Sikka <mukul.sikka@broadcom.com> 3.7.1-4
 - Upgrade Go deps to LTS-compliant versions
 * Thu May 21 2026 Mukul Sikka <mukul.sikka@broadcom.com> 3.7.1-3

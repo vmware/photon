@@ -16,7 +16,7 @@
 Summary:        Kubernetes Metrics Server
 Name:           kubernetes-metrics-server
 Version:        0.3.7
-Release:        22.1%{?dist}
+Release:        22.2%{?dist}
 URL:            https://github.com/kubernetes-incubator/metrics-server
 Source0:        https://github.com/kubernetes-sigs/metrics-server/archive/refs/tags/%{name}-%{version}.tar.gz
 
@@ -67,6 +67,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/metrics-server
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 0.3.7-22.2
+- Bump version as a part of go upgrade
 * Tue May 26 2026 Mukul Sikka <mukul.sikka@broadcom.com> 0.3.7-22.1
 - Maintain for photon_subrelease <= 90
 * Tue Mar 31 2026 Michelle Wang <michelle.wang@broadcom.com> 0.3.7-22

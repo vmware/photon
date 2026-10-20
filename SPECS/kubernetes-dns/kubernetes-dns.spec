@@ -7,7 +7,7 @@
 Summary:        Kubernetes DNS
 Name:           kubernetes-dns
 Version:        1.26.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://github.com/kubernetes/dns/archive/%{version}.tar.gz
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -67,6 +67,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/sidecar-e2e
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 1.26.8-2
+- Bump version as a part of go upgrade
 * Fri May 22 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.26.8-1
 - Upgrade to 1.26.8
 * Thu May 21 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.22.23-5

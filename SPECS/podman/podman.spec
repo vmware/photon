@@ -5,7 +5,7 @@
 Summary:        A tool to manage Pods, Containers and Container Images
 Name:           podman
 Version:        5.8.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://github.com/containers/podman
 Group:          Podman
 Vendor:         VMware, Inc.
@@ -172,6 +172,8 @@ rm -rv %{buildroot}%{_datadir}/zsh \
 %{_libexecdir}/%{name}/gvproxy
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 5.8.5-2
+- Bump version as a part of go upgrade
 * Tue Aug 11 2026 Prashant Singh Chauhan <prashant.singh-chauhan@broadcom.com> 5.8.5-1
 - Upgrade to v5.8.5, split man pages into a podman-docs subpackage
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.5.1-15

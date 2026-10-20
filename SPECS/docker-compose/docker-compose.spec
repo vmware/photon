@@ -6,7 +6,7 @@
 
 Name:           docker-compose
 Version:        5.5.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Multi-container orchestration for Docker
 Group:          Application/File
 Vendor:         VMware, Inc.
@@ -59,6 +59,8 @@ rm -rf %{buildroot}
 %{plugins_dir}/%{name}
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 5.5.1-2
+- Bump version as a part of go upgrade
 * Thu Sep 10 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 5.5.1-1
 - Upgrade to v5.5.1
 * Fri May 22 2026 Mukul Sikka <mukul.sikka@broadcom.com> 5.1.4-1

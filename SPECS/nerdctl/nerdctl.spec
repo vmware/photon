@@ -9,7 +9,7 @@
 Summary:        Docker-compatible CLI for containerd
 Name:           nerdctl
 Version:        2.3.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://github.com/containerd/nerdctl
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -63,6 +63,8 @@ rm -rf %{buildroot}/*
 %doc %{_docdir}/%{name}/
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 2.3.1-2
+- Bump version as a part of go upgrade
 * Fri May 22 2026 Mukul Sikka <mukul.sikka@broadcom.com> 2.3.1-1
 - Upgrade to v2.3.1
 * Fri May 22 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.4.0-18

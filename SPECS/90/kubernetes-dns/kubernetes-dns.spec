@@ -7,7 +7,7 @@
 Summary:        Kubernetes DNS
 Name:           kubernetes-dns
 Version:        1.22.23
-Release:        4.1%{?dist}
+Release:        4.2%{?dist}
 URL:            https://github.com/kubernetes/dns/archive/%{version}.tar.gz
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -67,6 +67,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/sidecar-e2e
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 1.22.23-4.2
+- Bump version as a part of go upgrade
 * Tue May 26 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.22.23-4.1
 - Maintain for photon_subrelease <= 90
 * Tue Mar 31 2026 Michelle Wang <michelle.wang@broadcom.com> 1.22.23-4

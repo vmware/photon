@@ -14,7 +14,7 @@
 Summary:        Docker
 Name:           docker
 Version:        29.8.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://docs.docker.com
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -291,6 +291,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 29.8.0-2
+- Bump version as a part of go upgrade
 * Thu Sep 10 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 29.8.0-1
 - Upgrade to v29.8.0
 * Sat Jul 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 29.5.3-2

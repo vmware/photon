@@ -4,7 +4,7 @@
 Summary:        Distributed reliable key-value store
 Name:           etcd
 Version:        3.6.9
-Release:        1.1%{?dist}
+Release:        1.2%{?dist}
 URL:            https://github.com/etcd-io/etcd
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -91,6 +91,8 @@ rm -rf %{buildroot}/*
 %endif
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 3.6.9-1.2
+- Bump version as a part of go upgrade
 * Tue May 26 2026 Mukul Sikka <mukul.sikka@broadcom.com> 3.6.9-1.1
 - Maintain for photon_subrelease <= 90
 * Tue Mar 31 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.6.9-1

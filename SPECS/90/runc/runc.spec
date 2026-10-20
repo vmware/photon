@@ -11,7 +11,7 @@
 Summary:             CLI tool for spawning and running containers per OCI spec.
 Name:                runc
 Version:             1.2.8
-Release:             1.2.1%{?dist}
+Release:             1.2.2%{?dist}
 URL:                 https://runc.io
 Group:               Virtualization/Libraries
 Vendor:              VMware, Inc.
@@ -67,6 +67,8 @@ make %{?_smp_mflags} DESTDIR="" PREFIX=%{buildroot}%{_prefix} BINDIR=%{buildroot
 %{_mandir}/man8/*
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 1.2.8-1.2.2
+- Bump version as a part of go upgrade
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.2.8-1.2.1
 - Adjusted to build for subrelease 90
 * Fri Feb 13 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.2.8-1.2

@@ -16,7 +16,7 @@
 Summary:        Go
 Name:           go
 Version:        1.24.13
-Release:        2.2.2%{?dist}
+Release:        2.2.3%{?dist}
 URL:            https://golang.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -40,6 +40,7 @@ Patch1: CVE-2026-32289.patch
 Patch2: CVE-2026-27144.patch
 Patch3: CVE-2026-32288.patch
 Patch4: CVE-2026-27143.patch
+Patch5: CVE-2026-111943.patch
 
 Requires: glibc
 Requires: gcc
@@ -130,6 +131,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 1.24.13-2.2.3
+- Fix CVE-2026-111943: crypto/x509 distrusts compromised eMudhra intermediate CA keys
 * Wed Oct 14 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 1.24.13-2.2.2
 - Update tzdata to 2026e
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.24.13-2.2.1

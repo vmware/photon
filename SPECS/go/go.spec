@@ -15,8 +15,8 @@
 
 Summary:        Go
 Name:           go
-Version:        1.26.8
-Release:        2%{?dist}
+Version:        1.26.10
+Release:        1%{?dist}
 URL:            https://golang.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -124,6 +124,9 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 1.26.10-1
+- Upgrade to 1.26.10
+- Fixes CVE-2026-111943: crypto/x509 distrusts compromised eMudhra intermediate CA keys
 * Wed Oct 14 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 1.26.8-2
 - Update tzdata to 2026e
 * Mon Sep 07 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.26.8-1

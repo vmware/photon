@@ -15,7 +15,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.36.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -246,6 +246,8 @@ fi
 %{_bindir}/pause-%{archname}
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 1.36.1-2
+- Bump version as a part of go upgrade
 * Thu May 21 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.36.1-1
 - Update to version 1.36.1
 * Wed Feb 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.34.1-2

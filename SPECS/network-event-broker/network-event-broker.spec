@@ -5,7 +5,7 @@
 Summary:        Manages network configuration
 Name:           network-event-broker
 Version:        0.3.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://github.com/vmware/%{name}
 Source0:        https://github.com/vmware/%{name}/archive/refs/tags/%{name}-%{version}.tar.gz
 Source1:        %{name}.sysusers
@@ -80,6 +80,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/network-broker.service
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 0.3.1-2
+- Bump version as a part of go upgrade
 * Fri May 22 2026 Mukul Sikka <mukul.sikka@broadcom.com> 0.3.1-1
 - Upgrade to v0.3.1
 * Wed Feb 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.3-18

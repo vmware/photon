@@ -8,7 +8,7 @@
 Summary:        Containerd
 Name:           containerd
 Version:        2.3.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://containerd.io/docs
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -140,6 +140,8 @@ make %{?_smp_mflags} integration
 %{_mandir}/man8/*
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 2.3.6-2
+- Bump version as a part of go upgrade
 * Wed Sep 30 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.3.6-1
 - Upgrade to v2.3.6
 - Fixes CVE-2026-53493

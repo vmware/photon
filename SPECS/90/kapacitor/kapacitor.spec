@@ -6,7 +6,7 @@
 
 Name:           kapacitor
 Version:        1.7.7
-Release:        6.1%{?dist}
+Release:        6.2%{?dist}
 Summary:        Open source framework for processing, monitoring, and alerting on time series data
 URL:            https://www.influxdata.com/time-series-platform/kapacitor
 Vendor:         VMware, Inc.
@@ -129,6 +129,8 @@ chown -R %{name}:%{name} /var/log/%{name}
 %{_sysusersdir}/%{name}.conf
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 1.7.7-6.2
+- Bump version as a part of go upgrade
 * Tue May 26 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.7.7-6.1
 - Maintain for photon_subrelease <= 90
 * Thu Mar 05 2026 Ankit Jain <ankit-aj.jain@vbroadcom.com> 1.7.7-6

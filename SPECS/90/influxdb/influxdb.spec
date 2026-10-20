@@ -7,7 +7,7 @@
 
 Name:           influxdb
 Version:        1.8.10
-Release:        19.0.1%{?dist}
+Release:        19.0.2%{?dist}
 Summary:        InfluxDB is an open source time series database
 URL:            https://influxdata.com
 Vendor:         VMware, Inc.
@@ -122,6 +122,8 @@ chown -R %{name}:%{name} /var/log/%{name}
 %{_sysusersdir}/%{name}.conf
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 1.8.10-19.0.2
+- Bump version as a part of go upgrade
 * Wed Jun 03 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.8.10-19.0.1
 - Split for 90
 * Wed Feb 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.8.10-19
