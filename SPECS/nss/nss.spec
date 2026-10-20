@@ -1,7 +1,7 @@
 Summary:        Security client
 Name:           nss
 Version:        3.72
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        MPLv2.0
 URL:            https://wiki.mozilla.org/NSS
 Group:          Applications/System
@@ -10,6 +10,9 @@ Distribution:   Photon
 
 Source0: http://ftp.mozilla.org/pub/security/nss/releases/NSS_3_72_RTM/src/%{name}-%{version}.tar.gz
 %define sha512 %{name}=1d818d2ef85735837275059fecf68d57e48152f0348ea54887c29171cf029b6944e94d99a8cd96e580a81edb678b79c55515ac0516e27daf6b290c34baed9ebb
+
+# Mozilla root store (lib/ckfw/builtins/certdata.txt) from upstream NSS tip
+Source1: certdata.txt
 
 Patch0: nss-%{version}-standalone-1.patch
 Patch1: nss-CVE-2021-43527.patch
@@ -55,6 +58,12 @@ This package contains minimal set of shared nss libraries.
 
 %prep
 %autosetup -p1
+
+# Refresh the built-in root store: drops eMudhra emSign roots (C1, C3, G3)
+cp %{SOURCE1} %{name}/lib/ckfw/builtins/certdata.txt
+sed -i -e 's/^\(#define NSS_BUILTINS_LIBRARY_VERSION_MINOR\) .*/\1 92/' \
+       -e 's/^\(#define NSS_BUILTINS_LIBRARY_VERSION\) ".*"/\1 "2.92"/' \
+       %{name}/lib/ckfw/builtins/nssckbi.h
 
 %build
 %ifarch aarch64
@@ -135,6 +144,9 @@ sudo -u test ./all.sh && userdel test -r -f
 %{_libdir}/libsoftokn3.chk
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 3.72-8
+- Update built-in root store (certdata.txt) to upstream NSS tip, drops
+- eMudhra emSign Root CA - C1, C3 and G3
 * Tue Mar 03 2026 Mukul Sikhare <mukul.sikka@broadcom.com> 3.72-7
 - Fix CVE-2026-2781
 * Tue Aug 06 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.72-6
