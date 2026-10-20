@@ -1,0 +1,70 @@
+# Should python bytecompilation errors terminate a build?
+%bytecompile_err_abort 1
+
+%__brp_python_bytecompile %{_rpmconfigdir}/brp-python-bytecompile "%{?bytecompile_err_abort}" "-j%{_smp_build_ncpus}"
+
+%__os_install_post_python_ghost \
+  %{__brp_python_bytecompile} \
+  if [ ! -f %{_builddir}/py_bytecompile_done ]; then \
+    touch %{_builddir}/py_bytecompile_done; \
+  fi; \
+%{nil}
+
+# Package-specific version of the all-in-one macro
+# Usage: %py_byte_compile_and_ghost_pkg foo %{python3_sitelib}/foo
+#
+%py_byte_compile_and_ghost_pkg() \
+  if [ ! -f %{_builddir}/py_bytecompile_done ]; then \
+    %{__os_install_post_python_ghost}; \
+    touch %{_builddir}/py_bytecompile_done; \
+  fi; \
+  %py_generate_ghost_pyc_pkg %{1} %{2} \
+  find %{buildroot}%{2} -type f \\( -name '*.pyc' -o -name '*.pyo' \\) -delete 2>/dev/null || true \
+  find %{buildroot}%{2} -type d -name '__pycache__' -empty -delete 2>/dev/null || true \
+%{nil}
+
+# Path to generated ghost file lists
+# Usage in files section with -f flag:
+#   %files -f %{py_ghost_filelist}
+#   %files -f %{py_ghost_filelist_pkg foo}
+#
+%py_ghost_filelist       %{_builddir}/ghost_pyc_files.list
+%py_ghost_filelist_pkg() %{_builddir}/ghost_pyc_%{1}.list
+
+# Generate ghost file list for Python byte-compiled files
+# This macro should be called in install section after byte-compilation
+# It creates a file with all .pyc files and __pycache__ directories
+#
+# Usage in install:
+#   %{__os_install_post_python_ghost}
+#   %py_generate_ghost_pyc
+#   %py_generate_ghost_pyc_pkg foo %{python3_sitelib}/foo
+#
+%py_generate_ghost_pyc %{_rpmconfigdir}/python_ghost_pyc.sh %{_builddir}/ghost_pyc_files.list
+
+# Generate package-specific ghost file list
+# Usage in install:
+#   %py_generate_ghost_pyc_pkg foo %{python3_sitelib}/foo
+#   %py_generate_ghost_pyc_pkg bar %{python3_sitelib}/bar
+# This creates ghost_pyc_foo.list and ghost_pyc_bar.list
+#
+%py_generate_ghost_pyc_pkg() %{_rpmconfigdir}/python_ghost_pyc.sh %{_builddir}/ghost_pyc_%{1}.list %{2}
+
+# All-in-one macro: byte-compile, generate ghost list, and remove .pyc files
+# This is the recommended macro for ghost file usage
+#
+# Usage in install:
+#   %py_byte_compile_and_ghost
+#   %py_byte_compile_and_ghost_pkg foo %{python3_sitelib}/foo
+#
+# What it does:
+#   1. Byte-compiles all .py files
+#   2. Generates ghost file list
+#   3. Removes all .pyc/.pyo files and empty __pycache__ directories from buildroot
+#
+%py_byte_compile_and_ghost \
+  %{__os_install_post_python_ghost} \
+  %py_generate_ghost_pyc \
+  find %{buildroot} -type f \\( -name '*.pyc' -o -name '*.pyo' \\) -delete \
+  find %{buildroot} -type d -name '__pycache__' -empty -delete \
+%{nil}

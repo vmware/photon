@@ -1,17 +1,17 @@
 sources:
-- archive: Python-3.14.7.tar.xz
-  archive_sha512sum: 3d4e2e2f983b320dec47005c408d7178d3656a6de0c4430ce21514797174b972f461200898b25d3dfac2a455019ef87e45d0fb2bb6ec2ca887124d10037a2a07
+- archive: Python-3.14.8.tar.xz
+  archive_sha512sum: f9e6809b0c45d90fcc174b8051e15058a3037981c9136c598d110a118a22cbbb8263fbd677e07b2b9d93e1aa83cd9cb835b61b6af898fd301d1080a29c2156fe
   archive_type: upstream
   skip_validation: false
-  name: Python-3.14.7
-  version: "3.14.7"
-  url: https://www.python.org/ftp/python/3.14.7/Python-3.14.7.tar.xz
+  name: Python-3.14.8
+  version: 3.14.8
+  url: https://www.python.org/ftp/python/3.14.8/Python-3.14.8.tar.xz
   repo_url: https://github.com/python/cpython
-  commit_id: 823f0323ee6ec1402088b73bce1a38473cac36dc
-  missing: ['mypy', 'NEWS', '.gitignore', 'NEWS.d', '.azure-pipelines', '.gitattributes', '.github']
+  commit_id: 8e6e75d9102e39bed2a2b279203a396741180f12
+  missing: [mypy, NEWS, .gitignore, NEWS.d, .azure-pipelines, .gitattributes, .github]
   license_manual_review:
   - file_paths:
-    - Python-3.14.7/Modules/blake2module.c
+    - Python-3.14.8/Modules/blake2module.c
     sha256sum: 7523638132c313eb5b8a5bca62bef4b5a403312718fc7585863230d231f70047
     spdx_exp: ''
   spdx:
@@ -44,7 +44,7 @@ sources:
   skip_validation: true
   spdx:
     package:
-      detailed_description: Installation wheel for pip.
+      detailed_description: 'Installation wheel for pip.'
       home_page: https://pypi.org/project/pip/
       license_concluded: (BSD-3-Clause OR Apache-2.0) AND (BSD-2-Clause OR Apache-2.0)
         AND Apache-2.0 AND BSD-2-Clause AND Python-2.0 AND BSD-3-Clause AND MIT

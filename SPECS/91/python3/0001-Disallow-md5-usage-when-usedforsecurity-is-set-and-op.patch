@@ -1,0 +1,58 @@
+From e83826deda633518a1a35e8f9e9a3ff668ab98e2 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Fri, 17 Apr 2026 23:38:35 +0530
+Subject: [PATCH] Disallow md5 usage when usedforsecurity is set and openssl
+ fips is enabled
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ Modules/md5module.c | 10 ++++++++++
+ configure           |  4 ++--
+ 2 files changed, 12 insertions(+), 2 deletions(-)
+
+diff --git a/Modules/md5module.c b/Modules/md5module.c
+index 9b5ea2d..b89b560 100644
+--- a/Modules/md5module.c
++++ b/Modules/md5module.c
+@@ -23,6 +23,8 @@
+ #include "Python.h"
+ #include "hashlib.h"
+ 
++#include <openssl/fips.h>
++
+ /*[clinic input]
+ module _md5
+ class MD5Type "MD5object *" "&PyType_Type"
+@@ -294,6 +296,14 @@ _md5_md5_impl(PyObject *module, PyObject *data, int usedforsecurity,
+         return NULL;
+     }
+ 
++    /* Check if MD5 is allowed for security purposes in FIPS mode */
++    if (usedforsecurity && FIPS_mode()) {
++      PyErr_SetString(PyExc_ValueError,
++          "MD5 is not allowed for security purposes in FIPS mode. "
++          "Use usedforsecurity=False for non-security purposes.");
++      return NULL;
++    }
++
+     MD5object *new;
+     Py_buffer buf;
+ 
+diff --git a/configure b/configure
+index 46eb066..242baa7 100755
+--- a/configure
++++ b/configure
+@@ -32714,8 +32714,8 @@ fi
+   if test "x$py_cv_module__md5" = xyes
+ then :
+ 
+-    as_fn_append MODULE_BLOCK "MODULE__MD5_CFLAGS=$LIBHACL_CFLAGS$as_nl"
+-    as_fn_append MODULE_BLOCK "MODULE__MD5_LDFLAGS=\$($LIBHACL_MD5_LDFLAGS)$as_nl"
++    as_fn_append MODULE_BLOCK "MODULE__MD5_CFLAGS=$LIBHACL_CFLAGS $OPENSSL_INCLUDES$as_nl"
++    as_fn_append MODULE_BLOCK "MODULE__MD5_LDFLAGS=\$($LIBHACL_MD5_LDFLAGS) $OPENSSL_LDFLAGS $OPENSSL_LDFLAGS_RPATH $LIBCRYPTO_LIBS$as_nl"
+ 
+ fi
+    if test "$py_cv_module__md5" = yes; then
+-- 
+2.53.0
+

@@ -1,0 +1,69 @@
+%__python3 /usr/bin/python3
+%python3 %__python3
+
+%python3_sitelib %(%{__python3} -Ic "from sysconfig import get_path,get_path_names; print(get_path(get_path_names()[2]))")
+
+%python3_sitearch %(%{__python3} -Ic "from sysconfig import get_path,get_path_names; print(get_path(get_path_names()[3]))")
+
+%python3_version %(%{__python3} -Ic "import sys; sys.stdout.write('{0.major}.{0.minor}'.format(sys.version_info))")
+
+%python3_version_nodots %(%{__python3} -Ic "import sys; sys.stdout.write('{0.major}{0.minor}'.format(sys.version_info))")
+
+%python3_platform %(%{__python3} -Ic "import sysconfig; print(sysconfig.get_platform())")
+
+%python3_platform_triplet %(%{__python3} -Ic "import sysconfig; print(sysconfig.get_config_var('MULTIARCH'))")
+
+%python3_ext_suffix %(%{__python3} -Ic "import sysconfig; print(sysconfig.get_config_var('EXT_SUFFIX'))")
+
+%py3dir %{_builddir}/python3-%{name}-%{version}-%{release}
+
+%py_setup setup.py
+
+%py3_shbang_opts -s
+
+# Use the slashes after expand so that the command starts on the same line as
+# the macro
+%py3_build() %{expand:\\\
+  CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS}}" LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS}}"\\\
+  %{__python3} %{py_setup} %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*}
+}
+
+%py3_install() %{expand:\\\
+  CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS}}" LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS}}"\\\
+  %{__python3} %{py_setup} %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
+  rm -rfv %{buildroot}%{_bindir}/__pycache__
+}
+
+#pyproject macros
+%pyproject_wheel() %{expand:\\\
+  CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS}}" LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS}}"\\\
+  %{__python3} -m pip wheel --disable-pip-version-check --verbose --wheel-dir pyproject-wheeldir --no-deps  --no-build-isolation --use-pep517  --progress-bar off .
+}
+
+%pyproject_install() %{expand:\\\
+  %{__python3} -m pip install --root %{buildroot} --no-deps --no-index --no-warn-script-location --disable-pip-version-check --progress-bar off --verbose pyproject-wheeldir/*.whl %{?*}
+  if [ -d %{buildroot}%{_bindir} ]; then
+    rm -rfv %{buildroot}%{_bindir}/__pycache__
+  fi
+}
+
+# This is intended for Python 3 only, hence also no Python version in the name.
+%__pytest /usr/bin/pytest%(test %{python3_pkgversion} == 3 || echo -%{python3_version})
+
+%pytest %{expand:\\\
+  CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS}}" LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS}}"\\\
+  PATH="%{buildroot}%{_bindir}:$PATH"\\\
+  PYTHONPATH="${PYTHONPATH:-%{buildroot}%{python3_sitearch}:%{buildroot}%{python3_sitelib}}"\\\
+  PYTHONDONTWRITEBYTECODE=1\\\
+  %{?__pytest_addopts:PYTEST_ADDOPTS="${PYTEST_ADDOPTS:-} %{__pytest_addopts}"}\\\
+  %__pytest}
+
+%py3_build_wheel() %{expand:\\\
+  CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS}}" LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS}}"\\\
+  %{__python3} -m build --wheel --no-isolation --outdir dist
+}
+
+%py3_install_wheel() %{expand:\
+  CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS}}" LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS}}"\\\
+  %{__python3} -m installer --destdir %{buildroot} --prefix %{_prefix} dist/*.whl
+}

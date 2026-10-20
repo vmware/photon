@@ -1,12 +1,12 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} >= 92
 
 %global VER 3.14
 %global with_gdb_hooks 1
 
 Summary:        A high-level scripting language
 Name:           python3
-Version:        3.14.7
-Release:        2%{?dist}
+Version:        3.14.8
+Release:        1%{?dist}
 URL:            http://www.python.org
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
@@ -31,7 +31,6 @@ Source6: macros.bytecompile.python
 
 Patch0: 0001-Disallow-md5-usage-when-usedforsecurity-is-set-and-op.patch
 Patch1: 0001-ssl-Add-system-wide-compatibility-option-for-X.509-v.patch
-Patch2: CVE-2026-19672.patch
 
 BuildRequires: pkg-config >= 0.28
 BuildRequires: bzip2-devel
@@ -314,6 +313,8 @@ rm -rf %{buildroot}/*
 %{_rpmconfigdir}/python_ghost_pyc.sh
 
 %changelog
+* Tue Oct 20 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.14.8-1
+- Upgrade to 3.14.8
 * Mon Sep 07 2026 Mukul Sikka <mukul.sikka@broadcom.com> 3.14.7-2
 - Patched for CVE-2026-19672
 * Mon Aug 17 2026 Prashant Singh Chauhan <prashant.singh-chauhan@broadcom.com> 3.14.7-1

@@ -1,0 +1,93 @@
+From a2144179300b492305d74b1df3cb5fae6f80d5de Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Thu, 16 Jul 2026 13:54:09 +0000
+Subject: [PATCH] ssl: Add system-wide compatibility option for X.509
+ verification
+
+Introduce support for a system-wide SSL configuration file to control
+the default X.509 verification behavior used by
+ssl.create_default_context().
+
+This allows distributions and system administrators to disable the
+VERIFY_X509_STRICT and VERIFY_X509_PARTIAL_CHAIN verification flags
+without requiring changes to individual applications.
+
+This provides a compatibility mechanism for environments that rely on
+legacy certificate chains while allowing the upstream defaults to remain
+available.
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ Lib/ssl.py | 35 +++++++++++++++++++++++++++++++++--
+ 1 file changed, 33 insertions(+), 2 deletions(-)
+
+diff --git a/Lib/ssl.py b/Lib/ssl.py
+index 8889aff..3e0fc76 100644
+--- a/Lib/ssl.py
++++ b/Lib/ssl.py
+@@ -93,6 +93,7 @@ ALERT_DESCRIPTION_UNKNOWN_PSK_IDENTITY
+ 
+ import sys
+ import os
++import configparser
+ from collections import namedtuple
+ from enum import Enum as _Enum, IntEnum as _IntEnum, IntFlag as _IntFlag
+ from enum import _simple_enum
+@@ -155,6 +156,8 @@ _PROTOCOL_NAMES = {value: name for name, value in _SSLMethod.__members__.items()
+ 
+ _SSLv2_IF_EXISTS = getattr(_SSLMethod, 'PROTOCOL_SSLv2', None)
+ 
++_SSL_CONFIG = "/etc/python-ssl.conf"
++
+ 
+ @_simple_enum(_IntEnum)
+ class TLSVersion:
+@@ -703,6 +706,31 @@ def create_default_context(purpose=Purpose.SERVER_AUTH, *, cafile=None,
+     else:
+         raise ValueError(purpose)
+ 
++    def _read_ssl_config():
++        cfg = configparser.ConfigParser()
++
++        if not os.path.exists(_SSL_CONFIG):
++            # Upstream defaults to True, True
++            # This patch has to be removed in a later release
++            return False, False  # Photon defaults
++
++        try:
++            cfg.read(_SSL_CONFIG)
++
++            strict = cfg.getboolean(
++                "ssl", "verify_x509_strict", fallback=False
++            )
++            partial = cfg.getboolean(
++                "ssl", "verify_x509_partial_chain", fallback=False
++            )
++        except Exception:
++            # Ignore malformed config and use defaults
++            return False, False
++
++        return strict, partial
++
++    _VERIFY_X509_STRICT_ENABLED, _VERIFY_X509_PARTIAL_CHAIN_ENABLED = _read_ssl_config()
++
+     # `VERIFY_X509_PARTIAL_CHAIN` makes OpenSSL's chain building behave more
+     # like RFC 3280 and 5280, which specify that chain building stops with the
+     # first trust anchor, even if that anchor is not self-signed.
+@@ -710,8 +738,11 @@ def create_default_context(purpose=Purpose.SERVER_AUTH, *, cafile=None,
+     # `VERIFY_X509_STRICT` makes OpenSSL more conservative about the
+     # certificates it accepts, including "disabling workarounds for
+     # some broken certificates."
+-    context.verify_flags |= (_ssl.VERIFY_X509_PARTIAL_CHAIN |
+-                             _ssl.VERIFY_X509_STRICT)
++    if _VERIFY_X509_STRICT_ENABLED:
++        context.verify_flags |= VERIFY_X509_STRICT
++
++    if _VERIFY_X509_PARTIAL_CHAIN_ENABLED:
++        context.verify_flags |= VERIFY_X509_PARTIAL_CHAIN
+ 
+     if cafile or capath or cadata:
+         context.load_verify_locations(cafile, capath, cadata)
+-- 
+2.53.0
+
