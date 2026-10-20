@@ -1,15 +1,14 @@
 Summary:        Python package for providing Mozilla's CA Bundle
 Name:           python3-certifi
-Version:        2023.11.17
-Release:        2%{?dist}
+Version:        2026.10.19
+Release:        1%{?dist}
 URL:            https://github.com/certifi
 License:        MPL-2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://github.com/certifi/python-certifi/archive/certifi-%{version}.tar.gz
-%define sha512  certifi=873eb3a34c5061f164484eec5bc659d4869882c96477395eec7d9d52242a033f9d82d293b07bcb094d04e62dc9af8a65caf2385a1a2a78c7058252af1b3d715b
-Patch0:         CVE-2024-39689.patch
+Source0:        https://github.com/certifi/python-certifi/archive/refs/tags/%{version}.tar.gz#/certifi-%{version}.tar.gz
+%define sha512  certifi=94bc3671aaf2a2aa9d90a2e6730778764eafc2200ca0a55eaaa8b003a1f0f25269bda207cd61072ae90884b81d157d7767c7f70c502fbe7ea901144fe3987aeb
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -44,6 +43,8 @@ SSL certificates while verifying the identity of TLS hosts
 %{python3_sitelib}/*
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 2026.10.19-1
+- Update to 2026.10.19, drops eMudhra intermediate CA roots (Comodo AAA, emSign G3)
 * Fri Aug 23 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2023.11.17-2
 - Fix CVE-2024-39689
 * Tue Dec 19 2023 Prashant S Chauhan <psinghchauha@vmware.com> 2023.11.17-1
