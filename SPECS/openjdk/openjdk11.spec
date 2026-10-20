@@ -21,7 +21,7 @@
 Summary:        OpenJDK
 Name:           openjdk11
 Version:        11.0.30
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            https://github.com/openjdk/jdk11u
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -43,6 +43,8 @@ Source2: license-openjdk11.txt
 %include %{SOURCE2}
 
 Source3: setup-zip-wrappers.sh
+
+Source4: emudhra-blocked.certs
 
 BuildRequires: which
 BuildRequires: zlib-devel
@@ -167,6 +169,11 @@ mv %{_usr}/local/jvm/openjdk-%{version}-internal/* \
 cp README.md LICENSE ASSEMBLY_EXCEPTION \
         %{buildroot}%{jdkInstallDir}/
 
+# Block the compromised eMudhra intermediate CAs (cross-signed by the AAA root)
+test -f %{buildroot}%{jdkInstallDir}/lib/security/blocked.certs
+sed -i -e '$a\' %{buildroot}%{jdkInstallDir}/lib/security/blocked.certs
+cat %{SOURCE4} >> %{buildroot}%{jdkInstallDir}/lib/security/blocked.certs
+
 %post jre
 alternatives --install %{_bindir}/java java %{jdkInstallDir}/bin/java 20000 \
   --slave %{_bindir}/jjs jjs %{jdkInstallDir}/bin/jjs \
@@ -284,6 +291,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{jdkInstallDir}/lib/src.zip
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 11.0.30-6
+- Block compromised eMudhra intermediate CAs via blocked.certs
 * Mon Jun 08 2026 Bo Gan <bo.gan@broadcom.com> 11.0.30-5
 - Remove unnecessary pcre build dependency
 * Tue Jun 02 2026 Ajay Kaher <ajay.kaher@broadcom.com> 11.0.30-4

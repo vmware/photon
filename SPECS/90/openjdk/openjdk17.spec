@@ -14,7 +14,7 @@
 Summary:    OpenJDK
 Name:       openjdk17
 Version:    17.0.18
-Release:    3.1%{?dist}
+Release:    3.2%{?dist}
 URL:        https://github.com/openjdk/jdk17u
 Group:      Development/Tools
 Vendor:     VMware, Inc.
@@ -34,6 +34,8 @@ Source1: https://download.java.net/java/GA/jdk17.0.2/8/GPL/openjdk-%{bootstrapTa
 
 Source2: license-openjdk17.txt
 %include %{SOURCE2}
+
+Source3: emudhra-blocked.certs
 
 BuildRequires: pcre-devel
 BuildRequires: which
@@ -160,6 +162,11 @@ mv %{_usr}/local/jvm/openjdk-%{version}-internal/* \
 cp README.md LICENSE ASSEMBLY_EXCEPTION \
         %{buildroot}%{jdkInstallDir}/
 
+# Block the compromised eMudhra intermediate CAs (cross-signed by the AAA root)
+test -f %{buildroot}%{jdkInstallDir}/lib/security/blocked.certs
+sed -i -e '$a\' %{buildroot}%{jdkInstallDir}/lib/security/blocked.certs
+cat %{SOURCE3} >> %{buildroot}%{jdkInstallDir}/lib/security/blocked.certs
+
 %post jre
 alternatives --install %{_bindir}/java java %{jdkInstallDir}/bin/java 30000 \
   --slave %{_bindir}/keytool keytool %{jdkInstallDir}/bin/keytool \
@@ -268,6 +275,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{jdkInstallDir}/lib/src.zip
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 17.0.18-3.2
+- Block compromised eMudhra intermediate CAs via blocked.certs
 * Thu Jun 4 2026 Ajay Kaher <ajay.kaher@broadcom.com> 17.0.18-3.1
 - Build for photon_subrelease <= 90 using zip/unzip
 * Thu Mar 12 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 17.0.18-3

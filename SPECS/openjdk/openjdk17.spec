@@ -14,7 +14,7 @@
 Summary:    OpenJDK
 Name:       openjdk17
 Version:    17.0.18
-Release:    5%{?dist}
+Release:    6%{?dist}
 URL:        https://github.com/openjdk/jdk17u
 Group:      Development/Tools
 Vendor:     VMware, Inc.
@@ -36,6 +36,8 @@ Source2: license-openjdk17.txt
 %include %{SOURCE2}
 
 Source3: setup-zip-wrappers.sh
+
+Source4: emudhra-blocked.certs
 
 BuildRequires: which
 BuildRequires: zlib-devel
@@ -160,6 +162,11 @@ mv %{_usr}/local/jvm/openjdk-%{version}-internal/* \
 cp README.md LICENSE ASSEMBLY_EXCEPTION \
         %{buildroot}%{jdkInstallDir}/
 
+# Block the compromised eMudhra intermediate CAs (cross-signed by the AAA root)
+test -f %{buildroot}%{jdkInstallDir}/lib/security/blocked.certs
+sed -i -e '$a\' %{buildroot}%{jdkInstallDir}/lib/security/blocked.certs
+cat %{SOURCE4} >> %{buildroot}%{jdkInstallDir}/lib/security/blocked.certs
+
 %post jre
 alternatives --install %{_bindir}/java java %{jdkInstallDir}/bin/java 30000 \
   --slave %{_bindir}/keytool keytool %{jdkInstallDir}/bin/keytool \
@@ -268,6 +275,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{jdkInstallDir}/lib/src.zip
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 17.0.18-6
+- Block compromised eMudhra intermediate CAs via blocked.certs
 * Mon Jun 08 2026 Bo Gan <bo.gan@broadcom.com> 17.0.18-5
 - Remove unnecessary pcre build dependency
 * Tue Jun 02 2026 Ajay Kaher <ajay.kaher@broadcom.com> 17.0.18-4
