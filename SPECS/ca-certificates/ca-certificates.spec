@@ -4,8 +4,8 @@
 
 Summary:        Certificate Authority certificates
 Name:           ca-certificates
-Version:        20260414
-Release:        2%{?dist}
+Version:        20261020
+Release:        1%{?dist}
 URL:            http://anduin.linuxfromscratch.org/BLFS/other
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -97,6 +97,10 @@ rm -rf %{buildroot}
 %{crt_dir}/ca-bundle.crt
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 20261020-1
+- Update certdata to revision 20261020
+- Drop eMudhra emSign Root CA - C1, C3 and G3 (compromised intermediate CAs)
+- Distrust Comodo AAA Certificate Services root (cross-signs compromised eMudhra intermediates)
 * Thu Apr 16 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 20260414-2
 - Update remove-expired-certs.sh
 * Tue Apr 14 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 20260414-1
