@@ -641,14 +641,44 @@ function find_installed_deprecated_packages() {
 # Update package managers
 function update_solv_to_support_complex_deps() {
   local rc=0
+  local tdnf_cmd="${TDNF} $REPOS_OPT -y install libsolv rpm rpm-libs tdnf tdnf-cli-libs --refresh"
+  local output=""
+  local p=''
 
-  echo "Updating package management software and libraries."
-  if ${TDNF} $REPOS_OPT -y install libsolv rpm rpm-libs tdnf tdnf-cli-libs --refresh; then
-    echo "Upgrade of package management software and libraries succeeded."
-    rebuilddb
+  if ! is_precheck_running; then
+    echo "Updating package management software and libraries."
+    if $tdnf_cmd; then
+      echo "Upgrade of package management software and libraries succeeded."
+      rebuilddb
+    else
+      rc=$?
+      abort $ERETRY_EAGAIN "Could not update package management software and libraries (tdnf error code: $rc)."
+    fi
   else
+    echo "Checking if updating package management software and libraries will succeed."
+    # In earlier versions of Photon OS on appliances, there may be a deprecated drpm packge which
+    # could have been installed, which, if present, would fail the test transaction being done below
+    # for updating package management software. The expected errors are of drpm, which in turn will
+    # prevent libsolv from updating. Hence, filtering out those expected errors and any other errors
+    # reported for packages named in --rm-pkgs-pre, which would anyways be removed before performing
+    # the update
+    tdnf_cmd="$tdnf_cmd 2>&1"
+
+    for p in drpm libsolv $(builtin echo $RM_PKGS_PRE | ${TR} , ' '); do
+      tdnf_cmd="$tdnf_cmd | grep -Ev 'package $p\\b.*\\brequires\\b.*, but none of the providers can be installed'"
+    done
+    tdnf_cmd="$tdnf_cmd | grep -E ', but none of the providers can be installed'"
+
+    output="$(eval $tdnf_cmd)"
     rc=$?
-    abort $ERETRY_EAGAIN "Could not update package management software and libraries (tdnf error code: $rc)."
+    if [ $rc -eq 0 ]; then
+      # There is output of missing package beyond the expected failures of drpm and, in turn, libsolv
+      abort $ERETRY_EAGAIN "$output\nPackage management software and libraries update" \
+                           "would fail (tdnf error code: $rc)."
+    else
+      echo "Package management software and libraries update would succeed."
+      return 0
+    fi
   fi
 }
 
