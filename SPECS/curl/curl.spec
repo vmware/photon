@@ -1,6 +1,6 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
-Version:        8.21.0
+Version:        8.22.0
 Release:        1%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
@@ -9,10 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://curl.haxx.se/download/%{name}-%{version}.tar.xz
-%define sha512 %{name}=5f7c646e5a3d4d3d8b8a3675adfa29c266a3148599d510d24f91c82d6ff064bfafce420af01522f8be973019619f3eee5e970398fa79be168b77f697c52bf8e5
-
-Patch0:        0001-FTP-fix-TLS-session-reuse-on-the-data-connection.patch
-Patch1:        0002-Fix_non-tunneling_proxy_hostname_use.patch
+%define sha512 %{name}=d6badf794e7a72760a353db73adb8b671804ce41619b401265b22dc8f6770ebeaa5adb3c4d1312722082c56013612a382884e025cca49397a8ab47577dd659f7
 
 BuildRequires: ca-certificates
 BuildRequires: openssl-devel
@@ -110,6 +107,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+* Tue Oct 20 2026 Dweep Advani <dweep.advani@broadcom.com> 8.22.0-1
+- Upgrade to 8.22.0 to fix CVEs
 * Fri Jul 24 2026 Dweep Advani <dweep.advani@broadcom.com> 8.21.0-1
 - Upgrade to 8.21.0 to fix CVEs
 * Tue May 05 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 8.20.0-1
