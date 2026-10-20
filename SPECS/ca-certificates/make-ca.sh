@@ -107,6 +107,14 @@ if test -f certs/8f111d69.pem; then
   rm -f certs/8f111d69.pem
 fi
 
+# Comodo/Sectigo AAA Certificate Services root. Eight eMudhra intermediates
+# whose private keys were compromised are cross-signed by this root, and the
+# OpenSSL trust store has no per-intermediate blocklist, so distrust the root.
+if test -f certs/ee64a828.pem; then
+  echo "Certificate ee64a828 (AAA Certificate Services) is not trusted!  Removing..."
+  rm -f certs/ee64a828.pem
+fi
+
 # Finally, generate the bundle and clean up.
 cat certs/*.pem > ${BUNDLE}
 rm -r "${TEMPDIR}"
