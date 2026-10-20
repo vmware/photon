@@ -16,7 +16,7 @@
 Summary:    OpenJDK
 Name:       openjdk8
 Version:    1.8.0.504
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    GNU GPL
 URL:        https://wiki.openjdk.org/display/jdk8u
 Group:      Development/Tools
@@ -25,6 +25,8 @@ Distribution:   Photon
 
 Source0: https://github.com/openjdk/jdk8u/archive/refs/tags/jdk8u%{subversion}-ga.tar.gz
 %define sha512 jdk8u=65f7bc9603dad6ecb206fa62ba1e9c6b4b11cbbdaf4a9d69e5aa2ec57806f3447fdd0fbf7a11b34ecf5e504579721bb5c0b211e66a96972b0a092ec2b9e840c4
+
+Source1: emudhra-blocked.certs
 
 Patch0: Awt_build_headless_only.patch
 Patch1: check-system-ca-certs-x86.patch
@@ -179,6 +181,11 @@ popd
 mv %{_usr}/local/jvm/openjdk-%{jdk_major_version}_%{subversion}-internal/* \
             %{buildroot}%{jdkInstallDir}/
 
+# Block the compromised eMudhra intermediate CAs (cross-signed by the AAA root)
+test -f %{buildroot}%{jdkInstallDir}/jre/lib/security/blacklisted.certs
+sed -i -e '$a\' %{buildroot}%{jdkInstallDir}/jre/lib/security/blacklisted.certs
+cat %{SOURCE1} >> %{buildroot}%{jdkInstallDir}/jre/lib/security/blacklisted.certs
+
 %post
 alternatives --install %{_bindir}/javac javac %{jdkInstallDir}/bin/javac 2000 \
   --slave %{_bindir}/appletviewer appletviewer %{jdkInstallDir}/bin/appletviewer \
@@ -320,6 +327,8 @@ rm -rf %{buildroot}/*
 %{jdkInstallDir}/src.zip
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 1.8.0.504-2
+- Block compromised eMudhra intermediate CAs via blacklisted.certs
 * Wed Sep 30 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.8.0.504-1
 - Upgrade to v1.8.0.504
 * Tue Aug 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.8.0.502-1

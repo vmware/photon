@@ -7,7 +7,7 @@
 Summary:    OpenJDK
 Name:       openjdk21
 Version:    21.0.12.1
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    GNU General Public License V2
 URL:        https://github.com/openjdk/jdk21u
 Group:      Development/Tools
@@ -16,6 +16,8 @@ Distribution:   Photon
 
 Source0: https://github.com/openjdk/jdk21u/archive/refs/tags/jdk-%{version}-ga.tar.gz
 %define sha512 jdk-21=52036317d1afcf573dddaab271db5e7e73e7e01b321d1cc6d8c48d21cd36b50c1bedcd0ebfc0220b8ff1e9a92e64e40ee304ad3032799357e3c7cd5a635abafc
+
+Source1: emudhra-blocked.certs
 
 BuildRequires: pcre-devel
 BuildRequires: which
@@ -125,6 +127,11 @@ mv build/linux-%{_arch}-server-release/images/jdk/* \
 cp README.md LICENSE ASSEMBLY_EXCEPTION \
         %{buildroot}%{jdkInstallDir}/
 
+# Block the compromised eMudhra intermediate CAs (cross-signed by the AAA root)
+test -f %{buildroot}%{jdkInstallDir}/lib/security/blocked.certs
+sed -i -e '$a\' %{buildroot}%{jdkInstallDir}/lib/security/blocked.certs
+cat %{SOURCE1} >> %{buildroot}%{jdkInstallDir}/lib/security/blocked.certs
+
 %post jre
 alternatives --install %{_bindir}/java java %{jdkInstallDir}/bin/java 40000 \
   --slave %{_bindir}/keytool keytool %{jdkInstallDir}/bin/keytool \
@@ -229,6 +236,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{jdkInstallDir}/lib/src.zip
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 21.0.12.1-2
+- Block compromised eMudhra intermediate CAs via blocked.certs
 * Wed Sep 30 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 21.0.12.1-1
 - Upgrade to v21.0.12.1
 * Wed Aug 12 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 21.0.10-2

@@ -7,7 +7,7 @@
 Summary:    OpenJDK
 Name:       openjdk17
 Version:    17.0.20.1
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    GNU General Public License V2
 URL:        https://github.com/openjdk/jdk17u
 Group:      Development/Tools
@@ -16,6 +16,8 @@ Distribution:   Photon
 
 Source0: https://github.com/openjdk/jdk17u/archive/refs/tags/jdk-%{version}-ga.tar.gz
 %define sha512 jdk-17=4659365e1bd18b66b853e11be3bd994351eaa40f22be6188a63fd1845b0c2330fc085059cdc5967fc5eaacc43e75abaf7c14fb7202635428516eeb234ade5428
+
+Source1: emudhra-blocked.certs
 
 BuildRequires: pcre-devel
 BuildRequires: which
@@ -130,6 +132,11 @@ mv %{_usr}/local/jvm/openjdk-%{version}-internal/* \
 cp README.md LICENSE ASSEMBLY_EXCEPTION \
         %{buildroot}%{jdkInstallDir}/
 
+# Block the compromised eMudhra intermediate CAs (cross-signed by the AAA root)
+test -f %{buildroot}%{jdkInstallDir}/lib/security/blocked.certs
+sed -i -e '$a\' %{buildroot}%{jdkInstallDir}/lib/security/blocked.certs
+cat %{SOURCE1} >> %{buildroot}%{jdkInstallDir}/lib/security/blocked.certs
+
 %post jre
 alternatives --install %{_bindir}/java java %{jdkInstallDir}/bin/java 30000 \
   --slave %{_bindir}/keytool keytool %{jdkInstallDir}/bin/keytool \
@@ -238,6 +245,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{jdkInstallDir}/lib/src.zip
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 17.0.20.1-2
+- Block compromised eMudhra intermediate CAs via blocked.certs
 * Wed Sep 30 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 17.0.20.1-1
 - Upgrade to v17.0.20.1
 * Wed Aug 12 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 17.0.18-2

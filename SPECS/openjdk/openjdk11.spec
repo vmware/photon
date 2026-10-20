@@ -7,7 +7,7 @@
 Summary:        OpenJDK
 Name:           openjdk11
 Version:        11.0.32.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GNU General Public License V2
 URL:            https://github.com/openjdk/jdk11u
 Group:          Development/Tools
@@ -16,6 +16,8 @@ Distribution:   Photon
 
 Source0: https://github.com/openjdk/jdk11u/archive/refs/tags/jdk-%{version}-ga.tar.gz
 %define sha512 jdk-11.0=7052428039711174a98c0cce28461d2aa32e535bec2c3fafea69b228986b801ece544377517ef286d994703aa65b393765f39b3e3b2c816fb14cc98ba1c948d6
+
+Source1: emudhra-blocked.certs
 
 BuildRequires: pcre-devel
 BuildRequires: which
@@ -129,6 +131,11 @@ mv %{_usr}/local/jvm/openjdk-%{version}-internal/* \
 
 cp README.md LICENSE ASSEMBLY_EXCEPTION \
         %{buildroot}%{jdkInstallDir}/
+
+# Block the compromised eMudhra intermediate CAs (cross-signed by the AAA root)
+test -f %{buildroot}%{jdkInstallDir}/lib/security/blocked.certs
+sed -i -e '$a\' %{buildroot}%{jdkInstallDir}/lib/security/blocked.certs
+cat %{SOURCE1} >> %{buildroot}%{jdkInstallDir}/lib/security/blocked.certs
 
 %post jre
 alternatives --install %{_bindir}/java java %{jdkInstallDir}/bin/java 20000 \
@@ -247,6 +254,8 @@ rm -rf %{buildroot}/* %{_libdir}/jvm/OpenJDK-*
 %{jdkInstallDir}/lib/src.zip
 
 %changelog
+* Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 11.0.32.1-2
+- Block compromised eMudhra intermediate CAs via blocked.certs
 * Wed Sep 30 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 11.0.32.1-1
 - Upgrade to v11.0.32.1
 * Wed Aug 12 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 11.0.30-2
