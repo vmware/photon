@@ -1,7 +1,13 @@
 sources:
-- archive: hatch_vcs-0.2.0.tar.gz
-  archive_sha512sum: 3eb0b04022d4801a982d90a3a0e34e59fcf7dd04c0c2db91c0306b4187ba466ac85ecbb80943a35f4a6a4912bc2ddf2633fab897e8820f5e1ee9d200147b5faf
-  skip_validation: true
+- archive: hatch_vcs-0.5.0.tar.gz
+  archive_sha512sum: ed2b81df3f0b51f9ebca28c023bbf1e66088971e76439ab864838012dc28ec140eadf4f07a4b7aca66b0f5c52fd3ccc001602e6c91dcc8d6241c0b56193cba54
+  archive_type: upstream
+  name: hatch-vcs-0.5.0
+  url: https://github.com/ofek/hatch-vcs/archive/refs/tags/v0.5.0.tar.gz
+  repo_url: https://github.com/ofek/hatch-vcs
+  commit_id: dfec2c06defdb4648eb66f6aadf7b57453d732cd
+  skip_list: []
+  missing: []
   spdx:
     package:
       detailed_description: 'This provides a plugin for Hatch that uses your preferred

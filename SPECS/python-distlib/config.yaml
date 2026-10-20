@@ -1,7 +1,13 @@
 sources:
-- archive: distlib-0.3.6.tar.gz
-  archive_sha512sum: 27f3a59f9175a92befb9a65a66cd0b8eb65185dab6fa13ef94e85ca69c2bc1b7281ce1522601034007cb98677ba9237a46224df4adc70ed966db7e131e073636
-  skip_validation: true
+- archive: distlib-0.4.4.tar.gz
+  archive_sha512sum: 437061f970e9fc19f42860f730d4eb0ac1cf4498fa5f1e359ef4b5899d3438e7f23578f65953edcc9c699cd29b74665423a05f76265113fda1b3f41de5b01170
+  archive_type: upstream
+  name: distlib-0.4.4
+  url: https://github.com/pypa/distlib/archive/refs/tags/0.4.4.tar.gz
+  repo_url: https://github.com/pypa/distlib
+  commit_id: 25eed06966e45ef26c0c472106c67f9dc9cd4b4b
+  skip_list: []
+  missing: []
   spdx:
     package:
       detailed_description: 'Distlib contains the implementations of the packaging
@@ -11,7 +17,7 @@ sources:
         it. Their developers and users then benefit from standardised implementation
         of low-level functions, time saved by not having to reinvent wheels, and improved
         interoperability between tools. '
-      home_page: https://pypi.org/project/distlib
+      home_page: https://github.com/pypa/distlib
       license_concluded: MIT AND BSD-2-Clause AND HPND AND Python-2.0 AND BSD-3-Clause
         AND ZPL-2.1
       license_declared: MIT AND BSD-2-Clause AND HPND AND Python-2.0 AND BSD-3-Clause

@@ -1,0 +1,21 @@
+sources:
+- archive: python-discovery-1.6.4.tar.gz
+  archive_sha512sum: 11a8bef9bf2b2cd4e86512bb9d12a44c881d0139cded567e70842de0ad0a9814e2450a40e74996cf904c5d33554820cff3ec59b39202ccc73827ea835056df00
+  archive_type: upstream
+  name: python-discovery-1.6.4
+  url: https://github.com/tox-dev/python-discovery/archive/refs/tags/1.6.4.tar.gz
+  repo_url: https://github.com/tox-dev/python-discovery
+  commit_id: 885805a8402f8b6ff689eca7a064b31eb46925f2
+  skip_list: []
+  missing: []
+  spdx:
+    package:
+      detailed_description: 'Python interpreter discovery: find, query and select
+        Python interpreters installed on a system, from the PATH, the Windows registry,
+        the py launcher and other sources. It is the interpreter discovery logic used
+        by virtualenv.'
+      home_page: https://github.com/tox-dev/python-discovery
+      license_concluded: MIT
+      license_declared: MIT
+      short_summary: Python interpreter discovery
+      supplier: 'Organization: Broadcom, Inc.'

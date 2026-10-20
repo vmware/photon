@@ -1,17 +1,17 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} >= 92
 
 %global srcname distlib
 
 Name:           python3-distlib
-Version:        0.3.6
-Release:        6%{?dist}
+Version:        0.4.4
+Release:        1%{?dist}
 Summary:        Low-level components of distutils2/packaging, augmented with higher-level APIs
 URL:            https://pypi.org/project/distlib
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://files.pythonhosted.org/packages/58/07/815476ae605bcc5f95c87a62b95e74a1bce0878bc7a3119bc2bf4178f175/distlib-%{version}.tar.gz
+Source0: https://github.com/pypa/distlib/archive/refs/tags/%{version}.tar.gz#/distlib-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -22,8 +22,10 @@ BuildArch:      noarch
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-wheel
-BuildRequires:  python3-pip
 BuildRequires:  python3-setuptools
+BuildRequires:  python3-build
+BuildRequires:  python3-installer
+BuildRequires:  python3-packaging
 
 Requires:       python3
 
@@ -45,10 +47,11 @@ rm -rf distlib/*.exe \
        distlib/_backport
 
 %build
-%pyproject_wheel
+%py3_build_wheel
 
 %install
-%pyproject_install
+%py3_install_wheel
+%{py_byte_compile_and_ghost}
 
 %if 0%{?with_check}
 %check
@@ -56,11 +59,13 @@ export PYTHONHASHSEED=0
 %{python3} setup.py test
 %endif
 
-%files
+%files -f %{py_ghost_filelist}
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+* Tue Oct 20 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.4.4-1
+- Upgrade to 0.4.4
 * Thu May 21 2026 Ajay Kaher <ajay.kaher@broadcom.com> 0.3.6-6
 - Drop unzip BuildRequires; not needed for tar.gz source
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.3.6-5

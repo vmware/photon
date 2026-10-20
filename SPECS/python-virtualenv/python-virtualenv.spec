@@ -1,29 +1,27 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} >= 92
 
 %define srcname virtualenv
 
 Name:           python3-virtualenv
-Version:        20.16.3
-Release:        8%{?dist}
+Version:        21.14.5
+Release:        1%{?dist}
 Summary:        Virtual Python Environment builder
 Group:          Development/Languages/Python
 Url:            https://pypi.python.org/pypi/virtualenv
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: %{srcname}-%{version}.tar.gz
+Source0: https://github.com/pypa/virtualenv/archive/refs/tags/%{version}.tar.gz#/%{srcname}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
 
-Patch0: CVE-2024-53899.patch
-
 BuildRequires: python3-devel
-BuildRequires: python3-setuptools
-BuildRequires: python3-wheel
+BuildRequires: python3-hatchling
+BuildRequires: python3-hatch-vcs
+BuildRequires: python3-build
+BuildRequires: python3-installer
 BuildRequires: python3-packaging
-BuildRequires: python3-setuptools_scm
-BuildRequires: python3-pip
 
 %if 0%{?with_check}
 BuildRequires: python3-appdirs
@@ -31,13 +29,15 @@ BuildRequires: python3-pytest
 BuildRequires: python3-platformdirs
 BuildRequires: python3-filelock
 BuildRequires: python3-distlib
+BuildRequires: python3-discovery
 %endif
 
 Requires: python3
-Requires: python3-appdirs
-Requires: python3-distlib
-Requires: python3-filelock
-Requires: python3-platformdirs
+Requires: python3-distlib >= 0.3.7
+Requires: python3-filelock >= 3.24.2
+Requires: python3-packaging >= 23.1
+Requires: python3-platformdirs >= 3.9.1
+Requires: python3-discovery >= 1.6
 
 BuildArch: noarch
 
@@ -48,21 +48,25 @@ virtualenv is a tool to create isolated Python environment.
 %autosetup -p1 -n %{srcname}-%{version}
 
 %build
-%pyproject_wheel
+export SETUPTOOLS_SCM_PRETEND_VERSION=%{version}
+%py3_build_wheel
 
 %install
-%pyproject_install
+%py3_install_wheel
+%{py_byte_compile_and_ghost}
 
 %check
 pip3 install tomli flaky pytest-mock pytest-freezer
 %pytest -k "not test_py_pyc_missing and not test_py_info_setuptools"
 
-%files
+%files -f %{py_ghost_filelist}
 %defattr(-,root,root,-)
 %{_bindir}/virtualenv
 %{python3_sitelib}/*
 
 %changelog
+* Tue Oct 20 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 21.14.5-1
+- Upgrade to 21.14.5
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 20.16.3-8
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 20.16.3-7

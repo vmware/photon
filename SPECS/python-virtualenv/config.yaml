@@ -1,11 +1,22 @@
 sources:
-- archive: virtualenv-20.16.3.tar.gz
-  archive_sha512sum: d3a90bab9862ea2a70e1dc429dff98a729425858a2153281cba4ecaf13107e6c3a43781e8c96b1f2a6c1ddd797de86bcfee8129a698e45d20eed76432efba5a6
-  skip_validation: true
+- archive: virtualenv-21.14.5.tar.gz
+  archive_sha512sum: 082d0002b61a3d17f3f290509c76a200ef77bb747fd549c66920b64fd62c0aa5c8747482876186108765e9cd760a1226e8efb0c59da6796c6d15a1707b7ca02c
+  archive_type: upstream
+  name: virtualenv-21.14.5
+  url: https://github.com/pypa/virtualenv/archive/refs/tags/21.14.5.tar.gz
+  repo_url: https://github.com/pypa/virtualenv
+  commit_id: 571bc2041dae5ecbd250d82ec7ef482cfd3c3b69
+  skip_list: []
+  missing: []
+  license_manual_review:
+  - file_paths:
+    - python3-virtualenv-21.14.5-build/virtualenv-21.14.5/src/virtualenv/seed/wheels/embed/setuptools-82.0.1-py3-none-any.whl-extract/setuptools/tests/test_core_metadata.py
+    sha256sum: a7c996f76d1a7ca55d2fcb02fc571ef33a667d60c24729416b775ddfd63ea96a
+    spdx_exp: ''
   spdx:
     package:
       detailed_description: 'virtualenv is a tool to create isolated Python environment. '
-      home_page: https://pypi.python.org/pypi/virtualenv
+      home_page: https://github.com/pypa/virtualenv
       license_concluded: LGPL-2.1-or-later AND ISC AND Apache-2.0 AND Python-2.0 AND
         MIT AND (BSD-3-Clause OR Apache-2.0) AND (BSD-2-Clause OR Apache-2.0) AND
         BSD-3-Clause
