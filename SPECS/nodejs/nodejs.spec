@@ -1,6 +1,6 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
-Version:        22.23.3
+Version:        22.23.4
 Release:        1%{?dist}
 License:        MIT
 Group:          Applications/System
@@ -9,7 +9,7 @@ Distribution:   Photon
 URL:            https://github.com/nodejs/node
 
 Source0: https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.gz
-%define sha512 node=04ad549da8175d7d13b7b2b8bb19b3c7f176c7f5f5effe4374171bd0fc28a169b8cadeb2e6f67e1bba10a270c3ea80be2684e65c3af7b504af940fb453e6ee29
+%define sha512 node=e4fb29ea28b8fa03ed91175c0fcf45779d40bb80c3d5fa07c08a2ebf5c34fc8935d835753c7c7fc13e21bff23842343216e58ff4c642d101cfd82fda79a4e228
 
 # From https://github.com/nodejs/node/pull/66419
 Source1: nodejs-tz-2026e-icudt78l.dat.bz2
@@ -104,6 +104,8 @@ done
 %{_docdir}/node/gdbinit
 
 %changelog
+* Wed Oct 21 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 22.23.4-1
+- Upgrade to 22.23.4, rejects TLS chains through compromised eMudhra intermediates
 * Thu Oct 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 22.23.3-1
 - Upgrade to v22.23.3
 - Update timezone to 2026e
