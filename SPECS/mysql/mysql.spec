@@ -1,7 +1,7 @@
 Summary:        MySQL.
 Name:           mysql
 Version:        8.0.46
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -13,6 +13,7 @@ Source0: https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-boost-%{version}.ta
 
 Patch0: CVE-2026-46862.patch
 Patch1: CVE-2026-46863.patch
+Patch2: 2026-07-security.patch
 
 BuildRequires: cmake
 BuildRequires: rpcsvc-proto-devel
@@ -182,6 +183,8 @@ getent passwd 'mysql' >/dev/null || \
 %defattr(-,root,root)
 
 %changelog
+* Thu Oct 22 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.46-3
+- CVE fixes
 * Mon Jul 13 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.46-2
 - Fix CVE-2026-46862, CVE-2026-46863
 * Mon May 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.46-1
