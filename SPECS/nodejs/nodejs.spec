@@ -3,7 +3,7 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
 Version:        24.19.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -19,6 +19,12 @@ Source2: nodejs-tz-2026e-icudt78l.dat.bz2
 
 # Backport of https://github.com/nodejs/node/pull/66871 (v24.22.1)
 Patch0: nodejs-tls-spki-blocklist.patch
+Patch1: CVE-2026-111497-1.patch
+Patch2: CVE-2026-111497-2.patch
+Patch3: CVE-2026-105482.patch
+Patch4: CVE-2026-105483-1.patch
+Patch5: CVE-2026-105483-2.patch
+Patch6: CVE-2026-106069.patch
 
 BuildRequires:  (coreutils or coreutils-selinux)
 BuildRequires:  zlib-devel
@@ -118,6 +124,8 @@ done
 %{_docdir}/node/gdbinit
 
 %changelog
+* Thu Oct 22 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 24.19.0-5
+- Fix CVE-2026-111497, CVE-2026-105482, CVE-2026-105483, CVE-2026-106069
 * Thu Oct 22 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 24.19.0-4
 - Reject TLS chains containing compromised eMudhra intermediate CA keys
 * Thu Oct 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 24.19.0-3
