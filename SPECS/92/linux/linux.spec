@@ -80,7 +80,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.113
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -255,7 +255,6 @@ Patch71: 0001-block-Fix-validation-of-ioprio-level.patch
 # aarch specific patches [200..219]
 # Rpi of_configfs patches
 Patch201: 0001-OF-DT-Overlay-configfs-interface.patch
-Patch203: 0003-of-overlay-Correct-symbol-path-fixups.patch
 # Rpi fan driver
 # arm64 hypervisor detection and kmsg dumper
 Patch205: 0001-x86-hyper-generalize-hypervisor-type-detection.patch
@@ -1032,6 +1031,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Thu Oct 22 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.113-3
+- Drop 0003-of-overlay-Correct-symbol-path-fixups.patch, superseded by upstream 21c89ff1fc86
 * Thu Oct 22 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 6.12.113-2
 - Fixes CVE-2026-72345, CVE-2026-89682, CVE-2026-90149, CVE-2026-90217, CVE-2026-90231, CVE-2026-90240, CVE-2026-90343, CVE-2026-92499, CVE-2026-93221
 * Mon Oct 19 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.12.113-1
