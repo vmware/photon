@@ -2,8 +2,8 @@
 
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
-Version:        22.23.3
-Release:        0.0.2%{?dist}
+Version:        22.23.4
+Release:        0.0.1%{?dist}
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -110,6 +110,8 @@ done
 %{_docdir}/node/gdbinit
 
 %changelog
+* Wed Oct 21 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 22.23.4-0.0.1
+- Upgrade to 22.23.4, rejects TLS chains through compromised eMudhra intermediates
 * Thu Oct 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 22.23.3-0.0.2
 - Update timezone to 2026e
 * Thu Oct 08 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 22.23.3-0.0.1

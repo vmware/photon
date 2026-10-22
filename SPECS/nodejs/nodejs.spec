@@ -3,7 +3,7 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
 Version:        24.19.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -16,6 +16,9 @@ Source1: license.txt
 
 # From https://github.com/nodejs/node/pull/66419
 Source2: nodejs-tz-2026e-icudt78l.dat.bz2
+
+# Backport of https://github.com/nodejs/node/pull/66871 (v24.22.1)
+Patch0: nodejs-tls-spki-blocklist.patch
 
 BuildRequires:  (coreutils or coreutils-selinux)
 BuildRequires:  zlib-devel
@@ -115,6 +118,8 @@ done
 %{_docdir}/node/gdbinit
 
 %changelog
+* Thu Oct 22 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 24.19.0-4
+- Reject TLS chains containing compromised eMudhra intermediate CA keys
 * Thu Oct 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 24.19.0-3
 - Update timezone to 2026e
 * Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 24.19.0-2
