@@ -1,0 +1,30 @@
+sources:
+- archive: openssh-10.6p1.tar.gz
+  archive_sha512sum: 243e07c8c68c649552ee019e6aac4393634de6e403cb793b3cd756d5c46e84cc8b2b560e6c0b36e8fb48979b109f888317411a9d640583109117ea621f27700a
+  archive_type: upstream
+  name: openssh-10.6p1
+  version: 10.6p1
+  url: https://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-10.6p1.tar.gz
+  repo_url: https://github.com/openssh/openssh-portable
+  commit_id: a8c72b842423f0774f542d3c2197247c3dd28d74
+  skip_list: []
+  missing: []
+  spdx:
+    package:
+      detailed_description: 'The OpenSSH package contains ssh clients and the sshd
+        daemon. This is useful for encrypting authentication and subsequent traffic
+        over a network. The ssh and scp commands are secure implementions of telnet
+        and rcp respectively.'
+      home_page: https://www.openssh.com
+      license_concluded: GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND
+        BSD-3-Clause AND FSFUL AND snprintf AND GPL-1.0-or-later AND SSLeay-standalone
+        AND SSH-OpenSSH AND SSH-short AND ISC AND ssh-keyscan AND X11-distribute-modifications-variant
+        AND HPND AND FSFULLRWD AND MIT AND BSD-2-Clause AND X11 AND OpenSSL-standalone
+        AND BSD-4.3TAHOE
+      license_declared: GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND BSD-3-Clause
+        AND FSFUL AND snprintf AND GPL-1.0-or-later AND SSLeay-standalone AND SSH-OpenSSH
+        AND SSH-short AND ISC AND ssh-keyscan AND X11-distribute-modifications-variant
+        AND HPND AND FSFULLRWD AND MIT AND BSD-2-Clause AND X11 AND OpenSSL-standalone
+        AND BSD-4.3TAHOE
+      short_summary: Free version of the SSH connectivity tools
+      supplier: 'Organization: Broadcom, Inc.'
