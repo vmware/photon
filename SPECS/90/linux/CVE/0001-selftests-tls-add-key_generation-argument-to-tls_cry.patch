@@ -1,0 +1,76 @@
+From b2e584aa3c710802600b690f34a56fb526aebf2f Mon Sep 17 00:00:00 2001
+From: Sabrina Dubroca <sd@queasysnail.net>
+Date: Thu, 12 Dec 2024 16:36:08 +0100
+Subject: [PATCH] selftests: tls: add key_generation argument to
+ tls_crypto_info_init
+
+[ Upstream commit b2e584aa3c710802600b690f34a56fb526aebf2f ]
+
+This allows us to generate different keys, so that we can test that
+rekey is using the correct one.
+
+Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+[Keerthana: Dropped the hunks in tls_basic.recseq_wrap, tls.getsockopt and
+prequeue as these tests are not present in v6.1]
+Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+---
+ tools/testing/selftests/net/tls.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
+
+diff --git a/tools/testing/selftests/net/tls.c b/tools/testing/selftests/net/tls.c
+index 1a706d03bb6b..b1f52d2bb096 100644
+--- a/tools/testing/selftests/net/tls.c
++++ b/tools/testing/selftests/net/tls.c
+@@ -40,9 +40,11 @@ struct tls_crypto_info_keys {
+ };
+ 
+ static void tls_crypto_info_init(uint16_t tls_version, uint16_t cipher_type,
+-				 struct tls_crypto_info_keys *tls12)
++				 struct tls_crypto_info_keys *tls12,
++				 char key_generation)
+ {
+-	memset(tls12, 0, sizeof(*tls12));
++	memset(tls12, key_generation, sizeof(*tls12));
++	memset(tls12, 0, sizeof(struct tls_crypto_info));
+ 
+ 	switch (cipher_type) {
+ 	case TLS_CIPHER_CHACHA20_POLY1305:
+@@ -321,7 +323,7 @@ FIXTURE_SETUP(tls)
+ 		SKIP(return, "Unsupported cipher in FIPS mode");
+ 
+ 	tls_crypto_info_init(variant->tls_version, variant->cipher_type,
+-			     &tls12);
++			     &tls12, 0);
+ 
+ 	ulp_sock_pair(_metadata, &self->fd, &self->cfd, &self->notls);
+ 
+@@ -1080,7 +1082,7 @@ TEST_F(tls, bidir)
+ 		struct tls_crypto_info_keys tls12;
+ 
+ 		tls_crypto_info_init(variant->tls_version, variant->cipher_type,
+-				     &tls12);
++				     &tls12, 0);
+ 
+ 		ret = setsockopt(self->fd, SOL_TLS, TLS_RX, &tls12,
+ 				 tls12.len);
+@@ -1488,7 +1490,7 @@ FIXTURE_SETUP(tls_err)
+ 	int ret;
+ 
+ 	tls_crypto_info_init(variant->tls_version, TLS_CIPHER_AES_GCM_128,
+-			     &tls12);
++			     &tls12, 0);
+ 
+ 	ulp_sock_pair(_metadata, &self->fd, &self->cfd, &self->notls);
+ 	ulp_sock_pair(_metadata, &self->fd2, &self->cfd2, &self->notls);
+@@ -1780,7 +1782,7 @@ TEST(tls_v6ops) {
+ 	int sfd, ret, fd;
+ 	socklen_t len, len2;
+ 
+-	tls_crypto_info_init(TLS_1_2_VERSION, TLS_CIPHER_AES_GCM_128, &tls12);
++	tls_crypto_info_init(TLS_1_2_VERSION, TLS_CIPHER_AES_GCM_128, &tls12, 0);
+ 
+ 	addr.sin6_family = AF_INET6;
+ 	addr.sin6_addr = in6addr_any;
+-- 
+2.43.7

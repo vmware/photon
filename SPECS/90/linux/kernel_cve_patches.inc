@@ -258,3 +258,9 @@ Patch3127: 0003-netfilter-ctnetlink-do-not-expose-expectation-DEAD-f.patch
 Patch3128: 0004-netfilter-nf_conntrack_expect-add-and-use-nf_ct_expe.patch
 Patch3129: 0005-netfilter-nf_conntrack_expect-bail-out-on-insert-dea.patch
 Patch3130: 0006-netfilter-nf_conntrack_expect-consolidate-check-for-.patch
+# Fixes CVE-2026-74611, CVE-2026-89530, CVE-2026-89702
+Patch3131: 0001-nfsd-size-fh_verify-server-sockaddr-slot-by-xpt_loca.patch
+Patch3132: 0001-selftests-tls-add-key_generation-argument-to-tls_cry.patch
+Patch3133: 0001-svcrdma-Reject-inline-replies-that-overflow-the-pull.patch
+Patch3134: 0002-selftests-tls-add-rekey-tests.patch
+Patch3135: 0003-tls-rx-restore-msg_iter-before-TLS-1.3-optimistic-re.patch
