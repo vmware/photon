@@ -312,7 +312,8 @@ class PackageUtils(object):
         rpmBuildcmd = [self.rpmbuildBinary] + self.rpmbuildBuildallOptions
 
         if constants.resume_build:
-            rpmBuildcmd += ["-D", "__spec_prep_cmd /bin/true"]
+            # Also skip RPM build-directory recreation to preserve the sources.
+            rpmBuildcmd += ["--noprep"]
 
         if (
             not constants.buildDbgInfoRpm
