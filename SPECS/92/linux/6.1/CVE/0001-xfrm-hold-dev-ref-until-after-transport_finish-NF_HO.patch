@@ -1,0 +1,138 @@
+From 1c428b03840094410c5fb6a5db30640486bbbfcb Mon Sep 17 00:00:00 2001
+From: Qi Tang <tpluszz77@gmail.com>
+Date: Thu, 02 Apr 2026 19:44:01 +0800
+Subject: [PATCH] xfrm: hold dev ref until after transport_finish NF_HOOK
+
+[ Upstream commit 1c428b03840094410c5fb6a5db30640486bbbfcb ]
+
+After async crypto completes, xfrm_input_resume() calls dev_put()
+immediately on re-entry before the skb reaches transport_finish.
+The skb->dev pointer is then used inside NF_HOOK and its okfn,
+which can race with device teardown.
+
+Remove the dev_put from the async resumption entry and instead
+drop the reference after the NF_HOOK call in transport_finish,
+using a saved device pointer since NF_HOOK may consume the skb.
+This covers NF_DROP, NF_QUEUE and NF_STOLEN paths that skip
+the okfn.
+
+For non-transport exits (decaps, gro, drop) and secondary
+async return points, release the reference inline when
+async is set.
+
+Suggested-by: Florian Westphal <fw@strlen.de>
+Fixes: acf568ee859f ("xfrm: Reinject transport-mode packets through tasklet")
+Signed-off-by: Qi Tang <tpluszz77@gmail.com>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+[Ankit: Backported for v6.1.x. Applied on top of b05d42e
+ (xfrm: hold device only for the asynchronous decryption)]
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ net/ipv4/xfrm4_input.c |  5 ++++-
+ net/ipv6/xfrm6_input.c |  5 ++++-
+ net/xfrm/xfrm_input.c  | 12 ++++++++++--
+ 3 files changed, 18 insertions(+), 4 deletions(-)
+
+diff --git a/net/ipv4/xfrm4_input.c b/net/ipv4/xfrm4_input.c
+index f6e90ba50b63..d05e8ff9c37b 100644
+--- a/net/ipv4/xfrm4_input.c
++++ b/net/ipv4/xfrm4_input.c
+@@ -48,6 +48,7 @@ int xfrm4_transport_finish(struct sk_buff *skb, int async)
+ {
+ 	struct xfrm_offload *xo = xfrm_offload(skb);
+ 	struct iphdr *iph = ip_hdr(skb);
++	struct net_device *dev = skb->dev;
+ 
+ 	iph->protocol = XFRM_MODE_SKB_CB(skb)->protocol;
+ 
+@@ -71,8 +72,10 @@ int xfrm4_transport_finish(struct sk_buff *skb, int async)
+ 	}
+ 
+ 	NF_HOOK(NFPROTO_IPV4, NF_INET_PRE_ROUTING,
+-		dev_net(skb->dev), NULL, skb, skb->dev, NULL,
++		dev_net(dev), NULL, skb, dev, NULL,
+ 		xfrm4_rcv_encap_finish);
++	if (async)
++		dev_put(dev);
+ 	return 0;
+ }
+ 
+diff --git a/net/ipv6/xfrm6_input.c b/net/ipv6/xfrm6_input.c
+index 8432b50d9ce4..b2e328de620b 100644
+--- a/net/ipv6/xfrm6_input.c
++++ b/net/ipv6/xfrm6_input.c
+@@ -41,6 +41,7 @@ static int xfrm6_transport_finish2(struct net *net, struct sock *sk,
+ int xfrm6_transport_finish(struct sk_buff *skb, int async)
+ {
+ 	struct xfrm_offload *xo = xfrm_offload(skb);
++	struct net_device *dev = skb->dev;
+ 	int nhlen = skb->data - skb_network_header(skb);
+ 
+ 	skb_network_header(skb)[IP6CB(skb)->nhoff] =
+@@ -66,8 +67,10 @@ int xfrm6_transport_finish(struct sk_buff *skb, int async)
+ 	}
+ 
+ 	NF_HOOK(NFPROTO_IPV6, NF_INET_PRE_ROUTING,
+-		dev_net(skb->dev), NULL, skb, skb->dev, NULL,
++		dev_net(dev), NULL, skb, dev, NULL,
+ 		xfrm6_transport_finish2);
++	if (async)
++		dev_put(dev);
+ 	return 0;
+ }
+ 
+diff --git a/net/xfrm/xfrm_input.c b/net/xfrm/xfrm_input.c
+index 6f674357d30d..be9dc0cae46e 100644
+--- a/net/xfrm/xfrm_input.c
++++ b/net/xfrm/xfrm_input.c
+@@ -490,7 +490,6 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
+ 		/* An encap_type of -1 indicates async resumption. */
+ 		if (encap_type == -1) {
+ 			async = 1;
+-			dev_put(skb->dev);
+ 			seq = XFRM_SKB_CB(skb)->seq.input.low;
+ 			goto resume;
+ 		}
+@@ -636,8 +635,11 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
+ 			dev_hold(skb->dev);
+ 
+ 			nexthdr = x->type->input(x, skb);
+-			if (nexthdr == -EINPROGRESS)
++			if (nexthdr == -EINPROGRESS) {
++				if (async)
++					dev_put(skb->dev);
+ 				return 0;
++			}
+ 
+ 			dev_put(skb->dev);
+ 		}
+@@ -707,6 +709,8 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
+ 			sp->olen = 0;
+ 		if (skb_valid_dst(skb))
+ 			skb_dst_drop(skb);
++		if (async)
++			dev_put(skb->dev);
+ 		gro_cells_receive(&gro_cells, skb);
+ 		return 0;
+ 	} else {
+@@ -726,6 +730,8 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
+ 				sp->olen = 0;
+ 			if (skb_valid_dst(skb))
+ 				skb_dst_drop(skb);
++			if (async)
++				dev_put(skb->dev);
+ 			gro_cells_receive(&gro_cells, skb);
+ 			return err;
+ 		}
+@@ -736,6 +742,8 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
+ drop_unlock:
+ 	spin_unlock(&x->lock);
+ drop:
++	if (async)
++		dev_put(skb->dev);
+ 	xfrm_rcv_cb(skb, family, x && x->type ? x->type->proto : nexthdr, -1);
+ 	kfree_skb(skb);
+ 	return 0;
+-- 
+2.40.4
+

@@ -15,7 +15,11 @@ Patch3002: 0001-btrfs-fix-double-free-of-qgroup-record-after-failure.patch
 Patch3004: 0002-ipv6-ioam-fix-potential-NULL-dereferences-in-__ioam6.patch
 # Fixes CVE-2026-31589, CVE-2026-43414, CVE-2026-43465, CVE-2026-53224, CVE-2026-53246, CVE-2026-53260
 Patch3005: 0001-mm-call-free_folio-directly-in-folio_.patch
+%if 0%{?photon_subrelease} == 91
+Patch3006: 0001-net-mlx5e-RX-Fix-XDP-multi-buf-frag-c-6.12.111.patch
+%else
 Patch3006: 0001-net-mlx5e-RX-Fix-XDP-multi-buf-frag-c.patch
+%endif
 Patch3007: 0001-scsi-qla2xxx-Completely-fix-fcport-do.patch
 Patch3008: 0001-sctp-validate-cached-peer-INIT-chunk-length-in-COOKI.patch
 Patch3010: 0002-sctp-validate-embedded-INIT-chunk-and.patch
@@ -28,11 +32,18 @@ Patch3018: 0001-nouveau-gsp-drop-WARN_ON-in-ACPI-probes.patch
 Patch3019: 0002-ALSA-usb-audio-Use-the-right-limit-for-PCM-OOB-check.patch
 # Fixes CVE-2025-40158, CVE-2025-68745, CVE-2026-63872, CVE-2026-64076, CVE-2026-64077
 Patch3020: 0001-esp-fix-page-frag-reference-leak-on-skb_to_sgvec-failure.patch
+%if 0%{?photon_subrelease} == 91
+Patch3021: 0001-ipv6-use-RCU-in-ip6_output.patch
+%endif
 Patch3022: 0001-netfilter-bridge-eb_tables-close-module-init-race.patch
 Patch3023: 0001-netfilter-ebtables-move-to-two-stage-removal-scheme.patch
 Patch3024: 0001-scsi-qla2xxx-Clear-cmds-after-chip-reset.patch
 # Fixes CVE-2026-52988, CVE-2026-52991, CVE-2026-53089, CVE-2026-53091
 Patch3026: 0001-cgroup-psi-Set-of-priv-to-NULL-upon-file-release.patch
+%if 0%{?photon_subrelease} == 91
+Patch3027: 0001-rculist-add-list_splice_rcu-for-private-lists.patch
+Patch3028: 0002-netfilter-nf_tables-join-hook-list-via-splice_list_r.patch
+%endif
 Patch3029: 0002-sched-psi-fix-race-between-file-release-and-pressure.patch
 Patch3030: 0001-net_sched-make-room-for-struct-qdisc_skb_cb-pkt_segs.patch
 Patch3031: 0002-net-init-shinfo-gso_segs-from-qdisc_pkt_len_init.patch
@@ -55,11 +66,24 @@ Patch3046: 0001-netfs-Fix-barriering-when-walking-subrequest-list.patch
 # Fixes CVE-2026-72413, CVE-2026-72423
 Patch3047: 0001-bpf-Guard-conntrack-opts-error-writes.patch
 # Fixes CVE-2026-72366, CVE-2026-72463, CVE-2026-72493, CVE-2026-74268, CVE-2026-74269
+%if 0%{?photon_subrelease} == 91
+Patch3049: 0001-bnxt-fix-head-underflow-on-XDP-head-grow-6.12.111.patch
+%else
 Patch3049: 0001-bnxt-fix-head-underflow-on-XDP-head-grow.patch
+%endif
 Patch3050: 0001-net-serialize-netif_running-check-in-enqueue_to_backlog.patch
 Patch3051: 0001-netfs-Fix-netfs_create_write_req-to-handle-async-cac.patch
+%if 0%{?photon_subrelease} == 91
+Patch3053: 0001-xfrm-Fix-dev-use-after-free-in-xfrm-async-resumption.patch
+# Fixes CVE-2026-64160
+Patch3054: 0001-cifs-Fix-handling-of-a-beyond-EOF-DIO-unbuffered-rea.patch
+%endif
 Patch3055: 0002-filemap-Add-folio_next_pos.patch
+%if 0%{?photon_subrelease} == 91
+Patch3056: 0003-netfs-Fix-potential-for-tearing-in-remote_i_size-and-6.12.111.patch
+%else
 Patch3056: 0003-netfs-Fix-potential-for-tearing-in-remote_i_size-and.patch
+%endif
 Patch3057: 0004-cifs-Fix-undefined-variables.patch
 # Fixes CVE-2026-63853, CVE-2026-63879, CVE-2026-64036, CVE-2026-64058, CVE-2026-64078
 Patch3058: 0001-cgroup-rstat-validate-cpu-before-css_rstat_cpu-acce.patch
@@ -74,7 +98,11 @@ Patch3065: 0001-fbdev-bound-mode-sysfs-output-to-the-sysfs-buffer.patch
 Patch3066: 0001-CVE-2026-68399-bpf-Fix-UAF-in-sock-clone-early-bailo.patch
 Patch3067: 0001-CVE-2026-68404-wifi-cfg80211-use-wiphy-work-for-sock.patch
 Patch3068: 0001-CVE-2026-68409-wifi-mac80211-defer-link-RX-stats-per.patch
+%if 0%{?photon_subrelease} == 91
+Patch3069: 0001-CVE-2026-68441-net-sched-Handle-TC_ACT_REDIRECT-from-6.12.111.patch
+%else
 Patch3069: 0001-CVE-2026-68441-net-sched-Handle-TC_ACT_REDIRECT-from.patch
+%endif
 Patch3070: 0001-CVE-2026-68447-drm-amdkfd-clamp-v9-CRIU-control-stac.patch
 # Fixes CVE-2026-74605, CVE-2026-74611
 Patch3071: 0001-eventfs-Use-children-field-for-rcu-head-and-add-memo.patch
@@ -98,6 +126,7 @@ Patch3084: 0001-xfrm-fix-stale-skb-prev-after-async-crypto-steals-a-.patch
 Patch3085: 0001-RDMA-rxe-Fix-iova-to-va-conversion-for-MR-page-sizes.patch
 Patch3086: 0001-drm-amdkfd-Check-bounds-on-CRIU-restore-queue-type-a.patch
 Patch3087: 0001-drm-i915-gt-Fix-NULL-deref-on-sched_engine-alloc-fai.patch
+%if 0%{?photon_subrelease} >= 92
 # Fixes CVE-2026-74752
 Patch3088: 0001-sctp-validate-cookie-AUTH-state-before-use.patch
 # Fixes CVE-2026-90104
@@ -132,3 +161,4 @@ Patch3110: 0003-perf-tools-Use-perf_env__get_cpu_topology-in-machine.patch
 Patch3111: 0001-bpf-Check-sk_state-before-sk_protocol-in-bpf_tcp_-_s.patch
 Patch3112: 0001-ceph-fix-UAF-in-check_new_map-on-session-freed-durin.patch
 Patch3113: 0002-ceph-fix-use-after-free-in-check_new_map-after-early.patch
+%endif
