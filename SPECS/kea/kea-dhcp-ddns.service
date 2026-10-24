@@ -1,0 +1,27 @@
+[Unit]
+Description=Kea DHCP-DDNS Server
+Documentation=https://kea.readthedocs.io/
+Wants=network-online.target
+After=network-online.target
+After=time-sync.target
+
+[Service]
+# Type=simple, not Type=notify: Kea 3.1.9 has no sd_notify support upstream
+# (no libsystemd dependency, no NOTIFY_SOCKET handling). Distributions that
+# use Type=notify carry an out-of-tree sd-daemon patch; Photon does not.
+Type=simple
+User=kea
+Group=kea
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+RuntimeDirectory=kea
+RuntimeDirectoryMode=0750
+RuntimeDirectoryPreserve=yes
+StateDirectory=kea
+StateDirectoryMode=0750
+LogsDirectory=kea
+LogsDirectoryMode=0750
+ExecStart=/usr/sbin/kea-dhcp-ddns -c /etc/kea/kea-dhcp-ddns.conf
+ExecReload=/usr/bin/kill -HUP $MAINPID
+
+[Install]
+WantedBy=multi-user.target
