@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} >= 92
 
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
-Version:        24.19.0
-Release:        5%{?dist}
+Version:        24.22.1
+Release:        1%{?dist}
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -14,17 +14,8 @@ Source0: https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.gz
 Source1: license.txt
 %include %{SOURCE1}
 
-# From https://github.com/nodejs/node/pull/66419
-Source2: nodejs-tz-2026e-icudt78l.dat.bz2
-
-# Backport of https://github.com/nodejs/node/pull/66871 (v24.22.1)
-Patch0: nodejs-tls-spki-blocklist.patch
-Patch1: CVE-2026-111497-1.patch
-Patch2: CVE-2026-111497-2.patch
-Patch3: CVE-2026-105482.patch
-Patch4: CVE-2026-105483-1.patch
-Patch5: CVE-2026-105483-2.patch
-Patch6: CVE-2026-106069.patch
+# From https://github.com/nodejs/node/pull/66953
+Patch0: respect-openssl-api-level.patch
 
 BuildRequires:  (coreutils or coreutils-selinux)
 BuildRequires:  zlib-devel
@@ -60,8 +51,6 @@ for developing applications that use nodejs.
 
 %prep
 %autosetup -p1 -n node-v%{version}
-
-cp -fv %{SOURCE2} deps/icu-small/source/data/in/icudt78l.dat.bz2
 
 rm -r deps/zlib \
       deps/zstd \
@@ -124,6 +113,8 @@ done
 %{_docdir}/node/gdbinit
 
 %changelog
+* Sat Oct 24 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 24.22.1-1
+- Upgrade to v24.22.1
 * Thu Oct 22 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 24.19.0-5
 - Fix CVE-2026-111497, CVE-2026-105482, CVE-2026-105483, CVE-2026-106069
 * Thu Oct 22 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 24.19.0-4

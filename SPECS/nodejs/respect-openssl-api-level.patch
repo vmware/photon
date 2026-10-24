@@ -1,0 +1,43 @@
+From 55fe3cce25b6bc53fab89f2d4bf3a6d25d93da8b Mon Sep 17 00:00:00 2001
+From: Filip Skokan <panva.ip@gmail.com>
+Date: Fri, 23 Oct 2026 12:30:58 +0200
+Subject: [PATCH] build: respect OpenSSL's configured API level
+
+Shared OpenSSL 3 builds configured with --api=1.1.1 reject
+OPENSSL_API_COMPAT=30000. Cap the requested compatibility level at the
+configured API level for both ncrypto targets, retaining the 3.0
+deprecation checks where supported.
+
+Fixes: https://github.com/nodejs/node/issues/66950
+Signed-off-by: Filip Skokan <panva.ip@gmail.com>
+Assisted-by: Codex
+---
+ deps/ncrypto/ncrypto.gyp | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/deps/ncrypto/ncrypto.gyp b/deps/ncrypto/ncrypto.gyp
+index 804a664fa0a2..9b3732d6f959 100644
+--- a/deps/ncrypto/ncrypto.gyp
++++ b/deps/ncrypto/ncrypto.gyp
+@@ -9,15 +9,19 @@
+       'engine.cc',
+       'ncrypto.h',
+     ],
++    # OpenSSL may be configured with --api below 3.0. Keep 3.0 deprecation
++    # checks where supported without exceeding its configured API level.
++    'ncrypto_openssl3_api_compat':
++      '(OPENSSL_CONFIGURED_API<30000?OPENSSL_CONFIGURED_API:30000)',
+     'ncrypto_strict_defines': [
+-      'OPENSSL_API_COMPAT=30000',
++      'OPENSSL_API_COMPAT=<(ncrypto_openssl3_api_compat)',
+       'OPENSSL_NO_DEPRECATED',
+     ],
+     'ncrypto_legacy_openssl_defines': [
+       'OPENSSL_API_COMPAT=0x10100000L',
+     ],
+     'ncrypto_engine_defines': [
+-      'OPENSSL_API_COMPAT=30000',
++      'OPENSSL_API_COMPAT=<(ncrypto_openssl3_api_compat)',
+       'OPENSSL_SUPPRESS_DEPRECATED',
+       'NCRYPTO_ENGINE_COMPAT=1',
+     ],
