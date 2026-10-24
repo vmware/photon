@@ -1,0 +1,58 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Daniel Casota <dcasota@gmail.com>
+Date: Thu, 8 Oct 2026 00:00:00 +0000
+Subject: [PATCH] stigenable: drop redundant packages from KS_STIG_PACKAGES
+
+Three of the eight entries are removed. Each is either already satisfied
+transitively or is dead weight:
+
+  libselinux-utils  a Requires of selinux-policy 36.5 (the subrelease 90
+                    build), and the stig-hardening ph5-2.1 role never
+                    invokes any of its binaries
+  ntp               installed but never configured - no task in the role
+                    notifies the time-sync handlers in handlers/main.yml,
+                    and no PHTN-50 control covers time sync; at
+                    subrelease 90 this is the separate ntp 4.2.8 package
+  libgcrypt         aide already Requires libgcrypt, and the role's own
+                    task in tasks/photon.yml installs aide and libgcrypt
+
+The same three are dropped from examples/ova/packages_stig.json, so the OVA
+package list and the installer's own list say the same thing.
+
+Port of the photon-os-installer 2.8 and 2.9 change to v2.7, whose
+KS_STIG_PACKAGES and packages_stig.json carry the same eight entries.
+---
+ examples/ova/packages_stig.json | 3 +--
+ photon_installer/stigenable.py  | 5 +----
+ 2 files changed, 2 insertions(+), 6 deletions(-)
+
+diff --git a/examples/ova/packages_stig.json b/examples/ova/packages_stig.json
+index 99dd0a9..1e307a2 100644
+--- a/examples/ova/packages_stig.json
++++ b/examples/ova/packages_stig.json
+@@ -14,8 +14,7 @@
+         "less",
+         "sudo",
+         "lvm2",
+-        "audit", "rsyslog", "openssl-fips-provider", "selinux-policy",
+-        "libselinux-utils", "ntp", "aide", "libgcrypt"
++        "audit", "rsyslog", "openssl-fips-provider", "selinux-policy", "aide"
+     ],
+     "packages_x86_64": ["linux-esx"]
+ }
+diff --git a/photon_installer/stigenable.py b/photon_installer/stigenable.py
+index 73841e3..0111ec0 100755
+--- a/photon_installer/stigenable.py
++++ b/photon_installer/stigenable.py
+@@ -24,10 +24,7 @@ KS_STIG_PACKAGES = [
+     "rsyslog",
+     "openssl-fips-provider",
+     "selinux-policy",
+-    "libselinux-utils",
+-    "ntp",
+-    "aide",
+-    "libgcrypt"
++    "aide"
+ ]
+ 
+ 
