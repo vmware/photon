@@ -2,7 +2,7 @@
 
 Summary:        Python package for providing Mozilla's CA Bundle
 Name:           python3-certifi
-Version:        2026.10.19
+Version:        2026.10.23
 Release:        1%{?dist}
 URL:            https://github.com/certifi
 Group:          Development/Languages/Python
@@ -48,6 +48,8 @@ SSL certificates while verifying the identity of TLS hosts
 %{python3_sitelib}/*
 
 %changelog
+* Mon Oct 26 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2026.10.23-1
+- Update to 2026.10.23, drops emSign Root CA - C1 and emSign ECC Root CA - C3
 * Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 2026.10.19-1
 - Update to 2026.10.19, drops eMudhra intermediate CA roots (Comodo AAA, emSign G3)
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2023.11.17-5

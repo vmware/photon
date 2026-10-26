@@ -1,8 +1,8 @@
 sources:
-- archive: certifi-2026.10.19.tar.gz
-  archive_sha512sum: 94bc3671aaf2a2aa9d90a2e6730778764eafc2200ca0a55eaaa8b003a1f0f25269bda207cd61072ae90884b81d157d7767c7f70c502fbe7ea901144fe3987aeb
-  name: certifi-2026.10.19
-  url: https://github.com/certifi/python-certifi/archive/refs/tags/2026.10.19.tar.gz
+- archive: certifi-2026.10.23.tar.gz
+  archive_sha512sum: f44a9f8b16ecd2b8abaa508bf6151574d62566ea782ede28a05caf8d974cc0d24d117384f32c7775784b41ba2efc9534d2a9d4f29fe7948b7727f2a7439175d6
+  name: certifi-2026.10.23
+  url: https://github.com/certifi/python-certifi/archive/refs/tags/2026.10.23.tar.gz
   skip_validation: true
   spdx:
     package:
