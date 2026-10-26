@@ -249,4 +249,12 @@ Patch3119: 0001-bonding-fix-type-confusion-in-bond_setup_by_slave.patch
 # Fix CVE-2026-31675
 Patch3121: 0001-net-sched-sch_netem-fix-out-of-bounds-access-in-pack.patch
 Patch3122: 0002-net-sched-netem-handle-multi-segment-skb-in-corrupti.patch
-
+# Fixes CVE-2026-80668, CVE-2026-90037
+Patch3123: 0001-NFSD-Prevent-client-use-after-free-during-delegation.patch
+Patch3124: 0001-netfilter-conntrack-check-NULL-when-retrieving-ct-ex.patch
+Patch3125: 0002-NFSD-Prevent-client-use-after-free-during-close_lru-.patch
+Patch3126: 0002-netfilter-nf_conntrack_expect-use-conntrack-GC-to-re.patch
+Patch3127: 0003-netfilter-ctnetlink-do-not-expose-expectation-DEAD-f.patch
+Patch3128: 0004-netfilter-nf_conntrack_expect-add-and-use-nf_ct_expe.patch
+Patch3129: 0005-netfilter-nf_conntrack_expect-bail-out-on-insert-dea.patch
+Patch3130: 0006-netfilter-nf_conntrack_expect-consolidate-check-for-.patch
