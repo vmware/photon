@@ -1,4 +1,4 @@
-From 2146f0130cbf0c7c403a6bf0e07af40dc2489e79 Mon Sep 17 00:00:00 2001
+From 776ff660422818dbc1d2be53277e08b3a050151b Mon Sep 17 00:00:00 2001
 From: Tighe Barris <tbarri@amazon.com>
 Date: Wed, 25 May 2022 16:43:55 +0000
 Subject: [PATCH] Correct read overflow in page touching DMA ops binding
@@ -24,27 +24,27 @@ Cc-Team: ec2-memo <ec2-memo@amazon.com>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/kernel/dma/page_touching.c b/kernel/dma/page_touching.c
-index a9bb7901d769..c5ffb90a40a5 100644
+index 99d9fb6c7..9ce190917 100644
 --- a/kernel/dma/page_touching.c
 +++ b/kernel/dma/page_touching.c
-@@ -36,7 +36,7 @@
- #include <linux/moduleparam.h>
-
+@@ -37,7 +37,7 @@
+ #include <linux/dma-page-touching.h>
+ 
  /*
 - * A wrapper around dma_direct which does a readl on the memory being mapped
 + * A wrapper around dma_direct which does a readb on the memory being mapped
   * for DMA to ensure that it becomes resident.
   * Useful when running in a memory overcommit environment with lazy allocation
   * and free page reporting.
-@@ -56,7 +56,7 @@ static void touch_each_page(void *start_addr, size_t size)
+@@ -57,7 +57,7 @@ static void touch_each_page(void *start_addr, size_t size)
  	int addr_offset;
-
+ 
  	for (addr_offset = 0; addr_offset < size; addr_offset += PAGE_SIZE)
 -		__raw_readl((char *)start_addr + addr_offset);
 +		__raw_readb((char *)start_addr + addr_offset);
  }
-
+ 
  static void *page_touching_dma_alloc(struct device *dev, size_t size,
---
-2.35.6
+-- 
+2.53.0
 

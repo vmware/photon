@@ -1,4 +1,4 @@
-From f8073890a69d7de12780a218c1b2208c2c2aeb95 Mon Sep 17 00:00:00 2001
+From 5242f82148c0e0c38702e375981b038c20aec0ae Mon Sep 17 00:00:00 2001
 From: Munehisa Kamata <kamatam@amazon.com>
 Date: Sat, 11 Feb 2017 00:53:56 +0000
 Subject: [PATCH] x86/xen: add system core suspend and resume callbacks
@@ -15,26 +15,28 @@ Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
 Reviewed-by: Munehisa Kamata <kamatam@amazon.com>
 Reviewed-by: Eduardo Valentin <eduval@amazon.com>
 CR: https://cr.amazon.com/r/8273204/
+[Brennan: Adapted for 6.12.114]
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
 ---
  arch/x86/xen/enlighten_hvm.c |  1 +
- arch/x86/xen/suspend.c       | 53 ++++++++++++++++++++++++++++++++++++
+ arch/x86/xen/suspend.c       | 57 ++++++++++++++++++++++++++++++++++++
  include/xen/xen-ops.h        |  2 ++
- 3 files changed, 56 insertions(+)
+ 3 files changed, 60 insertions(+)
 
 diff --git a/arch/x86/xen/enlighten_hvm.c b/arch/x86/xen/enlighten_hvm.c
-index 24d2957a4726..156d1f02a9f5 100644
+index 3ca5508a9..6dab17566 100644
 --- a/arch/x86/xen/enlighten_hvm.c
 +++ b/arch/x86/xen/enlighten_hvm.c
 @@ -227,6 +227,7 @@ static void __init xen_hvm_guest_init(void)
- 
+
  	xen_panic_handler_init();
- 
+
 +	xen_setup_syscore_ops();
  	xen_hvm_smp_init();
  	WARN_ON(xen_cpuhp_setup(xen_cpu_up_prepare_hvm, xen_cpu_dead_hvm));
  	xen_unplug_emulated_devices();
 diff --git a/arch/x86/xen/suspend.c b/arch/x86/xen/suspend.c
-index 77a6ea1c60e4..a0fe823b96cd 100644
+index 77a6ea1c6..294d370e8 100644
 --- a/arch/x86/xen/suspend.c
 +++ b/arch/x86/xen/suspend.c
 @@ -2,17 +2,22 @@
@@ -43,29 +45,29 @@ index 77a6ea1c60e4..a0fe823b96cd 100644
  #include <linux/percpu-defs.h>
 +#include <linux/syscore_ops.h>
 +#include <linux/kernel_stat.h>
- 
+
  #include <xen/xen.h>
  #include <xen/interface/xen.h>
 +#include <xen/interface/memory.h>
  #include <xen/grant_table.h>
  #include <xen/events.h>
 +#include <xen/xen-ops.h>
- 
+
  #include <asm/cpufeatures.h>
  #include <asm/msr-index.h>
  #include <asm/xen/hypercall.h>
  #include <asm/xen/page.h>
  #include <asm/fixmap.h>
 +#include <asm/pvclock.h>
- 
+
  #include "xen-ops.h"
- 
-@@ -80,3 +85,51 @@ void xen_arch_suspend(void)
- 
+
+@@ -80,3 +85,55 @@ void xen_arch_suspend(void)
+
  	on_each_cpu(xen_vcpu_notify_suspend, NULL, 1);
  }
 +
-+static int xen_syscore_suspend(void)
++static int xen_syscore_suspend(void *data)
 +{
 +	struct xen_remove_from_physmap xrfp;
 +	int ret;
@@ -84,7 +86,7 @@ index 77a6ea1c60e4..a0fe823b96cd 100644
 +	return ret;
 +}
 +
-+static void xen_syscore_resume(void)
++static void xen_syscore_resume(void *data)
 +{
 +	/* Xen suspend does similar stuffs in its own logic */
 +	if (xen_suspend_mode_is_xen_suspend())
@@ -102,29 +104,33 @@ index 77a6ea1c60e4..a0fe823b96cd 100644
 + * These callbacks will be called with interrupts disabled and when having only
 + * one CPU online.
 + */
-+static struct syscore_ops xen_hvm_syscore_ops = {
++static const struct syscore_ops xen_hvm_syscore_ops = {
 +	.suspend = xen_syscore_suspend,
 +	.resume = xen_syscore_resume
++};
++
++static struct syscore xen_hvm_syscore = {
++	.ops = &xen_hvm_syscore_ops,
 +};
 +
 +void __init xen_setup_syscore_ops(void)
 +{
 +	if (xen_hvm_domain())
-+		register_syscore_ops(&xen_hvm_syscore_ops);
++		register_syscore(&xen_hvm_syscore);
 +}
 diff --git a/include/xen/xen-ops.h b/include/xen/xen-ops.h
-index 47f11bec5e90..b0064615eeb5 100644
+index c6f64f8d3..8c8376017 100644
 --- a/include/xen/xen-ops.h
 +++ b/include/xen/xen-ops.h
 @@ -41,6 +41,8 @@ u64 xen_steal_clock(int cpu);
- 
+
  int xen_setup_shutdown_event(void);
- 
+
 +void xen_setup_syscore_ops(void);
 +
  bool xen_suspend_mode_is_xen_suspend(void);
  bool xen_suspend_mode_is_pm_suspend(void);
  bool xen_suspend_mode_is_pm_hibernation(void);
--- 
-2.39.4
+--
+2.53.0
 

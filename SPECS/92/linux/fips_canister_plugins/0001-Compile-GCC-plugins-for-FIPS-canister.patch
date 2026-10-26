@@ -1,4 +1,4 @@
-From 7fdff36b69fea4b2c66d93f51a7dee8ac1c4279e Mon Sep 17 00:00:00 2001
+From b30a8f3863aaae0d760bbc9d6636779b44e75691 Mon Sep 17 00:00:00 2001
 From: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
 Date: Wed, 7 May 2025 19:56:42 +0000
 Subject: [PATCH] Compile GCC plugins for FIPS canister
@@ -9,18 +9,18 @@ which come in a subsequent patch.
 Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
 ---
  Makefile                     |  8 ++++++++
- scripts/Makefile.gcc-plugins |  3 ++++
+ scripts/Makefile.gcc-plugins |  3 +++
  scripts/gcc-plugins/Kconfig  | 21 +++++++++++++++++++++
- scripts/gcc-plugins/Makefile | 27 +++++++++++++++++++++++++++-
- 4 files changed, 59 insertions(+), 1 deletion(-)
+ scripts/gcc-plugins/Makefile | 27 ++++++++++++++++++++++++++-
+ 4 files changed, 58 insertions(+), 1 deletion(-)
 
 diff --git a/Makefile b/Makefile
-index 17a0807e3..91051d3a7 100644
+index 769187a16ab2..14f631096ba9 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -1016,6 +1016,14 @@ KBUILD_CFLAGS += -fno-builtin-wcslen
- # Ensure compilers do not transform certain loops into calls to wcslen()
- KBUILD_CFLAGS += -fno-builtin-wcslen
+@@ -1044,6 +1044,14 @@ CFLAGS_GCOV	+= $(call try-run,\
+ endif
+ export CFLAGS_GCOV
  
 +ifdef CONFIG_GCC_PLUGIN_MATCH_CANISTER_STRUCTS
 +KBUILD_CFLAGS  += -Werror=designated-init
@@ -34,10 +34,10 @@ index 17a0807e3..91051d3a7 100644
  KBUILD_CPPFLAGS += $(call cc-option,-fmacro-prefix-map=$(srctree)/=)
  
 diff --git a/scripts/Makefile.gcc-plugins b/scripts/Makefile.gcc-plugins
-index 7acd78f9d..318a8c2cf 100644
+index 7acd78f9d9c4..8c1effd30b13 100644
 --- a/scripts/Makefile.gcc-plugins
 +++ b/scripts/Makefile.gcc-plugins
-@@ -42,6 +42,9 @@ ifdef CONFIG_PAX_RAP
+@@ -50,6 +50,9 @@ ifdef CONFIG_GCC_PLUGIN_ARM_SSP_PER_TASK
  endif
  export DISABLE_ARM_SSP_PER_TASK_PLUGIN
  
@@ -48,7 +48,7 @@ index 7acd78f9d..318a8c2cf 100644
  # filter them out of the KBUILD_CFLAGS.
  GCC_PLUGINS_CFLAGS := $(strip $(addprefix -fplugin=$(objtree)/scripts/gcc-plugins/, $(gcc-plugin-y)) $(gcc-plugin-cflags-y))
 diff --git a/scripts/gcc-plugins/Kconfig b/scripts/gcc-plugins/Kconfig
-index e383cda05..3495361cf 100644
+index e383cda05367..3495361cf0d6 100644
 --- a/scripts/gcc-plugins/Kconfig
 +++ b/scripts/gcc-plugins/Kconfig
 @@ -50,4 +50,25 @@ config GCC_PLUGIN_ARM_SSP_PER_TASK
@@ -78,7 +78,7 @@ index e383cda05..3495361cf 100644
 +
  endif
 diff --git a/scripts/gcc-plugins/Makefile b/scripts/gcc-plugins/Makefile
-index 0d3c8bdec..74a775556 100644
+index 668d130f33a3..371836a61d66 100644
 --- a/scripts/gcc-plugins/Makefile
 +++ b/scripts/gcc-plugins/Makefile
 @@ -26,6 +26,14 @@ always-y += $(GCC_PLUGIN)
@@ -96,7 +96,7 @@ index 0d3c8bdec..74a775556 100644
  plugin_cxxflags	= -Wp,-MMD,$(depfile) $(KBUILD_HOSTCXXFLAGS) -fPIC \
  		  -include $(srctree)/include/linux/compiler-version.h \
  		  -DPLUGIN_VERSION=$(call stringify,$(KERNELVERSION)) \
-@@ -42,6 +50,16 @@
+@@ -42,6 +50,16 @@ rap_plugin-objs := $(patsubst $(srctree)/$(src)/rap_plugin/%.c,rap_plugin/%.o,$(
  
  plugin_ldflags	= -shared
  
@@ -134,5 +134,5 @@ index 0d3c8bdec..74a775556 100644
 +$(match_canister_structs-cobjs): $(obj)/%.o: $(src)/%.c FORCE
 +	$(call if_changed_dep,plugin_cc_o_c)
 -- 
-2.35.6
+2.53.0
 

@@ -1,4 +1,4 @@
-From c12a67a2da199593250454127c011beb98d457f1 Mon Sep 17 00:00:00 2001
+From df394753910d1453fccea9ba1716d476bbae256a Mon Sep 17 00:00:00 2001
 From: James Gowans <jgowans@amazon.com>
 Date: Fri, 17 Sep 2021 00:45:10 +0200
 Subject: [PATCH] Introduce page touching DMA ops binding
@@ -12,25 +12,27 @@ resident.
 Signed-off-by: James Gowans <jgowans@amazon.com>
 Cc-Team: kaos-brimstone <kaos-brimstone@amazon.com>
 Cc-Team: ec2-memo <ec2-memo@amazon.com>
+[Brennan: Adapted for 6.12.114]
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
 ---
  MAINTAINERS                       |   7 ++
  arch/arm64/mm/dma-mapping.c       |   6 ++
  include/linux/dma-page-touching.h |  39 +++++++++
  kernel/dma/Kconfig                |  10 +++
  kernel/dma/Makefile               |   1 +
- kernel/dma/page_touching.c        | 134 ++++++++++++++++++++++++++++++
- 6 files changed, 197 insertions(+)
+ kernel/dma/page_touching.c        | 135 ++++++++++++++++++++++++++++++
+ 6 files changed, 198 insertions(+)
  create mode 100644 include/linux/dma-page-touching.h
  create mode 100644 kernel/dma/page_touching.c
 
 diff --git a/MAINTAINERS b/MAINTAINERS
-index cc40a9d9b8cd..60eec7214654 100644
+index 1cf22c953..eb0adec73 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -17293,6 +17293,13 @@ F:	Documentation/mm/page_table_check.rst
+@@ -17475,6 +17475,13 @@ F:	Documentation/mm/page_table_check.rst
  F:	include/linux/page_table_check.h
  F:	mm/page_table_check.c
- 
+
 +PAGE TOUCHING DMA
 +M:	James Gowans <jgowans@amazon.com>
 +L:	ec2-memo@amazon.com
@@ -42,7 +44,7 @@ index cc40a9d9b8cd..60eec7214654 100644
  M:	Kenneth Chan <kenneth.t.chan@gmail.com>
  L:	platform-driver-x86@vger.kernel.org
 diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
-index b2b5792b2caa..0803b3652cd7 100644
+index b2b5792b2..0803b3652 100644
 --- a/arch/arm64/mm/dma-mapping.c
 +++ b/arch/arm64/mm/dma-mapping.c
 @@ -8,6 +8,7 @@
@@ -50,12 +52,12 @@ index b2b5792b2caa..0803b3652cd7 100644
  #include <linux/dma-map-ops.h>
  #include <xen/xen.h>
 +#include <linux/dma-page-touching.h>
- 
+
  #include <asm/cacheflush.h>
  #include <asm/xen/xen-ops.h>
 @@ -51,4 +52,9 @@ void arch_setup_dma_ops(struct device *dev, bool coherent)
  	dev->dma_coherent = coherent;
- 
+
  	xen_setup_dma_ops(dev);
 +
 +#ifdef CONFIG_DMA_PAGE_TOUCHING
@@ -65,7 +67,7 @@ index b2b5792b2caa..0803b3652cd7 100644
  }
 diff --git a/include/linux/dma-page-touching.h b/include/linux/dma-page-touching.h
 new file mode 100644
-index 000000000000..8ff9856e994c
+index 000000000..8ff9856e9
 --- /dev/null
 +++ b/include/linux/dma-page-touching.h
 @@ -0,0 +1,39 @@
@@ -109,13 +111,13 @@ index 000000000000..8ff9856e994c
 + */
 +void setup_dma_page_touching_ops(struct device *dev);
 diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
-index c06e56be0ca1..83ebf96a1fe2 100644
+index 4c0dcd909..be06fe0dc 100644
 --- a/kernel/dma/Kconfig
 +++ b/kernel/dma/Kconfig
-@@ -24,6 +24,16 @@ config DMA_OPS_BYPASS
+@@ -23,6 +23,16 @@ config DMA_OPS_BYPASS
  config ARCH_HAS_DMA_MAP_DIRECT
  	bool
- 
+
 +config DMA_PAGE_TOUCHING
 +	bool "Support touching pages when allocated for DMA"
 +	help
@@ -128,9 +130,9 @@ index c06e56be0ca1..83ebf96a1fe2 100644
 +
  config NEED_SG_DMA_FLAGS
  	bool
- 
+
 diff --git a/kernel/dma/Makefile b/kernel/dma/Makefile
-index 21926e46ef4f..c552b9831f5b 100644
+index 697703344..33f8f09d0 100644
 --- a/kernel/dma/Makefile
 +++ b/kernel/dma/Makefile
 @@ -10,3 +10,4 @@ obj-$(CONFIG_SWIOTLB)			+= swiotlb.o
@@ -140,10 +142,10 @@ index 21926e46ef4f..c552b9831f5b 100644
 +obj-$(CONFIG_DMA_PAGE_TOUCHING)		+= page_touching.o
 diff --git a/kernel/dma/page_touching.c b/kernel/dma/page_touching.c
 new file mode 100644
-index 000000000000..a9bb7901d769
+index 000000000..99d9fb6c7
 --- /dev/null
 +++ b/kernel/dma/page_touching.c
-@@ -0,0 +1,134 @@
+@@ -0,0 +1,135 @@
 +// SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause
 +/*
 + * Copyright 2020 Amazon.com, Inc. or its affiliates.
@@ -180,6 +182,7 @@ index 000000000000..a9bb7901d769
 +#include <linux/dma-map-ops.h>
 +#include "direct.h"
 +#include <linux/moduleparam.h>
++#include <linux/dma-page-touching.h>
 +
 +/*
 + * A wrapper around dma_direct which does a readl on the memory being mapped
@@ -253,7 +256,7 @@ index 000000000000..a9bb7901d769
 + * the EC2 ENA / NVMe drivers to work.
 + * Notibly missing is alloc_pages.
 + */
-+const static struct dma_map_ops page_touching_dma_ops = {
++static const struct dma_map_ops page_touching_dma_ops = {
 +	.alloc			= page_touching_dma_alloc,
 +	.free			= dma_direct_free,
 +	.mmap			= dma_common_mmap,
@@ -278,6 +281,6 @@ index 000000000000..a9bb7901d769
 +	dev_info(dev, "binding to page touching DMA ops\n");
 +	dev->dma_ops = &page_touching_dma_ops;
 +}
--- 
-2.39.4
+--
+2.53.0
 
