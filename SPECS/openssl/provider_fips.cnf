@@ -19,6 +19,7 @@ providers = provider_sect
 ssl_conf = ssl_module
 
 [random_sect]
+random_provider = none
 seed = jitterentropy
 
 [provider_sect]

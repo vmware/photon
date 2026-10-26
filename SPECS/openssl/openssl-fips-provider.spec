@@ -3,7 +3,7 @@
 Summary:        FIPS Libraries for openssl
 Name:           openssl-fips-provider
 Version:        3.5.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.openssl.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -92,6 +92,8 @@ rm -rf %{buildroot}/*
 %exclude %{_sysconfdir}/ssl/fipsmodule.cnf
 
 %changelog
+* Mon Oct 26 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 3.5.4-3
+- Set random_provider as none to enable Jitterentropy in openssl.
 * Wed Oct 07 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 3.5.4-2
 - Set TLS Group config for default and fips providers.
 * Sun Sep 27 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 3.5.4-1
