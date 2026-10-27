@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 93
+%global build_if %{photon_subrelease} >= 92
 
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        3.5.9
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.openssl.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -194,6 +194,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Tue Oct 27 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.5.9-3
+- Build for sr-92 and above
 * Wed Oct 07 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 3.5.9-2
 - Set TLS Group config for default and fips providers.
 * Tue Oct 06 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.5.9-1

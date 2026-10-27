@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 93
+%global build_if %{photon_subrelease} >= 92
 
 Summary:        FIPS Libraries for openssl
 Name:           openssl-fips-provider
 Version:        3.5.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.openssl.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -92,6 +92,8 @@ rm -rf %{buildroot}/*
 %exclude %{_sysconfdir}/ssl/fipsmodule.cnf
 
 %changelog
+* Tue Oct 27 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.5.4-4
+- Build for sr-92 and above
 * Mon Oct 26 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 3.5.4-3
 - Set random_provider as none to enable Jitterentropy in openssl.
 * Wed Oct 07 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 3.5.4-2

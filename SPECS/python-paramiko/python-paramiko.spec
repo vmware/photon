@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 93
+%global build_if %{photon_subrelease} >= 92
 
 %define srcname paramiko
 
 Summary:        Python SSH module
 Name:           python3-paramiko
 Version:        5.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -72,6 +72,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Tue Oct 27 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.0.0-2
+- Build for sr-92 and above
 * Mon Sep 21 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.0.0-1
 - Upgrade to version 5.0.0
 * Mon May 18 2026 Prashant S Chauhan <prahant.singh-chauhan@broadcom.com> 4.0.0-1

@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 91 && %{photon_subrelease} <= 92
+%global build_if %{photon_subrelease} == 91
 
 %define srcname paramiko
 

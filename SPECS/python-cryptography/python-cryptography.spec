@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 93
+%global build_if %{photon_subrelease} >= 92
 
 Summary:        Python cryptography library
 Name:           python3-cryptography
 Version:        50.0.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/cryptography
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -92,6 +92,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Tue Oct 27 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 50.0.1-2
+- Build for sr-92 and above
 * Mon Sep 28 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 50.0.1-1
 - Upgrade to version 50.0.1
 * Tue Sep 22 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 49.0.0-2
