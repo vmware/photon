@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} <= 91
+%global build_if %{photon_subrelease} == 91
 
 Summary:        The Apache HTTP Server
 Name:           httpd

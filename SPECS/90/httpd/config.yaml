@@ -1,0 +1,27 @@
+sources:
+- archive: httpd-2.4.69.tar.bz2
+  archive_sha512sum: ca9c5808eef7a0d8d88148b0d2d6045b5a0151823f09afc786b283cef9990036a9c7bc53d043e2f67b6ec06db05f655aa961cb875fa7ad0911fa04fdd295bd93
+  name: httpd-2.4.69
+  version: 2.4.69
+  url: https://archive.apache.org/dist/httpd/httpd-2.4.69.tar.bz2
+  repo_url: https://github.com/apache/httpd.git
+  commit_id: 1e06e9860794ce39605b79a0a787abfe084e5677
+  archive_type: upstream
+  skip_list: [VERSIONING, ab.c, ROADMAP]
+  missing: ['*.fr', '*.xml', '*.tr', '*.ja', '*.ko', '*.meta', '*.ru', '*.be', '*.xsl', '*.de', '*.es', '*-br', '*-cn', tmp, apr_common.m4, config.sub, STATUS, .deps, ap_config_auto.h.in, configure, ltmain.sh, changes-entries, challenges, staging, config.guess, httpd.spec, index.xml.da, autoindex2]
+  spdx:
+    package:
+      detailed_description: 'The Apache HTTP Server.'
+      home_page: http://httpd.apache.org
+      license_concluded: metamail AND BSD-2-Clause AND MIT AND HPND-sell-variant AND
+        Spencer-94 AND Apache-2.0 AND GPL-2.0-or-later AND Apache-1.1 AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND GPL-3.0-or-later WITH Bison-exception-2.2
+        AND RSA-MD AND BSD-3-Clause AND FSFUL AND GPL-2.0-only AND Beerware AND GPL-2.0-or-later
+        WITH Libtool-exception
+      license_declared: metamail AND BSD-2-Clause AND MIT AND HPND-sell-variant AND
+        Spencer-94 AND Apache-2.0 AND GPL-2.0-or-later AND Apache-1.1 AND GPL-3.0-or-later
+        WITH Autoconf-exception-generic-3.0 AND GPL-3.0-or-later WITH Bison-exception-2.2
+        AND RSA-MD AND BSD-3-Clause AND FSFUL AND GPL-2.0-only AND Beerware AND GPL-2.0-or-later
+        WITH Libtool-exception
+      short_summary: The Apache HTTP Server
+      supplier: 'Organization: Broadcom, Inc.'
