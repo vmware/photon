@@ -3250,7 +3250,7 @@ index cf827d725..e7b40c6c9 100644
 --- a/net/netfilter/ipset/ip_set_core.c
 +++ b/net/netfilter/ipset/ip_set_core.c
 @@ -397,7 +397,6 @@ ip_set_comment_free(struct ip_set *set, void *ptr)
- 	rcu_assign_pointer(comment->c, NULL);
+ 	kfree_rcu(c, rcu);
  }
  
 -typedef void (*destroyer)(struct ip_set *, void *);

@@ -182,11 +182,11 @@ index fd7c5f0f5..899c5e926 100644
  		nf_log_buf_add(m, "PHYSIN=%s ", physindev->name);
  	physoutdev = nf_bridge_get_physoutdev(skb);
 diff --git a/net/netfilter/nf_queue.c b/net/netfilter/nf_queue.c
-index 99ea52a49..8695c30e3 100644
+index 99ea52a49..3e5e1f4c2 100644
 --- a/net/netfilter/nf_queue.c
 +++ b/net/netfilter/nf_queue.c
 @@ -88,7 +88,7 @@ static void __nf_queue_entry_init_physdevs(struct nf_queue_entry *entry)
- 	const struct sk_buff *skb = entry->skb;
+ 	struct net_device *dev = NULL;
  
  	if (nf_bridge_info_exists(skb)) {
 -		entry->physin = nf_bridge_get_physindev(skb);

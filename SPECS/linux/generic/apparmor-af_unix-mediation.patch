@@ -69,7 +69,7 @@ index 000000000..76821155b
 +#include "include/policy.h"
 +#include "include/cred.h"
 +
-+static inline struct sock *aa_sock(struct unix_sock *u)
++static inline struct sock *unix_sock_sk(struct unix_sock *u)
 +{
 +	return &u->sk;
 +}
@@ -79,7 +79,7 @@ index 000000000..76821155b
 +{
 +	AA_BUG(!label);
 +	AA_BUG(!u);
-+	AA_BUG(!UNIX_FS(aa_sock(u)));
++	AA_BUG(!UNIX_FS(unix_sock_sk(u)));
 +
 +	if (unconfined(label) || !LABEL_MEDIATES(label, AA_CLASS_FILE))
 +		return 0;
@@ -93,7 +93,7 @@ index 000000000..76821155b
 +		/* socket path has been cleared because it is being shutdown
 +		 * can only fall back to original sun_path request
 +		 */
-+		struct aa_sk_ctx *ctx = SK_CTX(&u->sk);
++		struct aa_sk_ctx *ctx = aa_sock(&u->sk);
 +		if (ctx->path.dentry)
 +			return aa_path_perm(op, label, &ctx->path, flags, mask,
 +					    &cond);
@@ -559,7 +559,7 @@ index 000000000..76821155b
 +
 +	state = PROFILE_MEDIATES_AF(profile, AF_UNIX);
 +	if (state) {
-+		struct aa_sk_ctx *peer_ctx = SK_CTX(peer_sk);
++		struct aa_sk_ctx *peer_ctx = aa_sock(peer_sk);
 +		struct aa_profile *peerp;
 +		struct sockaddr_un *addr = NULL;
 +		int len = 0;
@@ -594,9 +594,9 @@ index 000000000..76821155b
 +	AA_BUG(!sk);
 +	AA_BUG(!peer_sk);
 +
-+	if (UNIX_FS(aa_sock(peeru)))
++	if (UNIX_FS(unix_sock_sk(peeru)))
 +		return unix_fs_perm(op, request, label, peeru, 0);
-+	else if (UNIX_FS(aa_sock(u)))
++	else if (UNIX_FS(unix_sock_sk(u)))
 +		return unix_fs_perm(op, request, label, u, 0);
 +	else {
 +		struct aa_profile *profile;
@@ -679,7 +679,7 @@ index 000000000..76821155b
 +		error = unix_fs_perm(op, request, label, unix_sk(peer_sk),
 +				     PATH_SOCK_COND);
 +	} else {
-+		struct aa_sk_ctx *pctx = SK_CTX(peer_sk);
++		struct aa_sk_ctx *pctx = aa_sock(peer_sk);
 +		if (sk_req)
 +			error = aa_unix_label_sk_perm(label, op, sk_req,
 +						      sock->sk);
@@ -874,7 +874,7 @@ index 74768db94..4ff96fa0b 100644
 +	struct path path;
  };
  
- #define SK_CTX(X) ((X)->sk_security)
+ #define SOCK_ctx(X) SOCK_INODE(X)->i_security
 @@ -83,6 +84,9 @@ struct aa_net_compat {
  ({						\
  	int __e;				\
@@ -934,13 +934,13 @@ index 37aa1650c..fcabbe148 100644
  #include "include/apparmorfs.h"
  #include "include/audit.h"
 @@ -792,6 +794,7 @@ static void apparmor_sk_free_security(struct sock *sk)
- 	SK_CTX(sk) = NULL;
+ 
  	aa_put_label(ctx->label);
  	aa_put_label(ctx->peer);
 +	path_put(&ctx->path);
- 	kfree(ctx);
  }
  
+ /**
 @@ -811,6 +814,99 @@ static void apparmor_sk_clone_security(const struct sock *sk,
  	if (new->peer)
  		aa_put_label(new->peer);
@@ -966,9 +966,9 @@ index 37aa1650c..fcabbe148 100644
 +static int apparmor_unix_stream_connect(struct sock *sk, struct sock *peer_sk,
 +					struct sock *newsk)
 +{
-+	struct aa_sk_ctx *sk_ctx = SK_CTX(sk);
-+	struct aa_sk_ctx *peer_ctx = SK_CTX(peer_sk);
-+	struct aa_sk_ctx *new_ctx = SK_CTX(newsk);
++	struct aa_sk_ctx *sk_ctx = aa_sock(sk);
++	struct aa_sk_ctx *peer_ctx = aa_sock(peer_sk);
++	struct aa_sk_ctx *new_ctx = aa_sock(newsk);
 +	struct aa_label *label;
 +	struct path *path;
 +	int error;
@@ -1025,7 +1025,7 @@ index 37aa1650c..fcabbe148 100644
 + */
 +static int apparmor_unix_may_send(struct socket *sock, struct socket *peer)
 +{
-+	struct aa_sk_ctx *peer_ctx = SK_CTX(peer->sk);
++	struct aa_sk_ctx *peer_ctx = aa_sock(peer->sk);
 +	struct aa_label *label;
 +	int error;
 +
@@ -1046,7 +1046,7 @@ index 37aa1650c..fcabbe148 100644
  static struct aa_label *sk_peer_label(struct sock *sk)
  {
 +	struct sock *peer_sk;
- 	struct aa_sk_ctx *ctx = SK_CTX(sk);
+ 	struct aa_sk_ctx *ctx = aa_sock(sk);
  
  	if (ctx->peer)
  		return ctx->peer;
@@ -1059,7 +1059,7 @@ index 37aa1650c..fcabbe148 100644
 +	 */
 +	peer_sk = unix_peer(sk);
 +	if (peer_sk) {
-+		ctx = SK_CTX(peer_sk);
++		ctx = aa_sock(peer_sk);
 +		if (ctx->label)
 +			return ctx->label;
 +	}

@@ -42,10 +42,6 @@ Patch3017: 0006-bpf-Introduce-MEM_RDONLY-flag.patch
 Patch3018: 0007-bpf-Make-per_cpu_ptr-return-rdonly-PTR_TO_MEM.patch
 Patch3019: 0008-bpf-Add-MEM_RDONLY-for-helper-args-that-are-pointers.patch
 
-#Fix for CVE-2024-50125
-Patch3020: 0001-Bluetooth-call-sock_hold-earlier-in-sco_conn_del.patch
-Patch3021: 0002-Bluetooth-SCO-Fix-UAF-on-sco_sock_timeout.patch
-
 # Fix CVE-2025-21863
 Patch3022: 0001-io_uring-prevent-opcode-speculation.patch
 
@@ -97,8 +93,6 @@ Patch3039: 0001-bpf-Reject-variable-offset-alu-on-PTR_TO_FLOW_KEYS.patch
 # Fix CVE-2022-49444
 Patch3040: 0001-module-fix-e_shstrndx-.sh_size-0-OOB-access.patch
 
-# Fix CVE-2024-58240
-Patch3041: 0001-tls-separate-no-async-decryption-request-handling-fr.patch
 
 # Fix CVE-2024-41071
 Patch3042: 0001-wifi-mac80211-Avoid-address-calculations-via-out-of-.patch
@@ -213,9 +207,6 @@ Patch3083: 0002-drm-amdkfd-amdkfd_free_gtt_mem-clear-the-correct-poi.patch
 # Fix CVE-2026-43125
 Patch3084: 0001-dlm-validate-length-in-dlm_search_rsb_tree.patch
 
-# Fix CVE-2026-43198
-Patch3085: 0001-tcp-fix-potential-race-in-tcp_v6_syn_recv_sock.patch
-
 # Fix CVE-2023-52621
 Patch3086: 0005-bpf-Allow-RCU-protected-lookups-to-happen-from-bh-co.patch
 
@@ -239,9 +230,6 @@ Patch3096: 0003-wifi-iwlwifi-mvm-fix-double-list_add-at-iwl_mvm_mac_.patch
 Patch3097: 0004-wifi-iwlwifi-mvm-protect-TXQ-list-manipulation.patch
 Patch3098: 0005-wifi-iwlwifi-mvm-ensure-offloading-TID-queue-exists.patch
 
-# Fix CVE-2025-21759
-Patch3099: 0001-ipv6-mcast-extend-RCU-protection-in-igmp6_send.patch
-
 # Fix CVE-2021-47432
 Patch3100: 0001-lib-generic-radix-tree.c-Don-t-overflow-in-peek.patch
 
@@ -258,14 +246,8 @@ Patch3103: 0001-net-asix-add-proper-error-handling-of-usb-read-error.patch
 Patch3104: 0001-net-ena-Add-validation-for-completion-descriptors-co.patch
 Patch3105: 0001-net-ena-add-device-distinct-log-prefix-to-files.patch
 
-# CVE-2022-48816
-Patch3106: 0001-SUNRPC-lock-against-sock-changing-during-sysfs-read.patch
-
 # Fix CVE-2025-38728
 Patch3107: 0001-smb3-fix-for-slab-out-of-bounds-on-mount-to-ksmbd.patch
-
-# CVE-2025-68190
-Patch3108: 0001-drm-amdgpu-atom-Check-kcalloc-for-WS-buffer-in-amdgp.patch
 
 # Fix CVE-2024-42321
 Patch3109: 0001-net-flow_dissector-use-DEBUG_NET_WARN_ON_ONCE.patch
@@ -312,9 +294,6 @@ Patch3123: 0001-drm-i915-selftests-fix-subtraction-overflow-bug.patch
 
 # Fix CVE-2025-40099
 Patch3124: 0001-cifs-parse_dfs_referrals-prevent-oob-on-malformed-in.patch
-
-# Fix CVE-2022-50406
-Patch3125: 0001-iomap-iomap-fix-memory-corruption-when-recording-err.patch
 
 # Fix CVE-2025-39838
 Patch3126: 0001-cifs-prevent-NULL-pointer-dereference-in-UTF16-conve.patch
@@ -471,8 +450,6 @@ Patch3196: 0002-xfrm-hold-dev-ref-until-after-transport_finish-NF_HO.patch
 # Fix CVE-2026-31502
 Patch3197: 0001-team-fix-header_ops-type-confusion-with-non-Ethernet.patch
 
-# Fix CVE-2026-46116
-Patch3198: 0001-xfrm-defensively-unhash-xfrm_state-lists-in-__xfrm_state_delete.patch
 # Fixes CVE-2025-40323
 Patch3199: 0001-fbcon-Set-fb_displayi-mode-to-NULL-when-the-mode-is-released.patch
 # Fixes CVE-2024-35870

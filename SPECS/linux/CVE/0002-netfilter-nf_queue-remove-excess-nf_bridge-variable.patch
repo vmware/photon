@@ -23,10 +23,10 @@ diff --git a/net/netfilter/nf_queue.c b/net/netfilter/nf_queue.c
 index bb8607ff9..99ea52a49 100644
 --- a/net/netfilter/nf_queue.c
 +++ b/net/netfilter/nf_queue.c
-@@ -86,10 +86,8 @@ static void __nf_queue_entry_init_physdevs(struct nf_queue_entry *entry)
- {
- #if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
+@@ -88,10 +88,8 @@ static void __nf_queue_entry_init_physdevs(struct nf_queue_entry *entry)
  	const struct sk_buff *skb = entry->skb;
+ 	struct dst_entry *dst = skb_dst(skb);
+ 	struct net_device *dev = NULL;
 -	struct nf_bridge_info *nf_bridge;
  
 -	nf_bridge = nf_bridge_info_get(skb);

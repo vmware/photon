@@ -92,7 +92,7 @@ index 47f2903bacb9..a3b1bebee7ad 100644
 +#include "mds_client.h"
  
  #define CEPH_MDS_IS_READY(i, ignore_laggy) \
- 	(m->m_info[i].state > 0 && ignore_laggy ? true : !m->m_info[i].laggy)
+ 	(m->m_info[i].state > 0 && (ignore_laggy ? true : !m->m_info[i].laggy))
 @@ -114,7 +115,7 @@ static int __decode_and_drop_compat_set(void **p, void* end)
   * Ignore any fields we don't care about (there are quite a few of
   * them).

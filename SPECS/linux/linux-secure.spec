@@ -13,8 +13,8 @@
 
 Summary:        Kernel
 Name:           linux-secure
-Version:        5.10.260
-Release:        4%{?kat_build:.kat}%{?dist}
+Version:        5.10.272
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
@@ -27,7 +27,7 @@ BuildArch:      x86_64
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=37954bf006cb68fbeff174cb1ad9dbcd67d8ef7898c99d477031e33bdb4826c8ca75723d2fe8d3dff98e217057d3538d8eb7a12dd7bc3c6e48baf5a1bee56a3b
+%define sha512 linux=727d3e571406fe735b78db1eba0806665cb4c1dc52f6081ebb6662db258ea3f8202698baaa31e62a83851df6809b86c0a55e907d2bbbd167c49cdf426c8f0907
 Source1:        config-secure
 Source2:        initramfs.trigger
 # contains pre, postun, filetriggerun tasks
@@ -411,6 +411,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Oct 27 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.272-1
+- Update to version 5.10.272
 * Fri Sep 25 2026 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.260-4
 - Fix CVE-2026-64561
 * Wed Aug 26 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.10.260-3

@@ -84,14 +84,14 @@ index 5dde2a086..15af2e856 100644
  
  	return ctx->async_wait.err;
  }
-@@ -277,6 +270,7 @@ static int tls_do_decryption(struct sock *sk,
+@@ -271,6 +264,7 @@ static int tls_do_decryption(struct sock *sk,
  		aead_request_set_callback(aead_req,
  					  CRYPTO_TFM_REQ_MAY_BACKLOG,
  					  tls_decrypt_done, skb);
 +		BUILD_BUG_ON_INVALID(atomic_read(&ctx->decrypt_pending) < 1);
  		atomic_inc(&ctx->decrypt_pending);
  	} else {
- 		aead_request_set_callback(aead_req,
+ 		DECLARE_CRYPTO_WAIT(wait);
 @@ -470,7 +464,6 @@ static void tls_encrypt_done(struct crypto_async_request *req, int err)
  	struct sk_msg *msg_en;
  	struct tls_rec *rec;
