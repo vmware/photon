@@ -1,3 +1,5 @@
+%global build_if %{photon_subrelease} >= 92
+
 %define _origname   apache-tomcat
 %define _prefix     %{_var}/opt/%{name}
 %define _origprefix %{_var}/opt/%{_origname}
@@ -10,7 +12,7 @@
 
 Summary:        Apache Tomcat 11
 Name:           apache-tomcat11
-Version:        11.0.26
+Version:        11.0.27
 Release:        1%{?dist}
 URL:            http://tomcat.apache.org
 Group:          Applications/System
@@ -31,7 +33,7 @@ Source0: https://downloads.apache.org/tomcat/tomcat-11/v%{version}/src/%{_origna
 # 1. tar -xvzf Source0 to $HOME
 # 2. cd %{_origname}-%{version}-src && ant deploy dist-prepare dist-source
 # 3. Generated code will be at $HOME/tomcat-build-libs
-# 4. lete nsis-3.11-src.tar.bz2, nsis-3.11.zip and download-211133185.zip
+# 4. Delete nsis-3.11-src.tar.bz2, nsis-3.11.zip and download-211133185.zip
 #    present inside $HOME/tomcat-build-libs.(version number may differ)
 # 5. mv tomcat-build-libs base-for-%{_origname}-%{version}
 # 6. tar -cvzf base-for-%{_origname}-%{version}.tar.gz base-for-%{_origname}-%{version}
@@ -69,7 +71,7 @@ find . -type f \( -name "*.bat" -o -name "*.class" -o -name Thumbs.db -o -name "
    -name "*.jar" -o -name "*.war" -o -name "*.zip" \) -delete
 
 pushd %{_builddir}/base-for-apache-tomcat-%{version}
-rm nsis-3.12-src/Contrib/MakeLangId/MakeLangId.cpp
+rm nsis-3.13-src/Contrib/MakeLangId/MakeLangId.cpp
 popd
 
 %build
@@ -157,6 +159,8 @@ fi
 %{_webappsdir}/host-manager/*
 
 %changelog
+* Tue Oct 27 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 11.0.27-1
+- Upgrade to v11.0.27
 * Thu Sep 17 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 11.0.26-1
 - Upgrade to v11.0.26
 * Tue Apr 14 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 11.0.21-1

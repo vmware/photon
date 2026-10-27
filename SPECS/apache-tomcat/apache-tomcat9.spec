@@ -1,3 +1,5 @@
+%global build_if %{photon_subrelease} >= 92
+
 %define _origname   apache-tomcat
 %define _prefix     %{_var}/opt/%{name}
 %define _origprefix %{_var}/opt/%{_origname}
@@ -10,7 +12,7 @@
 
 Summary:        Apache Tomcat 9
 Name:           apache-tomcat9
-Version:        9.0.122
+Version:        9.0.123
 Release:        1%{?dist}
 URL:            http://tomcat.apache.org
 Group:          Applications/System
@@ -65,7 +67,7 @@ find . -type f \( -name "*.bat" -o -name "*.class" -o -name Thumbs.db -o -name "
    -name "*.jar" -o -name "*.war" -o -name "*.zip" \) -delete
 
 pushd %{_builddir}/base-for-apache-tomcat-%{version}
-rm nsis-3.12-src/Contrib/MakeLangId/MakeLangId.cpp
+rm nsis-3.13-src/Contrib/MakeLangId/MakeLangId.cpp
 popd
 
 %build
@@ -151,6 +153,8 @@ fi
 %{_webappsdir}/host-manager/*
 
 %changelog
+* Tue Oct 27 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.0.123-1
+- Upgrade to v9.0.123
 * Thu Sep 17 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.0.122-1
 - Upgrade to v9.0.122
 * Thu Sep 10 2026 Harinadh Dommaraju <harinadh.dommaraju@broadcom.com> 9.0.121-1
