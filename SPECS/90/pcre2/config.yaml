@@ -1,0 +1,25 @@
+sources:
+- archive: pcre2-10.40.tar.gz
+  archive_sha512sum: 679c6f540571850adec880934812e4f26f08ad858c776f10d1ed68ed3c0d4f91f6e1b53d781b53340af43a22c521e585cfc908f3659013c630a320e4fb246dc2
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'The PCRE2 library is a set of C functions that implement
+        regular expression pattern matching using the same syntax and semantics as
+        Perl 5. PCRE2 has its own native API, as well as a set of wrapper functions
+        that correspond to the POSIX regular expression API. It comes in three forms,
+        for processing 8-bit, 16-bit, or 32-bit code units, in either literal or UTF
+        encoding. '
+      home_page: https://github.com/PhilipHazel/pcre2
+      license_concluded: X11 AND MIT AND FSFUL AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-1.0-or-later AND BSD-3-Clause AND BSD-2-Clause AND GPL-2.0-or-later
+        WITH Libtool-exception AND FSFAP AND FSFULLR AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-2.0-only AND GPL-3.0-or-later AND FSFULLRWD AND GPL-3.0-or-later WITH
+        Autoconf-exception-macro
+      license_declared: X11 AND MIT AND FSFUL AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0
+        AND GPL-1.0-or-later AND BSD-3-Clause AND BSD-2-Clause AND GPL-2.0-or-later
+        WITH Libtool-exception AND FSFAP AND FSFULLR AND GPL-2.0-or-later WITH Autoconf-exception-generic
+        AND GPL-2.0-only AND GPL-3.0-or-later AND FSFULLRWD AND GPL-3.0-or-later WITH
+        Autoconf-exception-macro
+      short_summary: PCRE2 - Perl-Compatible Regular Experessions
+      supplier: 'Organization: Broadcom, Inc.'

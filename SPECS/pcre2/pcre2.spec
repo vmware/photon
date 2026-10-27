@@ -1,7 +1,9 @@
+%global build_if %{photon_subrelease} >= 92
+
 Summary:        PCRE2 - Perl-Compatible Regular Experessions
 Name:           pcre2
 Version:        10.40
-Release:        10%{?dist}
+Release:        11%{?dist}
 Url:            https://github.com/PhilipHazel/pcre2
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -12,7 +14,9 @@ Source0: https://github.com/PhilipHazel/pcre2/releases/download/%{name}-%{versio
 Source1: license.txt
 %include %{SOURCE1}
 
-Patch0: diagnose-negative-repeat-value-in-pcre2test-subj-line.patch
+Patch0: CVE-2022-41409.patch
+Patch1: CVE-2026-89157.patch
+Patch2: CVE-2026-89161.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -100,6 +104,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/*.so.*
 
 %changelog
+* Tue Oct 27 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.40-11
+- Fix CVE-2026-89157, CVE-2026-89161
 * Tue Nov 25 2025 Oliver Kurth <oliver.kurth@broadcom.com> 10.40-10
 - add static library to -devel package
 * Tue Jun 17 2025 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 10.40-9
