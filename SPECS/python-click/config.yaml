@@ -1,7 +1,14 @@
 sources:
-- archive: click-8.1.3.tar.gz
-  archive_sha512sum: be5b0c8b72ef7c10854f31406668ca4d6f826381deff10bb6a87a406166c09af97e2165f1327094d96abade15efb872892af37f20fdbc855b659cb2c7bd2f2c5
-  skip_validation: true
+- archive: click-8.3.3.tar.gz
+  archive_sha512sum: e49a773e09d0d4b96c63d36e9d329a143326246696b08a3ef3108dbdd55512f9d7e6749ccb7783f30eb7c6d7b680a34d511866d356907ce3ea77bbbbd98abe80
+  archive_type: upstream
+  version: 8.3.3
+  name: click-8.3.3
+  url: https://github.com/pallets/click/archive/refs/tags/8.3.3.tar.gz
+  repo_url: https://github.com/pallets/click
+  commit_id: c06d2d0a6aee6bcc50bd8257be2a4a592f4e75d0
+  skip_list: []
+  missing: []
   spdx:
     package:
       detailed_description: "Click is a Python package for creating beautiful command\
