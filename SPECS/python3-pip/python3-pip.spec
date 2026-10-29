@@ -8,7 +8,7 @@ Summary:        The PyPA recommended tool for installing Python packages.
 Name:           python3-pip
 # if you make any security fix in this package, package the whl files
 # python3.spec without miss
-Version:        26.2.1
+Version:        26.2.2
 Release:        1%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -28,7 +28,6 @@ Patch1: exclude-None-versioned-packages.patch
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
-BuildRequires:  python3-wheel
 BuildRequires:  ca-certificates
 BuildRequires:  python3-flit-core
 
@@ -87,6 +86,8 @@ rm -rf %{buildroot}
 %{python_wheel_dir}/%{python_wheel_name}
 
 %changelog
+* Thu Oct 29 2026 Prashant Singh Chauhan <prashant.singh-chauhan@broadcom.com> 26.2.2-1
+- Upgrade to 26.2.2
 * Mon Aug 17 2026 Prashant Singh Chauhan <prashant.singh-chauhan@broadcom.com> 26.2.1-1
 - Upgrade to 26.2.1
 * Wed Jun 17 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 26.1.1-2

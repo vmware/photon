@@ -5,8 +5,8 @@
 
 Summary:        A high-level scripting language
 Name:           python3
-Version:        3.14.8
-Release:        2%{?dist}
+Version:        3.14.10
+Release:        1%{?dist}
 URL:            http://www.python.org
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
@@ -18,7 +18,7 @@ Source1: macros.python
 
 # check readme inside the tarball for instructions on
 # how to create this tarball
-Source2: pip-wheel.ph5-1.0-4.tar.xz
+Source2: pip-wheel.ph5-1.0-6.tar.xz
 
 Source3: license.txt
 %include %{SOURCE3}
@@ -31,6 +31,7 @@ Source6: macros.bytecompile.python
 
 Patch0: 0001-Disallow-md5-usage-when-usedforsecurity-is-set-and-op.patch
 Patch1: 0001-ssl-Add-system-wide-compatibility-option-for-X.509-v.patch
+Patch2: CVE-2026-119170.patch
 
 BuildRequires: pkg-config >= 0.28
 BuildRequires: bzip2-devel
@@ -313,6 +314,8 @@ rm -rf %{buildroot}/*
 %{_rpmconfigdir}/python_ghost_pyc.sh
 
 %changelog
+* Wed Nov 11 2026 Prashant Singh Chauhan <prashant.singh-chauhan@broadcom.com> 3.14.10-1
+- Upgrade to 3.14.10, Fix CVE-2026-119170
 * Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.14.8-2
 - extend release to 91
 * Tue Oct 20 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.14.8-1

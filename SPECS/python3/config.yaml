@@ -1,18 +1,18 @@
 sources:
-- archive: Python-3.14.8.tar.xz
-  archive_sha512sum: f9e6809b0c45d90fcc174b8051e15058a3037981c9136c598d110a118a22cbbb8263fbd677e07b2b9d93e1aa83cd9cb835b61b6af898fd301d1080a29c2156fe
+- archive: Python-3.14.10.tar.xz
+  archive_sha512sum: 730ea64f7e8815a5e1a4280b1205d77719875de630e6807b3140987b44e7b91215918cf75ed77250cf6feb5de98ff4175555cbba96eaf32564d2f421e723994a
   archive_type: upstream
   skip_validation: false
-  name: Python-3.14.8
-  version: 3.14.8
-  url: https://www.python.org/ftp/python/3.14.8/Python-3.14.8.tar.xz
+  name: Python-3.14.10
+  version: 3.14.10
+  url: https://www.python.org/ftp/python/3.14.10/Python-3.14.10.tar.xz
   repo_url: https://github.com/python/cpython
-  commit_id: 8e6e75d9102e39bed2a2b279203a396741180f12
-  missing: [mypy, NEWS, .gitignore, NEWS.d, .azure-pipelines, .gitattributes, .github]
+  commit_id: b703b2c5e704341d61e367b9b940b77ed11dded0
+  missing: [.azure-pipelines, .gitattributes, .github, .gitignore, NEWS, NEWS.d, mypy]
   license_manual_review:
   - file_paths:
-    - Python-3.14.8/Modules/blake2module.c
-    sha256sum: 7523638132c313eb5b8a5bca62bef4b5a403312718fc7585863230d231f70047
+    - Python-3.14.10/Modules/blake2module.c
+    sha256sum: 11ae58fcf03b4c665ce70552d881f31c987e7e6c3f059666a9edd21c3f40fc2e
     spdx_exp: ''
   spdx:
     package:
@@ -39,13 +39,13 @@ sources:
         AND MS-RL
       short_summary: A high-level scripting language
       supplier: 'Organization: Broadcom, Inc.'
-- archive: pip-wheel.ph5-1.0-4.tar.xz
-  archive_sha512sum: 6e814def9af8bff3276ece7bd3ecd0c4ef7141094127a149670ddff4a844c8c0e792f7c8affcf0d5ac9f2d8cdc2ad4fbeac6d75308d2467dec04eeb0d3a85097
+- archive: pip-wheel.ph5-1.0-6.tar.xz
+  archive_sha512sum: a95dabbf2cde9ffebc590985da0a6c21624041ada514b26cc271dbe68654d38cfde55b4f5f8199a25ff1b832a579a3587be3b9b6eeafad6b83f8a0efe4d68313
   skip_validation: true
   spdx:
     package:
       detailed_description: 'Installation wheel for pip.'
-      home_page: https://pypi.org/project/pip/
+      home_page: https://pip.pypa.io/
       license_concluded: (BSD-3-Clause OR Apache-2.0) AND (BSD-2-Clause OR Apache-2.0)
         AND Apache-2.0 AND BSD-2-Clause AND Python-2.0 AND BSD-3-Clause AND MIT
       license_declared: (BSD-3-Clause OR Apache-2.0) AND (BSD-2-Clause OR Apache-2.0)
