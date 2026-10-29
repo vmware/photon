@@ -9,7 +9,7 @@
 
 Name:           cloud-init
 Version:        26.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 URL:            http://launchpad.net/cloud-init
@@ -36,7 +36,7 @@ Patch6: 0007-cli-retain-file-argument-as-main-cmd-arg.patch
 Patch7: 0008-No-single-process.patch
 Patch8: 0009-Show-stdout-logs-in-journal-only.patch
 Patch9: 0010-Drop-mandatory-configobj-dependency.patch
-Patch10: 0011-fix-photon-use-libexec-path-for-ds-identify.patch
+Patch10: 0011-libexec-path-fix.patch
 
 BuildRequires: meson
 BuildRequires: bash-completion-devel
@@ -166,6 +166,8 @@ rm -rf %{buildroot}
 %{_mandir}/man1/*
 
 %changelog
+* Wed Oct 28 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 26.2-5
+- Fix other instances of libexec path issue
 * Sun Oct 18 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 26.2-4
 - Fix systemd generator to find ds-identify under /usr/libexec
 * Tue Sep 22 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 26.2-3

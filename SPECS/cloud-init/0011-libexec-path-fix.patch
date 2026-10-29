@@ -1,0 +1,598 @@
+From 3e8a97d0ebd161eceb934175a5fba5fd23f71ad1 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Thu, 29 Oct 2026 13:33:55 +0530
+Subject: [PATCH] fix: use Meson's libexecdir for ds-identify and SSH key
+ fingerprints
+
+Use the Meson-configured helper directory (recorded in
+cloudinit/meson_paths.py) for ds-identify, write-ssh-key-fingerprints,
+and the executable temporary-directory fallback, so cloud-init finds
+its installed tools when libexecdir differs from /usr/lib.
+
+Set usr_lib_exec = "/usr/libexec" in the Photon distro class; Photon
+installs helpers under /usr/libexec, not the default /usr/lib.
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ cloudinit/config/cc_keys_to_console.py        |   7 +-
+ cloudinit/distros/__init__.py                 |   6 +-
+ cloudinit/distros/photon.py                   |   1 +
+ cloudinit/paths.py                            |  14 +++
+ cloudinit/templater.py                        |  12 +-
+ doc/rtd/development/build_system.rst          |  17 +++
+ meson.build                                   |  16 +++
+ meson_paths.py.in                             |   4 +
+ systemd/cloud-init-generator.tmpl             |  12 +-
+ .../config/test_cc_keys_to_console.py         |  90 +++++++++++++-
+ tests/unittests/distros/test__init__.py       |  19 ++-
+ tests/unittests/test_render_template.py       | 114 ++++++++++++++++++
+ tools/render-template                         |  14 ++-
+ 13 files changed, 304 insertions(+), 22 deletions(-)
+ create mode 100644 cloudinit/paths.py
+ create mode 100644 meson_paths.py.in
+
+diff --git a/cloudinit/config/cc_keys_to_console.py b/cloudinit/config/cc_keys_to_console.py
+index 5ed9d8b7c..5448b19a8 100644
+--- a/cloudinit/config/cc_keys_to_console.py
++++ b/cloudinit/config/cc_keys_to_console.py
+@@ -16,11 +16,9 @@ from cloudinit.cloud import Cloud
+ from cloudinit.config import Config
+ from cloudinit.config.schema import MetaSchema
+ from cloudinit.log import log_util
++from cloudinit.paths import get_lib_exec_dir
+ from cloudinit.settings import PER_INSTANCE
+ 
+-# This is a tool that cloud init provides
+-HELPER_TOOL_TPL = "%s/cloud-init/write-ssh-key-fingerprints"
+-
+ meta: MetaSchema = {
+     "id": "cc_keys_to_console",
+     "distros": ["all"],
+@@ -36,7 +34,8 @@ def _get_helper_tool_path(distro):
+         base_lib = distro.usr_lib_exec
+     except AttributeError:
+         base_lib = "/usr/lib"
+-    return HELPER_TOOL_TPL % base_lib
++    helper_dir = get_lib_exec_dir(os.path.join(base_lib, "cloud-init"))
++    return os.path.join(helper_dir, "write-ssh-key-fingerprints")
+ 
+ 
+ def handle(name: str, cfg: Config, cloud: Cloud, args: list) -> None:
+diff --git a/cloudinit/distros/__init__.py b/cloudinit/distros/__init__.py
+index f7b47921f..45c653cb6 100644
+--- a/cloudinit/distros/__init__.py
++++ b/cloudinit/distros/__init__.py
+@@ -60,6 +60,7 @@ from cloudinit.net import activators, dhcp, renderers
+ from cloudinit.net.netops import NetOps
+ from cloudinit.net.network_state import parse_net_config_data
+ from cloudinit.net.renderer import Renderer
++from cloudinit.paths import get_lib_exec_dir
+ 
+ # Used when a cloud-config module can be run on all cloud-init distributions.
+ # The value 'all' is surfaced in module documentation for distro support.
+@@ -1521,7 +1522,10 @@ class Distro(persistence.CloudInitPickleMixin, metaclass=abc.ABCMeta):
+         tmp_dir = temp_utils.get_tmp_ancestor(needs_exe=True)
+         if not util.has_mount_opt(tmp_dir, "noexec"):
+             return tmp_dir
+-        return os.path.join(self.usr_lib_exec, "cloud-init", "clouddir")
++        helper_dir = get_lib_exec_dir(
++            os.path.join(self.usr_lib_exec, "cloud-init")
++        )
++        return os.path.join(helper_dir, "clouddir")
+ 
+     def do_as(self, command: list, user: str, cwd: str = "", **kwargs):
+         """
+diff --git a/cloudinit/distros/photon.py b/cloudinit/distros/photon.py
+index 165206ec6..8563eaaa5 100644
+--- a/cloudinit/distros/photon.py
++++ b/cloudinit/distros/photon.py
+@@ -13,6 +13,7 @@ LOG = logging.getLogger(__name__)
+ 
+ 
+ class Distro(distros.Distro):
++    usr_lib_exec = "/usr/libexec"
+     systemd_hostname_conf_fn = "/etc/hostname"
+     network_conf_dir = "/etc/systemd/network/"
+     systemd_locale_conf_fn = "/etc/locale.conf"
+diff --git a/cloudinit/paths.py b/cloudinit/paths.py
+new file mode 100644
+index 000000000..32b7e57ab
+--- /dev/null
++++ b/cloudinit/paths.py
+@@ -0,0 +1,14 @@
++# This file is part of cloud-init. See LICENSE file for license information.
++
++"""Installation paths configured by the build system."""
++
++try:
++    from cloudinit.meson_paths import LIB_EXEC_DIR  # type: ignore
++except ImportError:
++    # Source checkouts and older packages have no generated path metadata.
++    LIB_EXEC_DIR = None
++
++
++def get_lib_exec_dir(default: str) -> str:
++    """Return the configured helper directory or the legacy default."""
++    return LIB_EXEC_DIR if LIB_EXEC_DIR is not None else default
+diff --git a/cloudinit/templater.py b/cloudinit/templater.py
+index 955058e5e..55cfc7c8c 100644
+--- a/cloudinit/templater.py
++++ b/cloudinit/templater.py
+@@ -15,6 +15,7 @@
+ import collections
+ import logging
+ import re
++import shlex
+ import sys
+ 
+ from jinja2 import DebugUndefined, TemplateSyntaxError
+@@ -140,6 +141,7 @@ def detect_template(text):
+                     trim_blocks=True,
+                     extensions=["jinja2.ext.do"],
+                 )
++                jinja_env.filters["shell_quote"] = shlex.quote
+                 return jinja_env.from_string(content).render(**params) + add
+         except TemplateSyntaxError as template_syntax_error:
+             template_syntax_error.lineno += 1
+@@ -191,9 +193,15 @@ def render_string(content, params):
+     return renderer(content, params)
+ 
+ 
+-def render_template(variant, template, output, is_yaml, prefix=None):
++def render_template(
++    variant, template, output, is_yaml, prefix=None, lib_exec_dir=None
++):
+     contents = util.load_text_file(template)
+-    tpl_params = {"variant": variant, "prefix": prefix}
++    tpl_params = {
++        "variant": variant,
++        "prefix": prefix,
++        "lib_exec_dir": lib_exec_dir,
++    }
+     contents = (render_string(contents, tpl_params)).rstrip() + "\n"
+     if is_yaml:
+         out = util.load_yaml(contents, default=True)
+diff --git a/doc/rtd/development/build_system.rst b/doc/rtd/development/build_system.rst
+index 65dfac560..d6604faf8 100644
+--- a/doc/rtd/development/build_system.rst
++++ b/doc/rtd/development/build_system.rst
+@@ -43,6 +43,23 @@ Meson install directory locations may be set with
+ ``meson setup -D<option_name>=<option_value>``. See :file:`meson_options.txt`
+ for available build options.
+ 
++The systemd generator uses the same helper directory as Meson's
++installation rules: ``<prefix>/<libexecdir>/cloud-init``. An absolute
++``libexecdir`` overrides the prefix. For example,
++``--prefix=/usr --libexecdir=libexec`` installs ``ds-identify`` at
++``/usr/libexec/cloud-init/ds-identify`` and embeds that path in the
++generator. When rendering the generator directly with
++``tools/render-template``, pass ``--lib-exec-dir`` with the full helper
++directory to override the distribution-specific default.
++
++Meson also records this directory in the installed
++``cloudinit/meson_paths.py``. The SSH host-key console module and the
++executable temporary-directory fallback use this value, including custom
++prefixes and absolute ``libexecdir`` settings. Reconfiguring Meson updates
++both the generator and Python paths. Staging with ``DESTDIR`` does not
++change these runtime paths. Source checkouts without generated metadata
++continue to use the distribution's default directory.
++
+ Steps to validate ``cloud-init`` package builds in a development environment:
+ 
+ .. code-block:: bash
+diff --git a/meson.build b/meson.build
+index 27c3abe09..a5efdf78c 100644
+--- a/meson.build
++++ b/meson.build
+@@ -43,6 +43,21 @@ configure_file(
+   install_tag: 'python-runtime',
+ )
+ 
++# Python consumers must use the same helper directory as the generator.
++# Serialize it as a Python literal so quotes and backslashes remain intact.
++configure_file(
++  input: 'meson_paths.py.in',
++  output: 'meson_paths.py',
++  configuration: {
++    'LIB_EXEC_DIR': run_command(
++      python, '-c', 'import sys; print(repr(sys.argv[1]))', lib_exec_dir,
++      check: true,
++    ).stdout().strip(),
++  },
++  install_dir: python.get_install_dir() / 'cloudinit',
++  install_tag: 'python-runtime',
++)
++
+ 
+ # Binaries and script entrypoints
+ if get_option('bash_completion') and is_readthedocs != 'True'
+@@ -124,6 +139,7 @@ if init_system == 'systemd' and is_readthedocs != 'True'
+     output: '@BASENAME@',
+     command: [
+       render_tmpl,
++      '--lib-exec-dir', lib_exec_dir,
+       '@INPUT@',
+       meson.current_build_dir() / '@OUTPUT@',
+     ],
+diff --git a/meson_paths.py.in b/meson_paths.py.in
+new file mode 100644
+index 000000000..b2ddace53
+--- /dev/null
++++ b/meson_paths.py.in
+@@ -0,0 +1,4 @@
++# This file is part of cloud-init. See LICENSE file for license information.
++# Automatically generated by Meson. Do not edit this file directly.
++
++LIB_EXEC_DIR = @LIB_EXEC_DIR@
+diff --git a/systemd/cloud-init-generator.tmpl b/systemd/cloud-init-generator.tmpl
+index 888bad535..006f49761 100644
+--- a/systemd/cloud-init-generator.tmpl
++++ b/systemd/cloud-init-generator.tmpl
+@@ -20,11 +20,13 @@ CLOUD_SYSTEM_TARGET="/usr/lib/systemd/system/cloud-init.target"
+ {% else %}
+ CLOUD_SYSTEM_TARGET="/lib/systemd/system/cloud-init.target"
+ {% endif %}
+-{% if variant in ["almalinux", "azurelinux", "centos", "cloudlinux", "eurolinux", "fedora",
+-                  "miraclelinux", "openeuler", "OpenCloudOS", "openmandriva", "rhel", "rocky", "TencentOS", "virtuozzo"] %}
+-    dsidentify="/usr/libexec/cloud-init/ds-identify"
+-{% elif variant == "benchmark" %}
++{% if variant == "benchmark" %}
+     dsidentify="/bin/true"
++{% elif lib_exec_dir is defined and lib_exec_dir %}
++    dsidentify={{ (lib_exec_dir ~ "/ds-identify") | shell_quote }}
++{% elif variant in ["almalinux", "azurelinux", "centos", "cloudlinux", "eurolinux", "fedora",
++                  "miraclelinux", "openeuler", "OpenCloudOS", "openmandriva", "photon", "rhel", "rocky", "TencentOS", "virtuozzo"] %}
++    dsidentify="/usr/libexec/cloud-init/ds-identify"
+ {% else %}
+     dsidentify="/usr/lib/cloud-init/ds-identify"
+ {% endif %}
+@@ -60,7 +62,7 @@ main() {
+         debug 1 "no ds-identify in $dsidentify"
+         ds=0
+     fi
+-    $dsidentify
++    "$dsidentify"
+     ds=$?
+     debug 1 "ds-identify rc=$ds"
+ 
+diff --git a/tests/unittests/config/test_cc_keys_to_console.py b/tests/unittests/config/test_cc_keys_to_console.py
+index 28296d09b..329ee4a15 100644
+--- a/tests/unittests/config/test_cc_keys_to_console.py
++++ b/tests/unittests/config/test_cc_keys_to_console.py
+@@ -1,25 +1,24 @@
+ """Tests for cc_keys_to_console."""
+ 
+ import re
++from types import SimpleNamespace
+ from unittest import mock
+ 
+ import pytest
+ 
++from cloudinit import paths
+ from cloudinit.config import cc_keys_to_console
+ from cloudinit.config.schema import (
+     SchemaValidationError,
+     get_schema,
+     validate_cloudconfig_schema,
+ )
++from cloudinit.distros.photon import Distro as PhotonDistro
+ from tests.unittests.helpers import skipUnlessJsonSchema
+ 
+ 
+ class TestHandle:
+-    """Tests for cloudinit.config.cc_keys_to_console.handle.
+-
+-    TODO: These tests only cover the emit_keys_to_console config option, they
+-    should be expanded to cover the full functionality.
+-    """
++    """Tests for cloudinit.config.cc_keys_to_console.handle."""
+ 
+     @mock.patch("cloudinit.config.cc_keys_to_console.log_util.multi_log")
+     @mock.patch("cloudinit.config.cc_keys_to_console.os.path.exists")
+@@ -43,10 +42,89 @@ class TestHandle:
+         m_path_exists.return_value = True
+         m_subp.return_value = ("", "")
+ 
+-        cc_keys_to_console.handle("name", cfg, mock.Mock(), ())
++        cloud = mock.Mock(distro=mock.Mock(usr_lib_exec="/usr/lib"))
++        cc_keys_to_console.handle("name", cfg, cloud, ())
+ 
+         assert subp_called == (m_subp.call_count == 1)
+ 
++    @pytest.mark.parametrize(
++        "helper_dir", ["usr/libexec/cloud-init", 'custom "helpers"/cloud-init']
++    )
++    def test_photon_uses_configured_helper(self, helper_dir, tmp_path, mocker):
++        helper = tmp_path / helper_dir / "write-ssh-key-fingerprints"
++        helper.parent.mkdir(parents=True)
++        helper.touch(mode=0o755)
++        mocker.patch.object(paths, "LIB_EXEC_DIR", str(helper.parent))
++        m_subp = mocker.patch.object(
++            cc_keys_to_console.subp, "subp", return_value=("fingerprints", "")
++        )
++        m_multi_log = mocker.patch.object(
++            cc_keys_to_console.log_util, "multi_log"
++        )
++        distro = PhotonDistro("photon", {}, None)
++        assert distro.usr_lib_exec == "/usr/libexec"
++
++        cc_keys_to_console.handle(
++            "keys_to_console", {}, SimpleNamespace(distro=distro), []
++        )
++
++        m_subp.assert_called_once_with([str(helper), "", ""])
++        m_multi_log.assert_called_once_with(
++            "fingerprints\n", stderr=False, console=True
++        )
++
++    def test_missing_configured_helper_does_not_use_legacy_path(
++        self, tmp_path, mocker, caplog
++    ):
++        legacy_base = tmp_path / "legacy"
++        legacy_helper = (
++            legacy_base / "cloud-init" / "write-ssh-key-fingerprints"
++        )
++        legacy_helper.parent.mkdir(parents=True)
++        legacy_helper.touch(mode=0o755)
++        configured_dir = tmp_path / "configured" / "cloud-init"
++        mocker.patch.object(paths, "LIB_EXEC_DIR", str(configured_dir))
++        m_subp = mocker.patch.object(cc_keys_to_console.subp, "subp")
++        m_multi_log = mocker.patch.object(
++            cc_keys_to_console.log_util, "multi_log"
++        )
++        cloud = SimpleNamespace(
++            distro=SimpleNamespace(usr_lib_exec=str(legacy_base))
++        )
++
++        cc_keys_to_console.handle("keys_to_console", {}, cloud, [])
++
++        m_subp.assert_not_called()
++        m_multi_log.assert_not_called()
++        assert (
++            "helper tool not found at "
++            f"{configured_dir / 'write-ssh-key-fingerprints'}"
++        ) in caplog.text
++
++
++class TestHelperToolPath:
++    @pytest.mark.parametrize(
++        "distro,expected_base",
++        [
++            (SimpleNamespace(usr_lib_exec="/usr/lib"), "/usr/lib"),
++            (SimpleNamespace(usr_lib_exec="/usr/libexec"), "/usr/libexec"),
++            (SimpleNamespace(usr_lib_exec="/usr/local/lib"), "/usr/local/lib"),
++            (
++                SimpleNamespace(usr_lib_exec="/usr/local/libexec"),
++                "/usr/local/libexec",
++            ),
++            (SimpleNamespace(), "/usr/lib"),
++        ],
++    )
++    def test_source_checkout_preserves_distro_default(
++        self, distro, expected_base, mocker
++    ):
++        mocker.patch.object(paths, "LIB_EXEC_DIR", None)
++
++        assert cc_keys_to_console._get_helper_tool_path(distro) == (
++            f"{expected_base}/cloud-init/write-ssh-key-fingerprints"
++        )
++
+ 
+ class TestKeysToConsoleSchema:
+     @pytest.mark.parametrize(
+diff --git a/tests/unittests/distros/test__init__.py b/tests/unittests/distros/test__init__.py
+index 2769efc60..9c00b0f5c 100644
+--- a/tests/unittests/distros/test__init__.py
++++ b/tests/unittests/distros/test__init__.py
+@@ -5,7 +5,7 @@ from unittest import mock
+ 
+ import pytest
+ 
+-from cloudinit import distros, util
++from cloudinit import distros, paths, util
+ from cloudinit.distros.ubuntu import Distro
+ from cloudinit.net.dhcp import Dhcpcd, IscDhclient, Udhcpc
+ 
+@@ -517,20 +517,33 @@ class TestGetPackageMirrors:
+ @pytest.mark.usefixtures("fake_filesystem")
+ class TestDistro:
+     @pytest.mark.parametrize("is_noexec", [False, True])
++    @pytest.mark.parametrize(
++        "helper_dir",
++        [None, "/usr/libexec/cloud-init", '/custom "helpers"/cloud-init'],
++    )
+     @mock.patch(M_PATH + "util.has_mount_opt")
+     @mock.patch(M_PATH + "temp_utils.get_tmp_ancestor", return_value="/tmp")
+     def test_get_tmp_exec_path(
+-        self, m_get_tmp_ancestor, m_has_mount_opt, is_noexec, mocker
++        self,
++        m_get_tmp_ancestor,
++        m_has_mount_opt,
++        is_noexec,
++        helper_dir,
++        mocker,
+     ):
+         m_has_mount_opt.return_value = not is_noexec
+         cls = distros.fetch("ubuntu")
+         distro = cls("ubuntu", {}, None)
+         mocker.patch.object(distro, "usr_lib_exec", "/usr_lib_exec")
++        mocker.patch.object(paths, "LIB_EXEC_DIR", helper_dir)
+         tmp_path = distro.get_tmp_exec_path()
+         if is_noexec:
+             assert "/tmp" == tmp_path
+         else:
+-            assert "/usr_lib_exec/cloud-init/clouddir" == tmp_path
++            expected_dir = helper_dir or "/usr_lib_exec/cloud-init"
++            assert f"{expected_dir}/clouddir" == tmp_path
++        m_get_tmp_ancestor.assert_called_once_with(needs_exe=True)
++        m_has_mount_opt.assert_called_once_with("/tmp", "noexec")
+ 
+ 
+ @pytest.mark.parametrize(
+diff --git a/tests/unittests/test_render_template.py b/tests/unittests/test_render_template.py
+index 32926da1d..674dbb2cf 100644
+--- a/tests/unittests/test_render_template.py
++++ b/tests/unittests/test_render_template.py
+@@ -1,5 +1,6 @@
+ """Tests for tools/render-template"""
+ 
++import shlex
+ import sys
+ 
+ import pytest
+@@ -128,6 +129,119 @@ class TestRenderCloudCfg:
+         assert renderers == system_cfg["system_info"]["network"]["renderers"]
+ 
+ 
++@pytest.mark.allow_subp_for(sys.executable, "sh")
++class TestRenderCloudInitGenerator:
++    tmpl_path = cloud_init_project_dir("systemd/cloud-init-generator.tmpl")
++
++    @pytest.mark.parametrize("variant", DISTRO_VARIANTS)
++    @pytest.mark.parametrize(
++        "lib_exec_dir",
++        [
++            "/usr/libexec/cloud-init",
++            "/usr/lib/cloud-init",
++            "/opt/custom helpers/cloud-init",
++        ],
++    )
++    def test_configured_helper_directory(
++        self, tmp_path, variant, lib_exec_dir
++    ):
++        outfile = tmp_path / "cloud-init-generator"
++        templater.render_template(
++            variant,
++            self.tmpl_path,
++            str(outfile),
++            is_yaml=False,
++            lib_exec_dir=lib_exec_dir,
++        )
++        assert self.get_dsidentify(outfile.read_text()) == (
++            lib_exec_dir + "/ds-identify"
++        )
++
++    @pytest.mark.parametrize(
++        "variant,expected",
++        [
++            ("photon", "/usr/libexec/cloud-init/ds-identify"),
++            ("fedora", "/usr/libexec/cloud-init/ds-identify"),
++            ("ubuntu", "/usr/lib/cloud-init/ds-identify"),
++            ("unknown", "/usr/lib/cloud-init/ds-identify"),
++            ("benchmark", "/bin/true"),
++        ],
++    )
++    def test_default_helper_directory(self, variant, expected):
++        rendered = templater.render_string(
++            util.load_text_file(self.tmpl_path), {"variant": variant}
++        )
++        assert self.get_dsidentify(rendered) == expected
++
++    @pytest.mark.parametrize("lib_exec_dir", [None, "/opt/helpers/cloud-init"])
++    def test_benchmark_ignores_helper_directory(self, tmp_path, lib_exec_dir):
++        outfile = tmp_path / "cloud-init-generator"
++        templater.render_template(
++            "benchmark",
++            self.tmpl_path,
++            str(outfile),
++            is_yaml=False,
++            lib_exec_dir=lib_exec_dir,
++        )
++        assert self.get_dsidentify(outfile.read_text()) == "/bin/true"
++
++    def test_helper_directory_cli(self, tmp_path):
++        outfile = tmp_path / "cloud-init-generator"
++        lib_exec_dir = "/opt/custom helpers/cloud-init"
++        subp.subp(
++            [
++                sys.executable,
++                cloud_init_project_dir("tools/render-template"),
++                "--variant",
++                "photon",
++                "--lib-exec-dir",
++                lib_exec_dir,
++                self.tmpl_path,
++                str(outfile),
++            ]
++        )
++        assert self.get_dsidentify(outfile.read_text()) == (
++            lib_exec_dir + "/ds-identify"
++        )
++
++    def test_generator_executes_helper_in_custom_directory(self, tmp_path):
++        lib_exec_dir = tmp_path / "custom 'helpers' $dir `name` \\\"quoted\""
++        lib_exec_dir.mkdir()
++        helper = lib_exec_dir / "ds-identify"
++        helper.write_text('#!/bin/sh\nprintf "helper executed\\n"\n')
++        helper.chmod(0o755)
++        outfile = tmp_path / "cloud-init-generator"
++        templater.render_template(
++            "photon",
++            self.tmpl_path,
++            str(outfile),
++            is_yaml=False,
++            lib_exec_dir=str(lib_exec_dir),
++        )
++        # Redirect runtime state into the temporary directory before running.
++        rendered = outfile.read_text().replace(
++            "/run/cloud-init", str(tmp_path / "run")
++        )
++        outfile.write_text(rendered)
++        stdout, _ = subp.subp(
++            ["sh", str(outfile)] + [str(tmp_path / "generator")] * 3
++        )
++        assert stdout == "helper executed\n"
++        assert (tmp_path / "run" / "enabled").exists()
++        assert (
++            tmp_path / "generator/multi-user.target.wants/cloud-init.target"
++        ).is_symlink()
++
++    @staticmethod
++    def get_dsidentify(rendered):
++        assignment = next(
++            line.strip()
++            for line in rendered.splitlines()
++            if line.strip().startswith("dsidentify=")
++        )
++        return shlex.split(assignment.split("=", 1)[1])[0]
++
++
+ EXPECTED_DEBIAN = """\
+ deb testmirror testcodename main
+ deb-src testmirror testcodename main
+diff --git a/tools/render-template b/tools/render-template
+index 4b5efcf34..d8ab6cf7c 100755
+--- a/tools/render-template
++++ b/tools/render-template
+@@ -58,6 +58,13 @@ def main():
+         default=sys.prefix,
+         help="define the prefix. Default: " + sys.prefix,
+     )
++    parser.add_argument(
++        "--lib-exec-dir",
++        help=(
++            "Full directory containing cloud-init helper executables. "
++            "Defaults to distribution-specific paths when omitted."
++        ),
++    )
+     parser.add_argument(
+         "--is-yaml",
+         action="store_true",
+@@ -84,7 +91,12 @@ def main():
+ 
+     args = parser.parse_args(sys.argv[1:])
+     templater.render_template(
+-        args.variant, args.template, args.output, args.is_yaml, prefix=args.prefix
++        args.variant,
++        args.template,
++        args.output,
++        args.is_yaml,
++        prefix=args.prefix,
++        lib_exec_dir=args.lib_exec_dir,
+     )
+ 
+ 
+-- 
+2.56.0
+
