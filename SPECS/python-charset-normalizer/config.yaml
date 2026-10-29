@@ -1,15 +1,21 @@
 sources:
-- archive: charset-normalizer-2.1.1.tar.gz
-  archive_sha512sum: f52abab683ebda4100d67ec6ee0349713baee453a742d60a1356f405c5ce2c3b4d850b0891527f08f92fa1217d59c46d6b181dc4ff1b962ce60d9c5ef8c913d1
-  skip_validation: true
+- archive: charset-normalizer-3.5.2.tar.gz
+  archive_sha512sum: cbcb39e42261bacc9e5a2554e361cd5481061090d6eda1ac355b9fcf95c1793e7cb771738704e9b947812466b67a75721c5a3586b7d8ec8604ea2d27c5b6bcbc
+  archive_type: upstream
+  name: charset_normalizer-3.5.2
+  url: https://github.com/jawah/charset_normalizer/archive/refs/tags/3.5.2.tar.gz
+  repo_url: https://github.com/jawah/charset_normalizer
+  commit_id: 935c29ad2d0d6e62fcf3a6e0617c55dc6e85db8f
+  skip_list: []
+  missing: []
   spdx:
     package:
       detailed_description: 'A library that helps you read text from an unknown charset
         encoding. Motivated by chardet, trying to resolve the issue by taking a new
         approach. All IANA character set names for which the Python core library provides
         codecs are supported. '
-      home_page: https://github.com/ousret/charset_normalizer
-      license_concluded: LGPL-2.1-only AND MIT
-      license_declared: LGPL-2.1-only AND MIT
+      home_page: https://github.com/jawah/charset_normalizer
+      license_concluded: MIT
+      license_declared: MIT
       short_summary: The Real First Universal Charset Detector
       supplier: 'Organization: Broadcom, Inc.'

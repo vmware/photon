@@ -1,20 +1,23 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} >= 92
 
 Summary:        Pexpect is a Pure Python Expect-like module
 Name:           python3-pexpect
-Version:        4.8.0
-Release:        7%{?dist}
+Version:        4.9.0
+Release:        1%{?dist}
 Url:            https://github.com/pexpect/pexpect
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://github.com/pexpect/pexpect/archive/pexpect-%{version}.tar.gz
+Source0: https://github.com/pexpect/pexpect/archive/refs/tags/4.9.tar.gz#/pexpect-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
+BuildRequires:  python3-build
+BuildRequires:  python3-installer
+BuildRequires:  python3-packaging
 %if 0%{?with_check}
 BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
@@ -37,14 +40,15 @@ Pexpect allows your script to spawn a child application and control it as if a h
 were typing commands.
 
 %prep
-%autosetup -n pexpect-%{version}
+%autosetup -n pexpect-4.9
 
 %build
-%py3_build
+%py3_build_wheel
 
 %install
 rm -rf %{buildroot}
-%py3_install
+%py3_install_wheel
+%{py_byte_compile_and_ghost}
 
 %check
 easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
@@ -52,10 +56,12 @@ $easy_install_3 pathlib2 funcsigs pluggy more_itertools
 LANG=en_US.UTF-8  PYTHONPATH=%{buildroot}%{python3_sitelib} \
 py.test3
 
-%files
+%files -f %{py_ghost_filelist}
 %{python3_sitelib}/*
 
 %changelog
+* Thu Oct 29 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.9.0-1
+- Upgrade to 4.9.0
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.8.0-7
 - Extended to build for subrelease 91 and above
 * Fri May 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.8.0-6

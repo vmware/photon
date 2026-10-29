@@ -1,0 +1,15 @@
+sources:
+- archive: charset-normalizer-2.1.1.tar.gz
+  archive_sha512sum: f52abab683ebda4100d67ec6ee0349713baee453a742d60a1356f405c5ce2c3b4d850b0891527f08f92fa1217d59c46d6b181dc4ff1b962ce60d9c5ef8c913d1
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'A library that helps you read text from an unknown charset
+        encoding. Motivated by chardet, trying to resolve the issue by taking a new
+        approach. All IANA character set names for which the Python core library provides
+        codecs are supported. '
+      home_page: https://github.com/ousret/charset_normalizer
+      license_concluded: LGPL-2.1-only AND MIT
+      license_declared: LGPL-2.1-only AND MIT
+      short_summary: The Real First Universal Charset Detector
+      supplier: 'Organization: Broadcom, Inc.'

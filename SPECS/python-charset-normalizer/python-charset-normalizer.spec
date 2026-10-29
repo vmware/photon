@@ -1,23 +1,24 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} >= 92
 
 Name:           python3-charset-normalizer
-Version:        2.1.1
-Release:        4%{?dist}
+Version:        3.5.2
+Release:        1%{?dist}
 Summary:        The Real First Universal Charset Detector
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-URL:            https://github.com/ousret/charset_normalizer
+URL:            https://github.com/jawah/charset_normalizer
 
-Source0: charset-normalizer-%{version}.tar.gz
+Source0: https://github.com/jawah/charset_normalizer/archive/refs/tags/%{version}.tar.gz#/charset-normalizer-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
-
-Requires:       python3-setuptools
+BuildRequires:  python3-build
+BuildRequires:  python3-installer
+BuildRequires:  python3-packaging
 
 BuildArch:      noarch
 
@@ -28,27 +29,28 @@ a new approach. All IANA character set names for which the Python core
 library provides codecs are supported.
 
 %prep
-%autosetup -p1 -n charset-normalizer-%{version}
-# Remove pytest-cov settings from setup.cfg
-sed -i "/addopts = --cov/d" setup.cfg
+%autosetup -p1 -n charset_normalizer-%{version}
 
 %build
-%py3_build
+%py3_build_wheel
 
 %install
-%py3_install
+%py3_install_wheel
+%{py_byte_compile_and_ghost}
 
 %if 0%{?with_check}
 %check
 %pytest
 %endif
 
-%files
+%files -f %{py_ghost_filelist}
 %defattr(-,root,root)
 %{_bindir}/normalizer
 %{python3_sitelib}/*
 
 %changelog
+* Thu Oct 29 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.5.2-1
+- Upgrade to 3.5.2
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.1.1-4
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.1.1-3

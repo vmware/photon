@@ -1,20 +1,23 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} >= 92
 
 %define debug_package %{nil}
 Summary:        Altgraph helps in creating graph network for doing BFS and DFS traversals.
 Name:           python3-altgraph
-Version:        0.17.2
-Release:        5%{?dist}
+Version:        0.17.5
+Release:        1%{?dist}
 Url:            https://pypi.org/project/altgraph
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://files.pythonhosted.org/packages/22/5a/ac50b52581bbf0d8f6fd50ad77d20faac19a2263b43c60e7f3af8d1ec880/altgraph-%{version}.tar.gz
+Source0: https://github.com/ronaldoussoren/altgraph/archive/refs/tags/v%{version}.tar.gz#/altgraph-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
+BuildRequires:  python3-build
+BuildRequires:  python3-installer
+BuildRequires:  python3-packaging
 Requires:       python3
 
 %description
@@ -24,16 +27,19 @@ altgraph is a fork of graphlib: a graph (network) package for constructing graph
 %autosetup -p1 -n altgraph-%{version}
 
 %build
-%{py3_build}
+%py3_build_wheel
 
 %install
-%{py3_install}
+%py3_install_wheel
+%{py_byte_compile_and_ghost}
 
-%files
+%files -f %{py_ghost_filelist}
 %defattr(-,root,root)
 %{python3_sitelib}/*
 
 %changelog
+* Thu Oct 29 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.17.5-1
+- Upgrade to 0.17.5
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.17.2-5
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.17.2-4

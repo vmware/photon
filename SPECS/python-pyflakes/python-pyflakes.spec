@@ -1,12 +1,12 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} >= 92
 
 Name:           python3-pyflakes
-Version:        2.5.0
-Release:        5%{?dist}
+Version:        4.0.3
+Release:        1%{?dist}
 Summary:        A simple program which checks Python source files for errors
 Group:          Development/Languages/Python
 Url:            https://github.com/PyCQA/pyflakes/archive/refs/tags/%{version}.tar.gz
-Source0:        pyflakes-%{version}.tar.gz
+Source0: https://github.com/PyCQA/pyflakes/archive/refs/tags/%{version}.tar.gz#/pyflakes-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -14,9 +14,11 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
+BuildRequires:  python3-build
+BuildRequires:  python3-installer
+BuildRequires:  python3-packaging
 Requires:       python3
 Requires:       python3-libs
-Requires:       python3-setuptools
 BuildArch:      noarch
 
 %description
@@ -30,21 +32,23 @@ check on style.
 %autosetup -n pyflakes-%{version}
 
 %build
-%py3_build
+%py3_build_wheel
 
 %install
-%py3_install
-find %{buildroot}%{_libdir} -name '*.pyc' -delete
+%py3_install_wheel
+%{py_byte_compile_and_ghost}
 
 %check
 python3 setup.py test
 
-%files
+%files -f %{py_ghost_filelist}
 %defattr(-,root,root,-)
 %{_bindir}/pyflakes
 %{python3_sitelib}/*
 
 %changelog
+* Thu Oct 29 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.0.3-1
+- Upgrade to 4.0.3
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.5.0-5
 - Extended to build for subrelease 91 and above
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.5.0-4

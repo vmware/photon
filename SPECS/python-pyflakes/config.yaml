@@ -1,7 +1,13 @@
 sources:
-- archive: pyflakes-2.5.0.tar.gz
-  archive_sha512sum: e47303c4b445e0c010dfc96244b6fa991bd1870072c61cc7acd309947af3d81581276b012b56b7db0d8df3f91a4216a5ec502720c149f5707d5d1d28654aeeb4
-  skip_validation: true
+- archive: pyflakes-4.0.3.tar.gz
+  archive_sha512sum: 286ef5c011eae75911f8460dc3666c5148aac5898d702c5d0428ec3c6ad4f944778a4c82b1927dd49b4652a46b16e5486513e9d819a02e6c986d471201574505
+  archive_type: upstream
+  name: pyflakes-4.0.3
+  url: https://github.com/PyCQA/pyflakes/archive/refs/tags/4.0.3.tar.gz
+  repo_url: https://github.com/PyCQA/pyflakes
+  commit_id: 8526af8494a831803bbc1eae24b8f9d2a24aa2f7
+  skip_list: []
+  missing: []
   spdx:
     package:
       detailed_description: 'Pyflakes is similar to PyChecker in scope, but differs
@@ -9,7 +15,7 @@ sources:
         and faster, although it does not perform as many checks. Unlike PyLint, Pyflakes
         checks only for logical errors in programs; it does not perform any check
         on style. '
-      home_page: https://github.com/PyCQA/pyflakes/archive/refs/tags/2.5.0.tar.gz
+      home_page: https://github.com/PyCQA/pyflakes
       license_concluded: MIT
       license_declared: MIT
       short_summary: A simple program which checks Python source files for errors
