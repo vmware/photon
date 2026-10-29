@@ -2,7 +2,7 @@
 
 Summary:        Utilities for file systems, consoles, partitions, and messages
 Name:           util-linux
-Version:        2.42.3
+Version:        2.42.4
 Release:        1%{?dist}
 URL:            http://www.kernel.org/pub/linux/utils/util-linux
 Group:          Applications/System
@@ -25,6 +25,9 @@ BuildRequires:  sudo
 Requires: %{name}-libs = %{version}-%{release}
 Requires: logger = %{version}-%{release}
 Requires: fsck-bin = %{version}-%{release}
+Requires: blkid-bin = %{version}-%{release}
+Requires: mount-bin = %{version}-%{release}
+Requires: umount-bin = %{version}-%{release}
 
 Conflicts: toybox < 0.8.2-2
 
@@ -87,6 +90,30 @@ Conflicts:  %{name} < 2.41.5-3
 %description -n fsck-bin
 %{summary}
 
+%package -n blkid-bin
+Summary:    blkid binary from %{name}
+Requires:   %{name}-libs = %{version}-%{release}
+Conflicts:  %{name} < 2.42.4-1
+
+%description -n blkid-bin
+%{summary}
+
+%package -n mount-bin
+Summary:    mount binary from %{name}
+Requires:   %{name}-libs = %{version}-%{release}
+Conflicts:  %{name} < 2.42.4-1
+
+%description -n mount-bin
+%{summary}
+
+%package -n umount-bin
+Summary:    umount binary from %{name}
+Requires:   %{name}-libs = %{version}-%{release}
+Conflicts:  %{name} < 2.42.4-1
+
+%description -n umount-bin
+%{summary}
+
 %prep
 %autosetup -p1
 
@@ -143,6 +170,9 @@ make check %{?_smp_mflags}"
 %exclude %{_bindir}/coresched
 %exclude %{_bindir}/logger
 %exclude %{_sbindir}/fsck
+%exclude %{_sbindir}/blkid
+%exclude %{_bindir}/mount
+%exclude %{_bindir}/umount
 
 %files -n logger-bin
 %defattr(-,root,root)
@@ -154,6 +184,18 @@ make check %{?_smp_mflags}"
 %files -n fsck-bin
 %defattr(-,root,root)
 %{_sbindir}/fsck
+
+%files -n blkid-bin
+%defattr(-,root,root)
+%{_sbindir}/blkid
+
+%files -n mount-bin
+%defattr(-,root,root)
+%{_bindir}/mount
+
+%files -n umount-bin
+%defattr(-,root,root)
+%{_bindir}/umount
 
 %files libs
 %defattr(-,root,root)
@@ -177,6 +219,9 @@ make check %{?_smp_mflags}"
 %{_docdir}/%{name}/getopt*
 
 %changelog
+* Thu Oct 29 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.42.4-1
+- Update to version 2.42.4
+- Ship blkid, mount and umount as standalone packages
 * Fri Sep 11 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.42.3-1
 - Upgrade to v2.42.3
 * Thu Sep 10 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.41.5-4
