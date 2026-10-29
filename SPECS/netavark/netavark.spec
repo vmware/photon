@@ -5,7 +5,7 @@
 Summary:        Container network stack
 Name:           netavark
 Version:        2.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://github.com/containers/netavark
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -84,5 +84,7 @@ rm -rf %{buildroot}
 %{_mandir}/man7/%{name}-firewalld.7*
 
 %changelog
+* Thu Oct 29 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.0.0-2
+- Rebuild with go 1.26.10 to fix CVE-2026-111943
 * Mon Nov 03 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.0.0-1
 - Initial Build
