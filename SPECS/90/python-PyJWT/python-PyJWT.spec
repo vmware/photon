@@ -2,7 +2,7 @@
 
 Name:           python3-PyJWT
 Version:        2.8.0
-Release:        2.2.2%{?dist}
+Release:        2.2.3%{?dist}
 Summary:        JSON Web Token implementation in Python
 Group:          Development/Languages/Python
 URL:            https://github.com/jpadilla/pyjwt
@@ -16,6 +16,8 @@ Source1: license.txt
 Patch0: CVE-2026-32597.patch
 Patch1: CVE-2026-48523-1.patch
 Patch2: pyjwt-cve-fixes.patch
+Patch3: CVE-2026-102267.patch
+Patch4: CVE-2026-102268.patch
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -43,6 +45,8 @@ A Python implementation of JSON Web Token draft 01. This library provides a mean
 %doc README.rst
 
 %changelog
+* Thu Oct 29 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.8.0-2.2.3
+- Fix CVE-2026-102267, CVE-2026-102268
 * Tue Oct 20 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.8.0-2.2.2
 - Fix CVE-2026-48522, 48523, 48524, 48525, 48526
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.8.0-2.2.1
