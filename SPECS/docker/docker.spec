@@ -15,7 +15,7 @@
 Summary:        Docker
 Name:           docker
 Version:        25.0.16
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -302,6 +302,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/dockerd-rootless-setuptool.sh
 
 %changelog
+* Thu Oct 29 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 25.0.16-2
+- Rebuild with go1.26-1.26.10 to fix CVE-2026-111943
 * Thu Jul 09 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 25.0.16-1
 - Upgrade to v25, LTS series
 * Wed Jul 08 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 24.0.9-11
