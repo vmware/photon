@@ -1,0 +1,19 @@
+sources:
+- archive: capnproto-1.5.0.tar.gz
+  archive_sha512sum: d3072f590212d40010fa7946e000ac9fe927c9058fcda518c14275c7a217207db644d44a124398873d3875bb5f1f8e52dbeccfbc4b4c003e8e35fd83486fc343
+  archive_type: upstream
+  name: capnproto-1.5.0
+  version: 1.5.0
+  url: https://github.com/capnproto/capnproto/archive/refs/tags/v1.5.0.tar.gz
+  repo_url: https://github.com/capnproto/capnproto
+  commit_id: 373e61ec89e2359f1c362e9b2eadc552f4779306
+  skip_list: []
+  missing: []
+  spdx:
+    package:
+      detailed_description: 'Cap''n Proto serialization/RPC system - core tools and C++ library'
+      home_page: https://capnproto.org
+      license_concluded: BSD-2-Clause AND BSD-3-Clause AND FSFAP AND MIT AND bcrypt-Solar-Designer
+      license_declared: BSD-2-Clause AND BSD-3-Clause AND FSFAP AND MIT AND bcrypt-Solar-Designer
+      short_summary: 'Cap''n Proto serialization/RPC system - core tools and C++ library'
+      supplier: 'Organization: Broadcom, Inc.'

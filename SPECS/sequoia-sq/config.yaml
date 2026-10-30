@@ -1,0 +1,33 @@
+sources:
+- archive: sequoia-sq-1.5.0.tar.gz
+  # due to gitlab rate limitting
+  skip_validation: true
+  #archive_type: upstream
+  archive_sha512sum: 22cc6a27367fdc71db28f24dab94186aea2a153be9b932e20cd96b7000ed833ab3cd3cefd5ea59412f1a45548d374f56fdf1c4744ab9759d45a1a798cfed81fd
+  name: sequoia-sq-sequoia-sq-v1.5.0
+  version: 1.5.0
+  url: https://gitlab.com/sequoia-pgp/sequoia-sq/-/archive/sequoia-sq/v1.5.0/sequoia-sq-sequoia-sq-v1.5.0.tar.gz
+  repo_url: https://gitlab.com/sequoia-pgp/sequoia-sq
+  commit_id: 5dcf8fff9e3a2280a2cff329ad9d140e62f64929
+  skip_list: []
+  missing: []
+  spdx:
+    package:
+      detailed_description: 'A command line application exposing a useful set of OpenPGP functionality for common tasks.'
+      home_page: https://gitlab.com/sequoia-pgp/sequoia-sq
+      license_concluded: GPL-1.0-or-later AND LGPL-2.0-only AND LGPL-2.0-or-later
+      license_declared: GPL-1.0-or-later AND LGPL-2.0-only AND LGPL-2.0-or-later
+      short_summary: A command line application exposing a useful set of OpenPGP functionality for common tasks.
+      supplier: 'Organization: Broadcom, Inc.'
+
+- archive: sequoia-sq-1.5.0-cargo-registry.tar.gz
+  archive_sha512sum: 63dacbedc9cfedcb59b944b38a8ab6ed8b1d043e058f5e4e49ea7aa482d06d6d607c926c391baf7f3e9832dcaeb08980077b8e1001eb6d0688cda318d5321b71
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: Contains vendor rust file sources which were needed to do offline build
+      home_page: https://github.com/vmware/photon
+      short_summary: Contains vendor rust file sources
+      license_concluded: GPL-1.0-or-later AND LGPL-2.0-only AND LGPL-2.0-or-later
+      license_declared: GPL-1.0-or-later AND LGPL-2.0-only AND LGPL-2.0-or-later
+      supplier: 'Organization: Broadcom, Inc.'
