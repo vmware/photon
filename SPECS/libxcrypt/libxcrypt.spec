@@ -1,14 +1,13 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} >= 93
+
 Name:           libxcrypt
 Summary:        Extended crypt library for DES, MD5, Blowfish and others
 Version:        4.5.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://github.com/besser82/%{name}
 Distribution:   Photon
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
-
-BuildRequires: perl
 
 Source0: %{url}/releases/download/v%{version}/%{name}-%{version}.tar.xz
 
@@ -16,6 +15,21 @@ Source1: license.txt
 %include %{SOURCE1}
 
 Patch0: 0001-fix-Werror-discarded-qualifiers.patch
+# OpenSSL backemd patches
+Patch1: 0002-sha1crypt-avoid-aliasing-output-buffer-for-initial-H.patch
+Patch2: 0003-lib-add-alg-openssl-evp.h-with-EVP-MD-and-MAC-primit.patch
+Patch3: 0004-lib-sha512crypt-add-OpenSSL-EVP-backend-via-alg-sha5.patch
+Patch4: 0005-lib-sha256crypt-add-OpenSSL-EVP-backend-via-alg-sha2.patch
+Patch5: 0006-lib-md5crypt-sunmd5-add-OpenSSL-EVP-backend-via-alg-.patch
+Patch6: 0007-lib-sm3crypt-add-OpenSSL-EVP-backend-via-alg-sm3-imp.patch
+Patch7: 0008-lib-sha1crypt-add-OpenSSL-EVP-HMAC-backend-via-alg-s.patch
+Patch8: 0009-build-test-wire-with-openssl-and-add-known-answer-te.patch
+Patch9: 0010-test-add-bm-crypt-benchmark-for-OpenSSL-EVP-backend.patch
+
+BuildRequires: perl
+BuildRequires: openssl-devel
+
+Requires: openssl-libs
 
 Conflicts: glibc < 2.36-5
 Conflicts: glibc-libs < 2.36-15
@@ -52,12 +66,15 @@ developing applications that use %{name}.
 %autosetup -p1
 
 %build
+autoreconf -vif
+
 %configure \
   --disable-static \
   --enable-shared \
   --enable-hashes=all \
   --enable-obsolete-api=glibc \
-  --disable-failure-tokens
+  --disable-failure-tokens \
+  --with-openssl=yes
 
 %make_build
 
@@ -84,6 +101,11 @@ rm -rf %{buildroot}
 %{_mandir}/man5/*
 
 %changelog
+* Tue Oct 13 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.5.2-3
+- Add optional OpenSSL EVP backend for SHA-256, SHA-512, MD5, HMAC-SHA1, and
+  SM3 crypt algorithms via --with-openssl configure option
+- sha1crypt: use a private buffer for the priming HMAC input and bound-check
+  the output buffer
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.5.2-2
 - Extended to build for subrelease 91 and above
 * Tue Apr 21 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.5.2-1

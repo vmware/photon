@@ -1,0 +1,113 @@
+From d6f63a2d6f3bd3a3b9a307f7f59798f70edae17a Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Fri, 30 Oct 2026 11:16:14 +0530
+Subject: [PATCH 5/8] lib: sm3crypt: add OpenSSL EVP backend via alg-sm3-impl.h
+
+alg-sm3-impl.h selects the OpenSSL EVP path when USE_OPENSSL is set
+and OpenSSL was built with SM3 support (!OPENSSL_NO_SM3); otherwise
+it falls back to alg-sm3.h.  SM3 uses the same private default-provider
+context as MD5.  sm3-yescrypt's HMAC-SM3 is unaffected.
+
+Co-authored-by: Claude Sonnet 4.6 <noreply@anthropic.com>
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ lib/alg-sm3-impl.h | 52 ++++++++++++++++++++++++++++++++++++++++++++++
+ lib/crypt-sm3.c    |  9 +++++++-
+ 2 files changed, 60 insertions(+), 1 deletion(-)
+ create mode 100644 lib/alg-sm3-impl.h
+
+diff --git a/lib/alg-sm3-impl.h b/lib/alg-sm3-impl.h
+new file mode 100644
+index 0000000..87c72b0
+--- /dev/null
++++ b/lib/alg-sm3-impl.h
+@@ -0,0 +1,52 @@
++/* Unified SM3 hash context for sm3crypt.
++ * Exactly one #if USE_OPENSSL block lives here; crypt-sm3.c has none.
++ * If OpenSSL was built without SM3 (OPENSSL_NO_SM3), fall back to native.
++ * SM3 uses a private default-provider context as a compatibility exception. */
++#ifndef _ALG_SM3_IMPL_H
++#define _ALG_SM3_IMPL_H 1
++
++#if USE_OPENSSL && !defined (OPENSSL_NO_SM3)
++# include "alg-openssl-evp.h"
++
++/* crypt-port.h renames sm3_* to _crypt_sm3_*; undo before defining our wrappers. */
++# undef sm3_init
++# undef sm3_update
++# undef sm3_final
++
++# define SM3_DIGEST_LENGTH 32
++
++typedef xcrypt_evp_ctx sm3_ctx;
++
++static inline bool
++xcrypt_sm3_prepare (sm3_ctx *ctx)
++{ return xcrypt_evp_md_prepare (ctx, "SM3", true); }
++
++static inline void
++sm3_init (sm3_ctx *ctx)
++{ xcrypt_evp_md_init (ctx); }
++
++static inline void
++sm3_update (sm3_ctx *ctx, const void *data, size_t len)
++{ xcrypt_evp_md_update (ctx, data, len); }
++
++static inline void
++sm3_final (uint8_t digest[SM3_DIGEST_LENGTH], sm3_ctx *ctx)
++{ xcrypt_evp_md_final (ctx, digest, SM3_DIGEST_LENGTH); }
++
++static inline bool
++xcrypt_sm3_finish (sm3_ctx *ctx)
++{ return xcrypt_evp_md_finish (ctx); }
++
++#else /* !USE_OPENSSL || OPENSSL_NO_SM3 */
++# include "alg-sm3.h"
++
++static inline bool
++xcrypt_sm3_prepare (sm3_ctx *ctx)
++{ (void)ctx; return true; }
++
++static inline bool
++xcrypt_sm3_finish (sm3_ctx *ctx)
++{ (void)ctx; return true; }
++
++#endif /* USE_OPENSSL && !OPENSSL_NO_SM3 */
++#endif /* _ALG_SM3_IMPL_H */
+diff --git a/lib/crypt-sm3.c b/lib/crypt-sm3.c
+index 1fbb960..5dc4be5 100644
+--- a/lib/crypt-sm3.c
++++ b/lib/crypt-sm3.c
+@@ -18,7 +18,8 @@
+  */
+ 
+ #include "crypt-port.h"
+-#include "alg-sm3.h"
++
++#include "alg-sm3-impl.h"
+ 
+ #include <errno.h>
+ #include <stdio.h>
+@@ -159,6 +160,9 @@ crypt_sm3crypt_rn (const char *phrase, size_t phr_size,
+ 
+   /* Compute alternate SM3 sum with input PHRASE, SALT, and PHRASE.  The
+      final result will be added to the first context.  */
++  if (!xcrypt_sm3_prepare (ctx))
++    return;
++
+   sm3_init (ctx);
+ 
+   /* Add phrase.  */
+@@ -251,6 +255,9 @@ crypt_sm3crypt_rn (const char *phrase, size_t phr_size,
+       sm3_final (result, ctx);
+     }
+ 
++  if (!xcrypt_sm3_finish (ctx))
++    return;
++
+   /* Now we can construct the result string.  It consists of four
+      parts, one of which is optional.  We already know that there
+      is sufficient space at CP for the longest possible result string.  */
+-- 
+2.56.0
+

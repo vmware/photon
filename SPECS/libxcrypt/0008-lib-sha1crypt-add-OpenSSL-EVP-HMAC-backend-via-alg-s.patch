@@ -1,0 +1,139 @@
+From da301592a298f6b3f377601c9d1290ff3e9602fa Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Fri, 30 Oct 2026 11:16:30 +0530
+Subject: [PATCH 6/8] lib: sha1crypt: add OpenSSL EVP HMAC backend via
+ alg-sha1-hmac-impl.h
+
+Add alg-sha1-hmac-impl.h with xcrypt_sha1_hmac_{prepare,compute,finish}.
+
+OpenSSL path: wraps xcrypt_evp_mac_ctx so the HMAC key is loaded once
+and EVP_MAC_init() resets state per round - avoiding a provider fetch,
+alloc, key-setup and free across the 196k-262k default iterations.
+
+Native path: stores a pointer to the key and calls hmac_sha1_process_data()
+per round - identical behaviour to the previous code.
+
+crypt-pbkdf1-sha1.c now has no #if USE_OPENSSL blocks.
+
+Co-authored-by: Claude Sonnet 4.6 <noreply@anthropic.com>
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ lib/alg-sha1-hmac-impl.h | 58 ++++++++++++++++++++++++++++++++++++++++
+ lib/crypt-pbkdf1-sha1.c  | 28 +++++++++++++------
+ 2 files changed, 78 insertions(+), 8 deletions(-)
+ create mode 100644 lib/alg-sha1-hmac-impl.h
+
+diff --git a/lib/alg-sha1-hmac-impl.h b/lib/alg-sha1-hmac-impl.h
+new file mode 100644
+index 0000000..8bb4792
+--- /dev/null
++++ b/lib/alg-sha1-hmac-impl.h
+@@ -0,0 +1,58 @@
++/* Unified HMAC-SHA1 context for sha1crypt (PBKDF1-SHA1).
++ * Exactly one #if USE_OPENSSL block lives here; crypt-pbkdf1-sha1.c has none.
++ * OpenSSL path: persistent EVP_MAC_CTX - key is set once, re-initialised per
++ * round.  Native path: thin wrapper that stores key pointer for one-shot calls. */
++#ifndef _ALG_SHA1_HMAC_IMPL_H
++#define _ALG_SHA1_HMAC_IMPL_H 1
++
++#if USE_OPENSSL
++# include "alg-openssl-evp.h"
++
++typedef xcrypt_evp_mac_ctx xcrypt_sha1_hmac_ctx;
++
++static inline bool
++xcrypt_sha1_hmac_prepare (xcrypt_sha1_hmac_ctx *ctx,
++                          const void *key, size_t klen)
++{ return xcrypt_evp_mac_prepare (ctx, "SHA1", key, klen); }
++
++static inline bool
++xcrypt_sha1_hmac_compute (xcrypt_sha1_hmac_ctx *ctx,
++                          const void *data, size_t dlen,
++                          void *digest, size_t outlen)
++{ return xcrypt_evp_mac_compute (ctx, data, dlen, digest, outlen); }
++
++static inline bool
++xcrypt_sha1_hmac_finish (xcrypt_sha1_hmac_ctx *ctx)
++{ return xcrypt_evp_mac_finish (ctx); }
++
++#else /* !USE_OPENSSL */
++# include "alg-hmac-sha1.h"
++
++typedef struct
++{
++  const uint8_t *key;
++  size_t         klen;
++} xcrypt_sha1_hmac_ctx;
++
++static inline bool
++xcrypt_sha1_hmac_prepare (xcrypt_sha1_hmac_ctx *ctx,
++                          const void *key, size_t klen)
++{ ctx->key = (const uint8_t *)key; ctx->klen = klen; return true; }
++
++static inline bool
++xcrypt_sha1_hmac_compute (xcrypt_sha1_hmac_ctx *ctx,
++                          const void *data, size_t dlen,
++                          void *digest, size_t outlen)
++{
++  (void)outlen;
++  hmac_sha1_process_data ((const uint8_t *)data, dlen,
++                          ctx->key, ctx->klen, digest);
++  return true;
++}
++
++static inline bool
++xcrypt_sha1_hmac_finish (xcrypt_sha1_hmac_ctx *ctx)
++{ (void)ctx; return true; }
++
++#endif /* USE_OPENSSL */
++#endif /* _ALG_SHA1_HMAC_IMPL_H */
+diff --git a/lib/crypt-pbkdf1-sha1.c b/lib/crypt-pbkdf1-sha1.c
+index 13d57fc..d0a3460 100644
+--- a/lib/crypt-pbkdf1-sha1.c
++++ b/lib/crypt-pbkdf1-sha1.c
+@@ -28,7 +28,9 @@
+  */
+ 
+ #include "crypt-port.h"
+-#include "alg-hmac-sha1.h"
++
++#include "alg-sha1-hmac-impl.h"
++
+ #include "byteorder.h"
+ 
+ #include <errno.h>
+@@ -164,14 +166,24 @@ crypt_sha1crypt_rn (const char *phrase, size_t phr_size,
+       return;
+     }
+   /*
+-   * Then hmac using <phrase> as key, and repeat...
++   * Then hmac using <phrase> as key, and repeat.
++   * xcrypt_sha1_hmac_prepare sets the key once; xcrypt_sha1_hmac_compute
++   * re-initialises per round (OpenSSL: reuses EVP_MAC_CTX; native: one-shot).
+    */
+-  hmac_sha1_process_data ((const unsigned char *)initial, (size_t)dl,
+-                          pwu, pl, hmac_buf);
+-  for (i = 1; i < iterations; ++i)
+-    {
+-      hmac_sha1_process_data (hmac_buf, SHA1_SIZE, pwu, pl, hmac_buf);
+-    }
++  {
++    xcrypt_sha1_hmac_ctx mac;
++    if (!xcrypt_sha1_hmac_prepare (&mac, pwu, pl))
++      return;
++    bool ok = xcrypt_sha1_hmac_compute (&mac, (const unsigned char *)initial,
++                                        (size_t)dl, hmac_buf, SHA1_SIZE);
++    for (i = 1; ok && i < iterations; ++i)
++      ok = xcrypt_sha1_hmac_compute (&mac, hmac_buf, SHA1_SIZE,
++                                     hmac_buf, SHA1_SIZE);
++    xcrypt_sha1_hmac_finish (&mac);
++    if (!ok)
++      return;
++  }
++
+   /* Now output... */
+   pl = (size_t)snprintf ((char *)output, out_size, "%s%lu$%.*s$",
+                          magic, iterations, (int)sl, setting);
+-- 
+2.56.0
+

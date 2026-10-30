@@ -1,0 +1,149 @@
+From 4c2728d6f4def3d3725b5fab7fb925a578d40888 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Fri, 30 Oct 2026 11:16:01 +0530
+Subject: [PATCH 4/8] lib: md5crypt/sunmd5: add OpenSSL EVP backend via
+ alg-md5-impl.h
+
+Add alg-md5-impl.h as the sole home for USE_OPENSSL in both md5crypt
+and sunmd5.  MD5 is an explicit compatibility exception: it uses a
+private default-provider context with provider=default,fips=no so that
+existing hashes can be verified even when the caller has loaded only
+FIPS-mode providers.
+
+Co-authored-by: Claude Sonnet 4.6 <noreply@anthropic.com>
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ lib/alg-md5-impl.h | 52 ++++++++++++++++++++++++++++++++++++++++++++++
+ lib/crypt-md5.c    |  8 ++++++-
+ lib/crypt-sunmd5.c |  9 +++++++-
+ 3 files changed, 67 insertions(+), 2 deletions(-)
+ create mode 100644 lib/alg-md5-impl.h
+
+diff --git a/lib/alg-md5-impl.h b/lib/alg-md5-impl.h
+new file mode 100644
+index 0000000..6bb7738
+--- /dev/null
++++ b/lib/alg-md5-impl.h
+@@ -0,0 +1,52 @@
++/* Unified MD5 hash context for md5crypt and sunmd5.
++ * Exactly one #if USE_OPENSSL lives here; the crypt-*.c files have none.
++ * MD5/SM3 use a private default-provider context as an explicit exception
++ * to caller policy; both md5crypt and sunmd5 set private_default = true. */
++#ifndef _ALG_MD5_IMPL_H
++#define _ALG_MD5_IMPL_H 1
++
++#if USE_OPENSSL
++# include "alg-openssl-evp.h"
++
++/* crypt-port.h renames MD5_* to _crypt_MD5_*; undo before defining our wrappers. */
++# undef MD5_Init
++# undef MD5_Update
++# undef MD5_Final
++
++# define XCRYPT_MD5_HASH_LEN 16
++
++typedef xcrypt_evp_ctx MD5_CTX;
++
++static inline bool
++xcrypt_md5_prepare (MD5_CTX *ctx)
++{ return xcrypt_evp_md_prepare (ctx, "MD5", true); }
++
++static inline void
++MD5_Init (MD5_CTX *ctx)
++{ xcrypt_evp_md_init (ctx); }
++
++static inline void
++MD5_Update (MD5_CTX *ctx, const void *data, size_t len)
++{ xcrypt_evp_md_update (ctx, data, len); }
++
++static inline void
++MD5_Final (uint8_t digest[XCRYPT_MD5_HASH_LEN], MD5_CTX *ctx)
++{ xcrypt_evp_md_final (ctx, digest, XCRYPT_MD5_HASH_LEN); }
++
++static inline bool
++xcrypt_md5_finish (MD5_CTX *ctx)
++{ return xcrypt_evp_md_finish (ctx); }
++
++#else /* !USE_OPENSSL */
++# include "alg-md5.h"
++
++static inline bool
++xcrypt_md5_prepare (MD5_CTX *ctx)
++{ (void)ctx; return true; }
++
++static inline bool
++xcrypt_md5_finish (MD5_CTX *ctx)
++{ (void)ctx; return true; }
++
++#endif /* USE_OPENSSL */
++#endif /* _ALG_MD5_IMPL_H */
+diff --git a/lib/crypt-md5.c b/lib/crypt-md5.c
+index b3ccc95..ce7ff73 100644
+--- a/lib/crypt-md5.c
++++ b/lib/crypt-md5.c
+@@ -19,7 +19,7 @@
+    <https://www.gnu.org/licenses/>.  */
+ 
+ #include "crypt-port.h"
+-#include "alg-md5.h"
++#include "alg-md5-impl.h"
+ 
+ #include <errno.h>
+ 
+@@ -102,6 +102,9 @@ crypt_md5crypt_rn (const char *phrase, size_t phr_size,
+ 
+   /* Compute alternate MD5 sum with input PHRASE, SALT, and PHRASE.  The
+      final result will be added to the first context.  */
++  if (!xcrypt_md5_prepare (ctx))
++    return;
++
+   MD5_Init (ctx);
+ 
+   /* Add phrase.  */
+@@ -182,6 +185,9 @@ crypt_md5crypt_rn (const char *phrase, size_t phr_size,
+       MD5_Final (result, ctx);
+     }
+ 
++  if (!xcrypt_md5_finish (ctx))
++    return;
++
+   /* Now we can construct the result string.  It consists of three
+      parts.  We already know that there is enough space at CP.  */
+   memcpy (cp, md5_salt_prefix, sizeof (md5_salt_prefix) - 1);
+diff --git a/lib/crypt-sunmd5.c b/lib/crypt-sunmd5.c
+index 9a871db..11c6b39 100644
+--- a/lib/crypt-sunmd5.c
++++ b/lib/crypt-sunmd5.c
+@@ -29,7 +29,8 @@
+  */
+ 
+ #include "crypt-port.h"
+-#include "alg-md5.h"
++
++#include "alg-md5-impl.h"
+ 
+ #include <errno.h>
+ #include <stdlib.h>
+@@ -233,6 +234,9 @@ crypt_sunmd5_rn (const char *phrase, size_t phr_size,
+   struct crypt_sunmd5_scratch *s = scratch;
+ 
+   /* Initial round.  */
++  if (!xcrypt_md5_prepare (&s->ctx))
++    return;
++
+   MD5_Init (&s->ctx);
+   MD5_Update (&s->ctx, phrase, phr_size);
+   MD5_Update (&s->ctx, setting, saltlen);
+@@ -256,6 +260,9 @@ crypt_sunmd5_rn (const char *phrase, size_t phr_size,
+       MD5_Final (s->dg, &s->ctx);
+     }
+ 
++  if (!xcrypt_md5_finish (&s->ctx))
++    return;
++
+   memcpy (output, setting, saltlen);
+   *(output + saltlen + 0) = '$';
+   /* This is the same permuted order used by BSD md5-crypt ($1$).  */
+-- 
+2.56.0
+

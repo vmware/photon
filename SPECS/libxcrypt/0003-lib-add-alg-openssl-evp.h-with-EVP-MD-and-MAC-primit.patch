@@ -1,0 +1,236 @@
+From a558cb131c78ba87b5de5a13299ef3845e4f0c86 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Fri, 30 Oct 2026 11:15:19 +0530
+Subject: [PATCH 1/8] lib: add alg-openssl-evp.h with EVP MD and MAC primitives
+
+Add alg-openssl-evp.h providing the low-level OpenSSL EVP wrappers used
+by the per-algorithm shim headers:
+
+  xcrypt_evp_ctx + xcrypt_evp_md_{prepare,init,update,final,finish}
+  for digest algorithms (SHA-2, MD5, SM3).
+
+  xcrypt_evp_mac_ctx + xcrypt_evp_mac_{prepare,compute,finish}
+  for HMAC-SHA1: the key is set once in prepare(), then EVP_MAC_init()
+  resets state each round, avoiding a provider fetch/alloc/free per
+  iteration over 196k-262k rounds.
+
+Errors are sticky in ctx->error and surfaced through the finish call,
+so callers do not need per-round checks.
+
+Co-authored-by: Claude Sonnet 4.6 <noreply@anthropic.com>
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ lib/alg-openssl-evp.h | 201 ++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 201 insertions(+)
+ create mode 100644 lib/alg-openssl-evp.h
+
+diff --git a/lib/alg-openssl-evp.h b/lib/alg-openssl-evp.h
+new file mode 100644
+index 0000000..40fa784
+--- /dev/null
++++ b/lib/alg-openssl-evp.h
+@@ -0,0 +1,201 @@
++/* OpenSSL digest state owned by one crypt operation.  Errors remain sticky
++   across digest rounds and must be checked before publishing a hash.  */
++
++#ifndef _ALG_OPENSSL_EVP_H
++#define _ALG_OPENSSL_EVP_H 1
++
++#if USE_OPENSSL
++#include <errno.h>
++#include <openssl/core_names.h>
++#include <openssl/evp.h>
++#include <openssl/params.h>
++#include <openssl/provider.h>
++#include <string.h>
++
++typedef struct
++{
++  EVP_MD_CTX *md;
++  EVP_MD *algorithm;
++  OSSL_LIB_CTX *libctx;
++  OSSL_PROVIDER *provider;
++  int error;
++} xcrypt_evp_ctx;
++
++static inline bool
++xcrypt_evp_md_finish (xcrypt_evp_ctx *ctx)
++{
++  int error = ctx->error;
++  EVP_MD_CTX_free (ctx->md);
++  EVP_MD_free (ctx->algorithm);
++  if (ctx->provider)
++    OSSL_PROVIDER_unload (ctx->provider);
++  OSSL_LIB_CTX_free (ctx->libctx);
++  memset (ctx, 0, sizeof *ctx);
++  if (error)
++    errno = error;
++  return error == 0;
++}
++
++static inline bool
++xcrypt_evp_md_prepare (xcrypt_evp_ctx *ctx, const char *algo,
++                       bool private_default)
++{
++  /* The caller's scratch area need not have been initialized. */
++  memset (ctx, 0, sizeof *ctx);
++  if (private_default)
++    {
++      /* MD5/SM3 compatibility is an explicit exception to the caller's
++         policy.  Never load providers or change properties in its context.
++         Keep this context for all rounds, and release it before returning. */
++      ctx->libctx = OSSL_LIB_CTX_new ();
++      if (!ctx->libctx)
++        {
++          ctx->error = ENOMEM;
++          return xcrypt_evp_md_finish (ctx);
++        }
++      ctx->provider = OSSL_PROVIDER_load (ctx->libctx, "default");
++      if (!ctx->provider)
++        {
++          ctx->error = ENOSYS;
++          return xcrypt_evp_md_finish (ctx);
++        }
++    }
++
++  ctx->algorithm = EVP_MD_fetch (ctx->libctx, algo,
++                                private_default
++                                ? "provider=default,fips=no" : NULL);
++  if (!ctx->algorithm)
++    {
++      ctx->error = ENOSYS;
++      return xcrypt_evp_md_finish (ctx);
++    }
++  ctx->md = EVP_MD_CTX_new ();
++  if (!ctx->md)
++    {
++      ctx->error = ENOMEM;
++      return xcrypt_evp_md_finish (ctx);
++    }
++  return true;
++}
++
++static inline void
++xcrypt_evp_md_init (xcrypt_evp_ctx *ctx)
++{
++  if (!ctx->error && EVP_DigestInit_ex (ctx->md, ctx->algorithm, NULL) != 1)
++    ctx->error = EIO;
++}
++
++static inline void
++xcrypt_evp_md_update (xcrypt_evp_ctx *ctx, const void *data, size_t len)
++{
++  if (!ctx->error && EVP_DigestUpdate (ctx->md, data, len) != 1)
++    ctx->error = EIO;
++}
++
++static inline void
++xcrypt_evp_md_final (xcrypt_evp_ctx *ctx, void *digest, size_t dlen)
++{
++  /* Sanity-check the algorithm digest size before writing to the buffer. */
++  if (!ctx->error && EVP_MD_get_size (ctx->algorithm) != (int)dlen)
++    ctx->error = EIO;
++  unsigned int len = 0;
++  if (!ctx->error
++      && (EVP_DigestFinal_ex (ctx->md, digest, &len) != 1 || len != dlen))
++    ctx->error = EIO;
++}
++
++static inline bool
++xcrypt_evp_hmac (const char *algo,
++                 const void *key, size_t klen,
++                 const void *msg, size_t mlen,
++                 void *digest, size_t dlen)
++{
++  size_t outlen = 0;
++  if (!EVP_Q_mac (NULL, "HMAC", NULL, algo, NULL, key, klen, msg, mlen,
++                 digest, dlen, &outlen) || outlen != dlen)
++    {
++      errno = EIO;
++      return false;
++    }
++  return true;
++}
++
++/* Persistent HMAC context: fetch the algorithm once, set the key once,
++   then call xcrypt_evp_mac_compute() for each round.  This avoids the
++   per-round provider fetch, allocation, key setup and free that EVP_Q_mac
++   incurs.  Errors are sticky and surfaced (with errno) through
++   xcrypt_evp_mac_finish, which is also used to release resources. */
++typedef struct
++{
++  EVP_MAC *mac;
++  EVP_MAC_CTX *ctx;
++  int error;
++} xcrypt_evp_mac_ctx;
++
++static inline bool
++xcrypt_evp_mac_finish (xcrypt_evp_mac_ctx *mctx)
++{
++  int error = mctx->error;
++  EVP_MAC_CTX_free (mctx->ctx);
++  EVP_MAC_free (mctx->mac);
++  memset (mctx, 0, sizeof *mctx);
++  if (error)
++    errno = error;
++  return error == 0;
++}
++
++static inline bool
++xcrypt_evp_mac_prepare (xcrypt_evp_mac_ctx *mctx, const char *algo,
++                        const void *key, size_t klen)
++{
++  memset (mctx, 0, sizeof *mctx);
++  mctx->mac = EVP_MAC_fetch (NULL, "HMAC", NULL);
++  if (!mctx->mac)
++    {
++      mctx->error = ENOSYS;
++      return xcrypt_evp_mac_finish (mctx);
++    }
++  mctx->ctx = EVP_MAC_CTX_new (mctx->mac);
++  if (!mctx->ctx)
++    {
++      mctx->error = ENOMEM;
++      return xcrypt_evp_mac_finish (mctx);
++    }
++  OSSL_PARAM params[] = {
++    OSSL_PARAM_construct_utf8_string (OSSL_MAC_PARAM_DIGEST,
++                                     (char *)(uintptr_t)algo, 0),
++    OSSL_PARAM_construct_end ()
++  };
++  if (!EVP_MAC_init (mctx->ctx, key, klen, params))
++    {
++      mctx->error = EIO;
++      return xcrypt_evp_mac_finish (mctx);
++    }
++  return true;
++}
++
++static inline bool
++xcrypt_evp_mac_compute (xcrypt_evp_mac_ctx *mctx,
++                        const void *data, size_t dlen,
++                        void *digest, size_t outlen)
++{
++  if (mctx->error)
++    return false;
++  /* Re-initialise with NULL key to reuse the key set in xcrypt_evp_mac_prepare. */
++  if (!EVP_MAC_init (mctx->ctx, NULL, 0, NULL)
++      || !EVP_MAC_update (mctx->ctx, data, dlen))
++    {
++      mctx->error = EIO;
++      return false;
++    }
++  size_t actual = 0;
++  if (!EVP_MAC_final (mctx->ctx, digest, &actual, outlen) || actual != outlen)
++    {
++      mctx->error = EIO;
++      return false;
++    }
++  return true;
++}
++
++#endif /* USE_OPENSSL */
++#endif /* _ALG_OPENSSL_EVP_H */
+-- 
+2.56.0
+

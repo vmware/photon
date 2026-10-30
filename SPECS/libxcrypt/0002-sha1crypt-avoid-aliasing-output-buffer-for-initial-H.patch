@@ -1,0 +1,51 @@
+From 4a1c9d981796299a307c02635ae1d49ed590a4c6 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Fri, 30 Oct 2026 07:58:21 +0530
+Subject: [PATCH 2/9] sha1crypt: avoid aliasing output buffer for initial HMAC
+ input
+
+Use a private 'initial' buffer for the priming snprintf so the caller's
+output is written exactly once (with the final formatted hash).  The old
+code passed 'output' to both snprintf and the first hmac round, aliasing
+a buffer that is later overwritten by the final format string.
+
+Add an explicit bounds check so that an oversized salt cannot produce a
+priming string that - together with the two separators and the encoded
+hash - would overflow the output buffer.
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ lib/crypt-pbkdf1-sha1.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/lib/crypt-pbkdf1-sha1.c b/lib/crypt-pbkdf1-sha1.c
+index 5e320d0..13d57fc 100644
+--- a/lib/crypt-pbkdf1-sha1.c
++++ b/lib/crypt-pbkdf1-sha1.c
+@@ -153,12 +153,20 @@ crypt_sha1crypt_rn (const char *phrase, size_t phr_size,
+    * Now get to work...
+    * Prime the pump with <salt><magic><iterations>
+    */
+-  dl = snprintf ((char *)output, out_size, "%.*s%s%lu",
++  char initial[CRYPT_OUTPUT_SIZE];
++  dl = snprintf (initial, sizeof initial, "%.*s%s%lu",
+                  (int)sl, setting, magic, iterations);
++  /* The final string also needs two separators, the hash, and a NUL. */
++  if (dl < 0 || (size_t)dl >= sizeof initial
++      || (size_t)dl + 2 + SHA1_OUTPUT_SIZE + 1 > out_size)
++    {
++      errno = ERANGE;
++      return;
++    }
+   /*
+    * Then hmac using <phrase> as key, and repeat...
+    */
+-  hmac_sha1_process_data ((const unsigned char *)output, (size_t)dl,
++  hmac_sha1_process_data ((const unsigned char *)initial, (size_t)dl,
+                           pwu, pl, hmac_buf);
+   for (i = 1; i < iterations; ++i)
+     {
+-- 
+2.56.0
+

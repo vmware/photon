@@ -1,0 +1,534 @@
+From b9a85178772ce6734b8068e25813a4347ff16bef Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Fri, 30 Oct 2026 11:16:45 +0530
+Subject: [PATCH 7/8] build,test: wire --with-openssl and add known-answer
+ tests
+
+configure.ac: add --with-openssl=yes|no|auto (default auto) which sets
+-DUSE_OPENSSL and links -lcrypto via pkg-config.
+
+Makefile.am: add libcrypt_la_LIBADD += $(OPENSSL_LIBS) and build
+test/crypt-backend-openssl when USE_OPENSSL is set.
+
+test/crypt-backend-openssl.c: known-answer tests for all six backends
+(sha512crypt, sha256crypt, md5crypt, SunMD5, sm3crypt, sha1crypt)
+including empty and single-character passwords, plus caller-policy and
+provider-isolation checks; skipped in native (non-OpenSSL) builds.
+
+Co-authored-by: Claude Sonnet 4.6 <noreply@anthropic.com>
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ Makefile.am                  |  23 ++-
+ configure.ac                 |  40 ++++
+ lib/libxcrypt.pc.in          |   1 +
+ test/crypt-backend-openssl.c | 381 +++++++++++++++++++++++++++++++++++
+ 4 files changed, 444 insertions(+), 1 deletion(-)
+ create mode 100644 test/crypt-backend-openssl.c
+
+diff --git a/Makefile.am b/Makefile.am
+index 548d44a..cacaeb2 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -77,6 +77,12 @@ noinst_HEADERS = \
+ 	lib/alg-hmac-sha1.h \
+ 	lib/alg-md4.h \
+ 	lib/alg-md5.h \
++	lib/alg-openssl-evp.h \
++	lib/alg-md5-impl.h \
++	lib/alg-sha1-hmac-impl.h \
++	lib/alg-sha256-impl.h \
++	lib/alg-sha512-impl.h \
++	lib/alg-sm3-impl.h \
+ 	lib/alg-sha1.h \
+ 	lib/alg-sha256.h \
+ 	lib/alg-sha512.h \
+@@ -170,6 +176,12 @@ endif
+ libcrypt_la_LDFLAGS += $(UNDEF_FLAG) $(TEXT_RELOC_FLAG) $(AM_LDFLAGS)
+ 
+ libcrypt_la_CPPFLAGS = $(AM_CPPFLAGS) -DIN_LIBCRYPT
++libcrypt_la_LIBADD =
++
++if USE_OPENSSL
++libcrypt_la_CPPFLAGS += $(OPENSSL_CFLAGS)
++libcrypt_la_LIBADD += $(OPENSSL_LIBS)
++endif
+ 
+ CONFIG_STATUS_DEPENDENCIES = lib/libcrypt.minver
+ EXTRA_libcrypt_la_DEPENDENCIES = libcrypt.map
+@@ -398,7 +410,8 @@ check_PROGRAMS = \
+ 	test/getrandom-interface \
+ 	test/preferred-method \
+ 	test/short-outbuf \
+-	test/special-char-salt
++	test/special-char-salt \
++	test/crypt-backend-openssl
+ 
+ # All of the known-answer tests are compiled from the same source file,
+ # with different macros defined.
+@@ -499,6 +512,14 @@ test/symbols-static.log test/symbols-static.trs: test/TestCommon.pm
+ 
+ COMMON_TEST_OBJECTS = libcrypt.la
+ 
++test_crypt_backend_openssl_SOURCES = test/crypt-backend-openssl.c
++test_crypt_backend_openssl_LDADD   = $(COMMON_TEST_OBJECTS)
++test_crypt_backend_openssl_CPPFLAGS = $(AM_CPPFLAGS)
++if USE_OPENSSL
++test_crypt_backend_openssl_CPPFLAGS += $(OPENSSL_CFLAGS)
++test_crypt_backend_openssl_LDADD += $(OPENSSL_LIBS)
++endif
++
+ test_badsalt_LDADD = $(COMMON_TEST_OBJECTS)
+ test_badsetting_LDADD = $(COMMON_TEST_OBJECTS)
+ test_gensalt_bcrypt_x_LDADD = $(COMMON_TEST_OBJECTS)
+diff --git a/configure.ac b/configure.ac
+index 94432b0..024ce07 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -237,6 +237,46 @@ AX_APPEND_COMPILE_FLAGS([-fno-plt], [OPTI_FLAGS], [$WARN_CFLAGS])
+ # Export compiler flags for optimization.
+ AC_SUBST([OPTI_FLAGS])
+ 
++# Optional OpenSSL backend for hash computations.
++# When enabled, SHA-256, SHA-512, MD5, and SHA-1 in crypt algorithms will use
++# OpenSSL's EVP API.  yescrypt always uses the native libxcrypt implementation
++# regardless of this setting, so PBKDF2-SHA256, HMAC-SHA256, and the yescrypt
++# KDF are never affected.
++AC_ARG_WITH([openssl],
++    AS_HELP_STRING(
++        [--with-openssl[=yes|no|auto]],
++        [Use OpenSSL as cryptographic backend for SHA-256, SHA-512, MD5, and
++         SHA-1 in crypt algorithms (sha256crypt, sha512crypt, md5crypt, sunmd5,
++         sha1crypt).  yescrypt always uses the native libxcrypt implementation
++         regardless of this setting.  [default=auto]]
++    ),
++    [with_openssl="$withval"],
++    [with_openssl=auto])
++
++AS_CASE([$with_openssl], [yes|no|auto], [],
++  [AC_MSG_ERROR([--with-openssl must be yes, no, or auto])])
++use_openssl=0
++LIBXCRYPT_REQUIRES_PRIVATE=
++if test x"$with_openssl" != xno; then
++  PKG_CHECK_MODULES([OPENSSL], [libcrypto >= 3.0.0],
++    [use_openssl=1],
++    [if test x"$with_openssl" = xyes; then
++       AC_MSG_ERROR([--with-openssl requires OpenSSL libcrypto >= 3.0.0, which was not found])
++     fi
++     AC_MSG_NOTICE([OpenSSL not found; using native hash implementations])])
++fi
++AM_CONDITIONAL([USE_OPENSSL], [test $use_openssl = 1])
++AC_DEFINE_UNQUOTED([USE_OPENSSL], [$use_openssl],
++  [Define to 1 to use OpenSSL EVP as cryptographic backend for SHA-256,
++   SHA-512, MD5, and SHA-1 in crypt algorithms.  yescrypt always uses the
++   native libxcrypt implementation.])
++if test $use_openssl = 1; then
++  LIBXCRYPT_REQUIRES_PRIVATE=libcrypto
++  AC_MSG_NOTICE([OpenSSL backend enabled for SHA-256, SHA-512, MD5, SHA-1 crypt algorithms])
++fi
++
++AC_SUBST([LIBXCRYPT_REQUIRES_PRIVATE])
++
+ # Checks for library functions.
+ AC_CHECK_FUNCS_ONCE([
+   arc4random_buf
+diff --git a/lib/libxcrypt.pc.in b/lib/libxcrypt.pc.in
+index 2c75dc2..8f57d66 100644
+--- a/lib/libxcrypt.pc.in
++++ b/lib/libxcrypt.pc.in
+@@ -11,5 +11,6 @@ includedir=@includedir@
+ Name: @PACKAGE@
+ Version: @VERSION@
+ Description: Extended crypt library for DES, MD5, Blowfish and others
++Requires.private: @LIBXCRYPT_REQUIRES_PRIVATE@
+ Libs: -L${libdir} -lcrypt
+ Cflags: -I${includedir}
+diff --git a/test/crypt-backend-openssl.c b/test/crypt-backend-openssl.c
+new file mode 100644
+index 0000000..3ff24ef
+--- /dev/null
++++ b/test/crypt-backend-openssl.c
+@@ -0,0 +1,381 @@
++/* Validate that the OpenSSL cryptographic backend produces correct output
++ * for the crypt algorithms that use it (sha512crypt, sha256crypt, md5crypt,
++ * sunmd5, sha1crypt, sm3crypt).  yescrypt is intentionally excluded here — it always
++ * uses the native libxcrypt implementation regardless of build flags, and is
++ * covered by test/alg-yescrypt and the yescrypt KA test.
++ *
++ * When built without --with-openssl the test returns 77 (UNSUPPORTED).
++ *
++ * All expected hashes were cross-verified: both the native libxcrypt
++ * implementation (--with-openssl=no) and the OpenSSL-backed build produce
++ * exactly the same output for every entry below.
++ */
++
++#include "crypt-port.h"
++#include "crypt.h"
++
++#include <errno.h>
++#include <stdio.h>
++#include <string.h>
++
++#if USE_OPENSSL
++
++#include <openssl/evp.h>
++#include <openssl/provider.h>
++
++static int failures = 0;
++
++static void
++check (const char *phrase, const char *setting, const char *expected)
++{
++  struct crypt_data cd;
++  memset (&cd, 0, sizeof cd);
++
++  char *result = crypt_r (phrase, setting, &cd);
++  if (!result || result[0] == '*')
++    {
++      fprintf (stderr,
++               "FAIL (crypt error, errno=%d): phrase=\"%s\" setting=\"%s\"\n",
++               errno, phrase, setting);
++      failures++;
++      return;
++    }
++
++  if (strcmp (result, expected) != 0)
++    {
++      fprintf (stderr,
++               "FAIL: phrase=\"%s\" setting=\"%s\"\n"
++               "  expected: %s\n"
++               "  got:      %s\n",
++               phrase, setting, expected, result);
++      failures++;
++    }
++}
++
++/* sha512crypt vectors (verified against both native and OpenSSL builds). */
++#if INCLUDE_sha512crypt
++static const struct { const char *phrase; const char *setting; const char *hash; }
++sha512_cases[] =
++{
++  { "Hello world!",
++    "$6$saltstring",
++    "$6$saltstring$svn8UoSVapNtMuq1ukKS4tPQd8iKwSMHWjl/O817G3uBnIFNjnQJu"
++    "esI68u4OTLiBFdcbYEdFCoEOfaS35inz1" },
++  { "Hello world!",
++    "$6$rounds=10000$saltstringsaltst",
++    "$6$rounds=10000$saltstringsaltst$OW1/O6BYHV6BcXZu8QVeXbDWra3Oeqh0sb"
++    "HbbMCVNSnCM/UrjmM0Dp8vOuZeHBy/YTBmSK6H9qs/y3RnOaw5v." },
++  { "This is just a test",
++    "$6$rounds=5000$toolongsaltstring",
++    "$6$rounds=5000$toolongsaltstrin$lQ8jolhgVRVhY4b5pZKaysCLi0QBxGoNeKQz"
++    "Q3glMhwllF7oGDZxUhx1yxdYcz/e1JSbq3y6JMxxl8audkUEm0" },
++  { "just a test string",
++    "$6$rounds=1400$anotherlongsaltstring",
++    "$6$rounds=1400$anotherlongsalts$fUi74O7nNUQ1m8cd8gNzjcPtaQkt2dRuaisn"
++    "k/ixj/y4bQzxW29VzGKXMCv48QFj7NJFpQtAn5.S.cTg/J.UD." },
++  /* empty and single-character passwords */
++  { "",
++    "$6$saltstring",
++    "$6$saltstring$kyGrqt6gmjAdtFLPrflEFifSYLCWWq1pyx95SvqinLDy2UHmj0sTF0"
++    "MSLMwxPFZc3tu5kQckI8fks0zOPda3n1" },
++  { "x",
++    "$6$saltstring",
++    "$6$saltstring$nk7Qohr7tOmwY2mX639VRP.Lyvj3uhcgpatqHuLC867qfSHKq1LDuKa"
++    "/h7Es9Nv0aL08pbF.cnQlRqhaoKT/D." },
++};
++#endif /* INCLUDE_sha512crypt */
++
++/* sha256crypt vectors (verified against both native and OpenSSL builds). */
++#if INCLUDE_sha256crypt
++static const struct { const char *phrase; const char *setting; const char *hash; }
++sha256_cases[] =
++{
++  { "Hello world!",
++    "$5$saltstring",
++    "$5$saltstring$5B8vYYiY.CVt1RlTTf8KbXBH3hsxY/GNooZaBBGWEc5" },
++  { "Hello world!",
++    "$5$rounds=10000$saltstringsaltst",
++    "$5$rounds=10000$saltstringsaltst$3xv.VbSHBb41AL9AvLeujZkZRBAwqFMz2.op"
++    "qey6IcA" },
++  { "This is just a test",
++    "$5$rounds=5000$toolongsaltstring",
++    "$5$rounds=5000$toolongsaltstrin$Un/5jzAHMgOGZ5.mWJpuVolil07guHPvOW8"
++    "mGRcvxa5" },
++  /* empty and single-character passwords */
++  { "",
++    "$5$saltstring",
++    "$5$saltstring$FdNfA4gXqvCeO6iZs7G/.wwwoywYZqo0l1pwmfWaBA7" },
++  { "x",
++    "$5$saltstring",
++    "$5$saltstring$8lNOPUYH/6hNVwI72WGU4WW1KQqblnIzRCd9nWOKs5A" },
++};
++#endif /* INCLUDE_sha256crypt */
++
++/* md5crypt vectors (verified against both native and OpenSSL builds). */
++#if INCLUDE_md5crypt
++static const struct { const char *phrase; const char *setting; const char *hash; }
++md5_cases[] =
++{
++  { "Hello world!",
++    "$1$saltsalt",
++    "$1$saltsalt$le8lFSqqnPaRFOlmAZpvH1" },
++  { "",
++    "$1$HX3u0jXB",
++    "$1$HX3u0jXB$7ckQ3ItVuVWGDGC4.Pqc20" },
++};
++#endif /* INCLUDE_md5crypt */
++
++/* SunMD5 vector from the existing known-answer table. */
++#if INCLUDE_sunmd5
++static const struct { const char *phrase; const char *setting; const char *hash; }
++sunmd5_cases[] =
++{
++  { "",
++    "$md5$9ZLwtuTO",
++    "$md5$9ZLwtuTO$RZCI6tPskaQD1XDK/Ffsr." },
++};
++#endif /* INCLUDE_sunmd5 */
++
++/* sm3crypt vectors (verified against both native and OpenSSL builds). */
++#if INCLUDE_sm3crypt
++static const struct { const char *phrase; const char *setting; const char *hash; }
++sm3_cases[] =
++{
++  { "Hello world!",
++    "$sm3$saltstring",
++    "$sm3$saltstring$6RCuSuWbADZmLALkvsvtcYYzhrw3xxpuDcqwdPIWxTD" },
++  { "Hello world!",
++    "$sm3$rounds=10000$saltstringsaltst",
++    "$sm3$rounds=10000$saltstringsaltst$H.iZTrCfA6u8TuT4tXLwKdsEKgdqnNHdXlB3./SazdB" },
++  { "This is just a test",
++    "$sm3$rounds=5000$toolongsaltstring",
++    "$sm3$rounds=5000$toolongsaltstrin$8EF2.EaVGKi1KdgOPVnq2i/K3.yjZkaid6gTpnJaT.D" },
++};
++#endif /* INCLUDE_sm3crypt */
++
++/* sha1crypt vectors (NetBSD reference + empty and short passwords). */
++#if INCLUDE_sha1crypt
++static const struct { const char *phrase; const char *setting; const char *hash; }
++sha1_cases[] =
++{
++  { "password",
++    "$sha1$40000$jtNX3nZ2$",
++    "$sha1$40000$jtNX3nZ2$hBNaIXkt4wBI2o5rsi8KejSjNqIq" },
++  /* empty and single-character passwords */
++  { "",
++    "$sha1$40000$jtNX3nZ2$",
++    "$sha1$40000$jtNX3nZ2$s.o9Hrha8halJYrlA4Voh2/JjMH2" },
++  { "x",
++    "$sha1$40000$jtNX3nZ2$",
++    "$sha1$40000$jtNX3nZ2$4pbDet.vscBO9qEN/uWGseELyM0X" },
++};
++#endif /* INCLUDE_sha1crypt */
++
++#define RUN_CASES(arr, label)                                       \
++  do {                                                              \
++    for (size_t _i = 0; _i < ARRAY_SIZE (arr); _i++)               \
++      check ((arr)[_i].phrase, (arr)[_i].setting, (arr)[_i].hash); \
++    printf ("%s: %zu vector(s) checked\n", (label),                \
++            ARRAY_SIZE (arr));                                      \
++  } while (0)
++
++/* The SHA algorithms must honor the caller's OpenSSL policy.  MD5 and
++   SM3 use private contexts to retain legacy password compatibility. */
++#if INCLUDE_sha256crypt || INCLUDE_sha512crypt || INCLUDE_sha1crypt
++static void
++check_failure (const char *phrase, const char *setting)
++{
++  struct crypt_data cd;
++  memset (&cd, 0xa5, sizeof cd);
++  cd.initialized = 0;
++
++  errno = 0;
++  char *result = crypt_r (phrase, setting, &cd);
++  int error = errno;
++  if ((result && result[0] != '*') || error <= 0)
++    {
++      fprintf (stderr, "FAIL: expected crypt error for %s, got %s, errno=%d\n",
++               setting, result ? result : "(null)", error);
++      failures++;
++    }
++}
++#endif
++
++static void
++check_private_hashes (void)
++{
++#if INCLUDE_md5crypt
++  check (md5_cases[0].phrase, md5_cases[0].setting, md5_cases[0].hash);
++#endif
++#if INCLUDE_sunmd5
++  check (sunmd5_cases[0].phrase, sunmd5_cases[0].setting, sunmd5_cases[0].hash);
++#endif
++#if INCLUDE_sm3crypt
++  check (sm3_cases[0].phrase, sm3_cases[0].setting, sm3_cases[0].hash);
++#endif
++}
++
++static void
++check_caller_properties (void)
++{
++  OSSL_LIB_CTX *ctx = OSSL_LIB_CTX_new ();
++  OSSL_PROVIDER *provider = NULL;
++  OSSL_LIB_CTX *previous = NULL;
++
++  if (!ctx || !(provider = OSSL_PROVIDER_load (ctx, "default")))
++    goto setup_error;
++  previous = OSSL_LIB_CTX_set0_default (ctx);
++  if (!EVP_set_default_properties (ctx, "provider=xcrypt_test_unavailable"))
++    goto setup_error;
++
++#if INCLUDE_sha256crypt
++  check_failure (sha256_cases[0].phrase, sha256_cases[0].setting);
++#endif
++#if INCLUDE_sha512crypt
++  check_failure (sha512_cases[0].phrase, sha512_cases[0].setting);
++#endif
++#if INCLUDE_sha1crypt
++  check_failure (sha1_cases[0].phrase, sha1_cases[0].setting);
++#endif
++
++  /* Failed calls must not prevent a later call from succeeding. */
++  if (!EVP_set_default_properties (ctx, NULL))
++    goto setup_error;
++#if INCLUDE_sha256crypt
++  check (sha256_cases[0].phrase, sha256_cases[0].setting, sha256_cases[0].hash);
++#endif
++#if INCLUDE_sha512crypt
++  check (sha512_cases[0].phrase, sha512_cases[0].setting, sha512_cases[0].hash);
++#endif
++#if INCLUDE_sha1crypt
++  check (sha1_cases[0].phrase, sha1_cases[0].setting, sha1_cases[0].hash);
++#endif
++
++  /* This tests property isolation; no FIPS provider is required. */
++  if (!EVP_set_default_properties (ctx, "fips=yes"))
++    goto setup_error;
++  check_private_hashes ();
++  if (!EVP_default_properties_is_fips_enabled (ctx))
++    {
++      fprintf (stderr,
++               "FAIL: private hashes changed the caller's FIPS policy\n");
++      failures++;
++    }
++  printf ("Caller properties: failure, recovery, and FIPS isolation checked\n");
++  goto out;
++
++setup_error:
++  fprintf (stderr, "FAIL: could not prepare caller property test\n");
++  failures++;
++out:
++  if (previous)
++    OSSL_LIB_CTX_set0_default (previous);
++  if (provider)
++    OSSL_PROVIDER_unload (provider);
++  OSSL_LIB_CTX_free (ctx);
++}
++
++static void
++check_provider_isolation (void)
++{
++  OSSL_LIB_CTX *ctx = OSSL_LIB_CTX_new ();
++  OSSL_PROVIDER *provider = NULL;
++  OSSL_LIB_CTX *previous = NULL;
++
++  /* Loading null suppresses implicit loading of the default provider. */
++  if (!ctx || !(provider = OSSL_PROVIDER_load (ctx, "null")))
++    goto setup_error;
++  previous = OSSL_LIB_CTX_set0_default (ctx);
++  if (OSSL_PROVIDER_available (ctx, "default"))
++    goto setup_error;
++
++  check_private_hashes ();
++  if (OSSL_PROVIDER_available (ctx, "default"))
++    {
++      fprintf (stderr,
++               "FAIL: private hashes loaded the caller's default provider\n");
++      failures++;
++    }
++  printf ("Caller provider isolation checked\n");
++  goto out;
++
++setup_error:
++  fprintf (stderr, "FAIL: could not prepare provider isolation test\n");
++  failures++;
++out:
++  if (previous)
++    OSSL_LIB_CTX_set0_default (previous);
++  if (provider)
++    OSSL_PROVIDER_unload (provider);
++  OSSL_LIB_CTX_free (ctx);
++}
++
++#endif /* USE_OPENSSL */
++
++/* ------------------------------------------------------------------ */
++
++int
++main (void)
++{
++#if !USE_OPENSSL
++  return 77; /* UNSUPPORTED — built without --with-openssl */
++#else
++  int any_included = 0;
++
++  printf ("Testing OpenSSL cryptographic backend\n");
++
++#if INCLUDE_sha512crypt
++  RUN_CASES (sha512_cases, "sha512crypt (OpenSSL SHA-512)");
++  any_included = 1;
++#endif
++
++#if INCLUDE_sha256crypt
++  RUN_CASES (sha256_cases, "sha256crypt (OpenSSL SHA-256)");
++  any_included = 1;
++#endif
++
++#if INCLUDE_md5crypt
++  RUN_CASES (md5_cases, "md5crypt    (OpenSSL MD5)");
++  any_included = 1;
++#endif
++
++#if INCLUDE_sunmd5
++  RUN_CASES (sunmd5_cases, "sunmd5      (OpenSSL MD5)");
++  any_included = 1;
++#endif
++
++#if INCLUDE_sm3crypt
++  RUN_CASES (sm3_cases, "sm3crypt    (OpenSSL SM3)");
++  any_included = 1;
++#endif
++
++#if INCLUDE_sha1crypt
++  RUN_CASES (sha1_cases, "sha1crypt   (OpenSSL HMAC-SHA1)");
++  any_included = 1;
++#endif
++
++  if (!any_included)
++    return 77;
++
++#if INCLUDE_sha1crypt
++  /* Priming text can fit while the final encoded hash would overflow. */
++  char oversized_salt[sizeof "$sha1$1$" + 360];
++  memcpy (oversized_salt, "$sha1$1$", sizeof "$sha1$1$" - 1);
++  memset (oversized_salt + sizeof "$sha1$1$" - 1, 'a', 360);
++  oversized_salt[sizeof oversized_salt - 1] = '\0';
++  check_failure ("password", oversized_salt);
++#endif
++
++  check_caller_properties ();
++  check_provider_isolation ();
++
++  if (failures)
++    {
++      fprintf (stderr, "%d test(s) FAILED\n", failures);
++      return 1;
++    }
++
++  printf ("All OpenSSL backend tests passed.\n");
++  return 0;
++#endif /* USE_OPENSSL */
++}
+-- 
+2.56.0
+

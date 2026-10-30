@@ -1,0 +1,125 @@
+From 609b2c68cba0be3bb63e40e8c248e6d87695daab Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Fri, 30 Oct 2026 12:42:59 +0530
+Subject: [PATCH 8/8] test: add bm-crypt benchmark for OpenSSL EVP backend
+
+Add test/bm-crypt.c, a standalone benchmark that times crypt_r() for
+sha1crypt, sha512crypt, sha256crypt, md5crypt, and sm3crypt using
+CLOCK_MONOTONIC.  The binary is registered under noinst_PROGRAMS so it
+is built by default but not run as part of make check.
+
+Run it directly to compare native vs OpenSSL build performance:
+
+  ./test/bm-crypt [reps]
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ Makefile.am     |  6 ++++-
+ test/bm-crypt.c | 70 +++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 75 insertions(+), 1 deletion(-)
+ create mode 100644 test/bm-crypt.c
+
+diff --git a/Makefile.am b/Makefile.am
+index cacaeb2..f30acdb 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -100,7 +100,8 @@ nodist_include_HEADERS += xcrypt.h
+ endif
+ 
+ noinst_PROGRAMS = \
+-	lib/gen-des-tables
++	lib/gen-des-tables \
++	test/bm-crypt
+ 
+ lib_LTLIBRARIES = \
+ 	libcrypt.la
+@@ -512,6 +513,9 @@ test/symbols-static.log test/symbols-static.trs: test/TestCommon.pm
+ 
+ COMMON_TEST_OBJECTS = libcrypt.la
+ 
++test_bm_crypt_SOURCES = test/bm-crypt.c
++test_bm_crypt_LDADD   = $(COMMON_TEST_OBJECTS)
++
+ test_crypt_backend_openssl_SOURCES = test/crypt-backend-openssl.c
+ test_crypt_backend_openssl_LDADD   = $(COMMON_TEST_OBJECTS)
+ test_crypt_backend_openssl_CPPFLAGS = $(AM_CPPFLAGS)
+diff --git a/test/bm-crypt.c b/test/bm-crypt.c
+new file mode 100644
+index 0000000..a622861
+--- /dev/null
++++ b/test/bm-crypt.c
+@@ -0,0 +1,70 @@
++/* Benchmark crypt_r() for algorithms that may use OpenSSL EVP.
++   Build: included in noinst_PROGRAMS; run manually, not part of make check.
++   Usage: ./test/bm-crypt [reps]   (default reps = 20) */
++
++#include "crypt-port.h"
++#include <crypt.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <time.h>
++
++static void
++bench (const char *label, const char *setting, const char *pw, int reps)
++{
++  struct crypt_data cd;
++  struct timespec t0, t1;
++
++  memset (&cd, 0, sizeof cd);
++  if (!crypt_r (pw, setting, &cd) || cd.output[0] == '*')
++    {
++      printf ("%-52s  skipped (not supported)\n", label);
++      return;
++    }
++
++  clock_gettime (CLOCK_MONOTONIC, &t0);
++  for (int i = 0; i < reps; i++)
++    crypt_r (pw, setting, &cd);
++  clock_gettime (CLOCK_MONOTONIC, &t1);
++
++  double ns = (double)(t1.tv_sec - t0.tv_sec) * 1e9
++              + (double)(t1.tv_nsec - t0.tv_nsec);
++  printf ("%-52s  %8.2f ms/hash\n", label, ns / 1e6 / reps);
++}
++
++int
++main (int argc, char **argv)
++{
++  int reps = argc > 1 ? atoi (argv[1]) : 20;
++
++  printf ("Benchmark: crypt_r(), %d iterations, CLOCK_MONOTONIC\n\n", reps);
++  printf ("%-52s  %14s\n", "Algorithm / rounds", "ms/hash");
++  printf ("%-52s  %14s\n",
++          "----------------------------------------------------",
++          "--------------");
++
++  /* sha1crypt: PBKDF1-HMAC-SHA1; default rounds 262144 */
++  bench ("sha1crypt  262144 rounds, password=\"password\"",
++         "$sha1$262144$abcdefgh$", "password", reps);
++  bench ("sha1crypt   10000 rounds, password=\"password\"",
++         "$sha1$10000$abcdefgh$",  "password", reps);
++  bench ("sha1crypt   10000 rounds, password=\"\"",
++         "$sha1$10000$abcdefgh$",  "",         reps);
++
++  /* sha512crypt: default 5000 rounds */
++  bench ("sha512crypt  5000 rounds, password=\"password\"",
++         "$6$saltsalt$",           "password", reps);
++
++  /* sha256crypt: default 5000 rounds */
++  bench ("sha256crypt  5000 rounds, password=\"password\"",
++         "$5$saltsalt$",           "password", reps);
++
++  /* md5crypt: fixed 1000 rounds */
++  bench ("md5crypt     1000 rounds, password=\"password\"",
++         "$1$saltsalt$",           "password", reps);
++
++  /* sm3crypt: default 5000 rounds */
++  bench ("sm3crypt     5000 rounds, password=\"password\"",
++         "$sm3$saltstring$",       "password", reps);
++
++  return 0;
++}
+-- 
+2.56.0
+

@@ -1,0 +1,112 @@
+From ecc5bb875229d8ba5328b9b03d57c7ffd43a067b Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Fri, 30 Oct 2026 11:15:34 +0530
+Subject: [PATCH 2/8] lib: sha512crypt: add OpenSSL EVP backend via
+ alg-sha512-impl.h
+
+Add alg-sha512-impl.h as the sole home for USE_OPENSSL in the sha512crypt
+code path.  The shim exposes xcrypt_sha512_prepare/finish alongside the
+existing SHA512_Init/Update/Final names so crypt-sha512.c needs no
+#if USE_OPENSSL blocks at all.
+
+In native builds, prepare/finish are no-ops returning true; SHA512_Init
+etc. resolve through alg-sha512.h as before.  In OpenSSL builds they
+allocate and release an EVP_MD_CTX around the full crypt operation;
+errors are sticky and propagated through finish().
+
+Co-authored-by: Claude Sonnet 4.6 <noreply@anthropic.com>
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ lib/alg-sha512-impl.h | 46 +++++++++++++++++++++++++++++++++++++++++++
+ lib/crypt-sha512.c    |  8 +++++++-
+ 2 files changed, 53 insertions(+), 1 deletion(-)
+ create mode 100644 lib/alg-sha512-impl.h
+
+diff --git a/lib/alg-sha512-impl.h b/lib/alg-sha512-impl.h
+new file mode 100644
+index 0000000..9288af9
+--- /dev/null
++++ b/lib/alg-sha512-impl.h
+@@ -0,0 +1,46 @@
++/* Unified SHA-512 hash context for sha512crypt.
++ * Exactly one #if USE_OPENSSL lives here; crypt-sha512.c has none.
++ * Native builds use alg-sha512.h (libcperciva); OpenSSL builds use EVP. */
++#ifndef _ALG_SHA512_IMPL_H
++#define _ALG_SHA512_IMPL_H 1
++
++#if USE_OPENSSL
++# include "alg-openssl-evp.h"
++
++# define SHA512_DIGEST_LENGTH 64
++
++typedef xcrypt_evp_ctx SHA512_CTX;
++
++static inline bool
++xcrypt_sha512_prepare (SHA512_CTX *ctx)
++{ return xcrypt_evp_md_prepare (ctx, "SHA2-512", false); }
++
++static inline void
++SHA512_Init (SHA512_CTX *ctx)
++{ xcrypt_evp_md_init (ctx); }
++
++static inline void
++SHA512_Update (SHA512_CTX *ctx, const void *data, size_t len)
++{ xcrypt_evp_md_update (ctx, data, len); }
++
++static inline void
++SHA512_Final (uint8_t digest[SHA512_DIGEST_LENGTH], SHA512_CTX *ctx)
++{ xcrypt_evp_md_final (ctx, digest, SHA512_DIGEST_LENGTH); }
++
++static inline bool
++xcrypt_sha512_finish (SHA512_CTX *ctx)
++{ return xcrypt_evp_md_finish (ctx); }
++
++#else /* !USE_OPENSSL */
++# include "alg-sha512.h"
++
++static inline bool
++xcrypt_sha512_prepare (SHA512_CTX *ctx)
++{ (void)ctx; return true; }
++
++static inline bool
++xcrypt_sha512_finish (SHA512_CTX *ctx)
++{ (void)ctx; return true; }
++
++#endif /* USE_OPENSSL */
++#endif /* _ALG_SHA512_IMPL_H */
+diff --git a/lib/crypt-sha512.c b/lib/crypt-sha512.c
+index 5544c49..41dd798 100644
+--- a/lib/crypt-sha512.c
++++ b/lib/crypt-sha512.c
+@@ -17,7 +17,7 @@
+  */
+ 
+ #include "crypt-port.h"
+-#include "alg-sha512.h"
++#include "alg-sha512-impl.h"
+ 
+ #include <errno.h>
+ #include <stdio.h>
+@@ -159,6 +159,9 @@ crypt_sha512crypt_rn (const char *phrase, size_t phr_size,
+ 
+   /* Compute alternate SHA512 sum with input PHRASE, SALT, and PHRASE.  The
+      final result will be added to the first context.  */
++  if (!xcrypt_sha512_prepare (ctx))
++    return;
++
+   SHA512_Init (ctx);
+ 
+   /* Add phrase.  */
+@@ -252,6 +255,9 @@ crypt_sha512crypt_rn (const char *phrase, size_t phr_size,
+       SHA512_Final (result, ctx);
+     }
+ 
++  if (!xcrypt_sha512_finish (ctx))
++    return;
++
+   /* Now we can construct the result string.  It consists of four
+      parts, one of which is optional.  We already know that buflen is
+      at least sha512_hash_length, therefore none of the string bashing
+-- 
+2.56.0
+

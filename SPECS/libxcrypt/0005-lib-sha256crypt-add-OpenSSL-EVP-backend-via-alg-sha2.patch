@@ -1,0 +1,105 @@
+From a69275efd6e939d6f8ddd2170ceca59fdc9eaf55 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Fri, 30 Oct 2026 11:15:46 +0530
+Subject: [PATCH 3/8] lib: sha256crypt: add OpenSSL EVP backend via
+ alg-sha256-impl.h
+
+Identical structure to the sha512crypt shim.  yescrypt's PBKDF2-SHA256
+and HMAC-SHA256 are unaffected: they include alg-sha256.h directly.
+
+Co-authored-by: Claude Sonnet 4.6 <noreply@anthropic.com>
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+---
+ lib/alg-sha256-impl.h | 46 +++++++++++++++++++++++++++++++++++++++++++
+ lib/crypt-sha256.c    |  8 +++++++-
+ 2 files changed, 53 insertions(+), 1 deletion(-)
+ create mode 100644 lib/alg-sha256-impl.h
+
+diff --git a/lib/alg-sha256-impl.h b/lib/alg-sha256-impl.h
+new file mode 100644
+index 0000000..3845f4e
+--- /dev/null
++++ b/lib/alg-sha256-impl.h
+@@ -0,0 +1,46 @@
++/* Unified SHA-256 hash context for sha256crypt.
++ * Exactly one #if USE_OPENSSL lives here; crypt-sha256.c has none.
++ * Note: yescrypt's PBKDF2-SHA256 / HMAC-SHA256 always use alg-sha256.h. */
++#ifndef _ALG_SHA256_IMPL_H
++#define _ALG_SHA256_IMPL_H 1
++
++#if USE_OPENSSL
++# include "alg-openssl-evp.h"
++
++# define SHA256_DIGEST_LENGTH 32
++
++typedef xcrypt_evp_ctx SHA256_CTX;
++
++static inline bool
++xcrypt_sha256_prepare (SHA256_CTX *ctx)
++{ return xcrypt_evp_md_prepare (ctx, "SHA2-256", false); }
++
++static inline void
++SHA256_Init (SHA256_CTX *ctx)
++{ xcrypt_evp_md_init (ctx); }
++
++static inline void
++SHA256_Update (SHA256_CTX *ctx, const void *data, size_t len)
++{ xcrypt_evp_md_update (ctx, data, len); }
++
++static inline void
++SHA256_Final (uint8_t digest[SHA256_DIGEST_LENGTH], SHA256_CTX *ctx)
++{ xcrypt_evp_md_final (ctx, digest, SHA256_DIGEST_LENGTH); }
++
++static inline bool
++xcrypt_sha256_finish (SHA256_CTX *ctx)
++{ return xcrypt_evp_md_finish (ctx); }
++
++#else /* !USE_OPENSSL */
++# include "alg-sha256.h"
++
++static inline bool
++xcrypt_sha256_prepare (SHA256_CTX *ctx)
++{ (void)ctx; return true; }
++
++static inline bool
++xcrypt_sha256_finish (SHA256_CTX *ctx)
++{ (void)ctx; return true; }
++
++#endif /* USE_OPENSSL */
++#endif /* _ALG_SHA256_IMPL_H */
+diff --git a/lib/crypt-sha256.c b/lib/crypt-sha256.c
+index 88870ae..4cf913e 100644
+--- a/lib/crypt-sha256.c
++++ b/lib/crypt-sha256.c
+@@ -17,7 +17,7 @@
+  */
+ 
+ #include "crypt-port.h"
+-#include "alg-sha256.h"
++#include "alg-sha256-impl.h"
+ 
+ #include <errno.h>
+ #include <stdio.h>
+@@ -158,6 +158,9 @@ crypt_sha256crypt_rn (const char *phrase, size_t phr_size,
+ 
+   /* Compute alternate SHA256 sum with input PHRASE, SALT, and PHRASE.  The
+      final result will be added to the first context.  */
++  if (!xcrypt_sha256_prepare (ctx))
++    return;
++
+   SHA256_Init (ctx);
+ 
+   /* Add phrase.  */
+@@ -250,6 +253,9 @@ crypt_sha256crypt_rn (const char *phrase, size_t phr_size,
+       SHA256_Final (result, ctx);
+     }
+ 
++  if (!xcrypt_sha256_finish (ctx))
++    return;
++
+   /* Now we can construct the result string.  It consists of four
+      parts, one of which is optional.  We already know that there
+      is sufficient space at CP for the longest possible result string.  */
+-- 
+2.56.0
+
