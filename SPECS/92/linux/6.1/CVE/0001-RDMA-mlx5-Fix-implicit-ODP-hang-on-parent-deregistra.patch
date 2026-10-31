@@ -1,0 +1,83 @@
+From 54337a462e9cd81ae52c71b0d234728fd262c8f9 Mon Sep 17 00:00:00 2001
+From: Yishai Hadas <yishaih@nvidia.com>
+Date: Mon, 10 Feb 2025 13:31:11 +0200
+Subject: [PATCH] RDMA/mlx5: Fix implicit ODP hang on parent deregistration
+
+[ Upstream commit 3d8c6f26893d55fab218ad086719de1fc9bb86ba ]
+
+Fix the destroy_unused_implicit_child_mr() to prevent hanging during
+parent deregistration as of below [1].
+
+Upon entering destroy_unused_implicit_child_mr(), the reference count
+for the implicit MR parent is incremented using:
+refcount_inc_not_zero().
+
+A corresponding decrement must be performed if
+free_implicit_child_mr_work() is not called.
+
+The code has been updated to properly manage the reference count that
+was incremented.
+
+[1]
+INFO: task python3:2157 blocked for more than 120 seconds.
+Not tainted 6.12.0-rc7+ #1633
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+task:python3         state:D stack:0     pid:2157 tgid:2157  ppid:1685   flags:0x00000000
+Call Trace:
+<TASK>
+__schedule+0x420/0xd30
+schedule+0x47/0x130
+__mlx5_ib_dereg_mr+0x379/0x5d0 [mlx5_ib]
+? __pfx_autoremove_wake_function+0x10/0x10
+ib_dereg_mr_user+0x5f/0x120 [ib_core]
+? lock_release+0xc6/0x280
+destroy_hw_idr_uobject+0x1d/0x60 [ib_uverbs]
+uverbs_destroy_uobject+0x58/0x1d0 [ib_uverbs]
+uobj_destroy+0x3f/0x70 [ib_uverbs]
+ib_uverbs_cmd_verbs+0x3e4/0xbb0 [ib_uverbs]
+? __pfx_uverbs_destroy_def_handler+0x10/0x10 [ib_uverbs]
+? lock_acquire+0xc1/0x2f0
+? ib_uverbs_ioctl+0xcb/0x170 [ib_uverbs]
+? ib_uverbs_ioctl+0x116/0x170 [ib_uverbs]
+? lock_release+0xc6/0x280
+ib_uverbs_ioctl+0xe7/0x170 [ib_uverbs]
+? ib_uverbs_ioctl+0xcb/0x170 [ib_uverbs]
+ __x64_sys_ioctl+0x1b0/0xa70
+? kmem_cache_free+0x221/0x400
+do_syscall_64+0x6b/0x140
+entry_SYSCALL_64_after_hwframe+0x76/0x7e
+RIP: 0033:0x7f20f21f017b
+RSP: 002b:00007ffcfc4a77c8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 00007ffcfc4a78d8 RCX: 00007f20f21f017b
+RDX: 00007ffcfc4a78c0 RSI: 00000000c0181b01 RDI: 0000000000000003
+RBP: 00007ffcfc4a78a0 R08: 000056147d125190 R09: 00007f20f1f14c60
+R10: 0000000000000001 R11: 0000000000000246 R12: 00007ffcfc4a7890
+R13: 000000000000001c R14: 000056147d100fc0 R15: 00007f20e365c9d0
+</TASK>
+
+Fixes: d3d930411ce3 ("RDMA/mlx5: Fix implicit ODP use after free")
+Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
+Reviewed-by: Artemy Kovalyov <artemyko@nvidia.com>
+Link: https://patch.msgid.link/80f2fcd19952dfa7d9981d93fd6359b4471f8278.1739186929.git.leon@kernel.org
+Signed-off-by: Leon Romanovsky <leon@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ drivers/infiniband/hw/mlx5/odp.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/infiniband/hw/mlx5/odp.c b/drivers/infiniband/hw/mlx5/odp.c
+index 160553d26ee1..0ed88f6a2069 100644
+--- a/drivers/infiniband/hw/mlx5/odp.c
++++ b/drivers/infiniband/hw/mlx5/odp.c
+@@ -227,6 +227,7 @@ static void destroy_unused_implicit_child_mr(struct mlx5_ib_mr *mr)
+ 	if (__xa_cmpxchg(&imr->implicit_children, idx, mr, NULL, GFP_KERNEL) !=
+ 	    mr) {
+ 		xa_unlock(&imr->implicit_children);
++		mlx5r_deref_odp_mkey(&imr->mmkey);
+ 		return;
+ 	}
+ 
+-- 
+2.40.4
+

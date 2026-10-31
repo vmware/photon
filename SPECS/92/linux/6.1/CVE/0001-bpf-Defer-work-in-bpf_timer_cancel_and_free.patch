@@ -1,0 +1,152 @@
+From a6fcd19d7eac1335eb76bc16b6a66b7f574d1d69 Mon Sep 17 00:00:00 2001
+From: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Date: Tue, 9 Jul 2024 18:54:39 +0000
+Subject: [PATCH] bpf: Defer work in bpf_timer_cancel_and_free
+
+[ Upstream commit a6fcd19d7eac1335eb76bc16b6a66b7f574d1d69 ]
+
+Currently, the same case as previous patch (two timer callbacks trying
+to cancel each other) can be invoked through bpf_map_update_elem as
+well, or more precisely, freeing map elements containing timers. Since
+this relies on hrtimer_cancel as well, it is prone to the same deadlock
+situation as the previous patch.
+
+It would be sufficient to use hrtimer_try_to_cancel to fix this problem,
+as the timer cannot be enqueued after async_cancel_and_free. Once
+async_cancel_and_free has been done, the timer must be reinitialized
+before it can be armed again. The callback running in parallel trying to
+arm the timer will fail, and freeing bpf_hrtimer without waiting is
+sufficient (given kfree_rcu), and bpf_timer_cb will return
+HRTIMER_NORESTART, preventing the timer from being rearmed again.
+
+However, there exists a UAF scenario where the callback arms the timer
+before entering this function, such that if cancellation fails (due to
+timer callback invoking this routine, or the target timer callback
+running concurrently). In such a case, if the timer expiration is
+significantly far in the future, the RCU grace period expiration
+happening before it will free the bpf_hrtimer state and along with it
+the struct hrtimer, that is enqueued.
+
+Hence, it is clear cancellation needs to occur after
+async_cancel_and_free, and yet it cannot be done inline due to deadlock
+issues. We thus modify bpf_timer_cancel_and_free to defer work to the
+global workqueue, adding a work_struct alongside rcu_head (both used at
+_different_ points of time, so can share space).
+
+Update existing code comments to reflect the new state of affairs.
+
+Fixes: b00628b1c7d5 ("bpf: Introduce bpf timers.")
+Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Link: https://lore.kernel.org/r/20240709185440.1104957-3-memxor@gmail.com
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[ KN: backported to v6.1; adjusted for lack of bpf_async_cb abstraction ]
+Signed-off-by: Kuntal Nayak <kuntal.nayak@broadcom.com>
+---
+ kernel/bpf/helpers.c | 64 +++++++++++++++++++++++++++++++++-----------
+ 1 file changed, 49 insertions(+), 15 deletions(-)
+
+diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
+index aa3649a08..c6d43dcc3 100644
+--- a/kernel/bpf/helpers.c
++++ b/kernel/bpf/helpers.c
+@@ -1095,7 +1095,10 @@ struct bpf_hrtimer {
+ 	struct bpf_prog *prog;
+ 	void __rcu *callback_fn;
+ 	void *value;
+-	struct rcu_head rcu;
++	union {
++		struct rcu_head rcu;
++		struct work_struct delete_work;
++	};
+ };
+ 
+ /* the actual struct hidden inside uapi struct bpf_timer */
+@@ -1149,6 +1152,21 @@ static enum hrtimer_restart bpf_timer_cb(struct hrtimer *hrtimer)
+ 	return HRTIMER_NORESTART;
+ }
+ 
++static void bpf_timer_delete_work(struct work_struct *work)
++{
++	struct bpf_hrtimer *t = container_of(work, struct bpf_hrtimer, delete_work);
++
++	/* Cancel the timer and wait for callback to complete if it was running.
++	 * If hrtimer_cancel() can be safely called it's safe to call
++	 * kfree_rcu(t) right after for both preallocated and non-preallocated
++	 * maps.  The async->cb = NULL was already done and no code path can see
++	 * address 't' anymore. Timer if armed for existing bpf_hrtimer before
++	 * bpf_timer_cancel_and_free will have been cancelled.
++	 */
++	hrtimer_cancel(&t->timer);
++	kfree_rcu(t, rcu);
++}
++
+ BPF_CALL_3(bpf_timer_init, struct bpf_timer_kern *, timer, struct bpf_map *, map,
+ 	   u64, flags)
+ {
+@@ -1181,6 +1199,7 @@ BPF_CALL_3(bpf_timer_init, struct bpf_timer_kern *, timer, struct bpf_map *, map
+ 		ret = -ENOMEM;
+ 		goto out;
+ 	}
++	INIT_WORK(&t->delete_work, bpf_timer_delete_work);
+ 	t->value = (void *)timer - map->timer_off;
+ 	t->map = map;
+ 	t->prog = NULL;
+@@ -1376,25 +1395,40 @@ void bpf_timer_cancel_and_free(void *val)
+ 	__bpf_spin_unlock_irqrestore(&timer->lock);
+ 	if (!t)
+ 		return;
+-	/* Cancel the timer and wait for callback to complete if it was running.
+-	 * If hrtimer_cancel() can be safely called it's safe to call kfree(t)
+-	 * right after for both preallocated and non-preallocated maps.
+-	 * The timer->timer = NULL was already done and no code path can
+-	 * see address 't' anymore.
+-	 *
+-	 * Check that bpf_map_delete/update_elem() wasn't called from timer
+-	 * callback_fn. In such case don't call hrtimer_cancel() (since it will
+-	 * deadlock) and don't call hrtimer_try_to_cancel() (since it will just
+-	 * return -1). Though callback_fn is still running on this cpu it's
++
++	/* We check that bpf_map_delete/update_elem() was called from timer
++	 * callback_fn. In such case we don't call hrtimer_cancel() (since it
++	 * will deadlock) and don't call hrtimer_try_to_cancel() (since it will
++	 * just return -1). Though callback_fn is still running on this cpu it's
+ 	 * safe to do kfree(t) because bpf_timer_cb() read everything it needed
+ 	 * from 't'. The bpf subprog callback_fn won't be able to access 't',
+-	 * since timer->timer = NULL was already done. The timer will be
++	 * since async->cb = NULL was already done. The timer will be
+ 	 * effectively cancelled because bpf_timer_cb() will return
+ 	 * HRTIMER_NORESTART.
++	 *
++	 * However, it is possible the timer callback_fn calling us armed the
++	 * timer _before_ calling us, such that failing to cancel it here will
++	 * cause it to possibly use struct hrtimer after freeing bpf_hrtimer.
++	 * Therefore, we _need_ to cancel any outstanding timers before we do
++	 * kfree_rcu, even though no more timers can be armed.
++	 *
++	 * Moreover, we need to schedule work even if timer does not belong to
++	 * the calling callback_fn, as on two different CPUs, we can end up in a
++	 * situation where both sides run in parallel, try to cancel one
++	 * another, and we end up waiting on both sides in hrtimer_cancel
++	 * without making forward progress, since timer1 depends on time2
++	 * callback to finish, and vice versa.
++	 *
++	 *  CPU 1 (timer1_cb)			CPU 2 (timer2_cb)
++	 *  bpf_timer_cancel_and_free(timer2)	bpf_timer_cancel_and_free(timer1)
++	 *
++	 * To avoid these issues, punt to workqueue context when we are in a
++	 * timer callback.
+ 	 */
+-	if (this_cpu_read(hrtimer_running) != t)
+-		hrtimer_cancel(&t->timer);
+-	kfree_rcu(t, rcu);
++	if (this_cpu_read(hrtimer_running))
++		queue_work(system_unbound_wq, &t->delete_work);
++	else
++		bpf_timer_delete_work(&t->delete_work);
+ }
+ 
+ BPF_CALL_2(bpf_kptr_xchg, void *, map_value, void *, ptr)
+-- 
+2.43.7
+

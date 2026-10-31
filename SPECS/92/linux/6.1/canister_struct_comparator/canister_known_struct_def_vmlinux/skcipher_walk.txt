@@ -1,0 +1,57 @@
+struct skcipher_walk {
+	union {
+		struct {
+			struct page * page;              /*     0     8 */
+			long unsigned int offset;        /*     8     8 */
+		} phys;                                  /*     0    16 */
+		struct {
+			u8 *       page;                 /*     0     8 */
+			void *     addr;                 /*     8     8 */
+		} virt;                                  /*     0    16 */
+	} src;                                           /*     0    16 */
+	union {
+		struct {
+			struct page * page;              /*    16     8 */
+			long unsigned int offset;        /*    24     8 */
+		} phys;                                  /*    16    16 */
+		struct {
+			u8 *       page;                 /*    16     8 */
+			void *     addr;                 /*    24     8 */
+		} virt;                                  /*    16    16 */
+	} dst;                                           /*    16    16 */
+	struct scatter_walk        in;                   /*    32    16 */
+
+	/* XXX last struct has 4 bytes of padding */
+
+	unsigned int               nbytes;               /*    48     4 */
+
+	/* XXX 4 bytes hole, try to pack */
+
+	struct scatter_walk        out;                  /*    56    16 */
+
+	/* XXX last struct has 4 bytes of padding */
+
+	/* --- cacheline 1 boundary (64 bytes) was 8 bytes ago --- */
+	unsigned int               total;                /*    72     4 */
+
+	/* XXX 4 bytes hole, try to pack */
+
+	struct list_head           buffers;              /*    80    16 */
+	u8 *                       page;                 /*    96     8 */
+	u8 *                       buffer;               /*   104     8 */
+	u8 *                       oiv;                  /*   112     8 */
+	void *                     iv;                   /*   120     8 */
+	/* --- cacheline 2 boundary (128 bytes) --- */
+	unsigned int               ivsize;               /*   128     4 */
+	int                        flags;                /*   132     4 */
+	unsigned int               blocksize;            /*   136     4 */
+	unsigned int               stride;               /*   140     4 */
+	unsigned int               alignmask;            /*   144     4 */
+
+	/* size: 152, cachelines: 3, members: 16 */
+	/* sum members: 140, holes: 2, sum holes: 8 */
+	/* padding: 4 */
+	/* paddings: 2, sum paddings: 8 */
+	/* last cacheline: 24 bytes */
+}; /* size: 152 */
+
