@@ -1,0 +1,131 @@
+From c11a5a785d004509e4ab64fb3dbb05a797166b51 Mon Sep 17 00:00:00 2001
+From: Elliot Berman <elliotjb@elliotjb.com>
+Date: Mon, 2 Nov 2026 06:37:03 -0800
+Subject: [PATCH] ext4: fix NULL folio dereference in mballoc
+
+In 6.1, __filemap_get_folio() returns NULL on failure. The backported
+folio conversion of mballoc keeps the original IS_ERR() checks, so they
+are always false here. The fast-path lookup in ext4_mb_load_buddy_gfp()
+has no FGP_CREAT and returns NULL whenever the bitmap or buddy page of
+an initialised group has been evicted from the page cache, e.g. by
+drop_caches or memory pressure. The next block allocation from that
+group then oopses under ext4_mb_regular_allocator().
+
+$ echo 3 > /proc/sys/vm/drop_caches, in 0.51 seconds)
+$ dd if=/dev/zero of=/mnt/b0 bs=1M count=4 conv=fsync
+BUG: kernel NULL pointer dereference, address: 0000000000000000
+PGD 5f19067 P4D 0
+Oops: 0000 [#1] PREEMPT SMP NOPTI
+CPU: 0 PID: 908 Comm: dd Not tainted 6.1.191 #1-NixOS
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.17.0-0-gb52ca86e094d-prebuilt.qemu.org 04/01/2014
+RIP: 0010:ext4_mb_load_buddy_gfp (fs/ext4/mballoc.c:1536 (discriminator 1)) ext4
+Call Trace:
+ <TASK>
+ext4_mb_regular_allocator (fs/ext4/mballoc.c:1641 fs/ext4/mballoc.c:2798) ext4
+ext4_mb_new_blocks (fs/ext4/mballoc.c:5793) ext4
+ ? ext4_find_extent (fs/ext4/extents.c:925) ext4
+ext4_ext_map_blocks (fs/ext4/extents.c:4369) ext4
+   ...
+
+Check for NULL instead and return -ENOMEM, as failures did before the
+conversion.
+
+Fixes: d34e4fd4e73f ("ext4: convert bd_bitmap_page to bd_bitmap_folio")
+Fixes: 862483175d3d ("ext4: convert bd_buddy_page to bd_buddy_folio")
+Reported-by: Tom Bereknyei <tomberek@gmail.com>
+Signed-off-by: Elliot Berman <elliotjb@elliotjb.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ fs/ext4/mballoc.c | 28 ++++++++++++++--------------
+ 1 file changed, 14 insertions(+), 14 deletions(-)
+
+diff --git a/fs/ext4/mballoc.c b/fs/ext4/mballoc.c
+index e77d56c533c0..d0b276ce9401 100644
+--- a/fs/ext4/mballoc.c
++++ b/fs/ext4/mballoc.c
+@@ -1375,8 +1375,8 @@ static int ext4_mb_get_buddy_page_lock(struct super_block *sb,
+ 	poff = block % blocks_per_page;
+ 	folio = __filemap_get_folio(inode->i_mapping, pnum,
+ 			FGP_LOCK | FGP_ACCESSED | FGP_CREAT, gfp);
+-	if (IS_ERR(folio))
+-		return PTR_ERR(folio);
++	if (!folio)
++		return -ENOMEM;
+ 	BUG_ON(folio->mapping != inode->i_mapping);
+ 	e4b->bd_bitmap_folio = folio;
+ 	e4b->bd_bitmap = folio_address(folio) + (poff * sb->s_blocksize);
+@@ -1389,8 +1389,8 @@ static int ext4_mb_get_buddy_page_lock(struct super_block *sb,
+ 	/* blocks_per_page == 1, hence we need another page for the buddy */
+ 	folio = __filemap_get_folio(inode->i_mapping, block + 1,
+ 			FGP_LOCK | FGP_ACCESSED | FGP_CREAT, gfp);
+-	if (IS_ERR(folio))
+-		return PTR_ERR(folio);
++	if (!folio)
++		return -ENOMEM;
+ 	BUG_ON(folio->mapping != inode->i_mapping);
+ 	e4b->bd_buddy_folio = folio;
+ 	return 0;
+@@ -1533,7 +1533,7 @@ ext4_mb_load_buddy_gfp(struct super_block *sb, ext4_group_t group,
+ 
+ 	/* Avoid locking the folio in the fast path ... */
+ 	folio = __filemap_get_folio(inode->i_mapping, pnum, FGP_ACCESSED, 0);
+-	if (IS_ERR(folio) || !folio_test_uptodate(folio) || folio_test_locked(folio)) {
++	if (!folio || !folio_test_uptodate(folio) || folio_test_locked(folio)) {
+ 		/*
+ 		 * folio_test_locked is employed to detect ongoing folio
+ 		 * migrations, since concurrent migrations can lead to
+@@ -1543,11 +1543,11 @@ ext4_mb_load_buddy_gfp(struct super_block *sb, ext4_group_t group,
+ 		 * try to get the folio with lock in both cases to avoid
+ 		 * concurrency.
+ 		 */
+-		if (!IS_ERR(folio))
++		if (folio)
+ 			folio_put(folio);
+ 		folio = __filemap_get_folio(inode->i_mapping, pnum,
+ 				FGP_LOCK | FGP_ACCESSED | FGP_CREAT, gfp);
+-		if (!IS_ERR(folio)) {
++		if (folio) {
+ 			if (WARN_RATELIMIT(folio->mapping != inode->i_mapping,
+ 	"ext4: bitmap's mapping != inode->i_mapping\n")) {
+ 				/* should never happen */
+@@ -1567,8 +1567,8 @@ ext4_mb_load_buddy_gfp(struct super_block *sb, ext4_group_t group,
+ 			folio_unlock(folio);
+ 		}
+ 	}
+-	if (IS_ERR(folio)) {
+-		ret = PTR_ERR(folio);
++	if (!folio) {
++		ret = -ENOMEM;
+ 		goto err;
+ 	}
+ 	if (!folio_test_uptodate(folio)) {
+@@ -1585,12 +1585,12 @@ ext4_mb_load_buddy_gfp(struct super_block *sb, ext4_group_t group,
+ 	poff = block % blocks_per_page;
+ 
+ 	folio = __filemap_get_folio(inode->i_mapping, pnum, FGP_ACCESSED, 0);
+-	if (IS_ERR(folio) || !folio_test_uptodate(folio) || folio_test_locked(folio)) {
+-		if (!IS_ERR(folio))
++	if (!folio || !folio_test_uptodate(folio) || folio_test_locked(folio)) {
++		if (folio)
+ 			folio_put(folio);
+ 		folio = __filemap_get_folio(inode->i_mapping, pnum,
+ 				FGP_LOCK | FGP_ACCESSED | FGP_CREAT, gfp);
+-		if (!IS_ERR(folio)) {
++		if (folio) {
+ 			if (WARN_RATELIMIT(folio->mapping != inode->i_mapping,
+ 	"ext4: buddy bitmap's mapping != inode->i_mapping\n")) {
+ 				/* should never happen */
+@@ -1609,8 +1609,8 @@ ext4_mb_load_buddy_gfp(struct super_block *sb, ext4_group_t group,
+ 			folio_unlock(folio);
+ 		}
+ 	}
+-	if (IS_ERR(folio)) {
+-		ret = PTR_ERR(folio);
++	if (!folio) {
++		ret = -ENOMEM;
+ 		goto err;
+ 	}
+ 	if (!folio_test_uptodate(folio)) {
+-- 
+2.53.0
+

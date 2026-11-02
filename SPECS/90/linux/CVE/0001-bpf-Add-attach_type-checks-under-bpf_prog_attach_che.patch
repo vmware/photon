@@ -18,21 +18,28 @@ Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 [ KN: Backport to LTS v6.1.y; Skip checks for case BPF_PROG_TYPE_NETFILTER,
       BPF_PROG_TYPE_SCHED_CLS as they are not present. ]
 Signed-off-by: Kuntal Nayak <kuntal.nayak@broadcom.com>
+[Ankit: Backported for v6.1.191, rebased on the 6.1.y forward declaration and ptype check already added to bpf_prog_attach_check_attach_type() by 543576ec15b1; function relocated below attach_type_to_prog_type().]
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
 ---
- kernel/bpf/syscall.c | 98 +++++++++++++++++++-------------------------
- 1 file changed, 43 insertions(+), 55 deletions(-)
+ kernel/bpf/syscall.c | 113 +++++++++++++++++-----------------------
+ 1 file changed, 48 insertions(+), 65 deletions(-)
 
 diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index b145f3ef3..62d483f8d 100644
+index 97dbfb8..8a56eb7 100644
 --- a/kernel/bpf/syscall.c
 +++ b/kernel/bpf/syscall.c
-@@ -3417,34 +3417,6 @@ static int bpf_raw_tracepoint_open(const union bpf_attr *attr)
+@@ -3470,44 +3470,6 @@ static int bpf_raw_tracepoint_open(const union bpf_attr *attr)
  	return fd;
  }
  
+-static enum bpf_prog_type
+-attach_type_to_prog_type(enum bpf_attach_type attach_type);
+-
 -static int bpf_prog_attach_check_attach_type(const struct bpf_prog *prog,
 -					     enum bpf_attach_type attach_type)
 -{
+-	enum bpf_prog_type ptype;
+-
 -	switch (prog->type) {
 -	case BPF_PROG_TYPE_CGROUP_SOCK:
 -	case BPF_PROG_TYPE_CGROUP_SOCK_ADDR:
@@ -45,6 +52,11 @@ index b145f3ef3..62d483f8d 100644
 -			 * check permissions at attach time.
 -			 */
 -			return -EPERM;
+-
+-		ptype = attach_type_to_prog_type(attach_type);
+-		if (prog->type != ptype)
+-			return -EINVAL;
+-
 -		return prog->enforce_expected_attach_type &&
 -			prog->expected_attach_type != attach_type ?
 -			-EINVAL : 0;
@@ -61,57 +73,62 @@ index b145f3ef3..62d483f8d 100644
  static enum bpf_prog_type
  attach_type_to_prog_type(enum bpf_attach_type attach_type)
  {
-@@ -3508,6 +3480,49 @@ attach_type_to_prog_type(enum bpf_attach_type attach_type)
+@@ -3571,6 +3533,54 @@ attach_type_to_prog_type(enum bpf_attach_type attach_type)
  	}
  }
  
 +static int bpf_prog_attach_check_attach_type(const struct bpf_prog *prog,
-+                        enum bpf_attach_type attach_type)
++					     enum bpf_attach_type attach_type)
 +{
-+   enum bpf_prog_type ptype;
++	enum bpf_prog_type ptype;
 +
-+   switch (prog->type) {
-+   case BPF_PROG_TYPE_CGROUP_SOCK:
-+   case BPF_PROG_TYPE_CGROUP_SOCK_ADDR:
-+   case BPF_PROG_TYPE_CGROUP_SOCKOPT:
-+   case BPF_PROG_TYPE_SK_LOOKUP:
-+       return attach_type == prog->expected_attach_type ? 0 : -EINVAL;
-+   case BPF_PROG_TYPE_CGROUP_SKB:
-+       if (!capable(CAP_NET_ADMIN))
-+           /* cg-skb progs can be loaded by unpriv user.
-+            * check permissions at attach time.
-+            */
-+           return -EPERM;
-+       return prog->enforce_expected_attach_type &&
-+           prog->expected_attach_type != attach_type ?
-+           -EINVAL : 0;
-+   case BPF_PROG_TYPE_EXT:
-+       return 0;
-+   case BPF_PROG_TYPE_PERF_EVENT:
-+   case BPF_PROG_TYPE_TRACEPOINT:
-+       if (attach_type != BPF_PERF_EVENT)
-+           return -EINVAL;
-+       return 0;
-+   case BPF_PROG_TYPE_KPROBE:
-+       if (prog->expected_attach_type == BPF_TRACE_KPROBE_MULTI &&
-+           attach_type != BPF_TRACE_KPROBE_MULTI)
-+           return -EINVAL;
-+       if (attach_type != BPF_PERF_EVENT &&
-+           attach_type != BPF_TRACE_KPROBE_MULTI)
-+           return -EINVAL;
-+       return 0;
-+   default:
-+       ptype = attach_type_to_prog_type(attach_type);
-+       if (ptype == BPF_PROG_TYPE_UNSPEC || ptype != prog->type)
-+           return -EINVAL;
-+       return 0;
-+   }
++	switch (prog->type) {
++	case BPF_PROG_TYPE_CGROUP_SOCK:
++	case BPF_PROG_TYPE_CGROUP_SOCK_ADDR:
++	case BPF_PROG_TYPE_CGROUP_SOCKOPT:
++	case BPF_PROG_TYPE_SK_LOOKUP:
++		return attach_type == prog->expected_attach_type ? 0 : -EINVAL;
++	case BPF_PROG_TYPE_CGROUP_SKB:
++		if (!capable(CAP_NET_ADMIN))
++			/* cg-skb progs can be loaded by unpriv user.
++			 * check permissions at attach time.
++			 */
++			return -EPERM;
++
++		ptype = attach_type_to_prog_type(attach_type);
++		if (prog->type != ptype)
++			return -EINVAL;
++
++		return prog->enforce_expected_attach_type &&
++			prog->expected_attach_type != attach_type ?
++			-EINVAL : 0;
++	case BPF_PROG_TYPE_EXT:
++		return 0;
++	case BPF_PROG_TYPE_PERF_EVENT:
++	case BPF_PROG_TYPE_TRACEPOINT:
++		if (attach_type != BPF_PERF_EVENT)
++			return -EINVAL;
++		return 0;
++	case BPF_PROG_TYPE_KPROBE:
++		if (prog->expected_attach_type == BPF_TRACE_KPROBE_MULTI &&
++		    attach_type != BPF_TRACE_KPROBE_MULTI)
++			return -EINVAL;
++		if (attach_type != BPF_PERF_EVENT &&
++		    attach_type != BPF_TRACE_KPROBE_MULTI)
++			return -EINVAL;
++		return 0;
++	default:
++		ptype = attach_type_to_prog_type(attach_type);
++		if (ptype == BPF_PROG_TYPE_UNSPEC || ptype != prog->type)
++			return -EINVAL;
++		return 0;
++	}
 +}
 +
  #define BPF_PROG_ATTACH_LAST_FIELD replace_bpf_fd
  
  #define BPF_F_ATTACH_MASK \
-@@ -4572,7 +4587,6 @@ static int bpf_map_do_batch(const union bpf_attr *attr,
+@@ -4642,7 +4652,6 @@ err_put:
  #define BPF_LINK_CREATE_LAST_FIELD link_create.kprobe_multi.cookies
  static int link_create(union bpf_attr *attr, bpfptr_t uattr)
  {
@@ -119,7 +136,7 @@ index b145f3ef3..62d483f8d 100644
  	struct bpf_prog *prog;
  	int ret;
  
-@@ -4588,32 +4602,6 @@ static int link_create(union bpf_attr *attr, bpfptr_t uattr)
+@@ -4658,32 +4667,6 @@ static int link_create(union bpf_attr *attr, bpfptr_t uattr)
  	if (ret)
  		goto out;
  
@@ -152,6 +169,7 @@ index b145f3ef3..62d483f8d 100644
  	switch (prog->type) {
  	case BPF_PROG_TYPE_CGROUP_SKB:
  	case BPF_PROG_TYPE_CGROUP_SOCK:
+
 -- 
 2.43.7
 

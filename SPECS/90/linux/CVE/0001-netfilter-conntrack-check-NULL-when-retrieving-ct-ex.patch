@@ -31,12 +31,16 @@ Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Apply the cleanup NULL check in pptp_destroy_siblings(), where
 the cleanup code lives in 6.1.]
 Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+[Ankit: Rebased onto v6.1.191; nf_conntrack_expect.c keeps stable's GC/evict
+rework, so the evict_oldest_expect() hunk is omitted as it already takes
+master_help in 6.1.]
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
 ---
  include/net/netfilter/nf_conntrack_helper.h |  2 +
  net/ipv4/netfilter/nf_nat_h323.c            | 12 ++++++
  net/ipv4/netfilter/nf_nat_pptp.c            | 14 +++++--
  net/netfilter/nf_conntrack_broadcast.c      |  3 ++
- net/netfilter/nf_conntrack_expect.c         | 33 +++++++++--------
+ net/netfilter/nf_conntrack_expect.c         | 26 ++++++++--------
  net/netfilter/nf_conntrack_ftp.c            |  6 +++
  net/netfilter/nf_conntrack_h323_main.c      | 18 +++++++++
  net/netfilter/nf_conntrack_pptp.c           | 12 ++++++
@@ -46,7 +50,7 @@ Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
  net/netfilter/nf_conntrack_sip.c            | 41 ++++++++++++++++++++-
  net/netfilter/nf_nat_sip.c                  | 12 ++++++
  net/netfilter/nfnetlink_cthelper.c          |  6 +++
- 14 files changed, 158 insertions(+), 27 deletions(-)
+ 14 files changed, 155 insertions(+), 23 deletions(-)
 
 diff --git a/include/net/netfilter/nf_conntrack_helper.h b/include/net/netfilter/nf_conntrack_helper.h
 index 243503943..70fa6052d 100644
@@ -178,20 +182,18 @@ index ef8a7ca8c..6b77d67b5 100644
  	if (skb->sk == NULL || !net_eq(nf_ct_net(ct), sock_net(skb->sk)))
  		goto out;
 diff --git a/net/netfilter/nf_conntrack_expect.c b/net/netfilter/nf_conntrack_expect.c
-index 70d06ae0a..e29e3233e 100644
+index a0b9cb8b00a9..37d709b011ca 100644
 --- a/net/netfilter/nf_conntrack_expect.c
 +++ b/net/netfilter/nf_conntrack_expect.c
-@@ -52,8 +52,7 @@ void nf_ct_unlink_expect_report(struct nf_conntrack_expect *exp,
+@@ -70,7 +70,6 @@ void nf_ct_unlink_expect_report(struct nf_conntrack_expect *exp,
  	struct nf_conntrack_net *cnet;
  
  	lockdep_nfct_expect_lock_held();
 -	WARN_ON(!master_help);
--	WARN_ON(timer_pending(&exp->timeout));
-+	WARN_ON_ONCE(timer_pending(&exp->timeout));
  
  	hlist_del_rcu(&exp->hnode);
  
-@@ -61,7 +60,8 @@ void nf_ct_unlink_expect_report(struct nf_conntrack_expect *exp,
+@@ -78,7 +77,8 @@ void nf_ct_unlink_expect_report(struct nf_conntrack_expect *exp,
  	cnet->expect_count--;
  
  	hlist_del_rcu(&exp->lnode);
@@ -201,7 +203,7 @@ index 70d06ae0a..e29e3233e 100644
  
  	nf_ct_expect_event_report(IPEXP_DESTROY, exp, portid, report);
  	nf_ct_expect_put(exp);
-@@ -406,10 +406,10 @@ void nf_ct_expect_put(struct nf_conntrack_expect *exp)
+@@ -409,10 +409,10 @@ void nf_ct_expect_put(struct nf_conntrack_expect *exp)
  }
  EXPORT_SYMBOL_GPL(nf_ct_expect_put);
  
@@ -214,19 +216,7 @@ index 70d06ae0a..e29e3233e 100644
  	struct nf_conntrack_helper *helper;
  	struct net *net = nf_ct_exp_net(exp);
  	unsigned int h = nf_ct_expect_dst_hash(net, &exp->tuple);
-@@ -437,10 +437,9 @@ static void nf_ct_expect_insert(struct nf_conntrack_expect *exp)
- }
- 
- /* Race with expectations being used means we could have none to find; OK. */
--static void evict_oldest_expect(struct nf_conn *master,
-+static void evict_oldest_expect(struct nf_conn_help *master_help,
- 				struct nf_conntrack_expect *new)
- {
--	struct nf_conn_help *master_help = nfct_help(master);
- 	struct nf_conntrack_expect *exp, *last = NULL;
- 
- 	hlist_for_each_entry(exp, &master_help->expectations, lnode) {
-@@ -453,13 +452,12 @@ static void evict_oldest_expect(struct nf_conn *master,
+@@ -457,13 +457,12 @@ static void evict_oldest_expect(struct nf_conn_help *master_help,
  }
  
  static inline int __nf_ct_expect_check(struct nf_conntrack_expect *expect,
@@ -241,7 +231,7 @@ index 70d06ae0a..e29e3233e 100644
  	struct nf_conntrack_helper *helper;
  	struct net *net = nf_ct_exp_net(expect);
  	struct hlist_node *next;
-@@ -468,10 +466,6 @@ static inline int __nf_ct_expect_check(struct nf_conntrack_expect *expect,
+@@ -472,10 +471,6 @@ static inline int __nf_ct_expect_check(struct nf_conntrack_expect *expect,
  
  	lockdep_nfct_expect_lock_held();
  
@@ -251,17 +241,8 @@ index 70d06ae0a..e29e3233e 100644
 -	}
  	h = nf_ct_expect_dst_hash(net, &expect->tuple);
  	hlist_for_each_entry_safe(i, next, &nf_ct_expect_hash[h], hnode) {
- 		if (master_matches(i, expect, flags) &&
-@@ -494,7 +488,7 @@ static inline int __nf_ct_expect_check(struct nf_conntrack_expect *expect,
- 		p = &helper->expect_policy[expect->class];
- 		if (p->max_expected &&
- 		    master_help->expecting[expect->class] >= p->max_expected) {
--			evict_oldest_expect(master, expect);
-+			evict_oldest_expect(master_help, expect);
- 			if (master_help->expecting[expect->class]
- 						>= p->max_expected) {
- 				ret = -EMFILE;
-@@ -515,14 +509,21 @@ static inline int __nf_ct_expect_check(struct nf_conntrack_expect *expect,
+ 		if (nf_ct_exp_is_expired(i)) {
+@@ -517,14 +512,21 @@ static inline int __nf_ct_expect_check(struct nf_conntrack_expect *expect,
  int nf_ct_expect_related_report(struct nf_conntrack_expect *expect,
  				u32 portid, int report, unsigned int flags)
  {

@@ -85,7 +85,7 @@ index e61ade810935..5f6788c3b906 100644
  				// If !IRQ_WORK, FQS scan will eventually IPI.
 -				rdp->defer_qs_iw =
 -					IRQ_WORK_INIT_HARD(rcu_preempt_deferred_qs_handler);
- 				rdp->defer_qs_iw_pending = DEFER_QS_PENDING;
+ 				rdp->defer_qs_pending = DEFER_QS_PENDING;
  				irq_work_queue_on(&rdp->defer_qs_iw, rdp->cpu);
  			}
 @@ -828,6 +826,10 @@ dump_blkd_tasks(struct rcu_node *rnp, int ncheck)

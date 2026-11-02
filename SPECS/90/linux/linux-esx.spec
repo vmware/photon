@@ -32,8 +32,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        6.1.190
-Release:        3%{?dist}
+Version:        6.1.191
+Release:        1%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -136,6 +136,12 @@ Patch22: 0001-fs-TARFS-file-system-to-mount-TAR-archive.patch
 #initrd newca
 Patch23: 0001-initramfs-support-for-page-aligned-format-newca.patch
 Patch24: 0001-NEWCA-make-initrd-pages-immutable.patch
+
+Patch25: 0001-ext4-fix-NULL-folio-dereference-in-mballoc.patch
+Patch26: 0001-bs-ntfs3-fix-NULL-folio-dereference-in-ntfs_lock_new_page.patch
+
+# Backward compatibility
+Patch27: 0001-block-Fix-validation-of-ioprio-level.patch
 
 # Patches for ptp_vmw
 Patch30: 0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
@@ -580,6 +586,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Nov 02 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.1.191-1
+- Update to version 6.1.191
+- Fix ioprio level validation to reject out-of-range values
 * Mon Nov 02 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.1.190-3
 - Fixes CVE-2026-74611, CVE-2026-89530, CVE-2026-89702
 * Thu Oct 29 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.1.190-2

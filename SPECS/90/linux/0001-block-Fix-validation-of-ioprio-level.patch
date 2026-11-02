@@ -1,0 +1,60 @@
+From e70be90cb7c6b34f366a58db8a3f571940883b1c Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <ajay.kaher@broadcom.com>
+Date: Thu, 12 Sep 2024 15:19:36 +0530
+Subject: [PATCH] block: Fix validation of ioprio level
+
+The commit eca2040972b4 introduced a backward compatibility issue in
+the function ioprio_check_cap.
+
+Before the change, if ioprio contains a level greater than 0x7, it was
+treated as -EINVAL:
+
+    data = ioprio & 0x1FFF
+    if data >= 0x7, return -EINVAL
+
+Since the change, if ioprio contains a level greater than 0x7 say 0x8
+it is calculated as 0x0:
+
+    level = ioprio & 0x7
+
+To maintain backward compatibility the kernel should return -EINVAL in
+the above case as well.
+
+Fixes: eca2040972b4 ("scsi: block: ioprio: Clean up interface definition")
+Signed-off-by: Ajay Kaher <ajay.kaher@broadcom.com>
+---
+ block/ioprio.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/block/ioprio.c b/block/ioprio.c
+index b5a9425..f830292 100644
+--- a/block/ioprio.c
++++ b/block/ioprio.c
+@@ -33,7 +33,7 @@
+ int ioprio_check_cap(int ioprio)
+ {
+ 	int class = IOPRIO_PRIO_CLASS(ioprio);
+-	int level = IOPRIO_PRIO_LEVEL(ioprio);
++	int data = IOPRIO_PRIO_DATA(ioprio);
+ 
+ 	switch (class) {
+ 		case IOPRIO_CLASS_RT:
+@@ -49,13 +49,13 @@ int ioprio_check_cap(int ioprio)
+ 			fallthrough;
+ 			/* rt has prio field too */
+ 		case IOPRIO_CLASS_BE:
+-			if (level >= IOPRIO_NR_LEVELS)
++			if (data >= IOPRIO_NR_LEVELS || data < 0)
+ 				return -EINVAL;
+ 			break;
+ 		case IOPRIO_CLASS_IDLE:
+ 			break;
+ 		case IOPRIO_CLASS_NONE:
+-			if (level)
++			if (data)
+ 				return -EINVAL;
+ 			break;
+ 		case IOPRIO_CLASS_INVALID:
+-- 
+2.7.4
+

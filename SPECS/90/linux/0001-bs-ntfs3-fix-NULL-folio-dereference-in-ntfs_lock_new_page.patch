@@ -1,0 +1,36 @@
+From 6a0718952075ee33dc9f377e657deb134d7677e4 Mon Sep 17 00:00:00 2001
+From: Elliot Berman <elliotjb@elliotjb.com>
+Date: Mon, 2 Nov 2026 06:37:04 -0800
+Subject: [PATCH] bs/ntfs3: fix NULL folio dereference in ntfs_lock_new_page()
+
+In 6.1, __filemap_get_folio() returns NULL on failure.  The backport of
+commit 95b917a14b15 ("ntfs: Do not overwrite uptodate pages") keeps the
+original IS_ERR() check, which is always false here, so a failed folio
+allocation while reading a compressed file dereferences NULL in
+folio_test_uptodate(). Check for NULL and return ERR_PTR(-ENOMEM).
+
+Fixes: 95b917a14b15 ("ntfs: Do not overwrite uptodate pages")
+Signed-off-by: Elliot Berman <elliotjb@elliotjb.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ fs/ntfs3/frecord.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c
+index a44b7338621e..fa443144f6d1 100644
+--- a/fs/ntfs3/frecord.c
++++ b/fs/ntfs3/frecord.c
+@@ -2172,8 +2172,8 @@ static struct page *ntfs_lock_new_page(struct address_space *mapping,
+ 			FGP_LOCK | FGP_ACCESSED | FGP_CREAT, gfp);
+ 	struct page *page;
+ 
+-	if (IS_ERR(folio))
+-		return ERR_CAST(folio);
++	if (!folio)
++		return ERR_PTR(-ENOMEM);
+ 
+ 	if (!folio_test_uptodate(folio))
+ 		return folio_file_page(folio, index);
+-- 
+2.53.0
+

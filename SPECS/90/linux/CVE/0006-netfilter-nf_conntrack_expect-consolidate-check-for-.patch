@@ -21,8 +21,7 @@ diff --git a/net/netfilter/nf_conntrack_expect.c b/net/netfilter/nf_conntrack_ex
 index 4ca0a5c25..60bd3c3b8 100644
 --- a/net/netfilter/nf_conntrack_expect.c
 +++ b/net/netfilter/nf_conntrack_expect.c
-@@ -470,6 +470,11 @@ static inline int __nf_ct_expect_check(struct nf_conntrack_expect *expect,
- 
+@@ -472,5 +472,10 @@ static inline int __nf_ct_expect_check(struct nf_conntrack_expect *expect,
  	lockdep_nfct_expect_lock_held();
  
 +	if (expect->flags & NF_CT_EXPECT_DEAD) {
