@@ -32,7 +32,6 @@ Patch3074: 0002-fbdev-serialize-mode-sysfs-access-with-lock_fb_info.patch
 # Fixes CVE-2026-63858
 Patch3093: 0001-netfilter-nf_tables-avoid-false-positive-lockdep-flowtables.patch
 Patch3094: 0002-netfilter-nf_tables-avoid-false-positive-lockdep-basechain.patch
-Patch3095: 0003-netfilter-nf_tables-use-list_del_rcu-for-netlink-hoo.patch
 Patch3096: 0004-netfilter-nf_tables-add-hook-transactions-for-device.patch
 Patch3100: 0001-ext4-validate-readdir-offset-before-accessing-dirent.patch
 Patch3102: 0001-net-mlx5-LAG-Fix-off-by-one-in-single-FDB-error-rol.patch
