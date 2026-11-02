@@ -4,7 +4,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        8.9p1
-Release:        17%{?dist}
+Release:        18%{?dist}
 License:        BSD
 URL:            https://www.openssh.com
 Group:          System Environment/Security
@@ -22,36 +22,8 @@ Source2: sshd.service
 Source3: sshd-keygen.service
 Source4: sshdat.service
 
-Patch0: 0001-sshd_config-Avoid-duplicate-entry.patch
-Patch1: CVE-2023-38408-1.patch
-Patch2: CVE-2023-38408-2.patch
-Patch3: CVE-2023-38408-3.patch
-Patch4: CVE-2023-38408-4.patch
-Patch5: CVE-2023-28531.patch
-Patch6: 0001-Support-for-overriding-algorithms-for-ssh-keyscan.patch
-Patch7: CVE-2023-51385.patch
-Patch8: CVE-2023-51384.patch
-Patch9: 0002-disable-async-signal-unsafe-code.patch
-Patch10: CVE-2025-26465.patch
-Patch11: CVE-2025-32728.patch
-Patch12: CVE-2025-61984-prep.patch
-Patch13: CVE-2025-61984.patch
-Patch14: CVE-2025-61985-prep.patch
-Patch15: CVE-2025-61985.patch
-Patch16: CVE-2023-48795.patch
-Patch17: CVE-2026-35385.patch
-Patch18: CVE-2026-35386.patch
-Patch19: CVE-2026-35388.patch
-Patch20: CVE-2026-35414.patch
-Patch21: CVE-2026-35387.patch
-Patch22: CVE-2026-59995.patch
-Patch23: CVE-2026-59996.patch
-Patch24: CVE-2026-59997.patch
-Patch25: CVE-2026-59999.patch
-Patch26: CVE-2026-60000.patch
-Patch27: CVE-2026-60001.patch
-Patch28: CVE-2026-60002.patch
-Patch29: upstream-Further-restrict-the-characters-allowed-in-.patch
+Source5: patches.txt
+%include %{SOURCE5}
 
 # Add couple more syscalls to seccomp filter to support glibc-2.31
 BuildRequires:  openssl-devel
@@ -234,6 +206,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/sshd@.service
 
 %changelog
+* Mon Nov 02 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.9p1-18
+- Scurity fixes
 * Wed Oct 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.9p1-17
 - Further restrict characters allowed in cli supplied user name
 * Thu Jul 30 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.9p1-16
