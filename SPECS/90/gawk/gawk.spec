@@ -3,7 +3,7 @@
 Summary:      Contains programs for manipulating text files
 Name:         gawk
 Version:      5.1.1
-Release:      6.1.1%{?dist}
+Release:      6.1.2%{?dist}
 URL:          http://www.gnu.org/software/gawk
 Group:        Applications/File
 Vendor:       VMware, Inc.
@@ -23,6 +23,9 @@ BuildRequires: readline-devel
 Requires:   mpfr
 Requires:   gmp
 Requires:   readline
+
+Patch0: CVE-2026-40553.patch
+Patch1: CVE-2026-40553_followup.patch
 
 %description
 The Gawk package contains programs for manipulating text files.
@@ -77,6 +80,8 @@ make %{?_smp_mflags} check
 %{_defaultdocdir}/%{name}-%{version}/*
 
 %changelog
+* Tue Oct 27 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 5.1.1-6.1.2
+- Fix CVE-2026-40553
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.1.1-6.1.1
 - Adjusted to build for subrelease 90
 * Wed Feb 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.1.1-6.1
