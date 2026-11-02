@@ -4,7 +4,7 @@
 Summary:    Package manager
 Name:       rpm
 Version:    6.1.0
-Release:    3%{?dist}
+Release:    4%{?dist}
 URL:        http://rpm.org
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -178,6 +178,18 @@ Requires: libselinux
 This plugin automatically sets the correct SELinux security contexts for
 installed files and executed scriptlets during RPM transactions
 
+%package plugin-unshare
+Summary:  Rpm plugin for namespace isolation of scriptlets
+Requires: %{name}-libs = %{version}-%{release}
+Conflicts: %{name} < 6.1.0-4
+Conflicts: %{name}-build < 6.1.0-4
+
+%description plugin-unshare
+This plugin uses Linux user and mount namespaces to isolate scriptlet
+execution. It requires a host kernel that permits namespace creation.
+Do not install this on systems where scriptlets run in unprivileged
+containers, as unshare will fail and break package transactions.
+
 %prep
 %autosetup -p1
 
@@ -246,10 +258,8 @@ rm -rf %{buildroot}
 %{rpmhome}/sysusers.sh
 %{_libdir}/%{name}-plugins/syslog.so
 %{_libdir}/%{name}-plugins/prioreset.so
-%{_libdir}/rpm-plugins/fapolicyd.so
+%{_libdir}/%{name}-plugins/fapolicyd.so
 %exclude %{_libdir}/%{name}-plugins/dbus_announce.so
-%{_libdir}/rpm-plugins/selinux.so
-%{_libdir}/rpm-plugins/unshare.so
 %{_datadir}/dbus-1/system.d/org.rpm.conf
 
 %{_mandir}/man5/rpm-rpmrc.5*
@@ -269,6 +279,9 @@ rm -rf %{buildroot}
 %{_mandir}/man8/rpmkeys.8.gz
 %{_mandir}/man8/%{name}.8.gz
 %{_mandir}/man8/%{name}-plugin*
+%exclude %{_mandir}/man8/%{name}-plugin-unshare.8*
+%exclude %{_mandir}/man8/%{name}-plugin-systemd-inhibit.8*
+%exclude %{_mandir}/man8/%{name}-plugin-selinux.8.gz
 %{_mandir}/man1/rpmsort.1*
 
 %files libs
@@ -299,6 +312,7 @@ rm -rf %{buildroot}
 %{_bindir}/rpmuncompress
 %{_bindir}/rpm-setup-autosign
 %{_rpmmacrodir}/*
+%exclude %{_rpmmacrodir}/macros.transaction_unshare
 %{rpmhome}/find-lang.sh
 %{rpmhome}/find-provides
 %{rpmhome}/find-requires
@@ -363,7 +377,16 @@ rm -rf %{buildroot}
 %{_libdir}/%{name}-plugins/selinux.so
 %{_mandir}/man8/%{name}-plugin-selinux.8.gz
 
+%files plugin-unshare
+%defattr(-,root,root)
+%{_libdir}/rpm-plugins/unshare.so
+%{_rpmmacrodir}/macros.transaction_unshare
+%{_mandir}/man8/%{name}-plugin-unshare.8*
+
 %changelog
+* Fri Oct 30 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.0-4
+- Move unshare plugin to a separate rpm-plugin-unshare subpackage
+- Fixes build failures in unprivileged containers where unshare(2) is not permitted
 * Fri Sep 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.0-3
 - Store build env info in src rpm
 * Thu Sep 03 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.0-2
