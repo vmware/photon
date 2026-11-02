@@ -1,9 +1,11 @@
+%global build_if %{photon_subrelease} >= 92
+
 %global debug_package %{nil}
 
 Summary:        Microsoft .NET Core Runtime
 Name:           dotnet-runtime
-Version:        10.0.12
-Release:        2%{?dist}
+Version:        10.0.14
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://github.com/dotnet/core
@@ -55,6 +57,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 
 %changelog
+* Wed Oct 28 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.0.14-1
+- Upgrade to v10.0.14
 * Wed Oct 07 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.0.12-2
 - Extend build to all subreleases
 * Sun Sep 20 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.0.12-1

@@ -1,0 +1,54 @@
+sources:
+
+- archive: powershell-7.6.9-linux-x64.tar.gz
+  archive_sha512sum: 2c925451b41534a4038cf7c715b8b1f1bde9523c62fbc364a0091056bd6af4d08c6d1b81621c0e32f2e440f4983eb05ba78f9aad0f470a6c852874e88cc17356
+  skip_validation: true
+  license_manual_review:
+  - file_paths:
+    - Modules/Microsoft.PowerShell.PSResourceGet/dependencies/NuGet.Packaging.dll
+    sha256sum: 877e82582d7802aca0b2fd53d34175b42d01bcf713a77d6d0a9e8a73c47ee2a4
+    spdx_exp: ''
+  spdx:
+    package:
+      detailed_description: Powershell is a cross-platform automation and configuration
+        tool/framework that works well with your existing tools and is optimized for
+        dealing with structured data (e.g. JSON, CSV, XML, etc.), REST APIs, and object
+        models. It includes a command-line shell, an associated scripting language
+        and a framework for processing cmdlets.
+      home_page: https://github.com/PowerShell/PowerShell
+      license_concluded: Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND MIT AND MS-PL
+      license_declared: Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND MIT AND MS-PL
+      short_summary: A cross-platform automation tool/framework.
+      supplier: 'Organization: Broadcom, Inc.'
+
+- archive: powershell-7.6.9-nuget-deps.tar.xz
+  archive_sha512sum: b366693cfdb8e5a2ed9de97690c81d70c76136af952b1cababc6fd51c84c2f74dd05de8c5aeaf7c903cadbf4ca26760abec6d99dd614cd2f1b68b9dbd5c945ad
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: Powershell extension for NuGet which is a package manager
+        for .NET.
+      home_page: https://github.com/PowerShell/PowerShell
+      license_concluded: Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND BSD-4-Clause-UC
+        AND CC-BY-3.0 AND CC-BY-SA-3.0 AND CC0-1.0 AND HP-1989 AND LGPL-2.1-or-later
+        AND MIT AND MS-PL AND NCSA AND Unicode-3.0 AND W3C-20150513 AND Zlib AND bzip2-1.0.6
+      license_declared: Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND BSD-4-Clause-UC
+        AND CC-BY-3.0 AND CC-BY-SA-3.0 AND CC0-1.0 AND HP-1989 AND LGPL-2.1-or-later
+        AND MIT AND MS-PL AND NCSA AND Unicode-3.0 AND W3C-20150513 AND Zlib AND bzip2-1.0.6
+      short_summary: Powershell extension for NuGet which is a package manager for
+        .NET.
+      supplier: 'Organization: Broadcom, Inc.'
+
+- archive: powershell-7.6.9.tar.gz
+  archive_sha512sum: 3b146ddad6e848b29ce9dace032a126cf8a779041309fecc836b8edb57acbd33446f6e6ad6c8d0b9140b15c896afcfc718af7702905a9f31f56feaa16918c51b
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: PowerShell is an automation and configuration management
+        platform. It consists of a cross-platform command-line shell and associated
+        scripting language.
+      home_page: https://microsoft.com/powershell
+      license_concluded: Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND MIT AND MS-PL
+      license_declared: Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND MIT AND MS-PL
+      short_summary: PowerShell is an automation and configuration management platform.
+      supplier: 'Organization: Broadcom, Inc.'

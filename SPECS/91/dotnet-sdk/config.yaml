@@ -1,0 +1,21 @@
+sources:
+- archive: dotnet-sdk-10.0.401-linux-x64.tar.gz
+  archive_sha512sum: 51c8b999af9e8dd9998c9edc5944e19a90788862068acd38694e098889054ce8c23d4f0c5cccfa16bf187d044562359e5ee69a9f8ad0bbe913ba90311fbce25b
+  skip_validation: true
+  license_manual_review:
+  - file_paths:
+    - sdk/10.0.401/NuGet.Packaging.dll
+    sha256sum: d1347085c89142139ec26c860a7635207cebd5af5a6bf1908a067b69233d73d2
+    spdx_exp: ''
+  - file_paths:
+    - sdk/10.0.401/Sdks/Microsoft.NET.Sdk/tools/net472/NuGet.Packaging.dll
+    sha256sum: d149980e83dc9e091e18141254d317f444f3219b572c561a53e9e3c9db2c6914
+    spdx_exp: ''
+  spdx:
+    package:
+      detailed_description: '.NET Core is a development platform that you can use to build command-line applications, microservices and modern websites.'
+      home_page: https://github.com/dotnet/core
+      license_concluded: Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND BSD-4-Clause-UC AND CC0-1.0 AND HP-1989 AND LZMA-SDK-9.22 AND MIT AND NCSA AND Unicode-3.0 AND W3C-20150513 AND Zlib
+      license_declared: Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND BSD-4-Clause-UC AND CC0-1.0 AND HP-1989 AND LZMA-SDK-9.22 AND MIT AND NCSA AND Unicode-3.0 AND W3C-20150513 AND Zlib
+      short_summary: Microsoft .NET Core SDK
+      supplier: 'Organization: Broadcom, Inc.'

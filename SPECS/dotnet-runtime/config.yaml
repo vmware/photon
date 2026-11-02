@@ -1,6 +1,6 @@
 sources:
-- archive: dotnet-runtime-10.0.12-linux-x64.tar.gz
-  archive_sha512sum: 58388fdde4f13bd703c7a6f7defb3300b17e42ba5fe8bca50066f80f64ac7406620dcdfb4acc1eff7992750c8cc5cff8369dd12d09730c8a9e8760d6032f7f6e
+- archive: dotnet-runtime-10.0.14-linux-x64.tar.gz
+  archive_sha512sum: 634326028645f38731c8c4e71a68356e4ca0d6b6607139a234ab760687f742063edaf33a1f20dda615742d2dc8300ca2ff857619d51fbb38090383b71334af89
   skip_validation: true
   spdx:
     package:

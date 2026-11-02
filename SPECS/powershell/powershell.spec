@@ -1,3 +1,5 @@
+%global build_if %{photon_subrelease} >= 92
+
 # powershell's make files use -D_FORTIFY_SOURCE=2, which conflicts
 # with =3 from adjust-gcc-specs.sh, failing the build with error:
 # `"_FORTIFY_SOURCE" redefined [-Werror]`
@@ -5,14 +7,15 @@
 %global security_hardening nofortify
 
 %global gen_nuget_deps  0
+
 %if 0%{?gen_nuget_deps} == 1
 %define network_required 1
 %endif
 
 Summary:        PowerShell is an automation and configuration management platform.
 Name:           powershell
-Version:        7.6.6
-Release:        2%{?dist}
+Version:        7.6.9
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://microsoft.com/powershell
@@ -76,7 +79,7 @@ BuildRequires:  wget
 
 Requires:       icu >= 70.1
 Requires:       zlib
-Requires:       dotnet-sdk = 10.0.401
+Requires:       dotnet-sdk = 10.0.403
 
 %description
 PowerShell is an automation and configuration management platform.
@@ -98,6 +101,8 @@ mv %{name}-%{version}-nuget-deps ${HOME}/.nuget
 %patch -p1 0
 dotnet restore .
 mv $HOME/.nuget %{name}-%{version}-nuget-deps
+sync
+sleep 3
 tar cJf %{name}-%{version}-nuget-deps.tar.xz %{name}-%{version}-nuget-deps
 echo "$PWD/%{name}-%{version}-nuget-deps.tar.xz is ready ..."
 echo "You can get the archive from chroot now ..."
@@ -155,6 +160,8 @@ fi
 %{_bindir}/pwsh
 
 %changelog
+* Wed Oct 28 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.6.9-1
+- Upgrade to v7.6.9
 * Wed Oct 07 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.6.6-2
 - Extend build to all subreleases
 * Wed Sep 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.6.6-1

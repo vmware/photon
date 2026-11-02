@@ -1,0 +1,110 @@
+%global build_if %{photon_subrelease} == 91
+
+%define debug_package %{nil}
+
+Summary:        Microsoft .NET Core SDK
+Name:           dotnet-sdk
+Version:        10.0.401
+Release:        2%{?dist}
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Url:            https://github.com/dotnet/core
+Group:          Development/Tools
+
+BuildArch: x86_64
+
+# Download source tarball from the links provided in:
+# https://dotnet.microsoft.com/en-us/download/dotnet/10.0
+Source0: %{name}-%{version}-linux-x64.tar.gz
+
+Source1: license.txt
+%include %{SOURCE1}
+
+Requires: dotnet-runtime = 10.0.12
+Requires: icu >= 70.1
+
+%description
+.NET Core is a development platform that you can use to build command-line
+applications, microservices and modern websites.
+
+%prep
+%autosetup -p1 -c %{name}-%{version} -p1
+
+%build
+
+%install
+mkdir -p %{buildroot}%{_datadir}/dotnet \
+         %{buildroot}%{_sysconfdir}/dotnet
+
+cp -a packs sdk shared %{buildroot}%{_datadir}/dotnet/
+
+echo "%{_datadir}/dotnet" > %{buildroot}%{_sysconfdir}/dotnet/install_location
+
+%files
+%defattr(-,root,root,0755)
+%{_datadir}/*
+%{_sysconfdir}/dotnet/install_location
+
+%changelog
+* Wed Oct 07 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.0.401-2
+- Extend build to all subreleases
+* Wed Sep 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.0.401-1
+- Upgrade to v10.0.401
+* Sun Sep 20 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.0.303-2
+- Bump as a part of dotnet-runtime upgrade
+* Sat Aug 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.0.303-1
+- Upgrade to v10.0.303
+* Mon Jun 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.0.300-2
+- Bump version as a part of dotnet-runtime upgrade
+* Fri May 29 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.0.300-1
+- Upgrade to v10.0.300
+* Wed May 20 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.420-2
+- Build for all subreleases
+* Mon May 11 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 8.0.420-1.1
+- Move to /90
+* Thu Apr 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.420-1
+- Upgrade to v8.0.420
+* Wed Feb 25 2026 Mukul Sikka <mukul.sikka@broadcom.com> 8.0.411-2
+- Bump version as a part of dotnet-runtime upgrade
+* Sun Aug 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.411-1
+- Upgrade to v8.0.411
+* Thu Jun 12 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.407-2
+- Bump version as a part of dotnet-runtime upgrade
+* Thu Apr 03 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.407-1
+- Upgrade to v8.0.407
+* Thu Dec 12 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 8.0.206-2
+- Release bump for SRP compliance
+* Thu Jul 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.0.206-1
+- Upgrade to v8.0.206
+* Thu Jan 11 2024 Anmol Jain <anmolja@vmware.com> 8.0.101-2
+- Bump version as a part to set env location
+* Thu Jan 11 2024 Anmol Jain <anmolja@vmware.com> 8.0.101-1
+- Version update
+* Thu Dec 21 2023 Anmol Jain <anmolja@vmware.com> 7.0.404-1
+- Upgrade version to 7.0.404
+* Mon Jun 12 2023 Anmol Jain <anmolja@vmware.com> 7.0.203-1
+- Upgrade version to 7.0.203
+* Sun Feb 12 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.0.102-2
+- Bump version as a part of icu upgrade
+* Sat Feb 11 2023 Shreenidhi Shedi <sshedi@vmware.com> 7.0.102-1
+- Upgrade to v7.0.102
+* Thu Oct 06 2022 Shreenidhi Shedi <sshedi@vmware.com> 7.0.100-rc1.1
+- Bump version as a part of icu upgrade
+* Wed Oct 05 2022 Shreenidhi Shedi <sshedi@vmware.com> 7.0.100-rc1
+- Upgrade to v7.0.100-rc1
+* Tue Dec 07 2021 Alexey Makhalov <amakhalov@vmware.com> 6.0.100-2
+- Release bump to build with icu-70.1
+* Mon Nov 15 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 6.0.100-1
+- Upgrade to version 6.0.100
+* Tue Oct 26 2021 Shreenidhi Shedi <sshedi@vmware.com> 5.0.402-1
+- Upgrade to version 5.0.402
+* Tue Mar 9 2021 Shreyas B. <shreyasb@vmware.com> 5.0.103-1
+- upgrade to version 5.0.103
+* Thu Jun 25 2020 Gerrit Photon <photon-checkins@vmware.com> 3.1.201-1
+- Automatic Version Bump
+* Thu Nov 07 2019 Shreyas B. <shreyasb@vmware.com> 2.1.509-1
+- upgraded to version 2.1.509
+* Wed Dec 05 2018 Ajay Kaher <akaher@vmware.com> 2.1.403-1
+- upgraded to version 2.1.403
+* Wed Jan 31 2018 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.1.4-1
+- Initial build for photon
