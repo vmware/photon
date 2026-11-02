@@ -1,78 +1,20 @@
 sources:
-- archive: bind-9.20.29.tar.xz
+- archive: bind-9.20.30.tar.gz
+  archive_sha512sum: 33f5272dc20638c08d4f05c3f694410413c7b0970b33d5a1578e4970c2c5f5bf03a6b4b2eb8940cb68972787b3c14bdf89d9b0ac31f8162203df63677f010ea1
   archive_type: upstream
-  version: 9.20.29
-  name: bind-9.20.29
-  url: https://downloads.isc.org/isc/bind9/9.20.29/bind-9.20.29.tar.xz
+  version: 9.20.30
+  name: bind9-9.20.30
+  url: https://github.com/isc-projects/bind9/archive/refs/tags/v9.20.30.tar.gz
   repo_url: https://github.com/isc-projects/bind9.git
-  commit_id: c3d4465e57f2771d780c82f413d4dc4cc779fb64
+  commit_id: 769c3fb93a0a06b2f1f44b5156c4f7e52f57ef78
   skip_list: []
-  missing:
-  - '*.in'
-  - '*.m4'
-  - '*.1in'
-  - '*.8in'
-  - '*.5in'
-  - '*.sh'
-  - '*.pl'
-  - tests
-  - testdata
-  - include
-  - dev
-  - design
-  - cocci
-  - conftools
-  - .github
-  - .gitlab
-  - .clang-format
-  - .clang-format.headers
-  - .gitlab-ci.yml
-  - .editorconfig
-  - .gitattributes
-  - .gitignore
-  - .mailmap
-  - .readthedocs.yaml
-  - .reuse
-  - REUSE.toml
-  - LICENSES
-  - .uncrustify.cfg
-  - .dir-locals.el
-  - .gitchangelog.rc
-  - .git-blame-ignore-revs
-  - .tsan-suppress
-  - sonar-project.properties
-  - dangerfile.py
-  - pyproject.toml
-  - FUZZING.md
-  - srcid
-  - names.csv
-  - mainpage
-  - startperf
-  - dnssec-policy.default.conf
-  - suppr-lsan.txt
-  - install-sh
-  - depcomp
-  - compile
-  - missing
-  - ar-lib
-  - test-driver
-  - config.guess
-  - config.sub
-  - configure
-  - run-clang-tidy
-  - models.c
-  - gen-rsa-sha-vectors.c
-  - gen-eddsa-vectors.c
-  - .agents
-  - .claude
-  archive_sha512sum: afedc73a1376d662eec86b7f0e5795a3b0302e7184af83f90d06e3b5054efb54f5d7ab73f777e0d1b84b25aa27f299de688c508e28f0a22e67ba5eb07aa46077
-  skip_validation: false
+  missing: [check-instincludes.sh, check-trailing-whitespace.sh, nanny.pl, git-replay-merge.sh, check-jinja-include-indentation.sh, run-clang-tidy, unused-headers.sh, design, check-includes.pl, check-gitignore.sh, oom-check.sh, conftools, check-cocci.sh, check-categories.sh, dev, gen-eddsa-vectors.c, pairwise-testing.sh, .gitignore, gen-rsa-sha-vectors.c, check-conf-indentation.sh, memleak.pl, checklibs.sh]
   spdx:
     package:
       detailed_description: 'BIND is open source software that implements the Domain
         Name System (DNS) protocols for the Internet. It is a reference implementation
         of those protocols, but it is also production-grade software, suitable for
-        use in high-volume and high-reliability applications. '
+        use in high-volume and high-reliability applications.'
       home_page: http://www.isc.org/downloads/bind
       license_concluded: FSFAP AND GPL-3.0-or-later WITH Autoconf-exception-3.0 AND
         GPL-3.0-or-later WITH Autoconf-exception-2.0 AND GPL-2.0-or-later WITH Autoconf-exception-generic

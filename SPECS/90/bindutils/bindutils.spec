@@ -6,16 +6,16 @@
 
 Summary:        Domain Name System software
 Name:           bindutils
-Version:        9.20.29
+Version:        9.20.30
 Release:        0.0.1%{?dist}
 URL:            http://www.isc.org/downloads/bind
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://ftp.isc.org/isc/bind9/%{version}/bind-%{version}.tar.xz
+Source0: https://github.com/isc-projects/bind9/archive/refs/tags/bind-%{version}.tar.gz
 
-Source1:        %{name}.sysusers
+Source1: %{name}.sysusers
 
 Source2: license.txt
 %include %{SOURCE2}
@@ -63,9 +63,10 @@ The bindutils-devel package contains full version of the header files and librar
 Upstream no longer supports nor recommends bind libraries for third party applications.
 
 %prep
-%autosetup -p1 -n bind-%{version}
+%autosetup -p1 -n bind9-%{version}
 
 %build
+autoreconf -vif
 %configure \
     --without-python \
     --disable-static
@@ -103,7 +104,6 @@ chmod 0770 %{_home_dir}
 %{_sbindir}/*
 %{_sysconfdir}/*
 %{_tmpfilesdir}/named.conf
-%{_mandir}/man1/*
 %{_sysusersdir}/%{name}.conf
 %{_home_dir}
 
@@ -130,10 +130,10 @@ chmod 0770 %{_home_dir}
 %{_includedir}/irs/*.h
 %{_includedir}/isccc/*.h
 %{_includedir}/isccfg/*.h
-%{_mandir}/man5/*
-%{_mandir}/man8/*
 
 %changelog
+* Mon Nov 02 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.20.30-0.0.1
+- Upgrade to v9.20.30
 * Thu Oct 08 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.20.29-0.0.1
 - Upgrade to v9.20.29
 * Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 9.20.23-1.0.1

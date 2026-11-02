@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} >= 92
 
 %define _bind_user      named
 %define _bind_group     named
@@ -6,29 +6,23 @@
 
 Summary:        Domain Name System software
 Name:           bindutils
-Version:        9.20.29
+Version:        9.20.30
 Release:        1%{?dist}
 URL:            http://www.isc.org/downloads/bind
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://ftp.isc.org/isc/bind9/%{version}/bind-%{version}.tar.xz
+Source0: https://github.com/isc-projects/bind9/archive/refs/tags/bind-%{version}.tar.gz
 
-Source1:        %{name}.sysusers
+Source1: %{name}.sysusers
 
 Source2: license.txt
 %include %{SOURCE2}
 
-Requires:       krb5
-Requires:       e2fsprogs-libs
 Requires(pre):  shadow
-Requires:       openssl-libs
-Requires:       libuv
-Requires:       userspace-rcu
-Requires:       nghttp2
-Requires:       %{name}-libs = %{version}-%{release}
 Requires(pre):  systemd-rpm-macros
+Requires:       %{name}-libs = %{version}-%{release}
 
 BuildRequires:  openssl-devel
 BuildRequires:  libuv-devel
@@ -39,6 +33,7 @@ BuildRequires:  systemd-rpm-macros
 BuildRequires:  krb5-devel
 BuildRequires:  e2fsprogs-devel
 BuildRequires:  userspace-rcu-devel
+BuildRequires:  zlib-devel
 
 %description
 BIND is open source software that implements the Domain Name System (DNS) protocols
@@ -47,7 +42,13 @@ also production-grade software, suitable for use in high-volume and high-reliabi
 
 %package    libs
 Summary:    Libraries used by the BIND DNS packages
-Group:      Development/Libraries
+Requires:   krb5
+Requires:   nghttp2
+Requires:   libuv
+Requires:   openssl-libs
+Requires:   userspace-rcu
+Requires:   e2fsprogs-libs
+Requires:   zlib
 
 %description    libs
 Contains heavyweight version of BIND suite libraries used by both named DNS
@@ -55,7 +56,6 @@ server and utilities in bindutils package.
 
 %package    devel
 Summary:    Header files and libraries needed for bind-dyndb-ldap
-Group:      Development/Libraries
 Requires:   %{name} = %{version}-%{release}
 
 %description    devel
@@ -63,9 +63,10 @@ The bindutils-devel package contains full version of the header files and librar
 Upstream no longer supports nor recommends bind libraries for third party applications.
 
 %prep
-%autosetup -p1 -n bind-%{version}
+%autosetup -p1 -n bind9-%{version}
 
 %build
+autoreconf -vif
 %configure \
     --without-python \
     --disable-static
@@ -83,7 +84,7 @@ zone "." in {
     allow-update {none;}; // no DDNS by default
 };
 EOF
-echo "d /run/named 0755 named named - -" > %{buildroot}%{_tmpfilesdir}/named.conf
+echo "d %{_rundir}/named 0755 named named - -" > %{buildroot}%{_tmpfilesdir}/named.conf
 install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.conf
 
 %pre
@@ -103,7 +104,6 @@ chmod 0770 %{_home_dir}
 %{_sbindir}/*
 %{_sysconfdir}/*
 %{_tmpfilesdir}/named.conf
-%{_mandir}/man1/*
 %{_sysusersdir}/%{name}.conf
 %{_home_dir}
 
@@ -130,10 +130,10 @@ chmod 0770 %{_home_dir}
 %{_includedir}/irs/*.h
 %{_includedir}/isccc/*.h
 %{_includedir}/isccfg/*.h
-%{_mandir}/man5/*
-%{_mandir}/man8/*
 
 %changelog
+* Mon Nov 02 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.20.30-1
+- Upgrade to v9.20.30
 * Mon Sep 21 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 9.20.29-1
 - Upgrade bindutils to version 9.20.29
 * Mon Aug 17 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.20.26-3
