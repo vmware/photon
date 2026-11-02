@@ -1,6 +1,6 @@
 Summary:        Fast incremental file transfer.
 Name:           rsync
-Version:        3.4.4
+Version:        3.5.1
 Release:        1%{?dist}
 License:        GPLv3+
 URL:            https://rsync.samba.org
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://download.samba.org/pub/rsync/src/%{name}-%{version}.tar.gz
-%define sha512 %{name}=cf9a838b1f019b70fd67fa2c293f267be3f24e579c2ea33177ec7afc502c97ce0b613ff0854088c0eb28acd14ee0a75706ae8445115cef4669bd586c505d8453
+%define sha512 %{name}=76f3c60eb12bbde9dd0edfb35c2584526298efea8eace446cbfc11791a593e3716daae313ae6ea30598c03f6c30f38492a4248482351b807ba653a23c808a4aa
 
 BuildRequires:  zlib-devel
 BuildRequires:  lz4-devel
@@ -43,7 +43,8 @@ copy command for everyday use.
     --enable-xxhash \
     --enable-zstd \
     --enable-lz4 \
-    --enable-ipv6
+    --enable-ipv6 \
+    --disable-idn
 
 %make_build
 
@@ -85,6 +86,8 @@ make %{?_smp_mflags} check
 %{_sysconfdir}/rsyncd.conf
 
 %changelog
+* Tue Nov 03 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 3.5.1-1
+- Update to v3.5.1 to fix multiple CVEs
 * Fri Jun 19 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 3.4.4-1
 - Update to v3.4.4
 * Tue May 19 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 3.4.1-2
