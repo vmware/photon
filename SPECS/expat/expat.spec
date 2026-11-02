@@ -1,15 +1,15 @@
 Summary:        An XML parser library
 Name:           expat
-Version:        2.8.1
+Version:        2.10.0
 Release:        1%{?dist}
 License:        MIT
 URL:            https://github.com/libexpat/libexpat
 Group:          System Environment/GeneralLibraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-%define tag     R_2_8_1
+%define tag     R_2_10_0
 Source0:        https://github.com/libexpat/libexpat/releases/download/%{tag}/%{name}-%{version}.tar.xz
-%define sha512 %{name}=186e9677a4255d054364c06f68318df3e9039793da29e7b286ed7c6b12e93f62f2d096b5f7535bde29844fc25a934b84616e72228f6584e9d655fd8ed95c639a
+%define sha512 %{name}=bd61f361d823f67586dad246fa4d4abbe3d22f5a0f9a28401e7a2fc96753d5bae33fbe4068fae72f016998d0da9d8c92edc4abd2fe8a8e4aafc775a8ab547c44
 Requires:       expat-libs = %{version}-%{release}
 
 %description
@@ -87,6 +87,15 @@ rm -rf %{buildroot}/*
 %exclude %{_mandir}/man1/xmlwf.1.gz
 
 %changelog
+* Mon Nov 02 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.10.0-1
+- Version upgrade to 2.10.0
+- Fixes CVE-2026-113351, CVE-2026-115506, CVE-2026-117610, CVE-2026-118370,
+- CVE-2026-102633, CVE-2026-77214, CVE-2026-93990, CVE-2026-66046,
+- CVE-2026-76641, CVE-2026-76957, CVE-2026-76956, CVE-2026-72522,
+- CVE-2026-50219, CVE-2026-56131, CVE-2026-56132, CVE-2026-56403,
+- CVE-2026-56404, CVE-2026-56405, CVE-2026-56406, CVE-2026-56407,
+- CVE-2026-56408, CVE-2026-56409, CVE-2026-56410, CVE-2026-56411,
+- CVE-2026-56412
 * Tue May 19 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.8.1-1
 - Version upgrade to fix CVE-2026-45186
 * Wed May 06 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.8.0-1
