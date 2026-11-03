@@ -2,8 +2,8 @@
 
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
-Version:        3.5.8
-Release:        0.1%{?dist}
+Version:        3.5.9
+Release:        0.2%{?dist}
 URL:            http://www.openssl.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -200,6 +200,12 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Tue Nov 03 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 3.5.9-0.2
+- Upgrade openssl to version 3.5.9.
+- Fixes multiple CVEs
+- CVE-2026-84782, CVE-2026-35189, CVE-2026-35191, CVE-2026-42772, CVE-2026-54873,
+- CVE-2026-54875, CVE-2026-72897, CVE-2026-75804, CVE-2026-75805, CVE-2026-75806,
+- CVE-2026-77696, CVE-2026-84784, CVE-2026-54872.
 * Tue Sep 01 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.5.8-0.1
 - Upgrade to v3.5.8
 - Sub branch for 91

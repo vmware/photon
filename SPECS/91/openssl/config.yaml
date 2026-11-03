@@ -1,12 +1,12 @@
 sources:
-- archive: openssl-3.5.8.tar.gz
+- archive: openssl-3.5.9.tar.gz
   archive_type: upstream
-  archive_sha512sum: 62a1dbed0fad75245b332e41b85a1f7c2379189525e7628a7cf68947d115e90a47f179e3f87d27641e5b2d357c357292179fc0e64eccecdebc81c083f7a8ebe4
-  version: 3.5.8
-  name: openssl-3.5.8
-  url: https://github.com/openssl/openssl/releases/download/openssl-3.5.8/openssl-3.5.8.tar.gz
+  archive_sha512sum: c4c8136fd2c98d13bb85a57bfb0def25c906f47f1fe97675cd114594944eab957b5b81a3e0f48826e1a0f093afff5e83766b539d49768f6db68310fd678d7de6
+  version: 3.5.9
+  name: openssl-3.5.9
+  url: https://github.com/openssl/openssl/releases/download/openssl-3.5.9/openssl-3.5.9.tar.gz
   repo_url: https://github.com/openssl/openssl
-  commit_id: f4dc4d58b48d346a8270183f89acf826d459b0ca
+  commit_id: 45e844fa2a14ec92d146bd8f5778ac130b6625fb
   missing: [.github, gost-engine, .gitmodules, pyca-cryptography, 90-team.norelease.conf, mktar.sh, krb5, .gitignore, .gitattributes, corpora, dev, .git-blame-ignore-revs, .clang-format, .codespellrc, .pre-commit-config.yaml]
   spdx:
     package:
