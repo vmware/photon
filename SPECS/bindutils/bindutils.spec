@@ -4,7 +4,7 @@
 
 Summary:        Domain Name System software
 Name:           bindutils
-Version:        9.18.49
+Version:        9.18.50
 Release:        1%{?dist}
 License:        ISC
 URL:            http://www.isc.org/downloads/bind/
@@ -12,8 +12,14 @@ Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://downloads.isc.org/isc/bind9/%{version}/bind-%{version}.tar.xz
-%define sha512  bind=e5259db8b9fdb3940d4e1d95978514692777a3675fc85a83db30e049d80d8150d10e672d51eeb885a94c6bbd4573ff8fe49248117c24ff155197a24a26b09544
+Source0: https://github.com/isc-projects/bind9/archive/refs/tags/bind-%{version}.tar.gz
+%define sha512 bind=9f05524b901d4ba4bb789b73a25b4bf28360762a9f956f8544e1bd873de8d264a119f34994a3abc6aae9e0f724e9213f5339aa44329bc6679c2eea2d64798ecc
+
+Patch0: CVE-2026-19630.patch
+Patch1: CVE-2026-94300.patch
+Patch2: CVE-2026-96888-1.patch
+Patch3: CVE-2026-96888-2.patch
+Patch4: CVE-2026-97313.patch
 
 BuildRequires:  openssl-devel
 BuildRequires:  libuv-devel
@@ -36,9 +42,10 @@ for the Internet. It is a reference implementation of those protocols, but it is
 also production-grade software, suitable for use in high-volume and high-reliability applications.
 
 %prep
-%autosetup -p1 -n bind-%{version}
+%autosetup -p1 -n bind9-%{version}
 
 %build
+autoreconf -vif
 %configure \
     --without-python \
     --disable-linux-caps
@@ -47,7 +54,7 @@ also production-grade software, suitable for use in high-volume and high-reliabi
 
 %install
 %make_install -C lib %{?_smp_mflags}
-%{__rm} -rf %{buildroot}%{_includedir}
+rm -r %{buildroot}%{_includedir}
 %make_install -C bin/dig %{?_smp_mflags}
 %make_install -C bin/nsupdate %{?_smp_mflags}
 
@@ -88,6 +95,8 @@ chmod 0770 %{_home_dir}
 %{_tmpfilesdir}/named.conf
 
 %changelog
+* Tue Nov 03 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.18.50-1
+- Upgrade to v9.18.50 and apply few security fixes on top
 * Mon Jun 15 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 9.18.49-1
 - Upgrade bindutils to version 9.18.49.
 - Remove obsolete CVE patches for CVE-2024-0760, CVE-2024-1737,
