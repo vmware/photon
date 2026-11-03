@@ -2,7 +2,7 @@
 
 Summary:        An URL retrieval utility and library
 Name:           curl
-Version:        8.22.0
+Version:        8.23.0
 Release:        1%{?dist}
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
@@ -106,6 +106,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+* Tue Nov 03 2026 Dweep Advani <dweep.advani@broadcom.com> 8.23.0-1
+- Upgrade to 8.23.0
 * Thu Sep 17 2026 Dweep Advani <dweep.advani@broadcom.com> 8.22.0-1
 - Upgrade to 8.22.0 to fix multiple CVEs
 * Mon Jul 27 2026 Tapas Kundu <tapas.kundu@broadcom.com> 8.21.0-3

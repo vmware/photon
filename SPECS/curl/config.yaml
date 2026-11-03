@@ -1,12 +1,12 @@
 sources:
-- archive: curl-8.22.0.tar.xz
+- archive: curl-8.23.0.tar.xz
   archive_type: upstream
-  archive_sha512sum: d6badf794e7a72760a353db73adb8b671804ce41619b401265b22dc8f6770ebeaa5adb3c4d1312722082c56013612a382884e025cca49397a8ab47577dd659f7
-  name: curl-8.22.0
-  version: 8.22.0
-  url: https://curl.se/download/curl-8.22.0.tar.xz
+  archive_sha512sum: 69cf0feafdc79fbad007cf2fc977b777ce6ccb05d01afd17b5a42f8bedbfcc342fc3a48193faa7f3eafe6800cd7d07948916e8733db1b9de60287ed06219b840
+  name: curl-8.23.0
+  version: 8.23.0
+  url: https://curl.se/download/curl-8.23.0.tar.xz
   repo_url: https://github.com/curl/curl
-  commit_id: 01346829096c61b372692f6dc43ffa778c6caccd
+  commit_id: 3163ec065643ba20709f190111f42c3e1fe95273
   skip_list: [tool_version.h, curlver.h]
   missing: [.dir-locals.el, cijobs.pl, renovate.json, THANKS-filter, adddocsref.pl, tool_hugehelp.c, SECURITY.md, compile, delta, .circleci, lt~obsolete.m4, buildconf, config.sub, aclocal.m4, libtool.m4, singleuse.pl, libtests.c, .gitignore, contributors.sh, .gitattributes, REUSE.toml, GIT-INFO.md, configure, config.guess, missing, appveyor.yml, .mailmap, depcomp, .git-blame-ignore-revs, installcheck.sh, RELEASE-TOOLS.md, contrithanks.sh, LICENSES, servers.c, ltmain.sh, release-notes.pl, README.md, ltoptions.m4, ltsugar.m4, Windows, tunits.c, Makefile.in, ltversion.m4, units.c, appveyor.sh, install-sh, curl_config.h.in, .github, libcurl-symbols.md, ciconfig.pl, CI.md]
   spdx:
