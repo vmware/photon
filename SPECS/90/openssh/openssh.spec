@@ -1,5 +1,4 @@
 %global build_if %{photon_subrelease} <= 90
-%define STIG_HARDEN 0
 
 %define privsep_path %{_datadir}/empty.sshd
 %global sshd_services sshd.service sshd-keygen.service
@@ -7,7 +6,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        9.3p2
-Release:        21.2%{?dist}
+Release:        21.3%{?dist}
 URL:            https://www.openssh.com
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -27,37 +26,8 @@ Source5: %{name}.sysusers
 Source6: license.txt
 %include %{SOURCE6}
 
-%if 0%{?STIG_HARDEN}
-Patch0: 0001-hardened-sshd-config.patch
-%endif
-
-%if 0%{?STIG_HARDEN} == 0
-Patch0: 0001-sshd_config-Avoid-duplicate-entry.patch
-%endif
-
-Patch1: 0002-Support-for-overriding-algorithms-for-ssh-keyscan.patch
-Patch2: CVE-2023-51385.patch
-Patch3: openssh-CVE-2023-48795.patch
-Patch4: CVE-2023-51384.patch
-Patch5: 0003-disable-async-signal-unsafe-code.patch
-Patch6: CVE-2025-26465.patch
-Patch7: CVE-2025-32728.patch
-Patch8: CVE-2025-61984-prep.patch
-Patch9: CVE-2025-61984.patch
-Patch10: CVE-2025-61985-prep.patch
-Patch11: CVE-2025-61985.patch
-Patch12: CVE-2026-35385.patch
-Patch13: CVE-2026-35386.patch
-Patch14: CVE-2026-35388.patch
-Patch15: CVE-2026-35414.patch
-Patch16: CVE-2026-35387.patch
-Patch17: CVE-2026-59995.patch
-Patch18: CVE-2026-59996.patch
-Patch19: CVE-2026-59997.patch
-Patch20: CVE-2026-59999.patch
-Patch21: CVE-2026-60000.patch
-Patch22: CVE-2026-60001.patch
-Patch23: CVE-2026-60002.patch
+Source7: patches.txt
+%include %{SOURCE7}
 
 # Add couple more syscalls to seccomp filter to support glibc-2.31
 BuildRequires: openssl-devel
@@ -252,6 +222,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/sshd@.service
 
 %changelog
+* Mon Nov 02 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.3p2-21.3
+- Security fixes
 * Wed Jul 29 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.3p2-21.2
 - CVE fixes, CVE-2026-59995 through CVE-2026-60002
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 9.3p2-21.1
