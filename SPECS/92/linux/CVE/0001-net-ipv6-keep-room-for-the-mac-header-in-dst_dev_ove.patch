@@ -1,0 +1,62 @@
+From 36c07127924f11fc5741a780abcaaf808fe9ef13 Mon Sep 17 00:00:00 2001
+From: Yuya Kusakabe <yuya.kusakabe@gmail.com>
+Date: Tue, 22 Sep 2026 05:49:56 +0900
+Subject: [PATCH] net: ipv6: keep room for the mac header in dst_dev_overhead()
+
+[ Upstream commit 87cd6b717e4069dca34e0866e57eaeb44d3b173e ]
+
+The seg6, ioam6 and rpl lwtunnels size their skb_cow_head() request as
+the length they are about to push plus dst_dev_overhead(), then push the
+new headers and rebuild the mac header below them with
+skb_mac_header_rebuild().  That rebuild needs skb->mac_len of headroom,
+but dst_dev_overhead() leaves LL_RESERVED_SPACE() of the egress device,
+16 bytes for plain Ethernet.
+
+Where the mac header is longer than that, as it is on ingress through a
+VLAN device with reorder_hdr off, the rebuild runs out of room:
+skb_set_mac_header(skb, -skb->mac_len) computes a negative offset,
+stores it unchecked in the u16 skb->mac_header, and the memmove that
+follows writes skb->mac_len bytes about 64 KB past skb->head.
+Forwarding plain ping6 traffic through such a device reproduces it on
+all five seg6 encapsulation modes and on the rpl and ioam6 inline paths;
+skb->mac_header comes back as 65534 on a 704-byte head.
+
+Return the larger of the two.  The helper already returns skb->mac_len
+when it has no dst, so this only makes the other branch agree, and it
+covers every caller rather than each call site in turn.
+
+Fixes: 40475b63761a ("net: ipv6: seg6_iptunnel: mitigate 2-realloc issue")
+Fixes: dce525185bc9 ("net: ipv6: ioam6_iptunnel: mitigate 2-realloc issue")
+Fixes: 985ec6f5e623 ("net: ipv6: rpl_iptunnel: mitigate 2-realloc issue")
+Suggested-by: Andrea Mayer <andrea.mayer@uniroma2.it>
+Signed-off-by: Yuya Kusakabe <yuya.kusakabe@gmail.com>
+Reviewed-by: Justin Iurman <justin.iurman@gmail.com>
+Reviewed-by: Gabriel Goller <g.goller@proxmox.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Reviewed-by: Andrea Mayer <andrea.mayer@uniroma2.it>
+Link: https://patch.msgid.link/20260922-seg6-maclen-headroom-v3-1-7b2f982ef79d@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[ Ajay Kaher: Modified to apply on v6.12 ]
+Signed-off-by: Ajay Kaher <ajay.kaher@broadcom.com>
+---
+ include/net/dst.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/include/net/dst.h b/include/net/dst.h
+index 307073eae7f8..dbedfe72e1fd 100644
+--- a/include/net/dst.h
++++ b/include/net/dst.h
+@@ -455,7 +455,8 @@ static inline unsigned int dst_dev_overhead(struct dst_entry *dst,
+ 					    struct sk_buff *skb)
+ {
+ 	if (likely(dst))
+-		return LL_RESERVED_SPACE(dst->dev);
++		return max_t(unsigned int, skb->mac_len,
++			     LL_RESERVED_SPACE(dst->dev));
+ 
+ 	return skb->mac_len;
+ }
+-- 
+2.53.0
+

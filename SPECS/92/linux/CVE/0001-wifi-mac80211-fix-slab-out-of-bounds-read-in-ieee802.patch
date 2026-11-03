@@ -1,0 +1,119 @@
+From 63e7064b4c1c4b540bf2f0cba47384f92ab95307 Mon Sep 17 00:00:00 2001
+From: "Cen Zhang (Microsoft)" <cenzhang@linux.microsoft.com>
+Date: Thu, 24 Sep 2026 22:44:08 -0400
+Subject: [PATCH] wifi: mac80211: fix slab-out-of-bounds read in
+ ieee80211_monitor_select_queue()
+
+[ Upstream commit 6f63e919fe1e335b8abcb3a28bfd4804a98d875a ]
+
+ieee80211_monitor_select_queue() validates the skb length using skb->len
+before dereferencing pointers into skb->data to access the 802.11 header.
+However, skb->len includes data in both the linear head buffer and
+non-linear fragments/pages. When AF_PACKET sends a packet large enough to
+become non-linear, the 802.11 header at skb->data + len_rthdr may extend
+past the linear head buffer even though skb->len appears sufficient.
+
+This leads to a slab-out-of-bounds read when accessing hdr->frame_control,
+as the kernel reads beyond the allocated skb head buffer:
+
+  BUG: KASAN: slab-out-of-bounds in ieee80211_monitor_select_queue+0x1ed/0x220
+
+syzbot has hit the same issues.
+
+Fix this by checking skb_headlen(skb) (which gives the length of the
+linear data region) instead of skb->len before dereferencing skb->data
+pointers. This ensures the required bytes are actually present in the
+linear portion of the skb.
+
+Apply the same fix to ieee80211_validate_radiotap_len() which has the
+same class of bug: it uses skb->len to validate accesses to skb->data,
+and to the corresponding checks in ieee80211_monitor_start_xmit(): for
+drivers advertising NETIF_F_SG the skb is not linearized before
+ndo_start_xmit, so the 802.11 header can be read past the linear
+buffer there as well.
+
+Fixes: cf0277e714a0 ("mac80211: fix skb buffering issue")
+Fixes: 9b8a74e3482f ("[MAC80211]: Improve sanity checks on injected packets")
+Reported-by: AutonomousCodeSecurity@microsoft.com
+Reported-by: syzbot+610e40369bc02181bad0@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=610e40369bc02181bad0
+Reported-by: syzbot+878643e0580bc580f883@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=878643e0580bc580f883
+Assisted-by: GitHub-Copilot:claude-opus-4.6
+Signed-off-by: Cen Zhang (Microsoft) <cenzhang@linux.microsoft.com>
+Reviewed-by: Francis Perron <francis@akrites.dev>
+Link: https://patch.msgid.link/20260925024408.32143-1-cenzhang@linux.microsoft.com
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[ Ajay Kaher: Modified to apply on v6.12 ]
+Signed-off-by: Ajay Kaher <ajay.kaher@broadcom.com>
+---
+ net/mac80211/iface.c |  4 ++--
+ net/mac80211/tx.c    | 10 +++++-----
+ 2 files changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/net/mac80211/iface.c b/net/mac80211/iface.c
+index 889c32fd8de1..88942317fec8 100644
+--- a/net/mac80211/iface.c
++++ b/net/mac80211/iface.c
+@@ -998,8 +998,8 @@ static u16 ieee80211_monitor_select_queue(struct net_device *dev,
+ 
+ 	len_rthdr = ieee80211_get_radiotap_len(skb->data);
+ 	hdr = (struct ieee80211_hdr *)(skb->data + len_rthdr);
+-	if (skb->len < len_rthdr + 2 ||
+-	    skb->len < len_rthdr + ieee80211_hdrlen(hdr->frame_control))
++	if (skb_headlen(skb) < len_rthdr + 2 ||
++	    skb_headlen(skb) < len_rthdr + ieee80211_hdrlen(hdr->frame_control))
+ 		return 0; /* doesn't matter, frame will be dropped */
+ 
+ 	return ieee80211_select_queue_80211(sdata, skb, hdr);
+diff --git a/net/mac80211/tx.c b/net/mac80211/tx.c
+index 77e7d5a17abe..8e274e9f1874 100644
+--- a/net/mac80211/tx.c
++++ b/net/mac80211/tx.c
+@@ -2082,7 +2082,7 @@ static bool ieee80211_validate_radiotap_len(struct sk_buff *skb)
+ 		(struct ieee80211_radiotap_header *)skb->data;
+ 
+ 	/* check for not even having the fixed radiotap header part */
+-	if (unlikely(skb->len < sizeof(struct ieee80211_radiotap_header)))
++	if (unlikely(skb_headlen(skb) < sizeof(struct ieee80211_radiotap_header)))
+ 		return false; /* too short to be possibly valid */
+ 
+ 	/* is it a header version we can trust to find length from? */
+@@ -2090,7 +2090,7 @@ static bool ieee80211_validate_radiotap_len(struct sk_buff *skb)
+ 		return false; /* only version 0 is supported */
+ 
+ 	/* does the skb contain enough to deliver on the alleged length? */
+-	if (unlikely(skb->len < ieee80211_get_radiotap_len(skb->data)))
++	if (unlikely(skb_headlen(skb) < ieee80211_get_radiotap_len(skb->data)))
+ 		return false; /* skb too short for claimed rt header extent */
+ 
+ 	return true;
+@@ -2379,13 +2379,13 @@ netdev_tx_t ieee80211_monitor_start_xmit(struct sk_buff *skb,
+ 	skb_set_network_header(skb, len_rthdr);
+ 	skb_set_transport_header(skb, len_rthdr);
+ 
+-	if (skb->len < len_rthdr + 2)
++	if (skb_headlen(skb) < len_rthdr + 2)
+ 		goto fail;
+ 
+ 	hdr = (struct ieee80211_hdr *)(skb->data + len_rthdr);
+ 	hdrlen = ieee80211_hdrlen(hdr->frame_control);
+ 
+-	if (skb->len < len_rthdr + hdrlen)
++	if (skb_headlen(skb) < len_rthdr + hdrlen)
+ 		goto fail;
+ 
+ 	/*
+@@ -2393,7 +2393,7 @@ netdev_tx_t ieee80211_monitor_start_xmit(struct sk_buff *skb,
+ 	 * carrying a rfc1042 header
+ 	 */
+ 	if (ieee80211_is_data(hdr->frame_control) &&
+-	    skb->len >= len_rthdr + hdrlen + sizeof(rfc1042_header) + 2) {
++	    skb_headlen(skb) >= len_rthdr + hdrlen + sizeof(rfc1042_header) + 2) {
+ 		u8 *payload = (u8 *)hdr + hdrlen;
+ 
+ 		if (ether_addr_equal(payload, rfc1042_header))
+-- 
+2.53.0
+

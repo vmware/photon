@@ -47,3 +47,6 @@ Patch3116: 0001-netfilter-conntrack-check-NULL-when-retrieving-ct-ex.patch
 Patch3119: 0004-netfilter-nf_conntrack_expect-add-and-use-nf_ct_expe.patch
 Patch3120: 0005-netfilter-nf_conntrack_expect-bail-out-on-insert-dea.patch
 Patch3121: 0006-netfilter-nf_conntrack_expect-consolidate-check-for-.patch
+# Fixes CVE-2026-98570, CVE-2026-98810
+Patch3122: 0001-net-ipv6-keep-room-for-the-mac-header-in-dst_dev_ove.patch
+Patch3123: 0001-wifi-mac80211-fix-slab-out-of-bounds-read-in-ieee802.patch
