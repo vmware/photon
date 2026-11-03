@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global security_hardening none
 %global __cmake_in_source_build 0
 %global lkcm_version 6.12
@@ -80,7 +80,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.114
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -1031,6 +1031,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Nov 03 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 6.12.114-2
+- extend release to 91
 * Wed Oct 28 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.114-1
 - Update to version 6.12.114
 * Wed Oct 28 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.113-6
