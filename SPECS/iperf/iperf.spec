@@ -1,9 +1,7 @@
-%global build_if %{photon_subrelease} >= 92
-
 Summary:        A network performance benchmark tool.
 Name:           iperf
 Version:        3.22
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://github.com/esnet/iperf
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -59,6 +57,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/libiperf.3.gz
 
 %changelog
+* Tue Nov 03 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 3.22-2
+- update and build for sr-90/91 as well
 * Tue Oct 06 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 3.22-1
 - Update to version 3.22, fix for CVE-2026-101283, CVE-2026-101276
 * Fri Sep 11 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 3.21-1
