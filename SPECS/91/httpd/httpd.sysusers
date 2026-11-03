@@ -1,2 +1,0 @@
-g apache 25
-u apache 25 "Apache Server" /srv/www /bin/false
