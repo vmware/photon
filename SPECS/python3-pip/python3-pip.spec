@@ -7,7 +7,7 @@ Name:           python3-pip
 # if you make any security fix in this package, package the whl files
 # python3.spec without miss
 Version:        23.3.2
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -56,6 +56,11 @@ A Python wheel of pip to use with venv.
 
 %prep
 %autosetup -p1 -n %{srcname}-%{version}
+# this goes together with Patch0 (dummy-certifi.patch): the patch makes
+# certifi.where()/contents() always use the system CA bundle, so the
+# vendored cacert.pem is dead weight that only carries a stale CA bundle
+# and gets flagged by cert/CVE scanners as if it were in use
+rm -f src/pip/_vendor/certifi/*.pem
 
 %build
 %{python3} setup.py bdist_wheel
@@ -96,6 +101,11 @@ rm -rf %{buildroot}
 %{python_wheel_dir}/%{python_wheel_name}
 
 %changelog
+* Tue Nov 03 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 23.3.2-8
+- Remove stale vendored src/pip/_vendor/certifi/cacert.pem from the build;
+  dummy-certifi.patch already redirects pip to the system CA bundle, so
+  the bundled cert was unused dead weight that could be mistaken for an
+  in-use, outdated CA bundle by security scanners
 * Tue Jun 16 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 23.3.2-7
 - Fix CVE-2024-37891
 * Thu Apr 09 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 23.3.2-6
