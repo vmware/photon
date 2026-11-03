@@ -1,6 +1,6 @@
 Summary:        Fast incremental file transfer.
 Name:           rsync
-Version:        3.5.0
+Version:        3.5.1
 Release:        1%{?dist}
 URL:            https://rsync.samba.org
 Group:          Appication/Internet
@@ -46,7 +46,8 @@ copy command for everyday use.
     --enable-xxhash \
     --enable-zstd \
     --enable-lz4 \
-    --enable-ipv6
+    --enable-ipv6 \
+    --disable-idn
 
 %make_build
 
@@ -87,6 +88,8 @@ make %{?_smp_mflags} check
 %exclude %dir %{_libdir}/debug
 
 %changelog
+* Tue Nov 03 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 3.5.1-1
+- Update to v3.5.1 to fix multiple CVEs
 * Fri Sep 04 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 3.5.0-1
 - Update to v3.5.0 to fix multiple CVEs
 * Tue Jun 16 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 3.4.4-1
