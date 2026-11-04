@@ -1,7 +1,7 @@
 Summary:        A network performance benchmark tool.
 Name:           iperf
-Version:        3.19.1
-Release:        2%{?dist}
+Version:        3.22
+Release:        1%{?dist}
 License:        BSD
 URL:            https://github.com/esnet/iperf
 Group:          Applications/System
@@ -9,11 +9,9 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/esnet/iperf/releases/download/%{version}/%{name}-%{version}.tar.gz
-%define sha512 iperf=116110d5c588395c5e0b11ebcd736bc7aaa0d9c848d65cd1cb32880f5ef02fcc07a1dc95ceaf17fa33fc822636ca74f7caf9e07936cd4e0bc832a0fa89556f35
+%define sha512 iperf=afa690cfdc0b05498778d6853c01d7bee02e86ba8b2af8f498d0b545eae2c407c25bc524bf52299bcd2875e9b123d855a9360a841014388b31cd8760bc7be15a
 
 Patch1:         disablepg.patch
-# Fix CVE-2026-101276 (watchdog stream use-after-free)
-Patch2:         CVE-2026-101276.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -58,6 +56,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/libiperf.3.gz
 
 %changelog
+* Tue Nov 03 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 3.22-1
+- Update to version 3.22, fixes many cves
 * Wed Oct 14 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 3.19.1-2
 - Fix CVE-2026-101276
 * Fri Aug 08 2025 Ankit Jain <ankit-aj.jain@broadcom.com> 3.19.1-1
