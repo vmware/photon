@@ -73,18 +73,8 @@
                     "v6.1"
                 ]
             },
-            "2.3.10": {
-                "subrelease_max": 91,
-                "flavours": [
-                    "linux",
-                    "linux-esx"
-                ],
-                "kernel_versions": [
-                    "v6.12"
-                ]
-            },
             "2.6.7": {
-                "subrelease_min": 92,
+                "subrelease_min": 91,
                 "flavours": [
                     "linux",
                     "linux-esx"
