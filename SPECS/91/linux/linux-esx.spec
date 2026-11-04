@@ -29,7 +29,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.111
-Release:        3%{?dist}
+Release:        3.u1%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -582,6 +582,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Nov 04 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 6.12.111-3.u1
+- Fixes CVE-2026-98432
 * Wed Sep 30 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 6.12.111-3
 - Fix jent mem free.
 * Mon Sep 28 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.12.111-2
