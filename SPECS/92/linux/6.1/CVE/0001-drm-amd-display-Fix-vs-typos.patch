@@ -1,0 +1,45 @@
+From 1c25a71f2f29fa01cf4663640f10dc921e8e9fed Mon Sep 17 00:00:00 2001
+From: Dan Carpenter <dan.carpenter@linaro.org>
+Date: Fri, 9 Feb 2024 16:02:42 +0300
+Subject: [PATCH] drm/amd/display: Fix && vs || typos
+
+commit 17ba9cde11c2bfebbd70867b0a2ac4a22e573379 upstream
+
+These ANDs should be ORs or it will lead to a NULL dereference.
+
+Fixes: fb5a3d037082 ("drm/amd/display: Add NULL test for 'timing generator' in 'dcn21_set_pipe()'")
+Fixes: 886571d217d7 ("drm/amd/display: Fix 'panel_cntl' could be null in 'dcn21_set_backlight_level()'")
+Reviewed-by: Anthony Koo <anthony.koo@amd.com>
+Signed-off-by: Dan Carpenter <dan.carpenter@linaro.org>
+Signed-off-by: Hamza Mahfooz <hamza.mahfooz@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ drivers/gpu/drm/amd/display/dc/dcn21/dcn21_hwseq.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_hwseq.c b/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_hwseq.c
+index a0376f518762..5910cde0408d 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_hwseq.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_hwseq.c
+@@ -187,7 +187,7 @@ void dcn21_set_pipe(struct pipe_ctx *pipe_ctx)
+ 	struct dmcu *dmcu = pipe_ctx->stream->ctx->dc->res_pool->dmcu;
+ 	uint32_t otg_inst;
+
+-	if (!abm && !tg && !panel_cntl)
++	if (!abm || !tg || !panel_cntl)
+ 		return;
+
+ 	otg_inst = tg->inst;
+@@ -211,7 +211,7 @@ bool dcn21_set_backlight_level(struct pipe_ctx *pipe_ctx,
+ 	struct panel_cntl *panel_cntl = pipe_ctx->stream->link->panel_cntl;
+ 	uint32_t otg_inst;
+
+-	if (!abm && !tg && !panel_cntl)
++	if (!abm || !tg || !panel_cntl)
+ 		return false;
+
+ 	otg_inst = tg->inst;
+--
+2.40.4
+
