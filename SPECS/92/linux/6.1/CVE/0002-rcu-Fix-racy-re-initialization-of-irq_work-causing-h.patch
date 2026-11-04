@@ -1,0 +1,113 @@
+From 7285c495da35553ed11ec28cd72d695ca8b26407 Mon Sep 17 00:00:00 2001
+From: Frederic Weisbecker <frederic@kernel.org>
+Date: Fri, 8 Aug 2025 19:03:22 +0200
+Subject: [PATCH 2/2] rcu: Fix racy re-initialization of irq_work causing hangs
+
+[ Upstream commit 61399e0c5410567ef60cb1cda34cca42903842e3 ]
+
+RCU re-initializes the deferred QS irq work everytime before attempting
+to queue it. However there are situations where the irq work is
+attempted to be queued even though it is already queued. In that case
+re-initializing messes-up with the irq work queue that is about to be
+handled.
+
+The chances for that to happen are higher when the architecture doesn't
+support self-IPIs and irq work are then all lazy, such as with the
+following sequence:
+
+1) rcu_read_unlock() is called when IRQs are disabled and there is a
+   grace period involving blocked tasks on the node. The irq work
+   is then initialized and queued.
+
+2) The related tasks are unblocked and the CPU quiescent state
+   is reported. rdp->defer_qs_iw_pending is reset to DEFER_QS_IDLE,
+   allowing the irq work to be requeued in the future (note the previous
+   one hasn't fired yet).
+
+3) A new grace period starts and the node has blocked tasks.
+
+4) rcu_read_unlock() is called when IRQs are disabled again. The irq work
+   is re-initialized (but it's queued! and its node is cleared) and
+   requeued. Which means it's requeued to itself.
+
+5) The irq work finally fires with the tick. But since it was requeued
+   to itself, it loops and hangs.
+
+Fix this with initializing the irq work only once before the CPU boots.
+
+Fixes: b41642c87716 ("rcu: Fix rcu_read_unlock() deadloop due to IRQ work")
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Closes: https://lore.kernel.org/oe-lkp/202508071303.c1134cce-lkp@intel.com
+Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
+Reviewed-by: Joel Fernandes <joelagnelf@nvidia.com>
+Signed-off-by: Neeraj Upadhyay (AMD) <neeraj.upadhyay@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[Ankit: Backported for v6.1, no change]
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ kernel/rcu/tree.c        | 2 ++
+ kernel/rcu/tree.h        | 1 +
+ kernel/rcu/tree_plugin.h | 8 ++++++--
+ 3 files changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
+index 38ab28a53e10..f421ae6d24ac 100644
+--- a/kernel/rcu/tree.c
++++ b/kernel/rcu/tree.c
+@@ -4205,6 +4205,8 @@ int rcutree_prepare_cpu(unsigned int cpu)
+ 	rdp->rcu_iw_gp_seq = rdp->gp_seq - 1;
+ 	trace_rcu_grace_period(rcu_state.name, rdp->gp_seq, TPS("cpuonl"));
+ 	raw_spin_unlock_irqrestore_rcu_node(rnp, flags);
++
++	rcu_preempt_deferred_qs_init(rdp);
+ 	rcu_spawn_one_boost_kthread(rnp);
+ 	rcu_spawn_cpu_nocb_kthread(cpu);
+ 	WRITE_ONCE(rcu_state.n_online_cpus, rcu_state.n_online_cpus + 1);
+diff --git a/kernel/rcu/tree.h b/kernel/rcu/tree.h
+index 4770ff998f27..9169882636d6 100644
+--- a/kernel/rcu/tree.h
++++ b/kernel/rcu/tree.h
+@@ -442,6 +442,7 @@ static int rcu_print_task_exp_stall(struct rcu_node *rnp);
+ static void rcu_preempt_check_blocked_tasks(struct rcu_node *rnp);
+ static void rcu_flavor_sched_clock_irq(int user);
+ static void dump_blkd_tasks(struct rcu_node *rnp, int ncheck);
++static void rcu_preempt_deferred_qs_init(struct rcu_data *rdp);
+ static void rcu_initiate_boost(struct rcu_node *rnp, unsigned long flags);
+ static void rcu_preempt_boost_start_gp(struct rcu_node *rnp);
+ static bool rcu_is_callbacks_kthread(struct rcu_data *rdp);
+diff --git a/kernel/rcu/tree_plugin.h b/kernel/rcu/tree_plugin.h
+index e61ade810935..5f6788c3b906 100644
+--- a/kernel/rcu/tree_plugin.h
++++ b/kernel/rcu/tree_plugin.h
+@@ -687,8 +687,6 @@ static void rcu_read_unlock_special(struct task_struct *t)
+ 			    cpu_online(rdp->cpu)) {
+ 				// Get scheduler to re-evaluate and call hooks.
+ 				// If !IRQ_WORK, FQS scan will eventually IPI.
+-				rdp->defer_qs_iw =
+-					IRQ_WORK_INIT_HARD(rcu_preempt_deferred_qs_handler);
+ 				rdp->defer_qs_iw_pending = DEFER_QS_PENDING;
+ 				irq_work_queue_on(&rdp->defer_qs_iw, rdp->cpu);
+ 			}
+@@ -828,6 +826,10 @@ dump_blkd_tasks(struct rcu_node *rnp, int ncheck)
+ 	}
+ }
+ 
++static void rcu_preempt_deferred_qs_init(struct rcu_data *rdp)
++{
++	rdp->defer_qs_iw = IRQ_WORK_INIT_HARD(rcu_preempt_deferred_qs_handler);
++}
+ #else /* #ifdef CONFIG_PREEMPT_RCU */
+ 
+ /*
+@@ -1027,6 +1029,8 @@ dump_blkd_tasks(struct rcu_node *rnp, int ncheck)
+ 	WARN_ON_ONCE(!list_empty(&rnp->blkd_tasks));
+ }
+ 
++static void rcu_preempt_deferred_qs_init(struct rcu_data *rdp) { }
++
+ #endif /* #else #ifdef CONFIG_PREEMPT_RCU */
+ 
+ /*
+-- 
+2.40.4
+

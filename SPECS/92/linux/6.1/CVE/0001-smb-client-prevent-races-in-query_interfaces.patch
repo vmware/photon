@@ -1,0 +1,70 @@
+From 93e8e3ee165ae4609a1222b516b573837103d2c3 Mon Sep 17 00:00:00 2001
+From: Henrique Carvalho <henrique.carvalho@suse.com>
+Date: Mon, 19 Jan 2026 14:54:44 -0300
+Subject: [PATCH] smb: client: prevent races in ->query_interfaces()
+
+[ Upstream commit c3c06e42e1527716c54f3ad2ced6a034b5f3a489 ]
+
+It was possible for two query interface works to be concurrently trying
+to update the interfaces.
+
+Prevent this by checking and updating iface_last_update under
+iface_lock.
+
+Signed-off-by: Henrique Carvalho <henrique.carvalho@suse.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[ Keerthana: Modified to apply on v6.1.y ]
+Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+---
+ fs/smb/client/smb2ops.c | 17 ++++++++---------
+ 1 file changed, 8 insertions(+), 9 deletions(-)
+
+diff --git a/fs/smb/client/smb2ops.c b/fs/smb/client/smb2ops.c
+index 57f6d25c9262..308b4cc6926f 100644
+--- a/fs/smb/client/smb2ops.c
++++ b/fs/smb/client/smb2ops.c
+@@ -590,13 +590,6 @@ parse_server_interfaces(struct network_interface_info_ioctl_rsp *buf,
+ 	p = buf;
+ 
+ 	spin_lock(&ses->iface_lock);
+-	/* do not query too frequently, this time with lock held */
+-	if (ses->iface_last_update &&
+-	    time_before(jiffies, ses->iface_last_update +
+-			(SMB_INTERFACE_POLL_INTERVAL * HZ))) {
+-		spin_unlock(&ses->iface_lock);
+-		return 0;
+-	}
+ 
+ 	/*
+ 	 * Go through iface_list and mark them as inactive
+@@ -727,7 +720,6 @@ parse_server_interfaces(struct network_interface_info_ioctl_rsp *buf,
+ 
+ 		ses->iface_count++;
+ 		spin_unlock(&ses->iface_lock);
+-		ses->iface_last_update = jiffies;
+ next_iface:
+ 		nb_iface++;
+ 		next = le32_to_cpu(p->Next);
+@@ -792,10 +784,17 @@ SMB3_request_interfaces(const unsigned int xid, struct cifs_tcon *tcon, bool in_
+ 	struct TCP_Server_Info *pserver;
+ 
+ 	/* do not query too frequently */
++	spin_lock(&ses->iface_lock);
+ 	if (ses->iface_last_update &&
+ 	    time_before(jiffies, ses->iface_last_update +
+-			(SMB_INTERFACE_POLL_INTERVAL * HZ)))
++			(SMB_INTERFACE_POLL_INTERVAL * HZ))) {
++		spin_unlock(&ses->iface_lock);
+ 		return 0;
++	}
++
++	ses->iface_last_update = jiffies;
++
++	spin_unlock(&ses->iface_lock);
+ 
+ 	rc = SMB2_ioctl(xid, tcon, NO_FILE_ID, NO_FILE_ID,
+ 			FSCTL_QUERY_NETWORK_INTERFACE_INFO,
+-- 
+2.43.7
+

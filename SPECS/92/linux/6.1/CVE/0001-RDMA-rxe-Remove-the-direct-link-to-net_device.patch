@@ -1,0 +1,434 @@
+From d2537d83861aa6cedf99d03fb158312cf1ddd6c9 Mon Sep 17 00:00:00 2001
+From: Zhu Yanjun <yanjun.zhu@linux.dev>
+Date: Fri, 20 Dec 2024 23:23:25 +0100
+Subject: [PATCH] RDMA/rxe: Remove the direct link to net_device
+
+[ Upstream commit 2ac5415022d16d63d912a39a06f32f1f51140261 ]
+
+The similar patch in siw is in the link:
+https://git.kernel.org/rdma/rdma/c/16b87037b48889
+
+This problem also occurred in RXE. The following analyze this problem.
+In the following Call Traces:
+"
+BUG: KASAN: slab-use-after-free in dev_get_flags+0x188/0x1d0 net/core/dev.c:8782
+Read of size 4 at addr ffff8880554640b0 by task kworker/1:4/5295
+
+CPU: 1 UID: 0 PID: 5295 Comm: kworker/1:4 Not tainted
+6.12.0-rc3-syzkaller-00399-g9197b73fd7bb #0
+Hardware name: Google Compute Engine/Google Compute Engine,
+BIOS Google 09/13/2024
+Workqueue: infiniband ib_cache_event_task
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:94 [inline]
+ dump_stack_lvl+0x241/0x360 lib/dump_stack.c:120
+ print_address_description mm/kasan/report.c:377 [inline]
+ print_report+0x169/0x550 mm/kasan/report.c:488
+ kasan_report+0x143/0x180 mm/kasan/report.c:601
+ dev_get_flags+0x188/0x1d0 net/core/dev.c:8782
+ rxe_query_port+0x12d/0x260 drivers/infiniband/sw/rxe/rxe_verbs.c:60
+ __ib_query_port drivers/infiniband/core/device.c:2111 [inline]
+ ib_query_port+0x168/0x7d0 drivers/infiniband/core/device.c:2143
+ ib_cache_update+0x1a9/0xb80 drivers/infiniband/core/cache.c:1494
+ ib_cache_event_task+0xf3/0x1e0 drivers/infiniband/core/cache.c:1568
+ process_one_work kernel/workqueue.c:3229 [inline]
+ process_scheduled_works+0xa65/0x1850 kernel/workqueue.c:3310
+ worker_thread+0x870/0xd30 kernel/workqueue.c:3391
+ kthread+0x2f2/0x390 kernel/kthread.c:389
+ ret_from_fork+0x4d/0x80 arch/x86/kernel/process.c:147
+ ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:244
+ </TASK>
+"
+
+1). In the link [1],
+
+"
+ infiniband syz2: set down
+"
+
+This means that on 839.350575, the event ib_cache_event_task was sent andi
+queued in ib_wq.
+
+2). In the link [1],
+
+"
+ team0 (unregistering): Port device team_slave_0 removed
+"
+
+It indicates that before 843.251853, the net device should be freed.
+
+3). In the link [1],
+
+"
+ BUG: KASAN: slab-use-after-free in dev_get_flags+0x188/0x1d0
+"
+
+This means that on 850.559070, this slab-use-after-free problem occurred.
+
+In all, on 839.350575, the event ib_cache_event_task was sent and queued
+in ib_wq,
+
+before 843.251853, the net device veth was freed.
+
+on 850.559070, this event was executed, and the mentioned freed net device
+was called. Thus, the above call trace occurred.
+
+[1] https://syzkaller.appspot.com/x/log.txt?x=12e7025f980000
+
+Reported-by: syzbot+4b87489410b4efd181bf@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=4b87489410b4efd181bf
+Fixes: 8700e3e7c485 ("Soft RoCE driver")
+Signed-off-by: Zhu Yanjun <yanjun.zhu@linux.dev>
+Link: https://patch.msgid.link/20241220222325.2487767-1-yanjun.zhu@linux.dev
+Signed-off-by: Leon Romanovsky <leon@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[Shivani: Modified to apply on 6.1.y, Exported ib_device_get_netdev()
+function and also added it to ib_verbs.h file. Added Error handling
+in rxe_query_port() function.]
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
+---
+ drivers/infiniband/core/device.c      |  1 +
+ drivers/infiniband/sw/rxe/rxe.c       | 23 +++++++++++++++----
+ drivers/infiniband/sw/rxe/rxe.h       |  3 ++-
+ drivers/infiniband/sw/rxe/rxe_mcast.c | 22 ++++++++++++++++--
+ drivers/infiniband/sw/rxe/rxe_net.c   | 25 ++++++++++++++++-----
+ drivers/infiniband/sw/rxe/rxe_verbs.c | 32 ++++++++++++++++++++++-----
+ drivers/infiniband/sw/rxe/rxe_verbs.h | 11 ++++++---
+ include/rdma/ib_verbs.h               |  2 ++
+ 8 files changed, 98 insertions(+), 21 deletions(-)
+
+diff --git a/drivers/infiniband/core/device.c b/drivers/infiniband/core/device.c
+index a5ba2cb30..8649cb3d8 100644
+--- a/drivers/infiniband/core/device.c
++++ b/drivers/infiniband/core/device.c
+@@ -2258,6 +2258,7 @@ struct net_device *ib_device_get_netdev(struct ib_device *ib_dev,
+ 
+ 	return res;
+ }
++EXPORT_SYMBOL(ib_device_get_netdev);
+ 
+ /**
+  * ib_device_get_by_netdev - Find an IB device associated with a netdev
+diff --git a/drivers/infiniband/sw/rxe/rxe.c b/drivers/infiniband/sw/rxe/rxe.c
+index be3ddfbf3..2535c4048 100644
+--- a/drivers/infiniband/sw/rxe/rxe.c
++++ b/drivers/infiniband/sw/rxe/rxe.c
+@@ -40,6 +40,8 @@ void rxe_dealloc(struct ib_device *ib_dev)
+ /* initialize rxe device parameters */
+ static void rxe_init_device_param(struct rxe_dev *rxe)
+ {
++	struct net_device *ndev;
++
+ 	rxe->max_inline_data			= RXE_MAX_INLINE_DATA;
+ 
+ 	rxe->attr.vendor_id			= RXE_VENDOR_ID;
+@@ -71,8 +73,15 @@ static void rxe_init_device_param(struct rxe_dev *rxe)
+ 	rxe->attr.max_fast_reg_page_list_len	= RXE_MAX_FMR_PAGE_LIST_LEN;
+ 	rxe->attr.max_pkeys			= RXE_MAX_PKEYS;
+ 	rxe->attr.local_ca_ack_delay		= RXE_LOCAL_CA_ACK_DELAY;
++
++	ndev = rxe_ib_device_get_netdev(&rxe->ib_dev);
++	if (!ndev)
++		return;
++
+ 	addrconf_addr_eui48((unsigned char *)&rxe->attr.sys_image_guid,
+-			rxe->ndev->dev_addr);
++			ndev->dev_addr);
++
++	dev_put(ndev);
+ 
+ 	rxe->max_ucontext			= RXE_MAX_UCONTEXT;
+ }
+@@ -109,10 +118,15 @@ static void rxe_init_port_param(struct rxe_port *port)
+ static void rxe_init_ports(struct rxe_dev *rxe)
+ {
+ 	struct rxe_port *port = &rxe->port;
++	struct net_device *ndev;
+ 
+ 	rxe_init_port_param(port);
++	ndev = rxe_ib_device_get_netdev(&rxe->ib_dev);
++	if (!ndev)
++		return;
+ 	addrconf_addr_eui48((unsigned char *)&port->port_guid,
+-			    rxe->ndev->dev_addr);
++			    ndev->dev_addr);
++	dev_put(ndev);
+ 	spin_lock_init(&port->port_lock);
+ }
+ 
+@@ -167,12 +181,13 @@ void rxe_set_mtu(struct rxe_dev *rxe, unsigned int ndev_mtu)
+ /* called by ifc layer to create new rxe device.
+  * The caller should allocate memory for rxe by calling ib_alloc_device.
+  */
+-int rxe_add(struct rxe_dev *rxe, unsigned int mtu, const char *ibdev_name)
++int rxe_add(struct rxe_dev *rxe, unsigned int mtu, const char *ibdev_name,
++			struct net_device *ndev)
+ {
+ 	rxe_init(rxe);
+ 	rxe_set_mtu(rxe, mtu);
+ 
+-	return rxe_register_device(rxe, ibdev_name);
++	return rxe_register_device(rxe, ibdev_name, ndev);
+ }
+ 
+ static int rxe_newlink(const char *ibdev_name, struct net_device *ndev)
+diff --git a/drivers/infiniband/sw/rxe/rxe.h b/drivers/infiniband/sw/rxe/rxe.h
+index ab334900f..803e57971 100644
+--- a/drivers/infiniband/sw/rxe/rxe.h
++++ b/drivers/infiniband/sw/rxe/rxe.h
+@@ -59,7 +59,8 @@
+ 
+ void rxe_set_mtu(struct rxe_dev *rxe, unsigned int dev_mtu);
+ 
+-int rxe_add(struct rxe_dev *rxe, unsigned int mtu, const char *ibdev_name);
++int rxe_add(struct rxe_dev *rxe, unsigned int mtu, const char *ibdev_name,
++			struct net_device *ndev);
+ 
+ void rxe_rcv(struct sk_buff *skb);
+ 
+diff --git a/drivers/infiniband/sw/rxe/rxe_mcast.c b/drivers/infiniband/sw/rxe/rxe_mcast.c
+index 86cc2e18a..07ff47bae 100644
+--- a/drivers/infiniband/sw/rxe/rxe_mcast.c
++++ b/drivers/infiniband/sw/rxe/rxe_mcast.c
+@@ -31,10 +31,19 @@
+ static int rxe_mcast_add(struct rxe_dev *rxe, union ib_gid *mgid)
+ {
+ 	unsigned char ll_addr[ETH_ALEN];
++	struct net_device *ndev;
++	int ret;
++
++	ndev = rxe_ib_device_get_netdev(&rxe->ib_dev);
++	if (!ndev)
++		return -ENODEV;
+ 
+ 	ipv6_eth_mc_map((struct in6_addr *)mgid->raw, ll_addr);
+ 
+-	return dev_mc_add(rxe->ndev, ll_addr);
++	ret = dev_mc_add(ndev, ll_addr);
++	dev_put(ndev);
++
++	return ret;
+ }
+ 
+ /**
+@@ -47,10 +56,19 @@ static int rxe_mcast_add(struct rxe_dev *rxe, union ib_gid *mgid)
+ static int rxe_mcast_del(struct rxe_dev *rxe, union ib_gid *mgid)
+ {
+ 	unsigned char ll_addr[ETH_ALEN];
++	struct net_device *ndev;
++	int ret;
++
++	ndev = rxe_ib_device_get_netdev(&rxe->ib_dev);
++	if (!ndev)
++		return -ENODEV;
+ 
+ 	ipv6_eth_mc_map((struct in6_addr *)mgid->raw, ll_addr);
+ 
+-	return dev_mc_del(rxe->ndev, ll_addr);
++	ret = dev_mc_del(ndev, ll_addr);
++	dev_put(ndev);
++
++	return ret;
+ }
+ 
+ /**
+diff --git a/drivers/infiniband/sw/rxe/rxe_net.c b/drivers/infiniband/sw/rxe/rxe_net.c
+index 779cd547c..4554b746e 100644
+--- a/drivers/infiniband/sw/rxe/rxe_net.c
++++ b/drivers/infiniband/sw/rxe/rxe_net.c
+@@ -505,7 +505,16 @@ struct sk_buff *rxe_init_packet(struct rxe_dev *rxe, struct rxe_av *av,
+  */
+ const char *rxe_parent_name(struct rxe_dev *rxe, unsigned int port_num)
+ {
+-	return rxe->ndev->name;
++	struct net_device *ndev;
++	char *ndev_name;
++
++	ndev = rxe_ib_device_get_netdev(&rxe->ib_dev);
++	if (!ndev)
++		return NULL;
++	ndev_name = ndev->name;
++	dev_put(ndev);
++
++	return ndev_name;
+ }
+ 
+ int rxe_net_add(const char *ibdev_name, struct net_device *ndev)
+@@ -517,9 +526,7 @@ int rxe_net_add(const char *ibdev_name, struct net_device *ndev)
+ 	if (!rxe)
+ 		return -ENOMEM;
+ 
+-	rxe->ndev = ndev;
+-
+-	err = rxe_add(rxe, ndev->mtu, ibdev_name);
++	err = rxe_add(rxe, ndev->mtu, ibdev_name, ndev);
+ 	if (err) {
+ 		ib_dealloc_device(&rxe->ib_dev);
+ 		return err;
+@@ -567,10 +574,18 @@ void rxe_port_down(struct rxe_dev *rxe)
+ 
+ void rxe_set_port_state(struct rxe_dev *rxe)
+ {
+-	if (netif_running(rxe->ndev) && netif_carrier_ok(rxe->ndev))
++	struct net_device *ndev;
++
++	ndev = rxe_ib_device_get_netdev(&rxe->ib_dev);
++	if (!ndev)
++		return;
++
++	if (netif_running(ndev) && netif_carrier_ok(ndev))
+ 		rxe_port_up(rxe);
+ 	else
+ 		rxe_port_down(rxe);
++
++	dev_put(ndev);
+ }
+ 
+ static int rxe_notify(struct notifier_block *not_blk,
+diff --git a/drivers/infiniband/sw/rxe/rxe_verbs.c b/drivers/infiniband/sw/rxe/rxe_verbs.c
+index 065717c11..d280f5017 100644
+--- a/drivers/infiniband/sw/rxe/rxe_verbs.c
++++ b/drivers/infiniband/sw/rxe/rxe_verbs.c
+@@ -29,25 +29,37 @@ static int rxe_query_port(struct ib_device *dev,
+ 			  u32 port_num, struct ib_port_attr *attr)
+ {
+ 	struct rxe_dev *rxe = to_rdev(dev);
+-	int rc;
++	struct net_device *ndev;
++	int err, rc;
+ 
+ 	/* *attr being zeroed by the caller, avoid zeroing it here */
+ 	*attr = rxe->port.attr;
+ 
++	ndev = rxe_ib_device_get_netdev(dev);
++	if (!ndev) {
++		err = -ENODEV;
++		goto err_out;
++	}
++
+ 	mutex_lock(&rxe->usdev_lock);
+ 	rc = ib_get_eth_speed(dev, port_num, &attr->active_speed,
+ 			      &attr->active_width);
+ 
+ 	if (attr->state == IB_PORT_ACTIVE)
+ 		attr->phys_state = IB_PORT_PHYS_STATE_LINK_UP;
+-	else if (dev_get_flags(rxe->ndev) & IFF_UP)
++	else if (dev_get_flags(ndev) & IFF_UP)
+ 		attr->phys_state = IB_PORT_PHYS_STATE_POLLING;
+ 	else
+ 		attr->phys_state = IB_PORT_PHYS_STATE_DISABLED;
+ 
+ 	mutex_unlock(&rxe->usdev_lock);
+ 
++	dev_put(ndev);
+ 	return rc;
++
++err_out:
++	pr_err("rxe returned err = %d", err);
++	return err;
+ }
+ 
+ static int rxe_query_pkey(struct ib_device *device,
+@@ -1003,9 +1015,16 @@ static const struct attribute_group rxe_attr_group = {
+ static int rxe_enable_driver(struct ib_device *ib_dev)
+ {
+ 	struct rxe_dev *rxe = container_of(ib_dev, struct rxe_dev, ib_dev);
++	struct net_device *ndev;
++
++	ndev = rxe_ib_device_get_netdev(ib_dev);
++	if (!ndev)
++		return -ENODEV;
+ 
+ 	rxe_set_port_state(rxe);
+-	dev_info(&rxe->ib_dev.dev, "added %s\n", netdev_name(rxe->ndev));
++	dev_info(&rxe->ib_dev.dev, "added %s\n", netdev_name(ndev));
++
++	dev_put(ndev);
+ 	return 0;
+ }
+ 
+@@ -1072,7 +1091,8 @@ static const struct ib_device_ops rxe_dev_ops = {
+ 	INIT_RDMA_OBJ_SIZE(ib_mw, rxe_mw, ibmw),
+ };
+ 
+-int rxe_register_device(struct rxe_dev *rxe, const char *ibdev_name)
++int rxe_register_device(struct rxe_dev *rxe, const char *ibdev_name,
++						struct net_device *ndev)
+ {
+ 	int err;
+ 	struct ib_device *dev = &rxe->ib_dev;
+@@ -1084,13 +1104,13 @@ int rxe_register_device(struct rxe_dev *rxe, const char *ibdev_name)
+ 	dev->num_comp_vectors = num_possible_cpus();
+ 	dev->local_dma_lkey = 0;
+ 	addrconf_addr_eui48((unsigned char *)&dev->node_guid,
+-			    rxe->ndev->dev_addr);
++			    ndev->dev_addr);
+ 
+ 	dev->uverbs_cmd_mask |= BIT_ULL(IB_USER_VERBS_CMD_POST_SEND) |
+ 				BIT_ULL(IB_USER_VERBS_CMD_REQ_NOTIFY_CQ);
+ 
+ 	ib_set_device_ops(dev, &rxe_dev_ops);
+-	err = ib_device_set_netdev(&rxe->ib_dev, rxe->ndev, 1);
++	err = ib_device_set_netdev(&rxe->ib_dev, ndev, 1);
+ 	if (err)
+ 		return err;
+ 
+diff --git a/drivers/infiniband/sw/rxe/rxe_verbs.h b/drivers/infiniband/sw/rxe/rxe_verbs.h
+index 5f5cbfcb3..f6db92bff 100644
+--- a/drivers/infiniband/sw/rxe/rxe_verbs.h
++++ b/drivers/infiniband/sw/rxe/rxe_verbs.h
+@@ -369,6 +369,7 @@ struct rxe_port {
+ 	u32			qp_gsi_index;
+ };
+ 
++#define	RXE_PORT	1
+ struct rxe_dev {
+ 	struct ib_device	ib_dev;
+ 	struct ib_device_attr	attr;
+@@ -376,8 +377,6 @@ struct rxe_dev {
+ 	int			max_inline_data;
+ 	struct mutex	usdev_lock;
+ 
+-	struct net_device	*ndev;
+-
+ 	struct rxe_pool		uc_pool;
+ 	struct rxe_pool		pd_pool;
+ 	struct rxe_pool		ah_pool;
+@@ -405,6 +404,11 @@ struct rxe_dev {
+ 	struct crypto_shash	*tfm;
+ };
+ 
++static inline struct net_device *rxe_ib_device_get_netdev(struct ib_device *dev)
++{
++	return ib_device_get_netdev(dev, RXE_PORT);
++}
++
+ static inline void rxe_counter_inc(struct rxe_dev *rxe, enum rxe_counters index)
+ {
+ 	atomic64_inc(&rxe->stats_counters[index]);
+@@ -470,6 +474,7 @@ static inline struct rxe_pd *rxe_mw_pd(struct rxe_mw *mw)
+ 	return to_rpd(mw->ibmw.pd);
+ }
+ 
+-int rxe_register_device(struct rxe_dev *rxe, const char *ibdev_name);
++int rxe_register_device(struct rxe_dev *rxe, const char *ibdev_name,
++						struct net_device *ndev);
+ 
+ #endif /* RXE_VERBS_H */
+diff --git a/include/rdma/ib_verbs.h b/include/rdma/ib_verbs.h
+index 41eb2a7c9..ae53ee2da 100644
+--- a/include/rdma/ib_verbs.h
++++ b/include/rdma/ib_verbs.h
+@@ -4397,6 +4397,8 @@ struct net_device *ib_get_net_dev_by_params(struct ib_device *dev, u32 port,
+ 					    const struct sockaddr *addr);
+ int ib_device_set_netdev(struct ib_device *ib_dev, struct net_device *ndev,
+ 			 unsigned int port);
++struct net_device *ib_device_get_netdev(struct ib_device *ib_dev,
++					u32 port);
+ struct net_device *ib_device_netdev(struct ib_device *dev, u32 port);
+ 
+ struct ib_wq *ib_create_wq(struct ib_pd *pd,
+-- 
+2.40.4
+

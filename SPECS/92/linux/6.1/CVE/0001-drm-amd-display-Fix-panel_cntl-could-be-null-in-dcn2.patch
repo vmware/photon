@@ -1,0 +1,65 @@
+From da4e54c3dce7136eaf40147b54bac681e3d253ad Mon Sep 17 00:00:00 2001
+From: Srinivasan Shanmugam <srinivasan.shanmugam@amd.com>
+Date: Sat, 27 Jan 2024 18:34:01 +0530
+Subject: [PATCH] drm/amd/display: Fix 'panel_cntl' could be null in
+ 'dcn21_set_backlight_level()'
+
+[ Upstream commit e96fddb32931d007db12b1fce9b5e8e4c080401b ]
+
+'panel_cntl' structure used to control the display panel could be null,
+dereferencing it could lead to a null pointer access.
+
+Fixes the below:
+drivers/gpu/drm/amd/amdgpu/../display/dc/hwss/dcn21/dcn21_hwseq.c:269 dcn21_set_backlight_level() error: we previously assumed 'panel_cntl' could be null (see line 250)
+
+Fixes: 474ac4a875ca ("drm/amd/display: Implement some asic specific abm call backs.")
+Cc: Yongqiang Sun <yongqiang.sun@amd.com>
+Cc: Anthony Koo <Anthony.Koo@amd.com>
+Cc: Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>
+Cc: Aurabindo Pillai <aurabindo.pillai@amd.com>
+Signed-off-by: Srinivasan Shanmugam <srinivasan.shanmugam@amd.com>
+Reviewed-by: Anthony Koo <Anthony.Koo@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[ Brennan : Ported to v6.1. Remove check before dmub_abm_set_pipe() as equivalent
+            to upstream check removal before the larger if/else block, before
+            set_pipe_ex()/dumb_abm_set_pipe() is called.
+            Also, skip other part for abm->funcs->set_backlight_level_pwm as
+            it is not present in v6.1 ]
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ drivers/gpu/drm/amd/display/dc/dcn21/dcn21_hwseq.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_hwseq.c b/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_hwseq.c
+index a43a7dee4e66..a0376f518762 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_hwseq.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_hwseq.c
+@@ -207,16 +207,21 @@ bool dcn21_set_backlight_level(struct pipe_ctx *pipe_ctx,
+ 	union dmub_rb_cmd cmd;
+ 	struct dc_context *dc = pipe_ctx->stream->ctx;
+ 	struct abm *abm = pipe_ctx->stream_res.abm;
+-	uint32_t otg_inst = pipe_ctx->stream_res.tg->inst;
++	struct timing_generator *tg = pipe_ctx->stream_res.tg;
+ 	struct panel_cntl *panel_cntl = pipe_ctx->stream->link->panel_cntl;
++	uint32_t otg_inst;
++
++	if (!abm && !tg && !panel_cntl)
++		return false;
++
++	otg_inst = tg->inst;
+
+ 	if (dc->dc->res_pool->dmcu) {
+ 		dce110_set_backlight_level(pipe_ctx, backlight_pwm_u16_16, frame_ramp);
+ 		return true;
+ 	}
+
+-	if (abm && panel_cntl)
+-		dmub_abm_set_pipe(abm, otg_inst, SET_ABM_PIPE_NORMAL, panel_cntl->inst);
++	dmub_abm_set_pipe(abm, otg_inst, SET_ABM_PIPE_NORMAL, panel_cntl->inst);
+
+ 	memset(&cmd, 0, sizeof(cmd));
+ 	cmd.abm_set_backlight.header.type = DMUB_CMD__ABM;
+--
+2.40.4
+
