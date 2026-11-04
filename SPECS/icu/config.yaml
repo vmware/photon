@@ -1,13 +1,13 @@
 sources:
-- archive: icu4c-78.3-sources.tgz
-  archive_sha512sum: 04a49455e1489030c520a4bfd2664fa2171e7938d08f2acdbbcb1fda976639fd8b1f0704f2eec89ba59a7b6d118ceaab6ec5a096e40d9085a0895d91ce225245
+- archive: icu4c-79.1-sources.tgz
+  archive_sha512sum: 9098adf9ba7fbe11d92963415cc80bf09de39ce1372414dbc2561e5f8ef57479a9fe4b6f7abc61911e4659e5953be987c459297d29e61b064d1931a16195a973
   archive_type: upstream
   name: icu
-  url: https://github.com/unicode-org/icu/releases/download/release-78.3/icu4c-78.3-sources.tgz
+  url: https://github.com/unicode-org/icu/releases/download/release-79.1/icu4c-79.1-sources.tgz
   repo_url: https://github.com/unicode-org/icu
-  commit_id: 21d1eb0f306e1141c10931e914dfc038c06121da
+  commit_id: ddc6b66926bfac6036144ca9902992a0d6d50af9
   skip_list: []
-  missing: ['.gitattributes', 'APIChangeReport.html', 'packaging', 'source', 'icu4j', '.github', 'KEYS', 'build_qnx', 'license.html', '.gitignore', 'vendor', 'icu4c.css', 'WORKSPACE', 'CONTRIBUTING.md', 'readme.html', '.bazeliskrc', 'tools', '.cpyskip.txt', 'README.md', '.bazelrc', 'icu4c', 'APIChangeReport.md', 'docs', 'SECURITY.md', 'as_is']
+  missing: ['errorprone.cfg', '.mvn', 'pom.xml', '.gitattributes', 'APIChangeReport.html', 'packaging', 'source', 'icu4j', '.github', 'KEYS', 'build_qnx', 'license.html', '.gitignore', 'vendor', 'icu4c.css', 'WORKSPACE', 'CONTRIBUTING.md', 'readme.html', '.bazeliskrc', 'tools', '.cpyskip.txt', 'README.md', '.bazelrc', 'icu4c', 'APIChangeReport.md', 'docs', 'SECURITY.md', 'as_is']
   spdx:
     package:
       detailed_description: 'The International Components for Unicode (ICU) package
@@ -23,8 +23,8 @@ sources:
         AND GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND Unicode-DFS-2016
       short_summary: International Components for Unicode
       supplier: 'Organization: Broadcom, Inc.'
-- archive: icu4c-78.3-data.zip
-  archive_sha512sum: d584523acb319be1e05489469cda580fb2929f0950c176a59244ef6565faf44f3506fd25d145dce6d8b57be3ff432af033e9ea6d324d2d3538944c5313edf327
+- archive: icu4c-79.1-data.zip
+  archive_sha512sum: d6f7147f882cad6c9ac7ff84f80234cd1c7bf2eeb0c509e277eb985694dbfe7b9a28663e40814c01866efe1c27ae8df87e5de6fe69c346d631b54076a6337fd1
   spdx:
     package:
       detailed_description: 'The International Components for Unicode (ICU) package

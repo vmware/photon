@@ -2,7 +2,7 @@
 
 Summary:        International Components for Unicode
 Name:           icu
-Version:        78.3
+Version:        79.1
 Release:        1%{?dist}
 URL:            http://www.icu-project.org
 Group:          System Environment/Libraries
@@ -11,14 +11,11 @@ Distribution:   Photon
 
 Source0: https://github.com/unicode-org/icu/releases/download/release-%{version}/%{name}4c-%{version}-sources.tgz
 
-# ICU data sources, the sources tarball only has the prebuilt data (icudt78l.dat)
+# ICU data sources, the sources tarball only has the prebuilt data (icudt79l.dat)
 Source2: https://github.com/unicode-org/icu/releases/download/release-%{version}/%{name}4c-%{version}-data.zip
 
 Source1: license.txt
 %include %{SOURCE1}
-
-# tz database 2026e, from maint-78 (ICU-23249, https://github.com/unicode-org/icu/pull/4248)
-Patch0: icu-tz-2026e.patch
 
 # configure uses python to generate the data build rules, also used to extract the data zip
 BuildRequires:  python3
@@ -38,9 +35,6 @@ It contains the libraries and header files to create applications.
 # build the data from sources instead of using the prebuilt one
 rm data/in/icudt*.dat
 python3 -m zipfile -e %{SOURCE2} .
-# the files in the data zip have CRLF line endings, convert them to LF so the tz patch applies
-sed -i 's/\r$//' data/misc/zoneinfo64.txt data/misc/metaZones.txt data/misc/timezoneTypes.txt
-%autopatch -p1
 
 %build
 %configure
@@ -65,6 +59,8 @@ sed -i 's/\r$//' data/misc/zoneinfo64.txt data/misc/metaZones.txt data/misc/time
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Wed Nov 04 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 79.1-1
+- Upgrade to v79.1, it already includes tz data 2026e, remove icu-tz-2026e.patch
 * Wed Oct 14 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 78.3-1
 - Upgrade to v78.3 and update tz data to 2026e, remove CVE-2025-5222 patch (fixed upstream)
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 76.1-2

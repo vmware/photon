@@ -5,7 +5,7 @@
 Summary:        Microsoft .NET Core SDK
 Name:           dotnet-sdk
 Version:        10.0.403
-Release:        2%{?dist}
+Release:        3%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://github.com/dotnet/core
@@ -46,6 +46,8 @@ echo "%{_datadir}/dotnet" > %{buildroot}%{_sysconfdir}/dotnet/install_location
 %{_sysconfdir}/dotnet/install_location
 
 %changelog
+* Wed Nov 04 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 10.0.403-3
+- Rebuild with icu 79.1
 * Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 10.0.403-2
 - extend release to 91
 * Wed Oct 28 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.0.403-1

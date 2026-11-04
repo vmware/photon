@@ -3,7 +3,7 @@
 Summary:        MySQL.
 Name:           mysql
 Version:        8.4.13
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -185,6 +185,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Wed Nov 04 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 8.4.13-3
+- Rebuild with icu 79.1
 * Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 8.4.13-2
 - extend release to 91
 * Tue Oct 20 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.4.13-1
