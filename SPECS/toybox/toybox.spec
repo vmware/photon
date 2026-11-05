@@ -8,7 +8,7 @@
 
 Name:           toybox
 Version:        0.8.9
-Release:        16%{?dist}
+Release:        17%{?dist}
 Summary:        Common Linux command line utilities in a single executable
 Url:            http://landley.net/toybox
 Group:          Applications/System
@@ -38,6 +38,8 @@ Provides:       /bin/grep
 Provides:       /bin/sh
 Provides:       /bin/bash
 Provides:       %{toysh_secondary_path}
+
+Conflicts:      net-tools
 
 %description
 Toybox combines common Linux command line utilities together into a single
@@ -397,15 +399,6 @@ mktoy %{_sbindir}/insmod \
 %{_mktoy_}
 mktoy %{_bindir}/netcat %{_bindir}/nc
 
-%triggerpostun -- net-tools
-[ $2 -eq 0 ] || exit 0
-%{_mktoy_}
-mktoy %{_sbindir}/arp \
-      %{_bindir}/hostname \
-      %{_bindir}/netstat \
-      %{_bindir}/ifconfig \
-      %{_sbindir}/iptunnel
-
 %triggerpostun -- hostname
 [ $2 -eq 0 ] || exit 0
 %{_mktoy_}
@@ -683,12 +676,8 @@ mktoy %{_bindir}/which
 %ghost %{_bindir}/netcat
 %ghost %{_bindir}/nc
 
-# hostname / net-tools
+# hostname
 %ghost %{_bindir}/hostname
-%ghost %{_sbindir}/arp
-%ghost %{_bindir}/netstat
-%ghost %{_bindir}/ifconfig
-%ghost %{_sbindir}/iptunnel
 
 # parted
 %ghost %{_sbindir}/partprobe
@@ -809,6 +798,10 @@ mktoy %{_bindir}/which
 %{_sbindir}/iplink
 %{_sbindir}/iproute
 %{_sbindir}/iprule
+%{_sbindir}/arp
+%{_bindir}/netstat
+%{_bindir}/ifconfig
+%{_sbindir}/iptunnel
 %{_bindir}/toysh
 %{toysh_secondary_path}
 
@@ -817,6 +810,8 @@ mktoy %{_bindir}/which
 %doc README LICENSE
 
 %changelog
+* Wed Nov 04 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 0.8.9-17
+- Remove net-tools posttrigger and ghosts, add conflicts for net-tools
 * Tue Jun 02 2026 Tapas Kundu <tapas.kundu@broadcom.com> 0.8.9-16
 - Added trigger for iotop-c
 * Mon Jun 01 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 0.8.9-15

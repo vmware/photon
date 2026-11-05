@@ -5,7 +5,7 @@
 Name:           minimal
 Summary:        Metapackage to install minimal profile
 Version:        5.0
-Release:        9%{?dist}
+Release:        10%{?dist}
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon
 Vendor:         VMware, Inc.
@@ -31,7 +31,7 @@ Requires: gdbm
 Requires: grep
 Requires: grub2-efi-image >= 2.06-15
 Requires: gzip
-Requires: (hostname or net-tools)
+Requires: hostname
 Requires: iana-etc
 Requires: iproute2
 Requires: iptables
@@ -68,6 +68,8 @@ Metapackage to install minimal profile
 %defattr(-,root,root,0755)
 
 %changelog
+* Wed Nov 04 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 5.0-10
+- Drop optional requirement on net-tools
 * Tue Jun 02 2026 Bo Gan <bo.gan@broadcom.com> 5.0-9
 - Requires hostname or net-tools, and preferably hostname
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.0-8

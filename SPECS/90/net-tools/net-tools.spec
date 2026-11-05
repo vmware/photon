@@ -1,3 +1,5 @@
+%global build_if %{photon_subrelease} <= 90
+
 Summary:    Networking Tools
 Name:       net-tools
 Version:    2.10
