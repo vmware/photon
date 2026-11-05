@@ -1,12 +1,12 @@
 sources:
-- archive: rsyslog-8.2608.0.tar.gz
-  archive_sha512sum: 5d75dea09a2f512a7c7c2870dee0cf8d96f36d29d9eebb9b97f18e6ef752891b14f951a9defd3b7984cc3b4d3a1f825e1e592c171c3e76a3924704bf22d74c5d
+- archive: rsyslog-8.2610.0.tar.gz
+  archive_sha512sum: dd75706c91f8d7d79c48b97a5cc0c829263ca0a4623217853bcbb4180ea1444be655b40f09355b97d0bd6f87ddbf1d8ddbfab4163f38f69555c7bdfaeab29a34
   archive_type: upstream
-  name: rsyslog-8.2608.0
+  name: rsyslog-8.2610.0
   skip_validation: true
   repo_url: https://github.com/rsyslog/rsyslog
-  url: https://github.com/rsyslog/rsyslog/archive/refs/tags/v8.2608.0.tar.gz
-  commit_id: 4bac899196d597c732f59bbcfe8ac9da40d60769
+  url: https://github.com/rsyslog/rsyslog/archive/refs/tags/v8.2610.0.tar.gz
+  commit_id: 4734a93f4a34c4321d55b58f46ca401abe791330
   spdx:
     package:
       detailed_description: 'RSYSLOG is the rocket-fast system for log processing.
