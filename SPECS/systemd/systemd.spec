@@ -7,7 +7,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        257.13
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        System and Service Manager
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -32,6 +32,7 @@ Source5:        10-rdrand-rng.conf
 %endif
 Source6:        10-defaults.preset
 
+Source7:        triggers.systemd
 Source11:       macros.sysusers
 Source12:       sysusers.attr
 Source13:       sysusers.prov
@@ -374,6 +375,8 @@ udevadm hwdb --update &>/dev/null || :
 %postun udev
 %systemd_postun_with_restart %{name}-udevd.service
 
+%include %{SOURCE7}
+
 %files
 %defattr(-,root,root)
 %dir %{_sysconfdir}/%{name}
@@ -681,6 +684,9 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+* Sat Oct 31 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 257.13-6
+- Add RPM file triggers so units marked by %%systemd_postun_with_restart
+  are actually restarted at transaction end
 * Mon Jun 08 2026 Bo Gan <bo.gan@broadcom.com> 257.13-5
 - Migrate from pcre to pcre2
 * Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 257.13-4
