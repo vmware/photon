@@ -1,12 +1,12 @@
 sources:
-- archive: systemd-257.13.tar.gz
+- archive: systemd-262.1.tar.gz
   archive_type: upstream
-  archive_sha512sum: f627e14e19b9ebc1686cad48d674fe7f69964b4d894e0253f9f47eeba3d6feabd1b19de54bdd8d4c2d21993865262830440a809f03d246ffa397320c94c7e46b
-  name: systemd-257.13
-  version: 257.13
-  url: https://github.com/systemd/systemd/archive/refs/tags/v257.13.tar.gz
-  repo_url: https://github.com/systemd/systemd
-  commit_id: 70b5d110be7702afc4dbce012f60d49506d513da
+  archive_sha512sum: a4d696dc03d096b815b6780f910fab4e79e01b8414b26529a8585b437b27a50b10c1082e534f1cdcb8bbec330a2af0f98fdcacf189e75f64a157c8bbc4774976
+  name: systemd-262.1
+  version: 262.1
+  url: https://github.com/systemd/systemd/archive/refs/tags/v262.1.tar.gz
+  repo_url: https://github.com/systemd/systemd.git
+  commit_id: 73612ea502d53baf9b0df4336cfc296a7ee0d524
   skip_list: []
   missing: []
   spdx:

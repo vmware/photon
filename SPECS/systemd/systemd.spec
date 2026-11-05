@@ -1,13 +1,13 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} >= 93
 
 %define STIG_HARDEN 0
 
 %global udev_services %{name}-udevd.service %{name}-udev-settle.service %{name}-udev-trigger.service %{name}-udevd-control.socket %{name}-udevd-kernel.socket %{name}-timesyncd.service
 
 Name:           systemd
-URL:            http://www.freedesktop.org/wiki/Software/systemd
-Version:        257.13
-Release:        6%{?dist}
+URL:            https://systemd.io
+Version:        262.1
+Release:        1%{?dist}
 Summary:        System and Service Manager
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -48,7 +48,7 @@ Patch3: 0004-Remove-unused-default-groups-rules-and-tmpfiles.patch
 Patch4: 0005-default-conf-modifications.patch
 
 %if 0%{?STIG_HARDEN}
-Patch4: harden-tmpfs-mount-options.patch
+Patch5: harden-tmpfs-mount-options.patch
 %endif
 
 Conflicts: dracut < 109
@@ -269,8 +269,6 @@ CONFIGURE_OPTS=(
        -Dsplit-bin=true
        -Db_lto=true
        -Db_ndebug=false
-       -Dsysvinit-path=%{_sysconfdir}/rc.d/init.d
-       -Drc-local=%{_sysconfdir}/rc.d/rc.local
        -Dfallback-hostname=photon
        -Doomd=false
        -Dhomed=disabled
@@ -288,8 +286,6 @@ CONFIGURE_OPTS=(
        -Dlibcryptsetup=disabled
        -Dlibcryptsetup-plugins=disabled
        -Dlibidn2=disabled
-       -Dlibidn=disabled
-       -Dlibiptc=disabled
        -Dqrencode=disabled
        -Dp11kit=disabled
        -Dlibfido2=disabled
@@ -388,7 +384,6 @@ udevadm hwdb --update &>/dev/null || :
 %dir %{_sysconfdir}/binfmt.d
 %{_sysconfdir}/X11/xinit/xinitrc.d/50-%{name}-user.sh
 %{_sysconfdir}/xdg/%{name}
-%{_sysconfdir}/rc.d/init.d/README
 %config(noreplace) %{_sysconfdir}/sysctl.d/50-security-hardening.conf
 %config(noreplace) %{_sysconfdir}/%{name}/sleep.conf
 %config(noreplace) %{_sysconfdir}/%{name}/system.conf
@@ -410,11 +405,11 @@ udevadm hwdb --update &>/dev/null || :
 %{_sbindir}/init
 %{_sbindir}/poweroff
 %{_sbindir}/reboot
-%{_sbindir}/runlevel
 %{_sbindir}/shutdown
-%{_sbindir}/telinit
 %{_sbindir}/resolvconf
 %{_sbindir}/mount.ddi
+%{_sbindir}/mount.mstack
+%{_sbindir}/mount.storage
 %{_bindir}/importctl
 %{_bindir}/run0
 %{_bindir}/%{name}-confext
@@ -453,6 +448,11 @@ udevadm hwdb --update &>/dev/null || :
 %{_bindir}/%{name}-tmpfiles
 %{_bindir}/%{name}-tty-ask-password-agent
 %{_bindir}/%{name}-umount
+%{_bindir}/%{name}-mstack
+%{_bindir}/%{name}-mute-console
+%{_bindir}/%{name}-pty-forward
+%{_bindir}/%{name}-sysinstall
+%{_bindir}/storagectl
 %{_bindir}/timedatectl
 %{_bindir}/userdbctl
 %{_bindir}/%{name}-dissect
@@ -472,6 +472,8 @@ udevadm hwdb --update &>/dev/null || :
 %{_tmpfilesdir}/%{name}.conf
 %{_tmpfilesdir}/%{name}-resolve.conf
 %{_tmpfilesdir}/%{name}-network.conf
+%{_tmpfilesdir}/root.conf
+%{_tmpfilesdir}/20-systemd-varlink.conf
 %{_tmpfilesdir}/tmp.conf
 %{_tmpfilesdir}/var.conf
 %{_tmpfilesdir}/x11.conf
@@ -490,8 +492,12 @@ udevadm hwdb --update &>/dev/null || :
 %{_systemd_util_dir}/resolv.conf
 %{_systemd_util_dir}/%{name}*
 %{_systemd_util_dir}/user*
-%{_systemd_util_dir}/import-pubring.gpg
-%{_systemd_util_dir}/profile.d/70-systemd-shell-extra.sh
+%{_systemd_util_dir}/import-pubring.pgp
+%{_systemd_util_dir}/profile.d/70-%{name}-shell-extra.sh
+%{_systemd_util_dir}/profile.d/80-%{name}-osc-context.sh
+%{_systemd_util_dir}/initrd-preset/*
+%{_systemd_util_dir}/oci-registry/*
+
 %{_unitdir}/*
 %{_presetdir}/*
 %{_systemdgeneratordir}/*
@@ -501,6 +507,7 @@ udevadm hwdb --update &>/dev/null || :
 %{_datadir}/doc/*
 %{_datadir}/polkit-1
 %{_datadir}/%{name}
+%{_datadir}/user-tmpfiles.d/20-%{name}-varlink.conf
 %{_var}/log/journal
 %{_datadir}/mime/packages/io.systemd.xml
 %ghost %dir %attr(0755,-,-) %{_sysconfdir}/%{name}/system/basic.target.wants
@@ -562,7 +569,6 @@ udevadm hwdb --update &>/dev/null || :
 %{_unitdir}/initrd-udevadm-cleanup-db.service
 %{_unitdir}/kmod-static-nodes.service
 %{_unitdir}/sleep.target
-%{_unitdir}/sockets.target.wants/%{name}-udevd-control.socket
 %{_unitdir}/sockets.target.wants/%{name}-udevd-kernel.socket
 %{_unitdir}/suspend-then-hibernate.target
 %{_unitdir}/suspend.target
@@ -646,10 +652,6 @@ udevadm hwdb --update &>/dev/null || :
 %defattr(-,root,root)
 %{_bindir}/%{name}-nspawn
 %{_bindir}/machinectl
-# Below two files are packaged with systemd main package
-# And without it etc/systemd/system won't get created by systemd
-#%%{_systemd_util_dir}/%%{name}-machined
-#%%{_unitdir}/%%{name}-machined.service
 %{_unitdir}/%{name}-nspawn@.service
 %{_unitdir}/dbus-org.freedesktop.machine1.service
 %{_unitdir}/var-lib-machines.mount
@@ -684,6 +686,9 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+* Thu Nov 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 262.1-1
+- Upgrade to v262.1
+- Add RPM transfiletriggers to restart units after package upgrades
 * Sat Oct 31 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 257.13-6
 - Add RPM file triggers so units marked by %%systemd_postun_with_restart
   are actually restarted at transaction end

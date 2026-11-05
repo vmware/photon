@@ -4,21 +4,17 @@
 #  This file is part of systemd.
 #
 #  Copyright 2018 Neal Gompa
-
-# Adapted from systemd src/rpm/triggers.systemd.sh.in (v257 branch) for Photon.
+# Adapted from systemd src/rpm/triggers.systemd.sh.in (v262 branch) for Photon.
 #
 # Minimum rpm version supported: 4.14.0
-
 %transfiletriggerin -P 900900 -- /usr/lib/systemd/system/ /etc/systemd/system/
 # This script will run after any package is initially installed or
 # upgraded. We care about the case where a package is initially
 # installed, because other cases are covered by the *un scriptlets,
 # so sometimes we will reload needlessly.
 %{_systemd_util_dir}/systemd-update-helper system-reload-restart || :
-
 %transfiletriggerin -P 900899 -- /usr/lib/systemd/user/ /etc/systemd/user/
 %{_systemd_util_dir}/systemd-update-helper user-reload-restart || :
-
 %transfiletriggerpostun -P 1000100 -- /usr/lib/systemd/system/ /etc/systemd/system/
 # On removal, we need to run daemon-reload after any units have been
 # removed.
@@ -26,35 +22,28 @@
 # have been installed, but before %postun scripts in packages get
 # executed.
 %{_systemd_util_dir}/systemd-update-helper system-reload || :
-
 %transfiletriggerpostun -P 1000099 -- /usr/lib/systemd/user/ /etc/systemd/user/
 # Execute daemon-reload in user managers.
 %{_systemd_util_dir}/systemd-update-helper user-reload || :
-
 %transfiletriggerpostun -P 10000 -- /usr/lib/systemd/system/ /etc/systemd/system/
 # We restart remaining system services that should be restarted here.
 %{_systemd_util_dir}/systemd-update-helper system-restart || :
-
-%transfiletriggerpostun -P  9999 -- /usr/lib/systemd/user/ /etc/systemd/user/
+%transfiletriggerpostun -P 9999 -- /usr/lib/systemd/user/ /etc/systemd/user/
 # We restart remaining user services that should be restarted here.
 %{_systemd_util_dir}/systemd-update-helper user-restart || :
-
 %transfiletriggerin -P 1000700 -- /usr/lib/sysusers.d/
 # This script will process files installed in /usr/lib/sysusers.d to create
 # specified users automatically. The priority is set such that it
 # will run before the tmpfiles file trigger.
 systemd-sysusers || :
-
 %transfiletriggerin -P 1000700 udev -- /usr/lib/udev/hwdb.d/
 # This script will automatically invoke hwdb update if files have been
 # installed or updated in /usr/lib/udev/hwdb.d.
 systemd-hwdb update || :
-
 %transfiletriggerin -P 1000700 -- /usr/lib/systemd/catalog/
 # This script will automatically invoke journal catalog update if files
 # have been installed or updated in /usr/lib/systemd/catalog.
 journalctl --update-catalog || :
-
 %transfiletriggerin -P 1000700 -- /usr/lib/binfmt.d/
 # This script will automatically apply binfmt rules if files have been
 # installed or updated in /usr/lib/binfmt.d.
@@ -63,7 +52,6 @@ if test -d "/run/systemd/system"; then
   # during install
   %{_systemd_util_dir}/systemd-binfmt || :
 fi
-
 %transfiletriggerin -P 1000600 -- /usr/lib/tmpfiles.d/
 # This script will process files installed in /usr/lib/tmpfiles.d to create
 # tmpfiles automatically. The priority is set such that it will run
@@ -71,10 +59,7 @@ fi
 if test -d "/run/systemd/system"; then
   systemd-tmpfiles --create || :
 fi
-
 %transfiletriggerin -P 1000600 udev -- /usr/lib/udev/rules.d/
 # This script will automatically update udev with new rules if files
 # have been installed or updated in /usr/lib/udev/rules.d.
-if test -e /run/udev/control; then
-  udevadm control --reload || :
-fi
+%{_systemd_util_dir}/systemd-update-helper mark-reload-system-units systemd-udevd.service || :

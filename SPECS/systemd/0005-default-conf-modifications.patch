@@ -1,7 +1,7 @@
-From 5c0c468229ae01f3d0c226eb17e5f16e9922000d Mon Sep 17 00:00:00 2001
+From 87ae51ff46bb1e363f53789e7bd92ec68f97ce5f Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
 Date: Thu, 12 Mar 2026 22:40:00 +0530
-Subject: [PATCH] default conf modifications
+Subject: [PATCH 5/5] default conf modifications
 
 Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
 ---
@@ -11,7 +11,7 @@ Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
  3 files changed, 6 insertions(+), 7 deletions(-)
 
 diff --git a/src/core/system.conf.in b/src/core/system.conf.in
-index 1c08aa4..d403c18 100644
+index aa8208ca1d..4ef6c80fb0 100644
 --- a/src/core/system.conf.in
 +++ b/src/core/system.conf.in
 @@ -23,7 +23,7 @@
@@ -23,7 +23,7 @@ index 1c08aa4..d403c18 100644
  #CrashChangeVT=no
  #CrashShell=no
  #CrashAction=freeze
-@@ -59,7 +59,7 @@
+@@ -60,7 +60,7 @@
  #DefaultIPAccounting=no
  #DefaultMemoryAccounting={{ 'yes' if MEMORY_ACCOUNTING_DEFAULT else 'no' }}
  #DefaultTasksAccounting=yes
@@ -32,20 +32,20 @@ index 1c08aa4..d403c18 100644
  #DefaultLimitCPU=
  #DefaultLimitFSIZE=
  #DefaultLimitDATA=
-@@ -78,7 +78,7 @@
- #DefaultLimitRTTIME=
- #DefaultMemoryPressureThresholdSec=200ms
- #DefaultMemoryPressureWatch=auto
+@@ -83,7 +83,7 @@
+ #DefaultCPUPressureWatch=auto
+ #DefaultIOPressureThresholdSec=200ms
+ #DefaultIOPressureWatch=auto
 -#DefaultOOMPolicy=stop
 +DefaultOOMPolicy=continue
  #DefaultSmackProcessLabel=
+ #DefaultRestrictSUIDSGID=
  #ReloadLimitIntervalSec=
- #ReloadLimitBurst=
 diff --git a/src/resolve/resolved.conf.in b/src/resolve/resolved.conf.in
-index 0031b15..8548452 100644
+index edd7344ab8..f627b98e76 100644
 --- a/src/resolve/resolved.conf.in
 +++ b/src/resolve/resolved.conf.in
-@@ -24,10 +24,10 @@
+@@ -30,10 +30,10 @@
  #DNS=
  #FallbackDNS={{DNS_SERVERS}}
  #Domains=
@@ -58,9 +58,9 @@ index 0031b15..8548452 100644
 +LLMNR=no
  #Cache=yes
  #CacheFromLocalhost=no
- #DNSStubListener=yes
+ #DNSCacheSize=4096
 diff --git a/tmpfiles.d/home.conf b/tmpfiles.d/home.conf
-index 7d9ed66..302d61a 100644
+index 7d9ed660ef..302d61ac88 100644
 --- a/tmpfiles.d/home.conf
 +++ b/tmpfiles.d/home.conf
 @@ -8,4 +8,3 @@
@@ -69,5 +69,5 @@ index 7d9ed66..302d61a 100644
  Q /home 0755 - - -
 -q /srv 0755 - - -
 -- 
-2.53.0
+2.56.0
 
