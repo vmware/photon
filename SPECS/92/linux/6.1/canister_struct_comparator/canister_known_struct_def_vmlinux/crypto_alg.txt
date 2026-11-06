@@ -1,0 +1,27 @@
+struct crypto_alg {
+	struct list_head           cra_list;             /*     0    16 */
+	struct list_head           cra_users;            /*    16    16 */
+	u32                        cra_flags;            /*    32     4 */
+	unsigned int               cra_blocksize;        /*    36     4 */
+	unsigned int               cra_ctxsize;          /*    40     4 */
+	unsigned int               cra_alignmask;        /*    44     4 */
+	int                        cra_priority;         /*    48     4 */
+	refcount_t                 cra_refcnt;           /*    52     4 */
+	char                       cra_name[128];        /*    56   128 */
+	/* --- cacheline 2 boundary (128 bytes) was 56 bytes ago --- */
+	char                       cra_driver_name[128]; /*   184   128 */
+	/* --- cacheline 4 boundary (256 bytes) was 56 bytes ago --- */
+	const struct crypto_type  * cra_type;            /*   312     8 */
+	/* --- cacheline 5 boundary (320 bytes) --- */
+	union {
+		struct cipher_alg  cipher;               /*   320    32 */
+		struct compress_alg compress;            /*   320    16 */
+	} cra_u;                                         /*   320    32 */
+	int                        (*cra_init)(struct crypto_tfm *); /*   352     8 */
+	void                       (*cra_exit)(struct crypto_tfm *); /*   360     8 */
+	void                       (*cra_destroy)(struct crypto_alg *); /*   368     8 */
+	struct module *            cra_module;           /*   376     8 */
+
+	/* size: 384, cachelines: 6, members: 16 */
+} __attribute__((__aligned__(8))); /* size: 384 */
+

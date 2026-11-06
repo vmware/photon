@@ -1,0 +1,64 @@
+From c33e17fcd23d0ac9342d39e35d899baba96d65c0 Mon Sep 17 00:00:00 2001
+From: Sasha Levin <sashal@kernel.org>
+Date: Thu, 12 Dec 2024 16:36:09 +0100
+Subject: selftests: tls: add rekey tests
+
+From: Sabrina Dubroca <sd@queasysnail.net>
+
+[ Upstream commit 555f0edb9ff043196655a5b7cc65f67dfd05b530 ]
+
+Test the kernel's ability to:
+ - update the key (but not the version or cipher), only for TLS1.3
+ - pause decryption after receiving a KeyUpdate message, until a new
+   RX key has been provided
+ - reflect the pause/non-readable socket in poll()
+
+Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Stable-dep-of: 1c8629651cb5 ("tls: rx: restore msg_iter before TLS 1.3 optimistic retry")
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[Keerthana: v6.1 does not support TLS 1.3 rekey (added upstream in
+47069594e67e ("tls: implement rekey for TLS1.3")), so drop all the rekey
+tests and keep only the TLS_RECORD_TYPE_HANDSHAKE define and the
+KeyUpdate helpers, which are needed as context by the follow-up fix.
+Place them before FIXTURE(tls_err) since tls.recv_efault is not present
+in v6.1]
+Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+---
+ tools/testing/selftests/net/tls.c | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
+
+diff --git a/tools/testing/selftests/net/tls.c b/tools/testing/selftests/net/tls.c
+index b9a470038ab33..fe2905e804083 100644
+--- a/tools/testing/selftests/net/tls.c
++++ b/tools/testing/selftests/net/tls.c
+@@ -1462,6 +1462,27 @@ TEST_F(tls, shutdown_reuse)
+ 	EXPECT_EQ(errno, EISCONN);
+ }
+ 
++#define TLS_RECORD_TYPE_HANDSHAKE      0x16
++/* key_update, length 1, update_not_requested */
++static const char key_update_msg[] = "\x18\x00\x00\x01\x00";
++static void tls_send_keyupdate(struct __test_metadata *_metadata, int fd)
++{
++	size_t len = sizeof(key_update_msg);
++
++	EXPECT_EQ(tls_send_cmsg(fd, TLS_RECORD_TYPE_HANDSHAKE,
++				(char *)key_update_msg, len, 0),
++		  len);
++}
++
++static void tls_recv_keyupdate(struct __test_metadata *_metadata, int fd, int flags)
++{
++	char buf[100];
++
++	EXPECT_EQ(tls_recv_cmsg(_metadata, fd, TLS_RECORD_TYPE_HANDSHAKE, buf, sizeof(buf), flags),
++		  sizeof(key_update_msg));
++	EXPECT_EQ(memcmp(buf, key_update_msg, sizeof(key_update_msg)), 0);
++}
++
+ FIXTURE(tls_err)
+ {
+ 	int fd, cfd;
+-- 
+2.53.0

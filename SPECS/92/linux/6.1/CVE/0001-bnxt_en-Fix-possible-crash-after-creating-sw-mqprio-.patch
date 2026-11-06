@@ -1,0 +1,205 @@
+From d3901ff5ff76fe9e08e20df771dd28ab215e21ae Mon Sep 17 00:00:00 2001
+From: Michael Chan <michael.chan@broadcom.com>
+Date: Wed, 17 Jan 2024 15:45:15 -0800
+Subject: [PATCH 1/2] bnxt_en: Fix possible crash after creating sw mqprio TCs
+
+commit 467739baf63646d4a5033f7f8a9306669ea55326 upstream
+
+The driver relies on netdev_get_num_tc() to get the number of HW
+offloaded mqprio TCs to allocate and free TX rings.  This won't
+work and can potentially crash the system if software mqprio or
+taprio TCs have been setup.  netdev_get_num_tc() will return the
+number of software TCs and it may cause the driver to allocate or
+free more TX rings that it should.  Fix it by adding a bp->num_tc
+field to store the number of HW offload mqprio TCs for the device.
+Use bp->num_tc instead of netdev_get_num_tc().
+
+This fixes a crash like this:
+
+BUG: kernel NULL pointer dereference, address: 0000000000000000
+PGD 42b8404067 P4D 0
+Oops: 0000 [#1] PREEMPT SMP NOPTI
+CPU: 120 PID: 8661 Comm: ifconfig Kdump: loaded Tainted: G           OE     5.18.16 #1
+Hardware name: Lenovo ThinkSystem SR650 V3/SB27A92818, BIOS ESE114N-2.12 04/25/2023
+RIP: 0010:bnxt_hwrm_cp_ring_alloc_p5+0x10/0x90 [bnxt_en]
+Code: 41 5c 41 5d 41 5e c3 cc cc cc cc 41 8b 44 24 08 66 89 03 eb c6 e8 b0 f1 7d db 0f 1f 44 00 00 41 56 41 55 41 54 55 48 89 fd 53 <48> 8b 06 48 89 f3 48 81 c6 28 01 00 00 0f b6 96 13 ff ff ff 44 8b
+RSP: 0018:ff65907660d1fa88 EFLAGS: 00010202
+RAX: 0000000000000010 RBX: ff4dde1d907e4980 RCX: f400000000000000
+RDX: 0000000000000010 RSI: 0000000000000000 RDI: ff4dde1d907e4980
+RBP: ff4dde1d907e4980 R08: 000000000000000f R09: 0000000000000000
+R10: ff4dde5f02671800 R11: 0000000000000008 R12: 0000000088888889
+R13: 0500000000000000 R14: 00f0000000000000 R15: ff4dde5f02671800
+FS:  00007f4b126b5740(0000) GS:ff4dde9bff600000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000000000 CR3: 000000416f9c6002 CR4: 0000000000771ee0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe07f0 DR7: 0000000000000400
+PKRU: 55555554
+Call Trace:
+ <TASK>
+ bnxt_hwrm_ring_alloc+0x204/0x770 [bnxt_en]
+ bnxt_init_chip+0x4d/0x680 [bnxt_en]
+ ? bnxt_poll+0x1a0/0x1a0 [bnxt_en]
+ __bnxt_open_nic+0xd2/0x740 [bnxt_en]
+ bnxt_open+0x10b/0x220 [bnxt_en]
+ ? raw_notifier_call_chain+0x41/0x60
+ __dev_open+0xf3/0x1b0
+ __dev_change_flags+0x1db/0x250
+ dev_change_flags+0x21/0x60
+ devinet_ioctl+0x590/0x720
+ ? avc_has_extended_perms+0x1b7/0x420
+ ? _copy_from_user+0x3a/0x60
+ inet_ioctl+0x189/0x1c0
+ ? wp_page_copy+0x45a/0x6e0
+ sock_do_ioctl+0x42/0xf0
+ ? ioctl_has_perm.constprop.0.isra.0+0xbd/0x120
+ sock_ioctl+0x1ce/0x2e0
+ __x64_sys_ioctl+0x87/0xc0
+ do_syscall_64+0x59/0x90
+ ? syscall_exit_work+0x103/0x130
+ ? syscall_exit_to_user_mode+0x12/0x30
+ ? do_syscall_64+0x69/0x90
+ ? exc_page_fault+0x62/0x150
+
+Fixes: c0c050c58d84 ("bnxt_en: New Broadcom ethernet driver.")
+Reviewed-by: Damodharam Ammepalli <damodharam.ammepalli@broadcom.com>
+Reviewed-by: Andy Gospodarek <andrew.gospodarek@broadcom.com>
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+Link: https://lore.kernel.org/r/20240117234515.226944-6-michael.chan@broadcom.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+[ Brennan : Backported to v6.1, drop context in few places as not needed ]
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c         | 13 +++++++++----
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h         |  1 +
+ drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c     |  2 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c |  4 ++--
+ drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c     |  2 +-
+ 5 files changed, 14 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index 6b1245a3ab4b..5d85f04f9ed6 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -8990,7 +8990,7 @@ static void bnxt_setup_msix(struct bnxt *bp)
+ 	struct net_device *dev = bp->dev;
+ 	int tcs, i;
+ 
+-	tcs = netdev_get_num_tc(dev);
++	tcs = bp->num_tc;
+ 	if (tcs) {
+ 		int i, off, count;
+ 
+@@ -9022,8 +9022,10 @@ static void bnxt_setup_inta(struct bnxt *bp)
+ {
+ 	const int len = sizeof(bp->irq_tbl[0].name);
+ 
+-	if (netdev_get_num_tc(bp->dev))
++	if (bp->num_tc) {
+ 		netdev_reset_tc(bp->dev);
++		bp->num_tc = 0;
++	}
+ 
+ 	snprintf(bp->irq_tbl[0].name, len, "%s-%s-%d", bp->dev->name, "TxRx",
+ 		 0);
+@@ -9250,8 +9252,8 @@ static void bnxt_clear_int_mode(struct bnxt *bp)
+ 
+ int bnxt_reserve_rings(struct bnxt *bp, bool irq_re_init)
+ {
+-	int tcs = netdev_get_num_tc(bp->dev);
+ 	bool irq_cleared = false;
++	int tcs = bp->num_tc;
+ 	int rc;
+ 
+ 	if (!bnxt_need_reserve_rings(bp))
+@@ -9277,6 +9279,7 @@ int bnxt_reserve_rings(struct bnxt *bp, bool irq_re_init)
+ 		    bp->tx_nr_rings - bp->tx_nr_rings_xdp)) {
+ 		netdev_err(bp->dev, "tx ring reservation failure\n");
+ 		netdev_reset_tc(bp->dev);
++		bp->num_tc = 0;
+ 		if (bp->tx_nr_rings_xdp)
+ 			bp->tx_nr_rings_per_tc = bp->tx_nr_rings_xdp;
+ 		else
+@@ -12827,7 +12830,7 @@ int bnxt_setup_mq_tc(struct net_device *dev, u8 tc)
+ 		return -EINVAL;
+ 	}
+ 
+-	if (netdev_get_num_tc(dev) == tc)
++	if (bp->num_tc == tc)
+ 		return 0;
+ 
+ 	if (bp->flags & BNXT_FLAG_SHARED_RINGS)
+@@ -12845,9 +12848,11 @@ int bnxt_setup_mq_tc(struct net_device *dev, u8 tc)
+ 	if (tc) {
+ 		bp->tx_nr_rings = bp->tx_nr_rings_per_tc * tc;
+ 		netdev_set_num_tc(dev, tc);
++		bp->num_tc = tc;
+ 	} else {
+ 		bp->tx_nr_rings = bp->tx_nr_rings_per_tc;
+ 		netdev_reset_tc(dev);
++		bp->num_tc = 0;
+ 	}
+ 	bp->tx_nr_rings += bp->tx_nr_rings_xdp;
+ 	bp->cp_nr_rings = sh ? max_t(int, bp->tx_nr_rings, bp->rx_nr_rings) :
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+index 111098b4b606..cf2e72d8ea7a 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+@@ -1935,6 +1935,7 @@ struct bnxt {
+ 	u8			tc_to_qidx[BNXT_MAX_QUEUE];
+ 	u8			q_ids[BNXT_MAX_QUEUE];
+ 	u8			max_q;
++	u8			num_tc;
+ 
+ 	unsigned int		current_interval;
+ #define BNXT_TIMER_INTERVAL	HZ
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c
+index 1727e9bb1479..71e14be2507e 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c
+@@ -228,7 +228,7 @@ static int bnxt_queue_remap(struct bnxt *bp, unsigned int lltc_mask)
+ 		}
+ 	}
+ 	if (bp->ieee_ets) {
+-		int tc = netdev_get_num_tc(bp->dev);
++		int tc = bp->num_tc;
+ 
+ 		if (!tc)
+ 			tc = 1;
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+index 7daaed4520ac..b1629c7b517f 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+@@ -866,7 +866,7 @@ static void bnxt_get_channels(struct net_device *dev,
+ 	if (max_tx_sch_inputs)
+ 		max_tx_rings = min_t(int, max_tx_rings, max_tx_sch_inputs);
+ 
+-	tcs = netdev_get_num_tc(dev);
++	tcs = bp->num_tc;
+ 	tx_grps = max(tcs, 1);
+ 	if (bp->tx_nr_rings_xdp)
+ 		tx_grps++;
+@@ -925,7 +925,7 @@ static int bnxt_set_channels(struct net_device *dev,
+ 	if (channel->combined_count)
+ 		sh = true;
+ 
+-	tcs = netdev_get_num_tc(dev);
++	tcs = bp->num_tc;
+ 
+ 	req_tx_rings = sh ? channel->combined_count : channel->tx_count;
+ 	req_rx_rings = sh ? channel->combined_count : channel->rx_count;
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
+index 967a7fa291ea..e883ce65a697 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
+@@ -404,7 +404,7 @@ static int bnxt_xdp_set(struct bnxt *bp, struct bpf_prog *prog)
+ 	if (prog)
+ 		tx_xdp = bp->rx_nr_rings;
+ 
+-	tc = netdev_get_num_tc(dev);
++	tc = bp->num_tc;
+ 	if (!tc)
+ 		tc = 1;
+ 	rc = bnxt_check_rings(bp, bp->tx_nr_rings_per_tc, bp->rx_nr_rings,
+-- 
+2.40.4
