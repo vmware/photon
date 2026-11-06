@@ -4,7 +4,7 @@
 Summary:        A tool to manage Pods, Containers and Container Images
 Name:           podman
 Version:        4.9.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/containers/podman
 Group:          Podman
@@ -21,6 +21,8 @@ Source2: https://github.com/containers/gvisor-tap-vsock/archive/refs/tags/gvisor
 %define sha512 gvisor-tap-vsock-%{gvisorvers}=cf49a555192c869751009bfc14ef192067851ef79197307c84bf3c96a3abc3a8954fdb5d1c2490942920cc663b200fd09cf2330d976e50376c39d5da588cf471
 
 Patch0: CVE-2025-9566.patch
+Patch1: CVE-2026-94603-1.patch
+Patch2: CVE-2026-94603-2.patch
 
 BuildRequires:  gcc
 BuildRequires:  glibc-devel
@@ -180,6 +182,8 @@ cd ..
 %{_libexecdir}/%{name}/gvproxy
 
 %changelog
+* Fri Nov 06 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.9.5-3
+- Fix CVE-2026-94603
 * Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 4.9.5-2
 - Bump version as a part of go upgrade
 * Wed Jun 17 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.9.5-1
