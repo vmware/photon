@@ -1,4 +1,4 @@
-From 1b0dac4e2f37c538856d13b948c8a2566eb15855 Mon Sep 17 00:00:00 2001
+From b6c1e02c816d52b7d09be16a56a81df5a50103fc Mon Sep 17 00:00:00 2001
 From: Oliver Kurth <oliver.kurth@broadcom.com>
 Date: Fri, 22 May 2026 19:50:50 +0000
 Subject: [PATCH 7/7] add a test for detailed solver problem reports
@@ -9,10 +9,10 @@ Signed-off-by: Oliver Kurth <oliver.kurth@broadcom.com>
  1 file changed, 29 insertions(+)
 
 diff --git a/pytests/tests/test_install.py b/pytests/tests/test_install.py
-index 5b82c6b..f9eb433 100644
+index b683dd5..d93f0bf 100644
 --- a/pytests/tests/test_install.py
 +++ b/pytests/tests/test_install.py
-@@ -172,3 +172,32 @@ def xxx_test_install_memcheck(utils):
+@@ -182,3 +182,32 @@ def xxx_test_install_memcheck(utils):
  
      utils.run_memcheck(['tdnf', 'install', '-y', '--nogpgcheck', pkgname])
      assert utils.check_package(pkgname)

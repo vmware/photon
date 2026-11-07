@@ -1,4 +1,4 @@
-From 7b73fe23c1c4fadc0c9453de85f9879465d57ec6 Mon Sep 17 00:00:00 2001
+From 102aa81aabc56c7d248fd6b13ad37eeaa71a5947 Mon Sep 17 00:00:00 2001
 From: Oliver Kurth <oliver.kurth@broadcom.com>
 Date: Fri, 22 May 2026 18:31:09 +0000
 Subject: [PATCH 6/7] check: use solver_findallproblemrules
@@ -12,7 +12,7 @@ Signed-off-by: Oliver Kurth <oliver.kurth@broadcom.com>
  4 files changed, 61 insertions(+), 15 deletions(-)
 
 diff --git a/client/api.c b/client/api.c
-index 833d35a..0ae08bb 100644
+index 596a8f7..0a93a9b 100644
 --- a/client/api.c
 +++ b/client/api.c
 @@ -290,7 +290,7 @@ TDNFCheckLocalPackages(
@@ -25,7 +25,7 @@ index 833d35a..0ae08bb 100644
      }
  
 diff --git a/client/goal.c b/client/goal.c
-index 87199b6..f134c6f 100644
+index a61acf4..e2ae324 100644
 --- a/client/goal.c
 +++ b/client/goal.c
 @@ -380,7 +380,7 @@ TDNFSolv(
@@ -52,10 +52,10 @@ index a5ecbab..73ae08e 100644
  
  uint32_t
 diff --git a/solv/tdnfpackage.c b/solv/tdnfpackage.c
-index 9398529..88c30d0 100644
+index cdea2fc..23aaba4 100644
 --- a/solv/tdnfpackage.c
 +++ b/solv/tdnfpackage.c
-@@ -1912,7 +1912,8 @@ uint32_t
+@@ -1928,7 +1928,8 @@ uint32_t
  SolvReportProblems(
      PSolvSack pSack,
      Solver* pSolv,
@@ -65,7 +65,7 @@ index 9398529..88c30d0 100644
      )
  {
      int nCount = 0;
-@@ -1932,20 +1933,17 @@ SolvReportProblems(
+@@ -1948,20 +1949,17 @@ SolvReportProblems(
      nCount = solver_problem_count(pSolv);
      for ( ; nCount > 0; nCount--)
      {
@@ -93,7 +93,7 @@ index 9398529..88c30d0 100644
  
          if (dwSkipProblem != SKIPPROBLEM_NONE &&
              type == SOLVER_RULE_PKG_REQUIRES)
-@@ -1956,13 +1954,60 @@ SolvReportProblems(
+@@ -1972,13 +1970,60 @@ SolvReportProblems(
              }
          }
  
@@ -128,7 +128,7 @@ index 9398529..88c30d0 100644
 +                if (dwSkipProblem != SKIPPROBLEM_NONE &&
 +                    type == SOLVER_RULE_PKG_REQUIRES)
 +                {
-+                    if (!check_for_providers(pSack, type, pszSubProblem, prv_pkgname))
++                    if (!check_for_providers(pSack, type, pszSubProblem, &pszPrevPkgname))
 +                    {
 +                        continue;
 +                    }
@@ -154,7 +154,7 @@ index 9398529..88c30d0 100644
 +        }
      }
  
-     return dwError;
+     TDNF_SAFE_FREE_MEMORY(pszPrevPkgname);
 -- 
 2.43.0
 

@@ -1,4 +1,4 @@
-From 1ced27ef9c343e8af63527f701b8a276e90e9e74 Mon Sep 17 00:00:00 2001
+From d768cf0e61558c245a1e7dcbfaa92ed08956838c Mon Sep 17 00:00:00 2001
 From: Oliver Kurth <oliver.kurth@broadcom.com>
 Date: Thu, 21 May 2026 18:35:47 +0000
 Subject: [PATCH 3/7] remove redundant TDNFFreeReposInternal()
@@ -11,10 +11,10 @@ Signed-off-by: Oliver Kurth <oliver.kurth@broadcom.com>
  3 files changed, 7 insertions(+), 39 deletions(-)
 
 diff --git a/client/api.c b/client/api.c
-index a118fbe..833d35a 100644
+index d61d0e9..596a8f7 100644
 --- a/client/api.c
 +++ b/client/api.c
-@@ -2579,7 +2579,7 @@ TDNFCloseHandle(
+@@ -2603,7 +2603,7 @@ TDNFCloseHandle(
      {
          if(pTdnf->pRepos)
          {
@@ -24,10 +24,10 @@ index a118fbe..833d35a 100644
          if(pTdnf->pConf)
          {
 diff --git a/client/prototypes.h b/client/prototypes.h
-index d38affb..fc989d8 100644
+index 70f1b87..03c1c8a 100644
 --- a/client/prototypes.h
 +++ b/client/prototypes.h
-@@ -713,11 +713,6 @@ TDNFCloneRepo(
+@@ -719,11 +719,6 @@ TDNFCloneRepo(
      PTDNF_REPO_DATA* ppRepo
      );
  
@@ -40,10 +40,10 @@ index d38affb..fc989d8 100644
  uint32_t
  TDNFPrepareAllPackages(
 diff --git a/client/repolist.c b/client/repolist.c
-index 2bca86e..08d2335 100644
+index f022ef5..05b8e86 100644
 --- a/client/repolist.c
 +++ b/client/repolist.c
-@@ -316,7 +316,7 @@ error:
+@@ -345,7 +345,7 @@ error:
      }
      if(pReposAll)
      {
@@ -52,7 +52,7 @@ index 2bca86e..08d2335 100644
      }
      goto cleanup;
  }
-@@ -352,7 +352,7 @@ cleanup:
+@@ -381,7 +381,7 @@ cleanup:
  error:
      if(pRepo)
      {
@@ -61,7 +61,7 @@ index 2bca86e..08d2335 100644
      }
      goto cleanup;
  }
-@@ -416,7 +416,7 @@ error:
+@@ -445,7 +445,7 @@ error:
      }
      if(pRepo)
      {
@@ -70,7 +70,7 @@ index 2bca86e..08d2335 100644
      }
      goto cleanup;
  }
-@@ -488,7 +488,7 @@ error:
+@@ -517,7 +517,7 @@ error:
      }
      if(pRepo)
      {
@@ -79,7 +79,7 @@ index 2bca86e..08d2335 100644
      }
      goto cleanup;
  }
-@@ -559,7 +559,7 @@ error:
+@@ -595,7 +595,7 @@ error:
      }
      if(pRepo)
      {
@@ -88,7 +88,7 @@ index 2bca86e..08d2335 100644
      }
      goto cleanup;
  }
-@@ -719,7 +719,7 @@ error:
+@@ -755,7 +755,7 @@ error:
      TDNF_SAFE_FREE_MEMORY(pRepo);
      if(pRepos)
      {
@@ -97,7 +97,7 @@ index 2bca86e..08d2335 100644
      }
      goto cleanup;
  }
-@@ -961,30 +961,3 @@ error:
+@@ -997,30 +997,3 @@ error:
      goto cleanup;
  }
  

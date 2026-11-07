@@ -1,4 +1,4 @@
-From 8da92f863beef68845724fb02219b5e1104d5356 Mon Sep 17 00:00:00 2001
+From 16dcab014904617e4c135737295020ced701323e Mon Sep 17 00:00:00 2001
 From: Oliver Kurth <oliver.kurth@broadcom.com>
 Date: Fri, 22 May 2026 17:24:59 +0000
 Subject: [PATCH 5/7] add a test for sslcacert settings and SSL_CERT_FILE
@@ -12,24 +12,24 @@ Signed-off-by: Oliver Kurth <oliver.kurth@broadcom.com>
  create mode 100644 pytests/tests/test_ssl_config.py
 
 diff --git a/ci/prep.sh b/ci/prep.sh
-index 8fcdd8e..399537d 100755
+index 5b3756f..256f02f 100755
 --- a/ci/prep.sh
 +++ b/ci/prep.sh
-@@ -37,6 +37,7 @@ if grep -qw "Fedora" ${rel_file}; then
-     glib2-devel
-     libcurl-devel
+@@ -39,6 +39,7 @@ if grep -qw "Fedora" ${rel_file}; then
+     libasan
+     libubsan
      make
 +    openssl
      python3-flake8
      rpm-devel
      rpm-sign
 diff --git a/pytests/conftest.py b/pytests/conftest.py
-index 5e060c0..01ffc27 100644
+index 41b3d2d..d2e6d5d 100644
 --- a/pytests/conftest.py
 +++ b/pytests/conftest.py
-@@ -295,20 +295,21 @@ class TestUtils(object):
-                         '--error-exitcode=1']
-         return self._run(memcheck_cmd + cmd, retvalonly=True)
+@@ -328,20 +328,21 @@ class TestUtils(object):
+             if os.path.exists(log_file):
+                 os.unlink(log_file)
  
 -    def run(self, cmd, cwd=None, noconfig=False):
 +    def run(self, cmd, cwd=None, noconfig=False, env=None):

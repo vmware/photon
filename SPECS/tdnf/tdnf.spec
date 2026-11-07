@@ -6,8 +6,8 @@
 
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.6.5
-Release:        2%{?buildtag}%{?dist}
+Version:        3.6.6
+Release:        1%{?buildtag}%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/vmware/%{name}
@@ -258,6 +258,8 @@ rm -f %{_var}/cache/%{name}/cached-updateinfo.txt
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Sat Nov 07 2026 Oliver Kurth <oliver.kurth@broadcom.com> 3.6.6-1
+- update to 3.6.6
 * Tue May 26 2026 Oliver Kurth <oliver.kurth@broadcom.com> 3.6.5-2
 - improve solver problem reporting
 - global SSL settings, and use SSL_CERT_FILE env

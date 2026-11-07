@@ -1,4 +1,4 @@
-From 8efa700e76ca084546cfc4931e931c3f8136c118 Mon Sep 17 00:00:00 2001
+From 8f37e06cbd6d87a3c79d72386acc0cead9a3db6c Mon Sep 17 00:00:00 2001
 From: Oliver Kurth <oliver.kurth@broadcom.com>
 Date: Thu, 21 May 2026 23:10:42 +0000
 Subject: [PATCH 4/7] use SSL_CERT_FILE environment variable
@@ -9,7 +9,7 @@ Signed-off-by: Oliver Kurth <oliver.kurth@broadcom.com>
  1 file changed, 10 insertions(+)
 
 diff --git a/client/repolist.c b/client/repolist.c
-index 08d2335..65e85ab 100644
+index 05b8e86..1f73f83 100644
 --- a/client/repolist.c
 +++ b/client/repolist.c
 @@ -289,6 +289,16 @@ TDNFLoadRepoData(
@@ -26,9 +26,9 @@ index 08d2335..65e85ab 100644
 +        }
 +    }
 +
-     /* look for setopt settings */
-     if (pTdnf->pArgs->cn_repoopts != NULL) {
-         for (pRepo = pReposAll; pRepo; pRepo = pRepo->pNext) {
+     /* Apply per-repo and glob-pattern setopts.
+      * Pass 1: glob patterns first. Pass 2: exact repo-id matches, which
+      * always take precedence over globs regardless of argument order.
 -- 
 2.43.0
 
