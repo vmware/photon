@@ -4,7 +4,7 @@
 Summary:        ipmitool - Utility for IPMI control
 Name:           ipmitool
 Version:        1.8.19
-Release:        6%{?dist}
+Release:        7%{?dist}
 Group:          System Environment/Utilities
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -77,6 +77,8 @@ rm -rf %{buildroot}
 %{_datadir}/misc/enterprise-numbers
 
 %changelog
+* Mon Nov 9 2026 Michelle Wang <michelle.wang@broadcom.com> 1.8.19-7
+- Update enterprise-numbers file with https://www.iana.org/assignments/enterprise-numbers.txt
 * Wed Dec 11 2024 Tapas Kundu <tapas.kundu@broadcom.com> 1.8.19-6
 - Release bump for SRP compliance
 * Wed Sep 04 2024 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.8.19-5
