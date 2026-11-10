@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %global debug_package %{nil}
 
@@ -7,7 +7,7 @@
 Summary:        The uv build backend
 Name:           python3-uv-build
 Version:        0.9.30
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://github.com/astral-sh/uv
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -68,5 +68,7 @@ cargo test --offline --manifest-path crates/uv-build/Cargo.toml
 %{python3_sitelib}/*
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.9.30-2
+- extend release to 91
 * Tue Jul 14 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.9.30-1
 - Initial build, required by python3-CacheControl

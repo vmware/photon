@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           python3-jsonpointer
 Version:        3.2.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Applying JSON Patches in Python
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -45,6 +45,8 @@ python3 tests.py
 %{python3_sitelib}/*
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.2.1-2
+- extend release to 91
 * Thu Oct 15 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.2.1-1
 - Upgrade to 3.2.1
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.3-4

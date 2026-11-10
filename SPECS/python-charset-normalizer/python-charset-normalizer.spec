@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           python3-charset-normalizer
 Version:        3.5.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        The Real First Universal Charset Detector
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -49,6 +49,8 @@ library provides codecs are supported.
 %{python3_sitelib}/*
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.5.2-2
+- extend release to 91
 * Thu Oct 29 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.5.2-1
 - Upgrade to 3.5.2
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.1.1-4

@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Python Build Reasonableness
 Name:           python3-pbr
 Version:        7.1.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -64,6 +64,8 @@ PBR_VERSION=%{version} python3 -m testtools.run discover -s pbr/tests -t .
 %{python3_sitelib}/pbr
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 7.1.3-2
+- extend release to 91
 * Tue Oct 13 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 7.1.3-1
 - Upgrade to 7.1.3
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.0-5

@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define srcname vmware-photon-5.0-stig-ansible-hardening-3r4
 
@@ -6,7 +6,7 @@ Summary:        VMware Photon OS 5.0 STIG Readiness Guide Ansible Playbook
 Name:           stig-hardening
 #Version x.y.z corresponds v<x>r<y>-z tag in the repo. Eg 1.1.1 = v1r1-1
 Version:        3.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://github.com/vmware/dod-compliance-and-automation/tree/master/photon/5.0/ansible/vmware-photon-5.0-stig-ansible-hardening
 Group:          Productivity/Security
 Vendor:         VMware, Inc.
@@ -56,6 +56,8 @@ popd
 %{_datadir}/ansible/
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.4-2
+- extend release to 91
 * Fri Oct 09 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.4-1
 - Upgrade to v3r4
 * Mon Sep 07 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.1-9

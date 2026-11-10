@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        PCRE2 - Perl-Compatible Regular Experessions
 Name:           pcre2
 Version:        10.40
-Release:        11%{?dist}
+Release:        12%{?dist}
 Url:            https://github.com/PhilipHazel/pcre2
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -104,6 +104,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/*.so.*
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 10.40-12
+- extend release to 91
 * Tue Oct 27 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.40-11
 - Fix CVE-2026-89157, CVE-2026-89161
 * Tue Nov 25 2025 Oliver Kurth <oliver.kurth@broadcom.com> 10.40-10

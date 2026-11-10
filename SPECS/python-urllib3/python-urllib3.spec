@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        A powerful, sanity-friendly HTTP client for Python.
 Name:           python3-urllib3
 Version:        2.8.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/urllib3
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -77,6 +77,8 @@ ulimit -n $nofiles
 %{python3_sitelib}/*
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.8.0-2
+- extend release to 91
 * Mon Oct 26 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.8.0-1
 - Upgrade to version 2.8.0, honor /etc/python-ssl.conf for X.509 verify flags
 * Tue Jun 30 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.26.19-9

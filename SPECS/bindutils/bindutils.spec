@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define _bind_user      named
 %define _bind_group     named
@@ -7,7 +7,7 @@
 Summary:        Domain Name System software
 Name:           bindutils
 Version:        9.20.30
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.isc.org/downloads/bind
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -132,6 +132,8 @@ chmod 0770 %{_home_dir}
 %{_includedir}/isccfg/*.h
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 9.20.30-2
+- extend release to 91
 * Mon Nov 02 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 9.20.30-1
 - Upgrade to v9.20.30
 * Mon Sep 21 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 9.20.29-1

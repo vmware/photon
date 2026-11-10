@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        A Universal Character Encoding Detector in Python
 Name:           python3-chardet
 Version:        7.6.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://github.com/chardet/chardet
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -56,6 +56,8 @@ PYTHONPATH=%{buildroot}%{python3_sitelib} %pytest -v
 %{_bindir}/chardetect
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 7.6.0-2
+- extend release to 91
 * Wed Oct 14 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 7.6.0-1
 - Upgrade to 7.6.0
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.0.0-5

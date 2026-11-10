@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Authoritative DNS server for A/AAAA container records
 Name:           aardvark-dns
 Version:        2.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://github.com/containers/aardvark-dns
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -49,5 +49,7 @@ rm -rf %{buildroot}
 %{_libexecdir}/podman/%{name}
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.0.0-2
+- extend release to 91
 * Mon Nov 03 2025 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.0.0-1
 - Initial Build

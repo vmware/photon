@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define _origname   apache-tomcat
 %define _prefix     %{_var}/opt/%{name}
@@ -13,7 +13,7 @@
 Summary:        Apache Tomcat 11
 Name:           apache-tomcat11
 Version:        11.0.27
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://tomcat.apache.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -159,6 +159,8 @@ fi
 %{_webappsdir}/host-manager/*
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 11.0.27-2
+- extend release to 91
 * Tue Oct 27 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 11.0.27-1
 - Upgrade to v11.0.27
 * Thu Sep 17 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 11.0.26-1

@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %global debug_package %{nil}
 
 Summary:        A kernel-based automounter for Linux
 Name:           autofs
 Version:        5.1.8
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://www.kernel.org/pub/linux/daemons/autofs
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
@@ -86,6 +86,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/autofs.service
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.1.8-5
+- extend release to 91
 * Thu Aug 06 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.1.8-4
 - Remove rpcsvc-proto dependency
 * Wed Dec 11 2024 HarinadhD <harinadh.dommaraju@broadcom.com> 5.1.8-3

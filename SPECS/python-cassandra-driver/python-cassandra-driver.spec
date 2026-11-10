@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define srcname cassandra-driver
 
 Summary:        A modern, feature-rich and highly-tunable Python client library for Apache Cassandra (2.1+)
 Name:           python3-cassandra-driver
 Version:        3.29.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://github.com/apache/cassandra-python-driver
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -48,6 +48,8 @@ export CASS_DRIVER_NO_CYTHON=1
 %{python3_sitelib}/*
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.29.3-2
+- extend release to 91
 * Wed Oct 07 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.29.3-1
 - Upgrade to 3.29.3
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.25.0-4

@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define srcname service-identity
 
 Summary:        Service identity verification for pyOpenSSL.
 Name:           python3-service_identity
 Version:        26.1.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -62,6 +62,8 @@ In the simplest case, this means host name verification. However, %{srcname} imp
 %{python3_sitelib}/*
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 26.1.0-2
+- extend release to 91
 * Thu Sep 03 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 26.1.0-1
 - Upgrade to v26.1.0
 - Fix make check

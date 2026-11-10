@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           python3-click
 Version:        8.3.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Composable command line interface toolkit
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -49,6 +49,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 8.3.3-2
+- extend release to 91
 * Wed Oct 28 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 8.3.3-1
 - Upgrade to v8.3.3
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 8.1.3-4

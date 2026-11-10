@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Pexpect is a Pure Python Expect-like module
 Name:           python3-pexpect
 Version:        4.9.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://github.com/pexpect/pexpect
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -60,6 +60,8 @@ py.test3
 %{python3_sitelib}/*
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.9.0-2
+- extend release to 91
 * Thu Oct 29 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.9.0-1
 - Upgrade to 4.9.0
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.8.0-7

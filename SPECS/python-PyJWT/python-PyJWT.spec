@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           python3-PyJWT
 Version:        2.15.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        JSON Web Token implementation in Python
 Group:          Development/Languages/Python
 URL:            https://github.com/jpadilla/pyjwt
@@ -43,6 +43,8 @@ A Python implementation of JSON Web Token draft 01. This library provides a mean
 %doc README.rst
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.15.1-2
+- extend release to 91
 * Fri Oct 16 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.15.1-1
 - Upgrade to 2.15.1, fixes multiple CVEs
 * Tue Aug 25 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.8.0-5

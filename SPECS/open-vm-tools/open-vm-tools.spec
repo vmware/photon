@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %global gosc_scripts    gosc-scripts
 %define gosc_ver        1.3.2
@@ -6,7 +6,7 @@
 Summary:        Usermode tools for VMware virts
 Name:           open-vm-tools
 Version:        13.1.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -270,6 +270,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/vmtoolsd
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 13.1.0-3
+- extend release to 91
 * Wed Sep 02 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.1.0-2
 - Remove rpcsvc-proto dependency
 * Mon Aug 24 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 13.1.0-1

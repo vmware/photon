@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define cl_services cloud-config.service cloud-config.target cloud-final.service %{name}.service %{name}.target %{name}-local.service
 
@@ -9,7 +9,7 @@
 
 Name:           cloud-init
 Version:        26.2
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 URL:            http://launchpad.net/cloud-init
@@ -166,6 +166,8 @@ rm -rf %{buildroot}
 %{_mandir}/man1/*
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 26.2-6
+- extend release to 91
 * Wed Oct 28 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 26.2-5
 - Fix other instances of libexec path issue
 * Sun Oct 18 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 26.2-4

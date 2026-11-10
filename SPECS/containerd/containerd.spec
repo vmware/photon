@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define debug_package %{nil}
 %define __os_install_post %{nil}
@@ -8,7 +8,7 @@
 Summary:        Containerd
 Name:           containerd
 Version:        2.3.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://containerd.io/docs
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -140,6 +140,8 @@ make %{?_smp_mflags} integration
 %{_mandir}/man8/*
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.3.6-3
+- extend release to 91
 * Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 2.3.6-2
 - Bump version as a part of go upgrade
 * Wed Sep 30 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.3.6-1

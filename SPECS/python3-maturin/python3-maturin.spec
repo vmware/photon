@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %global srcname maturin
 
 Summary:        Rust/Python Interoperability
 Name:           python3-maturin
 Version:        1.14.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/cryptography
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -66,5 +66,7 @@ cargo test --offline
 %{python3_sitelib}/*
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.14.1-2
+- extend release to 91
 * Fri Jul 10 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.14.1-1
 - Initial build required by python3-cryptopraghy

@@ -1,7 +1,13 @@
 sources:
-- archive: cryptography-41.0.7.tar.gz
-  archive_sha512sum: 9a870d45296de6af1331e73b102226b8269892216cd7bc0adfb2f63ce1ca7021d338effd09182128253d8d8df154bbd19d46c47f10ddac86e739fcbf6df78307
-  skip_validation: true
+- archive: cryptography-50.0.1.tar.gz
+  archive_sha512sum: a25b07f00b9b92b2557da7cc97755e5df78197b881882ecd062d2c3c312d4b6af61225d1f0633bd654261c1a30ab7e5883a298b7dbdee1fb37c60514fe67633c
+  archive_type: upstream
+  name: cryptography-50.0.1
+  url: https://github.com/pyca/cryptography/archive/refs/tags/50.0.1.tar.gz
+  repo_url: https://github.com/pyca/cryptography
+  commit_id: ffde75a2b594822c740a2e4748b56c00548302bf
+  skip_list: []
+  missing: []
   spdx:
     package:
       detailed_description: 'Cryptography is a Python library which exposes cryptographic
@@ -11,8 +17,8 @@ sources:
       license_declared: Apache-2.0 AND BSD-3-Clause AND (BSD-3-Clause OR Apache-2.0)
       short_summary: Python cryptography library
       supplier: 'Organization: Broadcom, Inc.'
-- archive: python3-cryptography-registry-41.0.7-7.ph5.tar.gz
-  archive_sha512sum: 883deb32c63027a300ac4b6402faa63c4daaa31ee1723845f4ffbde56d8bc2cdece79a3692016018c5160dab3e41bb40659897652dbe0285bed6f82ca061d47a
+- archive: python3-cryptography-registry-50.0.1-1.ph5.tar.gz
+  archive_sha512sum: d75b9484bdc3beaf5f40a17802735f97d15242999d7315cf21c9c4828c109b01deba0afd28f4415b5b7ca597afc0789353d9fed64b2de863827693bb2814e03e
   skip_validation: true
   spdx:
     package:

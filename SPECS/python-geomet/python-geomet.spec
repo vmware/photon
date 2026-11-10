@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define srcname geomet
 
 Name:           python3-geomet
 Version:        1.1.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        GeoJSON <-> WKT/WKB conversion utilities
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -58,6 +58,8 @@ bash build-scripts/02-test.sh
 %{python3_sitelib}/*
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.1.0-2
+- extend release to 91
 * Wed Oct 07 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.1.0-1
 - Upgrade to 1.1.0
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.3.0-4

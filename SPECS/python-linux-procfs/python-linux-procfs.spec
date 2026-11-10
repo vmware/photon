@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 #
 # spec file for package python3-linux-procfs
@@ -6,7 +6,7 @@
 
 Name:           python3-linux-procfs
 Version:        0.7.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -51,6 +51,8 @@ LANG=en_US.UTF-8 python3 bitmasklist_test.py
 %license COPYING
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.7.4-2
+- extend release to 91
 * Wed Oct 07 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.7.4-1
 - Upgrade to 0.7.4
 * Mon May 18 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 0.7.0-5

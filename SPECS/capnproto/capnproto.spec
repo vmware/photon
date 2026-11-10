@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:    A data interchange format and capability-based RPC system
 Name:       capnproto
 Version:    1.5.0
-Release:    1%{?dist}
+Release:    2%{?dist}
 URL:        https://capnproto.org
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -97,5 +97,7 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/cmake/CapnProto/
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.5.0-2
+- extend release to 91
 * Mon Oct 26 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.5.0-1
 - Initial version, needed by sequoia-sq.

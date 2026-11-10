@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:       tpm2-pytss
 Version:    2.3.0
-Release:    1%{?dist}
+Release:    2%{?dist}
 Summary:    Python bindings for tpm2-tss
 URL:        https://github.com/tpm2-software/tpm2-pytss
 Vendor:     VMware, Inc.
@@ -67,6 +67,8 @@ export PYTHONPATH=%{buildroot}%{python3_sitelib}
 %{python3_sitelib}/*
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.3.0-2
+- extend release to 91
 * Thu Jun 04 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.3.0-1
 - Upgrade to latest as part of cryptography & python3 upgrade
 * Thu May 21 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.2.0-7

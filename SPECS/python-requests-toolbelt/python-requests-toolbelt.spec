@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define srcname requests-toolbelt
 
 Name:           python3-requests-toolbelt
 Version:        1.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Utility belt for advanced users of python-requests
 Group:          Development/Languages/Python
 URL:            https://toolbelt.readthedocs.io
@@ -64,6 +64,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/requests_toolbelt-*.dist-info/
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.0.0-2
+- extend release to 91
 * Wed Oct 14 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.0.0-1
 - Upgrade to 1.0.0
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.10.1-5

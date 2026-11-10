@@ -1,43 +1,43 @@
 %global build_if %{photon_subrelease} == 91
 
+%global srcname pyopenssl
+
 Summary:        Python wrapper module around the OpenSSL library
 Name:           python3-pyOpenSSL
-Version:        23.3.0
-Release:        6%{?dist}
+Version:        26.4.0
+Release:        0.1%{?dist}
 Url:            https://github.com/pyca/pyopenssl
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://files.pythonhosted.org/packages/source/p/pyOpenSSL/pyOpenSSL-%{version}.tar.gz
+Source0:        https://github.com/pyca/pyopenssl/archive/refs/tags/%{srcname}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
 
-Patch0: CVE-2026-27459.patch
-
-BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
+BuildRequires:  python3-build
+BuildRequires:  python3-packaging
+BuildRequires:  python3-installer
 %if 0%{?with_check}
 BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
 BuildRequires:  python3-cryptography
-BuildRequires:  python3-six
 BuildRequires:  python3-pycparser
 BuildRequires:  python3-cffi
 BuildRequires:  python3-idna
 BuildRequires:  python3-pyasn1
-BuildRequires:  python3-six
 BuildRequires:  python3-packaging
 BuildRequires:  python3-pip
 BuildRequires:  python3-pytest
 %endif
 Requires:       python3
 Requires:       python3-libs
-Requires:       python3-cryptography
-Requires:       python3-six
+Requires:       python3-cryptography >= 49.0.0
+Requires:       python3-cryptography < 51
 
 BuildArch:      noarch
 
@@ -45,23 +45,30 @@ BuildArch:      noarch
 High-level wrapper around a subset of the OpenSSL library.
 
 %prep
-%autosetup -p1 -n pyopenssl-%{version}
+%autosetup -p1 -n %{srcname}-%{version}
 
 %build
-%py3_build
+%py3_build_wheel
 
 %install
-%py3_install
+%py3_install_wheel
+%{py_byte_compile_and_ghost}
 
 %check
 pip3 install pretend flaky tomli
 %pytest
 
-%files
+%files -f %{py_ghost_filelist}
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+* Thu Nov 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 26.4.0-0.1
+- Upgrade to version 26.4.0
+* Tue Sep 22 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 26.3.0-2
+- Remove stale python3-six dependency
+* Fri Jul 10 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 26.3.0-1
+- Upgrade to version 26.3.0
 * Thu May 21 2026 Mukul Sikka <mukul.sikka@broadcom.com> 23.3.0-6
 - Replace asn1crypto
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 23.3.0-5

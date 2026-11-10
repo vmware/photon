@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 # The post hooks strip the binary which removes
 # the BEGIN_trigger and END_trigger functions
@@ -8,7 +8,7 @@
 
 Name:           bpftrace
 Version:        0.25.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        High-level tracing language for Linux eBPF
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -105,6 +105,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/bash-completion/completions/bpftrace
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.25.1-5
+- extend release to 91
 * Thu Sep 17 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 0.25.1-4
 - Build separately for 92
 * Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 0.25.1-3

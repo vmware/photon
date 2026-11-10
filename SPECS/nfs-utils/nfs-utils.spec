@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:          NFS client utils
 Name:             nfs-utils
 Version:          2.9.1
-Release:          4%{?dist}
+Release:          5%{?dist}
 URL:              http://sourceforge.net/projects/nfs
 Group:            Applications/Nfs-utils-client
 Vendor:           VMware, Inc.
@@ -77,6 +77,9 @@ Development libraries and headers for %{name}
 
 %package -n rpcgen
 Summary: rpcgen binary
+Conflicts: rpcsvc-proto
+Obsoletes: rpcsvc-proto
+Obsoletes: rpcsvc-proto-devel
 
 %description -n rpcgen
 %{summary}
@@ -191,6 +194,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/rpcgen
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.9.1-5
+- extend release to 91
 * Thu Aug 06 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.9.1-4
 - Remove rpcsvc-proto dependency
 - Use built-in rpcsvc-proto

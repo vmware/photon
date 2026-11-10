@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Virtualization API library that supports KVM, QEMU, Xen, ESX etc
 Name:           libvirt
 Version:        12.6.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://libvirt.org
 Group:          Virtualization/Libraries
 Vendor:         VMware, Inc.
@@ -235,6 +235,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/polkit-1/*
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 12.6.0-2
+- extend release to 91
 * Thu Aug 20 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 12.6.0-1
 - Upgrade to v12.6.0
 - Remove rpcsvc-proto dependency

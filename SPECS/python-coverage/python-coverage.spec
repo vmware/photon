@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %define debug_package %{nil}
 
 Summary:        The code coverage tool for Python
 Name:           python3-coverage
 Version:        7.16.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -54,6 +54,8 @@ LANG=en_US.UTF-8 tox -e py36
 %{_bindir}/coverage-%{python3_version}
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 7.16.2-2
+- extend release to 91
 * Fri Oct 09 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 7.16.2-1
 - Upgrade to 7.16.2
 * Tue Sep 22 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 6.4.4-6

@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:       A Python module for decorators, wrappers and monkey patching
 Name:          python3-wrapt
 Version:       2.5.1
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Development/Tools/Python
 URL:           https://github.com/GrahamDumpleton/wrapt
 Vendor:        VMware, Inc.
@@ -44,6 +44,8 @@ of function wrappers and decorator functions.
 %{python3_sitearch}/*
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.5.1-2
+- extend release to 91
 * Tue Oct 20 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.5.1-1
 - Upgrade to 2.5.1
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.14.1-4

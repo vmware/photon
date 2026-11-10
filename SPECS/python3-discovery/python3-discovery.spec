@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           python3-discovery
 Version:        1.6.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python interpreter discovery
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -43,5 +43,7 @@ export SETUPTOOLS_SCM_PRETEND_VERSION=%{version}
 %{python3_sitelib}/*
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.6.4-2
+- extend release to 91
 * Tue Oct 20 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.6.4-1
 - Initial build. First version

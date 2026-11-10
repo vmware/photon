@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Cryptographic library for Python
 Name:           python3-pycryptodome
 Version:        3.24.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.pycryptodome.org/
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -47,6 +47,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.24.1-2
+- extend release to 91
 * Tue Oct 13 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.24.1-1
 - Upgrade to 3.24.1
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.20.0-4

@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %global VER 3.14
 %global with_gdb_hooks 1
@@ -6,7 +6,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.14.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.python.org
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
@@ -313,6 +313,8 @@ rm -rf %{buildroot}/*
 %{_rpmconfigdir}/python_ghost_pyc.sh
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.14.8-2
+- extend release to 91
 * Tue Oct 20 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.14.8-1
 - Upgrade to 3.14.8
 * Mon Sep 07 2026 Mukul Sikka <mukul.sikka@broadcom.com> 3.14.7-2

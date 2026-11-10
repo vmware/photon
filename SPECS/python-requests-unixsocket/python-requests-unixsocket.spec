@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define srcname requests-unixsocket
 
 Name:           python3-requests-unixsocket
 Version:        0.4.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Use requests to talk HTTP via a UNIX domain socket
 Url:            https://pypi.org/project/requests-unixsocket
 Group:          Development/Languages/Python
@@ -63,6 +63,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.4.1-2
+- extend release to 91
 * Wed Oct 14 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.4.1-1
 - Upgrade to 0.4.1
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.3.0-6

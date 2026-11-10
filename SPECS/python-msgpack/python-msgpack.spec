@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global debug_package %{nil}
 
 Summary:        MessagePack (de)serializer.
 Name:           python3-msgpack
 Version:        1.2.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -52,6 +52,8 @@ PYTHONPATH=%{buildroot}%{python3_sitelib} python3 -m pytest -v test
 %{python3_sitelib}/*
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.2.2-2
+- extend release to 91
 * Fri Oct 09 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.2.2-1
 - Upgrade to 1.2.2
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.0.4-6

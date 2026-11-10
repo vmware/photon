@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 # powershell's make files use -D_FORTIFY_SOURCE=2, which conflicts
 # with =3 from adjust-gcc-specs.sh, failing the build with error:
@@ -15,7 +15,7 @@
 Summary:        PowerShell is an automation and configuration management platform.
 Name:           powershell
 Version:        7.6.9
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://microsoft.com/powershell
@@ -160,6 +160,8 @@ fi
 %{_bindir}/pwsh
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 7.6.9-2
+- extend release to 91
 * Wed Oct 28 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.6.9-1
 - Upgrade to v7.6.9
 * Wed Oct 07 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 7.6.6-2

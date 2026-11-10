@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Python binding for libudev
 Name:           python3-pyudev
 Version:        0.24.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages/Python
 URL:            https://pypi.org/project/pyudev
 Source0:        pyudev-%{version}.tar.gz
@@ -62,6 +62,8 @@ The binding supports CPython 2 (2.6 or newer) and 3 (3.1 or newer), and PyPy 1.5
 %{python3_sitelib}/*
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.24.3-2
+- extend release to 91
 * Wed Oct 07 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.24.3-1
 - Upgrade to 0.24.3
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.23.2-6

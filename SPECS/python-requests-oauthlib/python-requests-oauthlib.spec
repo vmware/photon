@@ -1,4 +1,4 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %global srcname requests-oauthlib
 %global modname requests_oauthlib
@@ -6,7 +6,7 @@
 Summary:    OAuthlib authentication support for Requests.
 Name:       python3-requests-oauthlib
 Version:    2.0.0
-Release:    1%{?dist}
+Release:    2%{?dist}
 URL:        http://pypi.python.org/pypi/requests-oauthlib
 Group:      Development/Languages/Python
 Vendor:     VMware, Inc.
@@ -64,6 +64,8 @@ pip3 install requests-mock
 %{python3_sitelib}/%{modname}-%{version}.dist-info/
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.0.0-2
+- extend release to 91
 * Wed Oct 14 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.0.0-1
 - Upgrade to 2.0.0
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.3.1-4

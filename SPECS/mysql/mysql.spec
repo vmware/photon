@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        MySQL.
 Name:           mysql
 Version:        8.4.13
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -185,6 +185,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 8.4.13-2
+- extend release to 91
 * Tue Oct 20 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.4.13-1
 - Upgrade to v8.4.13
 * Wed Oct 14 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 8.4.11-4

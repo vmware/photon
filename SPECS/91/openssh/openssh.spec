@@ -5,7 +5,7 @@
 
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
-Version:        10.5p1
+Version:        10.6p1
 Release:        1.1%{?dist}
 URL:            https://www.openssh.com
 Group:          System Environment/Security
@@ -236,6 +236,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/sshd@.service
 
 %changelog
+* Wed Nov 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.6p1-1.1
+- Upgrade to v10.6p1
 * Tue Sep 29 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.5p1-1.1
 - Sub branch for 91, 92
 * Tue Sep 08 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 10.5p1-1

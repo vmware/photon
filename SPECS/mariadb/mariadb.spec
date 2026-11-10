@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:          Database servers made by the original developers of MySQL.
 Name:             mariadb
 Version:          11.8.9
-Release:          1%{?dist}
+Release:          2%{?dist}
 Group:            Applications/Databases
 Vendor:           VMware, Inc.
 Distribution:     Photon
@@ -453,6 +453,8 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/*/errmsg.sys
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 11.8.9-2
+- extend release to 91
 * Sat Oct 17 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 11.8.9-1
 - Upgrade to v11.8.9
 * Tue Jun 23 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 11.8.8-1

@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Name:           python3-PyNaCl
 Version:        1.6.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        PyNaCl is a Python binding to libsodium
 Group:          Development/Languages/Python
 Url:            https://pypi.org/project/PyNaCl
@@ -49,6 +49,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.6.2-2
+- extend release to 91
 * Tue Oct 13 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.6.2-1
 - Upgrade to 1.6.2
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.5.0-5

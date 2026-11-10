@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        A port of the caching algorithms in httplib2 for use with requests session object.
 Name:           python3-CacheControl
 Version:        0.14.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -55,6 +55,8 @@ python3 setup.py test
 %{_bindir}/doesitcache3
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.14.4-2
+- extend release to 91
 * Wed Oct 14 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.14.4-1
 - Upgrade to 0.14.4
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.12.11-4

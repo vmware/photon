@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        Photon upgrade scripts
 Name:           photon-upgrade
 Version:        1.1
-Release:        15%{?dist}
+Release:        16%{?dist}
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon
 Vendor:         VMware, Inc.
@@ -60,6 +60,8 @@ rm -rf %{buildroot}
 %{_datadir}/bash-completion/completions/%{name}
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.1-16
+- extend release to 91
 * Tue Oct 20 2026 Dweep Advani <dweep.advani@broadcom.com> 1.1-15
 - Do not report errors for --rm-pkgs-pre pkgs and deprecated drpm while updating package management
 * Mon Oct 12 2026 Dweep Advani <dweep.advani@broadcom.com> 1.1-14

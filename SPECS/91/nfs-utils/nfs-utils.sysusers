@@ -1,2 +1,0 @@
-g nobody -
-u nobody - "Unprivileged User" /dev/null /bin/false

@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 Summary:        A library for retrieving information onrunning processes and system utilization
 Name:           python3-psutil
 Version:        7.2.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/psutil
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -48,6 +48,8 @@ PYTHONSAFEPATH=1 make test CI_TESTING=1 PYTHON=%{__python3} PYTHONPATH=%{buildro
 %{python3_sitelib}/*
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 7.2.2-2
+- extend release to 91
 * Thu Oct 15 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 7.2.2-1
 - Upgrade to 7.2.2
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.9.1-4

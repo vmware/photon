@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 Summary:        Contains a linker, an assembler, and other tools
 Name:           binutils
 Version:        2.46.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.gnu.org/software/binutils
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -161,6 +161,8 @@ rm $(dirname $(gcc --print-libgcc-file-name))/../specs
 %{_libdir}/libsframe.so
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.46.1-2
+- extend release to 91
 * Sat Aug 08 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.46.1-1
 - Upgrade to 2.46.1
 - Use binutils-with-gold source

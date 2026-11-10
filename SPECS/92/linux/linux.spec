@@ -80,7 +80,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.115
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -696,7 +696,7 @@ cat %{SOURCE20} %{SOURCE21} > photon-cert-bundle.pem
 
 sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-%{release}"/' .config
 
-%if 0%{?photon_subrelease} >= 92
+%if 0%{?photon_subrelease} >= 91
 # Update toolchain config for gcc 12.5.0 and binutils 2.46.1
 sed -i 's/CONFIG_CC_VERSION_TEXT="gcc (GCC) 12.2.0"/CONFIG_CC_VERSION_TEXT="gcc (GCC) 12.5.0"/' .config
 sed -i 's/CONFIG_GCC_VERSION=120200/CONFIG_GCC_VERSION=120500/' .config
@@ -1031,6 +1031,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Nov 09 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.12.115-3
+- Build for sr-91 and above
 * Mon Nov 09 2026 Ajay Kaher <ajay.kaher@broadcom.com> 6.12.115-2
 - Fixes CVE-2026-98570, CVE-2026-98810
 * Tue Nov 03 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.12.115-1

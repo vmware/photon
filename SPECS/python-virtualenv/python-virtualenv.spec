@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %define srcname virtualenv
 
 Name:           python3-virtualenv
 Version:        21.14.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Virtual Python Environment builder
 Group:          Development/Languages/Python
 Url:            https://pypi.python.org/pypi/virtualenv
@@ -65,6 +65,8 @@ pip3 install tomli flaky pytest-mock pytest-freezer
 %{python3_sitelib}/*
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 21.14.5-2
+- extend release to 91
 * Tue Oct 20 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 21.14.5-1
 - Upgrade to 21.14.5
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 20.16.3-8

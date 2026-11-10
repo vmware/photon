@@ -1,11 +1,11 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 
 %global gvisorvers 0.8.9
 
 Summary:        A tool to manage Pods, Containers and Container Images
 Name:           podman
 Version:        5.8.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://github.com/containers/podman
 Group:          Podman
 Vendor:         VMware, Inc.
@@ -172,6 +172,8 @@ rm -rv %{buildroot}%{_datadir}/zsh \
 %{_libexecdir}/%{name}/gvproxy
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.8.5-3
+- extend release to 91
 * Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 5.8.5-2
 - Bump version as a part of go upgrade
 * Tue Aug 11 2026 Prashant Singh Chauhan <prashant.singh-chauhan@broadcom.com> 5.8.5-1

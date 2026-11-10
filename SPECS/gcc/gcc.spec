@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 %global security_hardening nofortify
 
 Summary:        Contains the GNU compiler collection
 Name:           gcc
 Version:        12.5.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://gcc.gnu.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -328,6 +328,8 @@ GFORTRAN_SUM_FILE=host-%{_host}/gcc/testsuite/gfortran/gfortran.sum
 %endif
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 12.5.0-2
+- extend release to 91
 * Sat Aug 08 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 12.5.0-1
 - Upgrade to 12.5
 - Move libssp into the libssp subpackage

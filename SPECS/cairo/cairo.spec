@@ -1,8 +1,8 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 91
 Summary:  A 2D graphics library.
 Name:     cairo
 Version:  1.17.6
-Release:  16%{?dist}
+Release:  17%{?dist}
 URL:      https://cairographics.org
 Group:    System Environment/Libraries
 Vendor:   VMware, Inc.
@@ -95,6 +95,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/gtk-doc/html/%{name}/*
 
 %changelog
+* Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.17.6-17
+- extend release to 91
 * Wed Aug 26 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.17.6-16
 - Restrict build to subrelease 92 and above; subrelease 91 forked off as a micro branch
 * Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 1.17.6-15
