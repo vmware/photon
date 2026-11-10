@@ -18,8 +18,8 @@ index 734acea..7b8fd9d 100644
  What=tmpfs
  Where=/tmp
  Type=tmpfs
--Options=mode=1777,strictatime,nosuid,nodev,size=50%%,nr_inodes=1m
-+Options=mode=1777,strictatime,nosuid,noexec,nodev,size=50%%,nr_inodes=1m
+-Options=mode=1777,strictatime,nosuid,nodev,size=50%%,nr_inodes=1m,x-systemd.graceful-option=usrquota
++Options=mode=1777,strictatime,nosuid,noexec,nodev,size=50%%,nr_inodes=1m,x-systemd.graceful-option=usrquota
 -- 
 2.51.0
 

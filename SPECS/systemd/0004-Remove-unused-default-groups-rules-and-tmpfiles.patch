@@ -5,35 +5,33 @@ Subject: [PATCH 4/5] Remove unused default groups, rules and tmpfiles
 
 Some of these groups and users are also created by filesystem
 ---
- rules.d/50-udev-default.rules.in            | 11 ----------
+ rules.d/50-udev-default.rules.in            | 12 -----------
  sysusers.d/basic.conf.in                    | 23 ---------------------
- sysusers.d/systemd-journal.conf.in          |  2 --
  sysusers.d/systemd-network.conf.in          |  2 --
  sysusers.d/systemd-remote.conf              |  2 --
  sysusers.d/systemd-resolve.conf.in          |  2 --
  sysusers.d/systemd-timesync.conf.in         |  2 --
  tmpfiles.d/static-nodes-permissions.conf.in |  3 ---
- 8 files changed, 47 deletions(-)
+ 7 files changed, 46 deletions(-)
 
 diff --git a/rules.d/50-udev-default.rules.in b/rules.d/50-udev-default.rules.in
-index 22b38f5f11..fd9d26f67e 100644
+index 22b38f5f11..b316d40e6c 100644
 --- a/rules.d/50-udev-default.rules.in
 +++ b/rules.d/50-udev-default.rules.in
-@@ -58,13 +58,8 @@ SUBSYSTEM=="dvb", GROUP="video"
+@@ -58,12 +58,6 @@ SUBSYSTEM=="dvb", GROUP="video"
  SUBSYSTEM=="media", GROUP="video"
  SUBSYSTEM=="cec", GROUP="video"
  
 -SUBSYSTEM=="drm", KERNEL=="renderD*", GROUP="render", MODE="{{GROUP_RENDER_MODE}}"
 -SUBSYSTEM=="kfd", GROUP="render", MODE="{{GROUP_RENDER_MODE}}"
- SUBSYSTEM=="accel", GROUP="render", MODE="{{GROUP_RENDER_MODE}}"
- 
+-SUBSYSTEM=="accel", GROUP="render", MODE="{{GROUP_RENDER_MODE}}"
+-
 -SUBSYSTEM=="misc", KERNEL=="sgx_enclave", GROUP="sgx", MODE="0660"
 -SUBSYSTEM=="misc", KERNEL=="sgx_vepc", GROUP="sgx", MODE="0660"
--
+ 
  # When using static_node= with non-default permissions, also update
  # tmpfiles.d/static-nodes-permissions.conf.in to keep permissions synchronized.
- 
-@@ -113,15 +108,9 @@ KERNEL=="tun", MODE="0666", OPTIONS+="static_node=net/tun"
+@@ -113,15 +107,9 @@ KERNEL=="tun", MODE="0666", OPTIONS+="static_node=net/tun"
  KERNEL=="fuse", MODE="0666", OPTIONS+="static_node=fuse"
  
  # The static_node is required on s390x and ppc (they are using MODULE_ALIAS)
@@ -93,16 +91,6 @@ index cf200fb14f..44ab50d24b 100644
 -
 -# Default group for normal users
 -g users   {{USERS_GID  }}     -            -
-diff --git a/sysusers.d/systemd-journal.conf.in b/sysusers.d/systemd-journal.conf.in
-index 61768b234e..5873bfab30 100644
---- a/sysusers.d/systemd-journal.conf.in
-+++ b/sysusers.d/systemd-journal.conf.in
-@@ -4,5 +4,3 @@
- #  under the terms of the GNU Lesser General Public License as published by
- #  the Free Software Foundation; either version 2.1 of the License, or
- #  (at your option) any later version.
--
--g systemd-journal {{SYSTEMD_JOURNAL_GID}} -
 diff --git a/sysusers.d/systemd-network.conf.in b/sysusers.d/systemd-network.conf.in
 index fc04827efd..5873bfab30 100644
 --- a/sysusers.d/systemd-network.conf.in
