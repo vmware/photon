@@ -3,7 +3,7 @@
 Summary:        DBus message bus
 Name:           dbus
 Version:        1.15.4
-Release:        8.1.1%{?dist}
+Release:        8.1.2%{?dist}
 URL:            http://www.freedesktop.org/wiki/Software/dbus
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -15,6 +15,7 @@ Source1: license.txt
 %include %{SOURCE1}
 
 Patch0: CVE-2023-34969.patch
+Patch1: CVE-2026-120749.patch
 
 BuildRequires:  expat-devel
 BuildRequires:  systemd-devel
@@ -107,6 +108,8 @@ make %{?_smp_mflags} check
 %{_userunitdir}/%{name}.socket
 
 %changelog
+* Wed Nov 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.15.4-8.1.2
+- Fix CVE-2026-120749
 * Thu May 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.15.4-8.1.1
 - Bump after moving to SPECS/90
 * Wed Feb 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.15.4-8.1

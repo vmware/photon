@@ -3,7 +3,7 @@
 Summary:        DBus message bus
 Name:           dbus
 Version:        1.16.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.freedesktop.org/wiki/Software/dbus
 Group:          Applications/File
 Vendor:         VMware, Inc.
@@ -15,6 +15,8 @@ Source1: license.txt
 %include %{SOURCE1}
 
 Source2: %{name}.sysusers
+
+Patch0: CVE-2026-120749.patch
 
 BuildRequires:  expat-devel
 BuildRequires:  systemd-devel
@@ -138,6 +140,8 @@ install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.conf
 %{_userunitdir}/%{name}.socket
 
 %changelog
+* Wed Nov 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.16.2-4
+- Fix CVE-2026-120749
 * Thu May 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.16.2-3
 - Build for subrelease >= 91
 * Tue Feb 24 2026 Oliver Kurth <oliver.kurth@broadcom.com> 1.16.2-2
