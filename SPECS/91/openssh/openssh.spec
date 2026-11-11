@@ -5,8 +5,8 @@
 
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
-Version:        10.6p1
-Release:        1.1%{?dist}
+Version:        10.6p2
+Release:        0.1%{?dist}
 URL:            https://www.openssh.com
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -236,6 +236,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/sshd@.service
 
 %changelog
+* Wed Nov 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.6p2-0.1
+- Upgrade to v10.6p2
 * Wed Nov 04 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.6p1-1.1
 - Upgrade to v10.6p1
 * Tue Sep 29 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 10.5p1-1.1
