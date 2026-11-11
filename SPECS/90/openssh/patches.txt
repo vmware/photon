@@ -1,7 +1,7 @@
 Patch0: 0001-sshd_config-Avoid-duplicate-entry.patch
 Patch1: 0002-Support-for-overriding-algorithms-for-ssh-keyscan.patch
 Patch2: CVE-2023-51385.patch
-Patch3: openssh-CVE-2023-48795.patch
+Patch3: CVE-2023-48795.patch
 Patch4: CVE-2023-51384.patch
 Patch5: CVE-2024-6387.patch
 Patch6: CVE-2025-26465.patch
@@ -40,3 +40,4 @@ Patch38: CVE-2026-106587.patch
 Patch39: CVE-2026-73281.patch
 Patch40: CVE-2026-73282.patch
 Patch41: CVE-2026-73283.patch
+Patch42: CVE-2026-123158.patch
