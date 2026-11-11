@@ -11,8 +11,6 @@ tools/bin/
 tools/src/contain/contain_unpriv
 common/data/pkg_info.json
 .idea/
-SPECS/kernels-drivers-intel/*.spec
-SPECS/91/kernels-drivers-intel/*.spec
-SPECS/90/kernels-drivers-intel/*.spec
+SPECS/kernel-drivers/*.spec
 SPECS/falco/*.spec
 SPECS/sysdig/*.spec
