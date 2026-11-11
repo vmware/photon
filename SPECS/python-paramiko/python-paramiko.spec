@@ -4,12 +4,13 @@
 
 Summary:        Python SSH module
 Name:           python3-paramiko
-Version:        5.0.0
-Release:        2%{?dist}
+Version:        5.1.0
+Release:        1%{?dist}
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            http://www.paramiko.org
+BuildArch:      noarch
 
 Source0: https://github.com/paramiko/paramiko/archive/paramiko-%{version}.tar.gz
 
@@ -17,9 +18,6 @@ Source1: license.txt
 %include %{SOURCE1}
 
 Patch0: support-key-operations-in-openssl-fips-mode.patch
-Patch1: add-pqc-support.patch
-
-BuildArch:      noarch
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-build
@@ -72,6 +70,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Wed Nov 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.1.0-1
+- Upgrade to v5.1.0
 * Tue Oct 27 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.0.0-2
 - Build for sr-92 and above
 * Mon Sep 21 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 5.0.0-1
