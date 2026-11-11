@@ -4,7 +4,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        8.9p1
-Release:        18%{?dist}
+Release:        19%{?dist}
 License:        BSD
 URL:            https://www.openssh.com
 Group:          System Environment/Security
@@ -206,6 +206,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/sshd@.service
 
 %changelog
+* Wed Nov 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.9p1-19
+- Fix CVE-2026-123158
 * Mon Nov 02 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.9p1-18
 - Scurity fixes
 * Wed Oct 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 8.9p1-17

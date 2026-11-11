@@ -45,3 +45,4 @@ Patch43: CVE-2026-106587.patch
 Patch44: CVE-2026-73281.patch
 Patch45: CVE-2026-73282.patch
 Patch46: CVE-2026-73283.patch
+Patch47: CVE-2026-123158.patch
