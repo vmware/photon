@@ -1,0 +1,298 @@
+%global build_if %{photon_subrelease} <= 91
+
+Summary:        Programs for handling passwords in a secure way
+Name:           shadow
+Version:        4.13
+Release:        15.1%{?dist}
+URL:            https://github.com/shadow-maint/shadow
+Group:          Applications/System
+Vendor:         VMware, Inc.
+Distribution:   Photon
+
+Source0: https://github.com/shadow-maint/shadow/releases/download/%{version}/%{name}-%{version}.tar.xz
+
+Source1: pam.d/chage
+Source2: pam.d/chpasswd
+Source3: pam.d/login
+Source4: pam.d/other
+Source5: pam.d/passwd
+Source6: pam.d/sshd
+Source7: pam.d/su
+Source8: pam.d/system-account
+Source9: pam.d/system-auth
+Source10: pam.d/system-password
+Source11: pam.d/system-session
+Source12: pam.d/useradd
+
+Source14: license.txt
+%include %{SOURCE14}
+
+Patch0: 0001-remove-group-from-deliverables.patch
+Patch1: 0002-login.defs-config-changes.patch
+Patch2: CVE-2023-29383.patch
+Patch3: CVE-2023-29383.1.patch
+Patch4: CVE-2023-4641.patch
+Patch6: CVE-2024-56433.patch
+
+BuildRequires: cracklib-devel
+BuildRequires: Linux-PAM-devel
+BuildRequires: libxcrypt-devel
+
+Requires: cracklib
+Requires: Linux-PAM
+Requires: libpwquality
+Requires: openssl
+Requires: %{name}-libs = %{version}-%{release}
+Requires: %{name}-tools = %{version}-%{release}
+
+Provides: /usr/sbin/useradd
+Provides: /usr/sbin/userdel
+Provides: /usr/sbin/groupadd
+Provides: /usr/sbin/groupdel
+
+%description
+The Shadow package contains programs for handling passwords in a secure way.
+
+%package        tools
+Summary:        Contains subset of tools which might be replaced by toybox
+Group:          Applications/System
+Requires:       %{name}-libs = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
+Conflicts:      toybox < 0.8.2-2
+
+%description    tools
+Contains subset of tools which might be replaced by toybox
+
+%package        lang
+Summary:        Additional language files for shadow
+Group:          Applications/System
+Requires:       %{name} = %{version}-%{release}
+
+%description    lang
+These are the additional language files of shadow.
+
+%package        devel
+Summary:        Development libraries and headers for %{name}.
+Requires:       %{name} = %{version}-%{release}
+
+%description    devel
+Development libraries and headers for %{name}.
+
+%package        libs
+Summary:        Libraries needed by %{name}.
+Requires:       libxcrypt
+
+%description    libs
+Libraries needed by %{name}.
+
+%prep
+%autosetup -p1
+
+%build
+%configure \
+    --with-libpam \
+    --with-libcrack \
+    --with-group-name-max-length=32 \
+    --with-yescrypt
+
+%make_build
+
+%install
+%make_install %{?_smp_mflags}
+
+mkdir -p %{buildroot}%{_sysconfdir}/default
+cp %{SOURCE12} %{buildroot}%{_sysconfdir}/default
+
+cp etc/{limits,login.access} %{buildroot}%{_sysconfdir}
+
+install -vdm 755 %{buildroot}%{_sysconfdir}/profile.d
+
+install -vm644 %{SOURCE1} %{buildroot}%{_sysconfdir}/pam.d/
+install -vm644 %{SOURCE2} %{buildroot}%{_sysconfdir}/pam.d/
+install -vm644 %{SOURCE3} %{buildroot}%{_sysconfdir}/pam.d/
+install -vm644 %{SOURCE4} %{buildroot}%{_sysconfdir}/pam.d/
+install -vm644 %{SOURCE5} %{buildroot}%{_sysconfdir}/pam.d/
+install -vm644 %{SOURCE6} %{buildroot}%{_sysconfdir}/pam.d/
+install -vm644 %{SOURCE7} %{buildroot}%{_sysconfdir}/pam.d/
+install -vm644 %{SOURCE8} %{buildroot}%{_sysconfdir}/pam.d/
+install -vm644 %{SOURCE9} %{buildroot}%{_sysconfdir}/pam.d/
+install -vm644 %{SOURCE10} %{buildroot}%{_sysconfdir}/pam.d/
+install -vm644 %{SOURCE11} %{buildroot}%{_sysconfdir}/pam.d/
+
+%if 0%{?STIG_HARDEN}
+install -Dm644 %{SOURCE13} %{buildroot}%{_sysconfdir}/profile.d/tmout.sh
+%endif
+
+pushd %{buildroot}%{_sysconfdir}/pam.d
+sed -e "s/chpasswd/newusers/" chpasswd > newusers
+
+for PROGRAM in chfn chgpasswd chsh groupadd groupdel \
+               groupmems groupmod useradd userdel usermod; do
+  sed -e "s/chage/${PROGRAM}/" chage > ${PROGRAM}
+done
+popd
+
+find %{buildroot}%{_libdir} -name '*.la' -delete
+
+%find_lang %{name}
+
+%if 0%{?with_check}
+%check
+%make_build check
+%endif
+
+%post
+/sbin/ldconfig
+%{_sbindir}/pwconv
+%{_sbindir}/grpconv
+
+%postun
+/sbin/ldconfig
+
+%clean
+rm -rf %{buildroot}/*
+
+%files
+%defattr(-,root,root)
+%config(noreplace) %{_sysconfdir}/login.defs
+%config(noreplace) %{_sysconfdir}/login.access
+%attr(0644,root,root) %config(noreplace) %{_sysconfdir}/default/useradd
+%config(noreplace) %{_sysconfdir}/limits
+
+%if 0%{?STIG_HARDEN}
+%{_sysconfdir}/profile.d/tmout.sh
+%endif
+
+%{_bindir}/*
+%{_sbindir}/*
+%exclude %{_bindir}/su
+%exclude %{_bindir}/login
+%exclude %{_bindir}/passwd
+%exclude %{_datadir}/locale/*
+%config(noreplace) %{_sysconfdir}/pam.d/*
+
+%files libs
+%defattr(-,root,root)
+%{_libdir}/libsubid.so.*
+
+%files tools
+%defattr(-,root,root)
+%{_bindir}/passwd
+%{_bindir}/su
+%{_bindir}/login
+
+%files devel
+%defattr(-,root,root)
+%{_libdir}/libsubid.so
+%{_libdir}/libsubid.a
+%{_includedir}/%{name}/subid.h
+
+%files lang -f %{name}.lang
+%defattr(-,root,root)
+
+%changelog
+* Wed Nov 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.13-15.1
+- Sub branch for <= 91
+* Mon Sep 28 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.13-15
+- Fix CVE-2024-56433
+- SUB_UID_COUNT and SUB_GID_COUNT set to 0; useradd no longer allocates
+  subuid/subgid ranges automatically. Rootless container users must run:
+  usermod --add-subuids 100000-165535 --add-subgids 100000-165535 <user>
+* Tue Dec 09 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.13-14
+- Add provides entries
+* Mon Nov 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.13-13
+- Cosmetic changes in pam files
+* Fri Nov 14 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.13-12
+- Revert STIG hardening changes
+* Tue Nov 11 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.13-11
+- pam_faillock should be before pam_unix
+* Fri Oct 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.13-10
+- Load hardening rules in login.defs by default, add tmout.sh
+- Fix newusers pam config
+- Harden the pam settings by default
+- Use yescrypt as default password encryption backend
+* Wed Dec 11 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.13-9
+- Release bump for SRP compliance
+* Sun Dec 01 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.13-8
+- Use sha512 backend for system password backend
+* Wed Nov 13 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.13-7
+- Enable yescrypt
+* Tue Nov 05 2024 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.13-6
+- Release bump for SRP compliance
+* Mon Apr 08 2024 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.13-5
+- Use pam_umask.so to set system-wide umask
+* Sat Dec 16 2023 Srish Srinivasan <srish.srinivasan@broadcom.com> 4.13-4
+- Patched CVE-2023-29383, CVE-2023-4641
+* Wed Jan 25 2023 Shreenidhi Shedi <sshedi@vmware.com> 4.13-3
+- Exclude passwd from main package
+* Mon Jan 02 2023 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 4.13-2
+- Rebuild with new cracklib
+* Fri Nov 11 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.13-1
+- Upgrade to v4.13
+* Wed Feb 23 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.8.1-4
+- Fix binary path
+* Wed Feb 10 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.8.1-3
+- Added patch to be lenient with usernames
+* Fri Sep 25 2020 Ankit Jain <ankitja@vmware.com> 4.8.1-2
+- pam_cracklib has been deprecated.
+- Replaced it with pam_pwquality
+* Thu Jul 09 2020 Gerrit Photon <photon-checkins@vmware.com> 4.8.1-1
+- Fix for Automatic Version Bump
+* Thu Apr 16 2020 Alexey Makhalov <amakhalov@vmware.com> 4.6-5
+- Do not conflict with toybox >= 0.8.2-2
+* Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 4.6-4
+- Cross compilation support
+* Wed Oct 24 2018 Michelle Wang <michellew@vmware.com> 4.6-3
+- Add su and login into shadow-tool.
+* Tue Oct 2 2018 Michelle Wang <michellew@vmware.com> 4.6-2
+- Add conflict toybox for shadow-tools.
+* Wed Sep 19 2018 Srinidhi Rao <srinidhir@vmware.com> 4.6-1
+- Upgrading the version to 4.6.
+* Mon Jul 30 2018 Tapas Kundu <tkundu@vmware.com> 4.2.1-16
+- Added fix for CVE-2018-7169.
+* Fri Apr 20 2018 Alexey Makhalov <amakhalov@vmware.com> 4.2.1-15
+- Move pam.d config file to here for better tracking.
+- Add pam_loginuid module as optional in a session.
+* Tue Oct 10 2017 Alexey Makhalov <amakhalov@vmware.com> 4.2.1-14
+- Added -tools subpackage.
+- Main package requires -tools or toybox.
+* Tue Aug 15 2017 Anish Swaminathan <anishs@vmware.com> 4.2.1-13
+- Added fix for CVE-2017-12424, CVE-2016-6252.
+* Thu Apr 27 2017 Divya Thaluru <dthaluru@vmware.com> 4.2.1-12
+- Allow '.' in username.
+* Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 4.2.1-11
+- BuildRequires Linux-PAM-devel.
+* Wed Nov 23 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.1-10
+- Added -lang subpackage.
+* Tue Oct 04 2016 ChangLee <changlee@vmware.com> 4.2.1-9
+- Modified %check.
+* Tue Jun 21 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-8
+- Added logic to not replace pam.d conf files in upgrade scenario.
+* Fri May 27 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-7
+- Adding pam_cracklib module as requisite to pam password configuration.
+* Wed May 25 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-6
+- Modifying pam_systemd module as optional in a session.
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.2.1-5
+- GA Bump release of all rpms.
+* Mon May 2 2016 Xiaolin Li <xiaolinl@vmware.com> 4.2.1-4
+- Enabling pam_systemd module in a session.
+* Fri Apr 29 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-3
+- Setting password aging limits to 90 days.
+* Wed Apr 27 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-3
+- Setting password aging limits to 365 days.
+* Wed Mar 23 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-2
+- Enabling pam_limits module in a session.
+* Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com> 4.2.1-1
+- Update version.
+* Wed Dec 2 2015 Divya Thaluru <dthaluru@vmware.com> 4.1.5.1-6
+- Fixed PAM Configuration file for passwd.
+* Mon Oct 26 2015 Sharath George <sharathg@vmware.com> 4.1.5.1-5
+- Allow mixed case in username.
+* Mon Jun 29 2015 Divya Thaluru <dthaluru@vmware.com> 4.1.5.1-4
+- Fixed PAM Configuration file for chpasswd.
+* Tue Jun 16 2015 Alexey Makhalov <amakhalov@vmware.com> 4.1.5.1-3
+- Use group id 100(users) by default.
+* Wed May 27 2015 Divya Thaluru <dthaluru@vmware.com> 4.1.5.1-2
+- Adding PAM support.
+* Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 4.1.5.1-1
+- Initial build First version.

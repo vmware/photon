@@ -1,11 +1,18 @@
 sources:
-- archive: shadow-4.13.tar.xz
-  archive_sha512sum: 2949a728c3312bef13d23138d6b79caf402781b1cb179e33b5be546c1790971ec20778d0e9cd3dbe09691d928ffcbe88e60da42fab58c69a90d5ebe5e3e2ab8e
-  skip_validation: true
+- archive: shadow-4.20.3.tar.xz
+  archive_type: upstream
+  archive_sha512sum: 1ae3cf1e0a2538133f17a79f87728264adb44fed74527055dab172958d75a67714a2288ec641475163cb64434b0841a59d78e28c37b628e79d46ea48f68d5934
+  name: shadow-4.20.3
+  version: 4.20.3
+  url: https://github.com/shadow-maint/shadow/releases/download/4.20.3/shadow-4.20.3.tar.xz
+  repo_url: https://github.com/shadow-maint/shadow.git
+  commit_id: 7188fbf46f397ab40d2e77d6f0bb8ebbe479cc0c
+  missing: ['*.gmo', Makefile.in, Makefile.in.in, README, contributions, config.h.in, man5, passwd.1, README.skey, stats, STABLE.md, m4, en@boldquot.header, share, README.md, .github, remove-potcdate.sin, groupmems.8, boldquot.sed, insert-header.sin, en@quot.header, man8, groupmems, aclocal.m4, SECURITY.md, build-aux, keys, logoutd.8, .editorconfig, config.xml, ABOUT-NLS, .gitignore, autogen.sh, configure, chfn.1, Rules-quot, quot.sed, newgrp.1, man3, stamp-po, man1, subid.h]
+  skip_list: ['*.po', '*.pot']
   spdx:
     package:
       detailed_description: 'The Shadow package contains programs for handling passwords
-        in a secure way. '
+        in a secure way.'
       home_page: https://github.com/shadow-maint/shadow
       license_concluded: GPL-2.0-only AND GPL-2.0-or-later WITH Libtool-exception
         AND GPL-2.0-or-later WITH Autoconf-exception-generic AND GPL-3.0-or-later

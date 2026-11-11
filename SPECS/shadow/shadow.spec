@@ -1,9 +1,11 @@
+%global build_if %{photon_subrelease} >= 92
+
 %define STIG_HARDEN 0
 
 Summary:        Programs for handling passwords in a secure way
 Name:           shadow
-Version:        4.13
-Release:        14%{?dist}
+Version:        4.20.3
+Release:        1%{?dist}
 URL:            https://github.com/shadow-maint/shadow
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -45,29 +47,17 @@ Source12: pam.d/useradd
 Source14: license.txt
 %include %{SOURCE14}
 
-Patch0: 0001-remove-group-from-deliverables.patch
-
 %if 0%{?STIG_HARDEN}
-Patch1: 0002-login.defs-config-changes.stig.patch
+Patch0: 0001-login.defs-config-changes.stig.patch
 %endif
 
 %if 0%{?STIG_HARDEN} == 0
-Patch1: 0002-login.defs-config-changes.patch
+Patch0: 0001-login.defs-config-changes.patch
 %endif
 
-Patch2: CVE-2023-29383.patch
-Patch3: CVE-2023-29383.1.patch
-Patch4: CVE-2023-4641.patch
-
-%if 0%{?STIG_HARDEN}
-Patch5: 0003-shadow-set-login.defs-hardening-rules.patch
-%endif
-
-BuildRequires: cracklib-devel
 BuildRequires: Linux-PAM-devel
 BuildRequires: libxcrypt-devel
 
-Requires: cracklib
 Requires: Linux-PAM
 Requires: libpwquality
 Requires: openssl
@@ -119,35 +109,38 @@ Libraries needed by %{name}.
 
 %build
 %configure \
-    $(test %{_host} != %{_build} && echo "--with-sysroot=/target-%{_arch}") \
     --with-libpam \
-    --with-libcrack \
     --with-group-name-max-length=32 \
-    --with-yescrypt
+    --with-yescrypt \
+    --without-libcrack \
+    --without-libbsd \
+    --without-nscd \
+    --without-sssd \
+    --disable-logind
 
 %make_build
 
 %install
 %make_install %{?_smp_mflags}
 
-mkdir -p %{buildroot}%{_sysconfdir}/default
-cp %{SOURCE12} %{buildroot}%{_sysconfdir}/default
+install -d %{buildroot}%{_sysconfdir}/{default,pam.d,profile.d}
 
-cp etc/{limits,login.access} %{buildroot}%{_sysconfdir}
+install -pm 644 %{SOURCE12} %{buildroot}%{_sysconfdir}/default/
+install -pm 644 etc/limits etc/login.access %{buildroot}%{_sysconfdir}/
 
-install -vdm 755 %{buildroot}%{_sysconfdir}/profile.d
-
-install -vm644 %{SOURCE1} %{buildroot}%{_sysconfdir}/pam.d/
-install -vm644 %{SOURCE2} %{buildroot}%{_sysconfdir}/pam.d/
-install -vm644 %{SOURCE3} %{buildroot}%{_sysconfdir}/pam.d/
-install -vm644 %{SOURCE4} %{buildroot}%{_sysconfdir}/pam.d/
-install -vm644 %{SOURCE5} %{buildroot}%{_sysconfdir}/pam.d/
-install -vm644 %{SOURCE6} %{buildroot}%{_sysconfdir}/pam.d/
-install -vm644 %{SOURCE7} %{buildroot}%{_sysconfdir}/pam.d/
-install -vm644 %{SOURCE8} %{buildroot}%{_sysconfdir}/pam.d/
-install -vm644 %{SOURCE9} %{buildroot}%{_sysconfdir}/pam.d/
-install -vm644 %{SOURCE10} %{buildroot}%{_sysconfdir}/pam.d/
-install -vm644 %{SOURCE11} %{buildroot}%{_sysconfdir}/pam.d/
+install -pm 644 \
+        %{SOURCE1} \
+        %{SOURCE2} \
+        %{SOURCE3} \
+        %{SOURCE4} \
+        %{SOURCE5} \
+        %{SOURCE6} \
+        %{SOURCE7} \
+        %{SOURCE8} \
+        %{SOURCE9} \
+        %{SOURCE10} \
+        %{SOURCE11} \
+        %{buildroot}%{_sysconfdir}/pam.d/
 
 %if 0%{?STIG_HARDEN}
 install -Dm644 %{SOURCE13} %{buildroot}%{_sysconfdir}/profile.d/tmout.sh
@@ -221,6 +214,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+* Wed Nov 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.20.3-1
+- Upgrade to v4.20.3
 * Tue Dec 09 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.13-14
 - Add provides entries
 * Mon Nov 17 2025 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.13-13
