@@ -3,7 +3,7 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
 Version:        24.22.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -16,6 +16,10 @@ Source1: license.txt
 
 # From https://github.com/nodejs/node/pull/66953
 Patch0: respect-openssl-api-level.patch
+
+# Bundled npm brace-expansion 5.0.9 -> 5.0.11 fixes
+Patch1: CVE-2026-102276.patch
+Patch2: CVE-2026-102278.patch
 
 BuildRequires:  (coreutils or coreutils-selinux)
 BuildRequires:  zlib-devel
@@ -113,6 +117,8 @@ done
 %{_docdir}/node/gdbinit
 
 %changelog
+* Wed Nov 11 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 24.22.1-3
+- Fix CVE-2026-102276, CVE-2026-102278
 * Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 24.22.1-2
 - extend release to 91
 * Sat Oct 24 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 24.22.1-1
