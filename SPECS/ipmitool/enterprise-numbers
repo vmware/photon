@@ -1,6 +1,6 @@
 PRIVATE ENTERPRISE NUMBERS
 
-(last updated 2026-11-06)
+(last updated 2026-11-13)
 
 SMI Network Management Private Enterprise Codes:
 
@@ -135066,9 +135066,9 @@ Decimal
     Maurizio Garabunato
       m.garabunato&gds.com
 33763
-  AD Holdings plc
-    Chris Blood
-      adh.snmp&googlemail.com
+  NetVu Ltd
+    Mike Newton
+      mnewton&netvu.co.uk
 33764
   I-bridge B.V.
     Luis Santos
@@ -241983,8 +241983,8 @@ Decimal
       iana-admin&calnexsol.com
 60492
   Ticketmaster
-    Greg Bowyer
-      greg.bowyer&ticketmaster.com
+    Network Services
+      networkservices&ticketmaster.com
 60493
   Ing. Alfredo Revenaz
     Alfredo Revenaz
@@ -244366,9 +244366,9 @@ Decimal
     Huang Qingmin
       wanzi49&163.com
 61088
-  MTNSAT
+  SDConnX
     Brian Govanlu
-      brian.govanlu&mtnsat.com
+      snmp&sdconnx.com
 61089
   Lighthouse Credit Union
     Sean LaBrie
@@ -257590,9 +257590,9 @@ Decimal
     Fredrik Magnusson
       fredrik.magnusson&naturskog.se
 64394
-  Sellplus TECH LLC
-    Domain Administrator
-      pki&sellplus.ru
+  Unassigned
+    Removed 2026-11-12
+      no-reply&iana.org
 64395
   com.ksbarnt
     Kenny Barnt
@@ -270139,8 +270139,8 @@ Decimal
       iana-pen&owner.com
 67531
   Con-Ex.io Schweiz GmbH
-    Markus Maier
-      markus.maier&con-ex.io
+    Con-Ex.io PKI Team
+      certmaster&con-ex.io
 67532
   Solcon Internetdiensten B.V.
     Noortje Cornelissen
@@ -270349,6 +270349,402 @@ Decimal
   Belleville Police Service
     IT Services Unit
       bps.itservices&bellevilleps.ca
+67584
+  Hlib Lukavetskyi
+    Hlib Lukavetskyi
+      admin&hlib.cz
+67585
+  KDDI CORPORATION
+    Kota Endo
+      smdp-dev&kddi.com
+67586
+  Tiernan Messmer
+    Tiernan Messmer
+      iana&nv.io
+67587
+  beijing ziweixin technology co ltd.
+    gao mandeng
+      gaomandeng&163.com
+67588
+  Shaanxi TeraTalos Information Technology Co., Ltd.
+    Yanan Zhao
+      zhaoyanan&csdun.com
+67589
+  Pri Ltd (cmnSense)
+    Szabolcs Gyurko
+      szabolcs&cmnsense.org
+67590
+  Baron Aerial Media LLC
+    Kevin Baron
+      k.baron&baronaerial.com
+67591
+  José Ángel Alegre
+    José Ángel Alegre
+      iana-pen.cancel072&simplelogin.com
+67592
+  Fells Code LLC
+    Brandon Corbett
+      iana&fellscode.com
+67593
+  Beijing Zhimengxingchen Technology Co., Ltd.
+    Jenming Li
+      jenmingli&zhimeng.io
+67594
+  Astute Systems
+    Ross Newman
+      ross.newman&astutesys.com
+67595
+  DotNet Talk AB
+    Mehdi Mohseni
+      Mehdi.mohseni&dotnet-talk.com
+67596
+  Maciej Kuklewski IT Professional
+    Maciej Kuklewski
+      pen_mkitpro&outlook.com
+67597
+  DXC Technology
+    Mark Hebden
+      anz-ai-engineering&dxc.com
+67598
+  Cortex Access
+    Aidan Nakache
+      x&cortexus.co
+67599
+  Kernix JSC
+    Pavel Filchenko
+      mail&kernix.ru
+67600
+  ACTAtek
+    Huang Hsuan Huan
+      peter&actatek.com
+67601
+  iBoostUp Pty Ltd
+    Fabio Mancini
+      pki&iboostup.com
+67602
+  roboa AG
+    Pascal Auf der Maur
+      software&roboa.ch
+67603
+  SKABE FLIS AB
+    JARL KARLSSON
+      jalle&skabe.se
+67604
+  Cristie Data GmbH
+    Volker Wester
+      Volker.Wester&cristie.de
+67605
+  Tecnologias Plexus S.L. - Producto
+    Manuel Suárez Vidal
+      manuel.suarezvidal&plexus.es
+67606
+  PKIaaS.io
+    Lyas Spiehler
+      lspiehler&gmail.com
+67607
+  Iya CyberSecurity Solutions, LLC
+    Robert Broeckelmann
+      robert&iyasec.io
+67608
+  City of Gainesville
+    Paul Ackerman
+      ackermanp1&gainesvillefl.gov
+67609
+  TEEMO TECHNOLOGY LTD
+    Harry Varatharasan
+      support&complycube.com
+67610
+  Clanto Services
+    Antonio Esposito
+      assistenza+iana&clanto.it
+67611
+  ForwardingPlane, LLC
+    Nick Buraglio
+      buraglio&forwardingplane.net
+67612
+  Labor Becker
+    IT Department
+      edv&labor-becker.de
+67613
+  Hoil Ryu
+    Hoil Ryu
+      reitheta&gmail.com
+67614
+  Rhizomatics
+    Jeffrey Burrows
+      jrb&rhizomatics.org.uk
+67615
+  FairSSL A/S
+    Sole Viktor
+      info&fairssl.dk
+67616
+  George Kent (Malaysia) Berhad
+    Vincent Wong
+      vincent.wong&georgekent.net
+67617
+  IP²HX (Intellectual and Industrial Property Holding & Exchange)
+    Sebastian Millan
+      operations&kimunverse.com
+67618
+  JuridicApp
+    Sebastian Millan
+      operations&juridicapp.net
+67619
+  butterpigs
+    Benjamin Higgins
+      iana&butterpigs.com
+67620
+  1AN Inc.
+    hun wook kim
+      hwkim&cloud1an.com
+67621
+  7G Fuse
+    Muhammad Maisam
+      m.mohsin&7gfuse.com
+67622
+  Apricot Heavy Industries Pty Ltd
+    Ben Knight
+      ben&apricot.net.au
+67623
+  Netlab AC CN
+    Wang Junkang
+      admin&netlab.ac.cn
+67624
+  Glatt GmbH
+    Christian Langenbacher
+      helpdesk&glatt.com
+67625
+  Contra Sport GmbH
+    Dirk Wommelsdorf
+      it&contra.de
+67626
+  Onno Media
+    Serhat Timar
+      stimar&onnomedia.com
+67627
+  IDENTT sp. z o.o.
+    Marek Kędziera
+      marek.kedziera&identt.pl
+67628
+  Bröderna Carlström Trävaru AB
+    Fredrik Carlström
+      fredrik&brcarlstrom.se
+67629
+  Jonathan Rubini
+    Jonathan Rubini
+      pen&rubini.be
+67630
+  Presight AI
+    Azarudeen Mohamed Yaseen
+      azarudeen.yaseen&presight.ai
+67631
+  FROETEK-Kunststofftechnik GmbH
+    IT-Department
+      it&froetek.de
+67632
+  Azalio Technologies Pvt. Ltd.
+    Navjeet Singh
+      navjeet.singh&azalio.io
+67633
+  Association Pharmacists Belgium
+    Erwin Vanderhaeghen
+      erwin.vanderhaeghen&apb.be
+67634
+  Steelborn LLC
+    Steelborn Network Operations
+      info&steelborn.net
+67635
+  SkyPulse Communications
+    SkyPulse Communications
+      pki&skypulse.net
+67636
+  Justice AV Solutions Inc.
+    Jesse Moore
+      jesse.moore&javs.com
+67637
+  GIBIRNET İletişim Hizmetleri Sanayi ve Ticaret Anonim Şirketi
+    Ahmet AK
+      ahmetak&gibir.com.tr
+67638
+  AB Computer Elektronik
+    Andreas Blum
+      andreas&a-blum.de
+67639
+  Ortomatic Ltd
+    Frank Tonjes
+      frankt&ortomatic.io
+67640
+  Chad Marple
+    Chad Marple
+      cmarple&gmail.com
+67641
+  WebRAY Tech Group Inc.
+    zongyuan wang
+      wangzongyuan&webray.com.cn
+67642
+  NUWAY RESPONSE PTY LTD
+    Tony Tanios
+      t.tanios&sellzo.com
+67643
+  Government Technology Agency of Singapore
+    Peng Tian
+      TIAN_peng&tech.gov.sg
+67644
+  devguard GmbH
+    Arvid Picciani
+      netop&devguard.io
+67645
+  Società Servizi Informatici Sammarinese SPA
+    Alessandro Rossi
+      alessandro.rossi&ssis.sm
+67646
+  Meridian Technology Center
+    Kenneth Duke
+      PKI&meridiantech.edu
+67647
+  SINTEK Srl
+    ACHILLE Amedeo
+      amedeo.achille&sinteksrl.net
+67648
+  PhalanxAI Security LLC
+    Anthony Trujillo
+      founder&phalanxaisec.com
+67649
+  Pound of Cure, LLC
+    Sierra Miller
+      sierra.miller&poundofcureweightloss.com
+67650
+  ScaiLabs B.V.
+    Marcel v. Birgelen
+      marcel.vanbirgelen&scailabs.ai
+67651
+  CINERI
+    Mbaye NDIAYE
+      mbaye.ndiaye&cineri.sn
+67652
+  Celare Quantum Communications
+    Peter Michael Bruun
+      pb&celare-quantum.com
+67653
+  Shineful
+    Wang Li
+      edward&shineful.cn
+67654
+  Nelson Rocha Ramos
+    Nelson Rocha Ramos
+      nelsonramos&ua.pt
+67655
+  Ergosana d.o.o.
+    Ljuban Tomic
+      info&ergosana.com
+67656
+  Subnetly, Inc
+    Subnetly Engineering
+      iana&subnetly.com
+67657
+  Quantifind, Inc.
+    Daniel Howard
+      ops&quantifind.com
+67658
+  idruide SAM
+    Jean-Baptiste Pin
+      jeanbaptiste&idruide.com
+67659
+  WAN4YOU
+    Mohamed El Bouddunti
+      mohamed&wan4you.net
+67660
+  Kilantis
+    Nadim El Boustani
+      nadim.elboustani&kilantis.com
+67661
+  D&AT Company Co., Ltd.
+    Byounguk Park
+      contact&dnatcompany.com
+67662
+  Asim Pervez
+    Asim Pervez
+      asimpervez76&gmail.com
+67663
+  SELPROM TECNOLOGIA LTDA
+    Wagner Moreira
+      wagnermoreira88&gmail.com
+67664
+  PEB (Portable Executable Bundle)
+    Sebastian Millan
+      operations&kimunverse.com
+67665
+  IRB (Interoperable Rights Bundle)
+    Sebastian Millan
+      operations&kimunverse.com
+67666
+  AIoTrust
+    Fabien Bouchard
+      fabien.bouchard&aiotrust.io
+67667
+  Otto Ursinyi
+    Otto Ursinyi
+      otto&ursinyi.hu
+67668
+  ABSOFT ASIA
+    Albert B Tsou
+      albert&absoft.asia
+67669
+  Trojan Unicorn Ventures LLC
+    Robert Fitzgerald
+      admin&trojanunicorn.com
+67670
+  C319 IT Services GmbH
+    Oliver Jarmes
+      oliver.jarmes&c319.de
+67671
+  Medteris Corp.
+    David Nunes
+      dnunes&medteris.com
+67672
+  GMB Computers SRL
+    Tanasie Radu
+      noc&gmbcomputers.ro
+67673
+  Solarbridge Technology Inc.
+    Qi (Kemp) Qiu
+      info&solarbridge.us
+67674
+  Fox River Fursuit Events Inc.
+    Wolferajd Wolf
+      wolferajd&foxriverfurevents.org
+67675
+  GoCodeIT Inc
+    Sepehr Ahmadi
+      domainsupport&gocode.it
+67676
+  Asylon Incorporated
+    Eric Timmons
+      etimmons&asylonrobotics.com
+67677
+  Red Distribution
+    Maria Kostrova
+      info&red-dst.ru
+67678
+  Magne Haagen Grøtting
+    Magne Haagen Grøtting
+      magnetrout&gmail.com
+67679
+  EDW TI Solucoes em Informatica
+    Carlos Eduardo Pereira Dutra
+      eduardo&edwti.com.br
+67680
+  Swiss Timing Ltd.
+    HÄBERLI, Jean Marcel
+      swt-iana-pen&swisstiming.com
+67681
+  NibblePoker
+    Herwin Bozet
+      iana-oid&nibblepoker.lu
+67682
+  Kinective
+    Ilya Teterev
+      Ilya.Teterev&kinective.io
 
 
 End of Document
