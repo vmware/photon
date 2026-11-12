@@ -1,0 +1,58 @@
+From 0cda67768232e2001ae0a9fd1d4acad0c86d660f Mon Sep 17 00:00:00 2001
+From: Chuck Lever <cel@kernel.org>
+Date: Thu, 9 Jul 2026 13:40:31 -0400
+Subject: [PATCH] NFSD: Prevent client use-after-free during close_lru reaping
+
+[ Upstream commit 2330b788d732f43668b965b3105b37ceb276dfea ]
+
+An nfs4_openowner left on nn->close_lru after its final CLOSE keeps
+its last closed stateid in oo_last_closed_stid, holding only a raw
+pointer to its nfs4_client. The laundromat reaps timed-out entries,
+drops nn->client_lock, and calls nfs4_put_stid(), which dereferences
+the client through cl_lock. Nothing pins the client across that
+window, so a concurrent force_expire_client() can free it and
+nfs4_put_stid() reads freed memory. __destroy_client() hits the same
+race, walking clp->cl_openowners without cl_lock.
+
+Pin the client with cl_rpc_users before dropping client_lock, and
+skip clients already expiring. __destroy_client() then cleans up its
+own close_lru entries through release_last_closed_stateid(), so
+teardown no longer races the laundromat.
+
+Fixes: 217526e7ecc9 ("nfsd: protect the close_lru list and oo_last_closed_stid with client_lock")
+Cc: stable@vger.kernel.org
+Reviewed-by: Jeff Layton <jlayton@kernel.org>
+Link: https://patch.msgid.link/20260709-cel-v4-8-1d519d9be0cb@kernel.org
+Signed-off-by: Chuck Lever <cel@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+ fs/nfsd/nfs4state.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/fs/nfsd/nfs4state.c b/fs/nfsd/nfs4state.c
+index 38daac6ec..e5fb6a5fa 100644
+--- a/fs/nfsd/nfs4state.c
++++ b/fs/nfsd/nfs4state.c
+@@ -6336,11 +6336,18 @@ nfs4_laundromat(struct nfsd_net *nn)
+ 		if (!state_expired(&lt, oo->oo_time))
+ 			break;
+ 		list_del_init(&oo->oo_close_lru);
++		clp = oo->oo_owner.so_client;
++		if (is_client_expired(clp))
++			continue;
+ 		stp = oo->oo_last_closed_stid;
+ 		oo->oo_last_closed_stid = NULL;
++		atomic_inc(&clp->cl_rpc_users);
+ 		spin_unlock(&nn->client_lock);
+ 		nfs4_put_stid(&stp->st_stid);
+ 		spin_lock(&nn->client_lock);
++		if (atomic_dec_and_test(&clp->cl_rpc_users) &&
++		    is_client_expired(clp))
++			wake_up_all(&expiry_wq);
+ 	}
+ 	spin_unlock(&nn->client_lock);
+ 
+-- 
+2.53.0
+

@@ -1,0 +1,69 @@
+From b05d42eefac737ce3cd80114d3579111023941b8 Mon Sep 17 00:00:00 2001
+From: Jianbo Liu <jianbol@nvidia.com>
+Date: Thu, 19 Jun 2025 12:48:51 +0300
+Subject: [PATCH] xfrm: hold device only for the asynchronous decryption
+
+[ Upstream commit b05d42eefac737ce3cd80114d3579111023941b8 ]
+The dev_hold() on skb->dev during packet reception was originally
+added to prevent the device from being released prematurely during
+asynchronous decryption operations.
+
+As current hardware can offload decryption, this asynchronous path is
+not always utilized. This often results in a pattern of dev_hold()
+immediately followed by dev_put() for each packet, creating
+unnecessary reference counting overhead detrimental to performance.
+
+This patch optimizes this by skipping the dev_hold() and subsequent
+dev_put() when asynchronous decryption is not being performed.
+
+Signed-off-by: Jianbo Liu <jianbol@nvidia.com>
+Reviewed-by: Cosmin Ratiu <cratiu@nvidia.com>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+[Ankit: Backported for v6.1.x]
+Signed-off-by: Ankit Jain <ankit-aj.jain@broadcom.com>
+---
+ net/xfrm/xfrm_input.c | 17 +++++++++--------
+ 1 file changed, 9 insertions(+), 8 deletions(-)
+
+diff --git a/net/xfrm/xfrm_input.c b/net/xfrm/xfrm_input.c
+index 4bba890ff3bc..6f674357d30d 100644
+--- a/net/xfrm/xfrm_input.c
++++ b/net/xfrm/xfrm_input.c
+@@ -490,6 +490,7 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
+ 		/* An encap_type of -1 indicates async resumption. */
+ 		if (encap_type == -1) {
+ 			async = 1;
++			dev_put(skb->dev);
+ 			seq = XFRM_SKB_CB(skb)->seq.input.low;
+ 			goto resume;
+ 		}
+@@ -629,18 +630,18 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
+ 		XFRM_SKB_CB(skb)->seq.input.low = seq;
+ 		XFRM_SKB_CB(skb)->seq.input.hi = seq_hi;
+ 
+-		dev_hold(skb->dev);
+-
+-		if (crypto_done)
++		if (crypto_done) {
+ 			nexthdr = x->type_offload->input_tail(x, skb);
+-		else
++		} else {
++			dev_hold(skb->dev);
++
+ 			nexthdr = x->type->input(x, skb);
++			if (nexthdr == -EINPROGRESS)
++				return 0;
+ 
+-		if (nexthdr == -EINPROGRESS)
+-			return 0;
++			dev_put(skb->dev);
++		}
+ resume:
+-		dev_put(skb->dev);
+-
+ 		spin_lock(&x->lock);
+ 		if (nexthdr < 0) {
+ 			if (nexthdr == -EBADMSG) {
+-- 
+2.40.4
+

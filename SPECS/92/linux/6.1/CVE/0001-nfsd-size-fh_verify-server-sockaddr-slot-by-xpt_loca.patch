@@ -1,0 +1,83 @@
+From e91c60af5a5b7fec3035b184ed27323826a51bca Mon Sep 17 00:00:00 2001
+From: Sasha Levin <sashal@kernel.org>
+Date: Fri, 4 Sep 2026 22:00:07 -0400
+Subject: nfsd: size fh_verify server sockaddr slot by xpt_locallen
+
+From: Chris Mason <clm@meta.com>
+
+[ Upstream commit 71d068490098b1d23c63b2345e40675d3a1ca763 ]
+
+The nfsd_fh_verify and nfsd_fh_verify_err tracepoints declare the
+server sockaddr slot sized by xpt_remotelen but fill it from
+xpt_local using xpt_locallen:
+
+    TP_STRUCT__entry(
+            ...
+            __sockaddr(server, rqstp->rq_xprt->xpt_remotelen)
+            ...
+    )
+    TP_fast_assign(
+            ...
+            __assign_sockaddr(server, &rqstp->rq_xprt->xpt_local,
+                              rqstp->rq_xprt->xpt_locallen);
+            ...
+    )
+
+When xpt_locallen exceeds xpt_remotelen, __assign_sockaddr's memcpy
+writes past the reserved ring-buffer slot. In the reverse direction
+(xpt_locallen < xpt_remotelen) the slot is oversized and the
+unwritten tail leaks prior ring-buffer contents to trace consumers.
+
+The write-past-end case is reachable on NFS/UDP. svc_xprt_set_remote()
+is only called from svc_tcp_accept() (net/sunrpc/svcsock.c) and from
+the RDMA connect path; svc_create_socket() for UDP calls only
+svc_xprt_set_local(), so xpt_remotelen stays 0 for the xprt's
+lifetime. Every fh_verify trace for an NFSv2/v3-over-UDP request
+then copies 16 or 28 bytes from xpt_local into a zero-byte slot.
+
+The other NFSD tracepoints that record the server address
+(NFSD_TRACE_PROC_CALL_FIELDS, NFSD_TRACE_PROC_RES_FIELDS,
+SVC_RQST_ENDPOINT_FIELDS) already size the server slot by
+xpt_locallen; nfsd_fh_verify and nfsd_fh_verify_err were the only
+exceptions.
+
+Fix by sizing the server slot with xpt_locallen so the declared slot
+matches the copy length. The client slot and its assignment already
+agree on xpt_remotelen and are left untouched.
+
+Fixes: 051382885552 ("NFSD: Instrument fh_verify()")
+Fixes: 948755efc951 ("NFSD: Replace dprintk() call site in fh_verify()")
+Cc: stable@vger.kernel.org
+Assisted-by: kres:claude-opus-4-7
+Signed-off-by: Chris Mason <clm@meta.com>
+Link: https://patch.msgid.link/20260531-nfsd-testing-v1-1-7bfa481b0540@kernel.org
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ fs/nfsd/trace.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/fs/nfsd/trace.h b/fs/nfsd/trace.h
+index 447b3483f94ba..513245b3697cf 100644
+--- a/fs/nfsd/trace.h
++++ b/fs/nfsd/trace.h
+@@ -201,7 +201,7 @@ TRACE_EVENT(nfsd_fh_verify,
+ 	TP_ARGS(rqstp, fhp, type, access),
+ 	TP_STRUCT__entry(
+ 		__field(unsigned int, netns_ino)
+-		__sockaddr(server, rqstp->rq_xprt->xpt_remotelen)
++		__sockaddr(server, rqstp->rq_xprt->xpt_locallen)
+ 		__sockaddr(client, rqstp->rq_xprt->xpt_remotelen)
+ 		__field(u32, xid)
+ 		__field(u32, fh_hash)
+@@ -240,7 +240,7 @@ TRACE_EVENT_CONDITION(nfsd_fh_verify_err,
+ 	TP_CONDITION(error),
+ 	TP_STRUCT__entry(
+ 		__field(unsigned int, netns_ino)
+-		__sockaddr(server, rqstp->rq_xprt->xpt_remotelen)
++		__sockaddr(server, rqstp->rq_xprt->xpt_locallen)
+ 		__sockaddr(client, rqstp->rq_xprt->xpt_remotelen)
+ 		__field(u32, xid)
+ 		__field(u32, fh_hash)
+-- 
+2.53.0

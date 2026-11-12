@@ -204,16 +204,16 @@ index c0a8e4f66..78341ecbb 100644
  	}
  
  	while (outlen) {
-@@ -2089,14 +2089,14 @@ static inline int __init drbg_healthcheck_sanity(void)
+@@ -2088,14 +2088,14 @@ static inline int __init drbg_healthcheck_sanity(void)
  	drbg_string_fill(&addtl, buf, max_addtllen + 1);
- 	/* overflow addtllen with additonal info string */
- 	len = drbg_generate(drbg, buf, OUTBUFLEN, &addtl);
--	BUG_ON(0 < len);
-+	fcw_bug_on(0 < len);
+ 	/* overflow addtllen with additional info string */
+ 	ret = drbg_generate(drbg, buf, OUTBUFLEN, &addtl);
+-	BUG_ON(ret == 0);
++	fcw_bug_on(ret == 0);
  	/* overflow max_bits */
- 	len = drbg_generate(drbg, buf, (max_request_bytes + 1), NULL);
--	BUG_ON(0 < len);
-+	fcw_bug_on(0 < len);
+ 	ret = drbg_generate(drbg, buf, max_request_bytes + 1, NULL);
+-	BUG_ON(ret == 0);
++	fcw_bug_on(ret == 0);
  
  	/* overflow max addtllen with personalization string */
  	ret = drbg_seed(drbg, &addtl, false);
@@ -290,8 +290,8 @@ index bfde0f28c..a631b4905 100644
  	const unsigned int digest_size = req->dst_len;
  	int err;
  
--	if (WARN_ON(req->dst) || WARN_ON(!digest_size) ||
-+	if (fcw_warn_on(req->dst) || fcw_warn_on(!digest_size) ||
+-	if (WARN_ON(req->dst) || !digest_size ||
++	if (fcw_warn_on(req->dst) || !digest_size ||
  	    !ctx->key_size || sig_size != ctx->key_size)
  		return -EINVAL;
  

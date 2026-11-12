@@ -228,6 +228,15 @@ static void process_section(Elf *elf, Elf_Scn *s, int sndx, struct symbol_entry 
 	unsigned int offset = 0;
 	Elf64_Rela *rels;
 	struct _relocation *r;
+	/*
+	 * The output relocation names its section by ondx in an unsigned
+	 * char; an unmeasured section has none (-1).
+	 */
+	if (section_symbols[sndx]->ondx < 0 ||
+	    section_symbols[sndx]->ondx > ONE_BYTE_UNSIGNED_MAX_VALUE)
+		error("Relocations in section %s with no valid index (%d)",
+		      section_symbols[sndx]->name, section_symbols[sndx]->ondx);
+
 	data = elf_getdata(s, NULL);
 	rels = (Elf64_Rela *)data->d_buf;
 	n_entries = data->d_size / sizeof (Elf64_Rela);
@@ -399,8 +408,19 @@ static void parse_sections(Elf *elf, size_t shstrndx, int *n_syms, size_t *strnd
 		/*
 		 * ndx - section index in inout file.
 		 * ondx - section index in generated .c file
+		 *
+		 * ondx is what fips_integrity_init() uses to index its si[]
+		 * array, and si[] is built from canister_sections[], which
+		 * holds only the sections that have both markers. A section
+		 * with no end marker - .bss - is not measured and therefore
+		 * not in si[], so it must not consume an ondx. If it does,
+		 * every section that follows it is numbered one too high and
+		 * its reverse relocations are applied to the wrong section.
 		 */
-		section_symbols[ndx]->ondx = ondx++;
+		if (section_symbols[ndx]->end)
+			section_symbols[ndx]->ondx = ondx++;
+		else
+			section_symbols[ndx]->ondx = -1;
 	}
 	if (!symtab)
 		error("Unable to find .symtab section");
