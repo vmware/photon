@@ -1,0 +1,60 @@
+From a9a0aa27f04cd6246b1bff7753c49c0d88981fde Mon Sep 17 00:00:00 2001
+From: Srinidhi Rao <srinidhi.rao@broadcom.com>
+Date: Thu, 12 Nov 2026 11:32:05 +0000
+Subject: [PATCH] lighttpd: honor openssl system default TLS groups
+
+  -  When no Groups/Curves is set via ssl.openssl.ssl-conf-cmd, mod_openssl
+unconditionally calls SSL_CTX_set1_groups_list() with a compiled-in
+default ("X25519:P-256:P-384:X448"; upstream 1.4.83+ prepends
+"X25519MLKEM768:"). This overrides the openssl.cnf system_default
+"Groups" policy, and the unprefixed X25519/X448 entries are a hard error
+when they are not available.
+
+    The openssl 3.5.x FIPS provider registers X25519/X448 with fips=no, so
+with default_properties = fips=yes SSL_CTX_set1_groups_list() fails,
+lighttpd logs "SSL: Unable to config groups X25519:P-256:P-384:X448" and
+TLS socket initialization aborts. The failure happens before
+ssl.openssl.ssl-conf-cmd is processed, so it cannot be worked around
+from lighttpd.conf.
+
+    With openssl >= 3.5, skip the override when no groups are configured, as
+is already done for BoringSSL/LibreSSL. SSL_CTX_new() has already applied
+the system_default policy, and openssl's own built-in default
+("?*X25519MLKEM768 / ?*X25519:?secp256r1 / ...") marks every group '?'.
+An explicit ssl.openssl.ssl-conf-cmd "Groups"/"Curves" is still applied.
+
+[Srinidhi: Photon-specific fix, not present in upstream.]
+
+Signed-off-by: Srinidhi Rao <srinidhi.rao@broadcom.com>
+---
+ src/mod_openssl.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/src/mod_openssl.c b/src/mod_openssl.c
+index 26517ae1..620d7161 100644
+--- a/src/mod_openssl.c
++++ b/src/mod_openssl.c
+@@ -3339,6 +3339,20 @@ mod_openssl_ssl_conf_curves(server *srv, plugin_config_socket *s, const buffer *
+         return 1;
+   #endif
+ 
++  #if !defined(BORINGSSL_API_VERSION) && !defined(LIBRESSL_VERSION_NUMBER) \
++   && OPENSSL_VERSION_NUMBER >= 0x30500000L
++    /* openssl 3.5+ applies the openssl.cnf system_default "Groups" policy in
++     * SSL_CTX_new(), and its built-in default group list marks every group
++     * with '?' (ignore if unavailable).  Do not override either with a
++     * hardcoded list containing unprefixed X25519/X448: the openssl 3.5 FIPS
++     * provider registers X25519/X448 as fips=no, so with
++     * default_properties = fips=yes SSL_CTX_set1_groups_list() fails and the
++     * TLS socket cannot be initialized.  Groups can still be set explicitly
++     * with ssl.openssl.ssl-conf-cmd = ("Groups" => "...") */
++    if (NULL == ssl_ec_curve || buffer_is_blank(ssl_ec_curve))
++        return 1;
++  #endif
++
+   #if (defined(BORINGSSL_API_VERSION) && BORINGSSL_API_VERSION >= 3) \
+    || (defined(LIBRESSL_VERSION_NUMBER) \
+        && LIBRESSL_VERSION_NUMBER >= 0x2050100fL) \
+-- 
+2.53.0
+

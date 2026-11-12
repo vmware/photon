@@ -1,9 +1,9 @@
-%global build_if %{photon_subrelease} >= 91
+%global build_if %{photon_subrelease} >= 92
 %define documentroot /srv/www/htdocs
 Summary:        A secure, fast, compliant, and very flexible web server
 Name:           lighttpd
 Version:        1.4.82
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            https://www.lighttpd.net/
 Group:          Productivity/Networking/Web/Servers
 Vendor:         VMware, Inc.
@@ -17,6 +17,8 @@ Source4: start-server.sh
 
 Source5: license.txt
 %include %{SOURCE5}
+
+Patch0: 0001-lighttpd-honor-openssl-system-default-TLS-groups.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -117,6 +119,10 @@ make %{?_smp_mflags} check
 %{_mandir}/man8/%{name}*8*
 
 %changelog
+* Thu Nov 12 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 1.4.82-4
+- Split lighttpd package for subrelease 92 and above.
+- Honor openssl system default TLS groups, fixes TLS init failure
+  in FIPS mode with openssl-fips-provider 3.5.4
 * Tue Jun 02 2026 Bo Gan <bo.gan@broadcom.com> 1.4.82-3
 - Migrate from pcre to pcre2
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.4.82-2
