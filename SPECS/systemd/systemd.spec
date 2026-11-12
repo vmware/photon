@@ -7,7 +7,7 @@
 Name:           systemd
 URL:            https://systemd.io
 Version:        262.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        System and Service Manager
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -342,11 +342,22 @@ rm %{buildroot}%{_bindir}/bootctl \
 %post
 %{name}-machine-id-setup &>/dev/null || :
 
-systemctl daemon-reexec &>/dev/null || {
-  if [ $1 -gt 1 ] && [ -d /run/%{name}/system ] ; then
-    kill -TERM 1 &>/dev/null || :
-  fi
-}
+# systemd >= 258 does not support the cgroup v1 hierarchy. If PID 1 re-executes
+# into the new binary while the running system (e.g. an old kernel from an
+# older release) still uses cgroup v1, it prints "Freezing execution" and stops
+# answering: systemctl, shutdown and reboot fail until the next hard reset.
+# So on upgrade, re-exec only if the running system uses cgroup v2, otherwise
+# the new systemd takes over at the next boot.
+if [ $1 -gt 1 ] && [ -d /run/%{name}/system ] && \
+   [ ! -e /sys/fs/cgroup/cgroup.controllers ]; then
+  echo "cgroup v1 in use, skip re-exec of systemd, it takes effect at next boot"
+else
+  systemctl daemon-reexec &>/dev/null || {
+    if [ $1 -gt 1 ] && [ -d /run/%{name}/system ] ; then
+      kill -TERM 1 &>/dev/null || :
+    fi
+  }
+fi
 
 journalctl --update-catalog &>/dev/null || :
 systemd-sysusers || :
@@ -686,6 +697,9 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+* Wed Nov 11 2026 Michelle Wang <michelle.wang@broadcom.com> 262.1-2
+- Skip re-exec of PID 1 on upgrade if the running system uses cgroup v1,
+  else systemd freezes (cgroup v1 is not supported since v258).
 * Thu Nov 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 262.1-1
 - Upgrade to v262.1
 - Add RPM transfiletriggers to restart units after package upgrades
