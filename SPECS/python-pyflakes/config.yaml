@@ -1,11 +1,11 @@
 sources:
-- archive: pyflakes-4.0.3.tar.gz
-  archive_sha512sum: 286ef5c011eae75911f8460dc3666c5148aac5898d702c5d0428ec3c6ad4f944778a4c82b1927dd49b4652a46b16e5486513e9d819a02e6c986d471201574505
+- archive: pyflakes-4.1.0.tar.gz
+  archive_sha512sum: 691fde67fd3ddd67ecc0a7ddfeda1be86726a568378df443883947a84519998a7e10e7c2a2912412305c83db2476a324d3a9b7b2e5906041205866c527e93adf
   archive_type: upstream
-  name: pyflakes-4.0.3
-  url: https://github.com/PyCQA/pyflakes/archive/refs/tags/4.0.3.tar.gz
+  name: pyflakes-4.1.0
+  url: https://github.com/PyCQA/pyflakes/archive/refs/tags/4.1.0.tar.gz
   repo_url: https://github.com/PyCQA/pyflakes
-  commit_id: 8526af8494a831803bbc1eae24b8f9d2a24aa2f7
+  commit_id: 5324946c5d8602697f5df6d98ad162920b3e5d61
   skip_list: []
   missing: []
   spdx:

@@ -1,7 +1,14 @@
 sources:
-- archive: dnspython-2.6.1.tar.gz
-  archive_sha512sum: 0a2950b320e3963b0f76a80575b4387b2a92201a3e0a279900f81e353fbc8810f2b8aab8ad680d01e1a7e079c4e37292e103ab8db860ba646451593541067fbb
-  skip_validation: true
+- archive: dnspython-2.9.2.tar.gz
+  archive_sha512sum: f8f471b812b3db85ad1a0b2e0a3513735da0eac3c134b9559743cba59305d42cc8adab82be8b4ef589ae32985dfcb5483c03ac34d1aa90740da0eaadca7b7d1b
+  archive_type: upstream
+  name: dnspython-2.9.2
+  version: 2.9.2
+  url: https://github.com/rthalley/dnspython/archive/refs/tags/v2.9.2.tar.gz
+  repo_url: https://github.com/rthalley/dnspython
+  commit_id: 854bedd6d641cb42785d26ca674ed2c0f20131e0
+  skip_list: []
+  missing: []
   spdx:
     package:
       detailed_description: 'dnspython is a DNS toolkit for Python. It supports almost
@@ -13,7 +20,7 @@ sources:
         records.  dnspython originated at Nominum where it was developed to facilitate
         the testing of DNS software. Nominum has generously allowed it to be open
         sourced under a BSD-style license. '
-      home_page: https://pypi.python.org/pypi/dnspython
+      home_page: https://www.dnspython.org
       license_concluded: ISC
       license_declared: ISC
       short_summary: A DNS toolkit for Python

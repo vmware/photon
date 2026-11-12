@@ -2,31 +2,23 @@
 
 Summary:        A DNS toolkit for Python
 Name:           python3-dnspython
-Version:        2.6.1
-Release:        5%{?dist}
+Version:        2.9.2
+Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/dnspython
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://files.pythonhosted.org/packages/source/d/dnspython/dnspython-%{version}.tar.gz
+Source0: https://github.com/rthalley/dnspython/archive/refs/tags/v%{version}.tar.gz#/dnspython-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
 BuildArch:      noarch
 
-BuildRequires:  python3-libs
 BuildRequires:  python3-devel
-BuildRequires:  python3-wheel
-BuildRequires:  python3-packaging
-BuildRequires:  python3-pathspec
-BuildRequires:  python3-pluggy
-BuildRequires:  python3-hatchling
 BuildRequires:  python3-pip
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-BuildRequires:  python3-setuptools_scm
+BuildRequires:  python3-uv-build
+BuildRequires:  python3-packaging
 Requires:       python3
-Requires:       python3-libs
 
 %description
 dnspython is a DNS toolkit for Python. It supports almost all record types. It can be used for queries, zone transfers, and dynamic updates. It supports TSIG authenticated messages and EDNS0.
@@ -43,15 +35,19 @@ dnspython originated at Nominum where it was developed to facilitate the testing
 
 %install
 %pyproject_install
+%{py_byte_compile_and_ghost}
 
 %check
 python3 setup.py test
 
-%files
+%files -f %{py_ghost_filelist}
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+* Thu Nov 12 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 2.9.2-1
+- Upgrade to 2.9.2
+- Fix missing byte compilation
 * Thu May 21 2026 Ajay Kaher <ajay.kaher@broadcom.com> 2.6.1-5
 - Drop unzip BuildRequires; not needed for tar.gz source
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.6.1-4

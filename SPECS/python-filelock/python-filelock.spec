@@ -1,8 +1,8 @@
 %global build_if %{photon_subrelease} >= 91
 
 Name:           python3-filelock
-Version:        3.32.7
-Release:        2%{?dist}
+Version:        4.2.9
+Release:        1%{?dist}
 Summary:        A platform independent file lock
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -17,6 +17,7 @@ BuildArch:      noarch
 BuildRequires:  python3-devel
 BuildRequires:  python3-hatchling
 BuildRequires:  python3-hatch-vcs
+BuildRequires:  python3-hatch-fancy-pypi-readme
 BuildRequires:  python3-build
 BuildRequires:  python3-installer
 BuildRequires:  python3-packaging
@@ -53,6 +54,8 @@ export SETUPTOOLS_SCM_PRETEND_VERSION=%{version}
 %{python3_sitelib}/*
 
 %changelog
+* Thu Nov 12 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.2.9-1
+- Upgrade to 4.2.9
 * Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.32.7-2
 - extend release to 91
 * Tue Oct 20 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.32.7-1

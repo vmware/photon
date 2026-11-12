@@ -1,11 +1,11 @@
 sources:
-- archive: filelock-3.32.7.tar.gz
-  archive_sha512sum: 335bb0e2d0a4d1a04c9c57776ea2741c79873897fce0a523b41edc5ecf76cde688fbe6d4f7bbca44dd8b6c04325f178959a8f5d36369aa1de5ce954ea605b4d8
+- archive: filelock-4.2.9.tar.gz
+  archive_sha512sum: b6898201ce768dfafa1927bbbfc4e796312d0147921849b02327766e306e2f5501523d1a066c794e329f40f83d9809188b187505cf1cf892bf164248889c53ac
   archive_type: upstream
-  name: filelock-3.32.7
-  url: https://github.com/tox-dev/filelock/archive/refs/tags/3.32.7.tar.gz
+  name: filelock-4.2.9
+  url: https://github.com/tox-dev/filelock/archive/refs/tags/4.2.9.tar.gz
   repo_url: https://github.com/tox-dev/filelock
-  commit_id: 20929f7d1439d5fa1df158fcac87b60815f5d422
+  commit_id: 8803429a56c51df4a4e52d5d7e421a26154b2b95
   skip_list: []
   missing: []
   spdx:
