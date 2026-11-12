@@ -1,10 +1,10 @@
-%global build_if %{photon_subrelease} >= 92
+%global build_if %{photon_subrelease} >= 93
 %global subrelease %{?photon_subrelease}%{!?photon_subrelease:0}
 
 Summary:        Photon repo files, gpg keys
 Name:           photon-repos
 Version:        5.0
-Release:        11%{?dist}
+Release:        12%{?dist}
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon/
 Vendor:         VMware, Inc.
@@ -88,6 +88,8 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/yum.repos.d/photon-snapshot.repo
 
 %changelog
+*   Wed Nov 11 2026 Michelle Wang <michelle.wang@broadcom.com> 5.0-12
+-   Split photon-repos for 92 and 93
 *   Mon Jun 01 2026 Bo Gan <bo.gan@broadcom.com> 5.0-11
 -   Update the RSA 4096-bit GPG key with SHA256 signature, and deprecate 1024-bit key
 -   Cleanup: Follow the subrelease versioning
