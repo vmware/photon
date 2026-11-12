@@ -227,7 +227,7 @@ specs=(${specs_map["kernel_drivers_intel"]})
 for s in ${!specs[@]}; do
   specs[$s]="$(find -L $@ -type f -name ${specs[$s]}.spec.in )"
 done
-find -L $@ -type f -path "*/kernels-drivers-intel/*.spec" -delete
+find -L $@ -type f -path "*/kernel-drivers/*.spec" -delete
 
 declare -A d_info=()
 

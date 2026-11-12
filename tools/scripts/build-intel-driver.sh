@@ -128,7 +128,7 @@ parse_args() {
     KSHORTVER="$(cut -d '-' -f 1 <<< "${KVER}")"
 
 
-    SPEC_DIR="${PHOTON_DIR}/SPECS/kernels-drivers-intel"
+    SPEC_DIR="${PHOTON_DIR}/SPECS/kernel-drivers"
     BUILD_DIR="${SPEC_DIR}/tmp-build-dir"
     OUT_DIR="${PHOTON_DIR}/stage/SANDBOX_DRIVER_RPMS"
     CUSTOM_TEMPLATE="${SPEC_DIR}/drivers-intel-$DNAME.spec.in"
