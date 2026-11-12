@@ -1,0 +1,31 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Daniel Casota <dcasota@gmail.com>
+Date: Thu, 8 Oct 2026 00:00:00 +0000
+Subject: [PATCH] Include btrfs-progs for btrfs filesystem support
+
+Add btrfs-progs to install list for btrfs partitions.
+
+Backport of upstream commit 770ce982ded42df1048ce39335499d75d6b3e085,
+first released in v2.9:
+https://github.com/vmware/photon-os-installer/commit/770ce982ded42df1048ce39335499d75d6b3e085
+In v2.7 _partition_disks() has the same lvm2-only package addition, so
+the change applies unchanged; upstream's comment line and trailing
+whitespace are left out.
+---
+ photon_installer/installer.py | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/photon_installer/installer.py b/photon_installer/installer.py
+index af30e06..d252621 100644
+--- a/photon_installer/installer.py
++++ b/photon_installer/installer.py
+@@ -1975,6 +1975,9 @@ class Installer(object):
+             # add lvm2 package to install list
+             self._add_packages_to_install('lvm2')
+ 
++        if any(p.get('filesystem') == 'btrfs' for p in partitions):
++            self._add_packages_to_install('btrfs-progs')
++
+         # Create partitions_data (needed for mk-setup-grub.sh)
+         for partition in partitions:
+             if 'mountpoint' in partition and not partition.get('shadow', False):
