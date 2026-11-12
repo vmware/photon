@@ -5,7 +5,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        257.13
-Release:        6.1%{?dist}
+Release:        6.2%{?dist}
 Summary:        System and Service Manager
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -262,6 +262,7 @@ CONFIGURE_OPTS=(
        -Doomd=false
        -Dhomed=disabled
        -Dversion-tag=v%{version}-%{release}
+       -Dsystemd-journal-gid=23
        -Dsystemd-network-uid=76
        -Dsystemd-resolve-uid=77
        -Dsystemd-timesync-uid=78
@@ -671,6 +672,8 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+* Tue Nov 10 2026 Daniel Casota <dcasota@gmail.com> 257.13-6.2
+- Fix render and systemd-journal groups
 * Thu Nov 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 257.13-6.1
 - Sub branch for sr-91 and sr-92
 * Sat Oct 31 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 257.13-6

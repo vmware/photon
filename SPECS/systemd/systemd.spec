@@ -1,13 +1,16 @@
 %global build_if %{photon_subrelease} >= 93
 
-%define STIG_HARDEN 0
+# Default off, but overridable from pkg_build_options.json / rpmbuild -D.
+# A plain define of STIG_HARDEN here would win over -D and make every
+# conditional below permanently unreachable, and therefore untested.
+%{!?STIG_HARDEN: %global STIG_HARDEN 0}
 
 %global udev_services %{name}-udevd.service %{name}-udev-settle.service %{name}-udev-trigger.service %{name}-udevd-control.socket %{name}-udevd-kernel.socket %{name}-timesyncd.service
 
 Name:           systemd
 URL:            https://systemd.io
 Version:        262.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        System and Service Manager
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -273,6 +276,7 @@ CONFIGURE_OPTS=(
        -Doomd=false
        -Dhomed=disabled
        -Dversion-tag=v%{version}-%{release}
+       -Dsystemd-journal-gid=23
        -Dsystemd-network-uid=76
        -Dsystemd-resolve-uid=77
        -Dsystemd-timesync-uid=78
@@ -686,6 +690,8 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+* Tue Nov 10 2026 Daniel Casota <dcasota@gmail.com> 262.1-2
+- Fix render/systemd-journal groups; repair the STIG build variant
 * Thu Nov 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 262.1-1
 - Upgrade to v262.1
 - Add RPM transfiletriggers to restart units after package upgrades
