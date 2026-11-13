@@ -2,7 +2,7 @@
 
 Summary:        The Apache HTTP Server
 Name:           httpd
-Version:        2.4.69
+Version:        2.4.71
 Release:        0.0.1%{?dist}
 URL:            http://httpd.apache.org
 Group:          Applications/System
@@ -193,6 +193,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+* Fri Nov 13 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.4.71-0.0.1
+- Upgrade to v2.4.71, contains security fixes
 * Tue Oct 27 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.4.69-0.0.1
 - Upgrade to v2.4.69, contains security fixes
 * Sat Jul 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.4.68-2

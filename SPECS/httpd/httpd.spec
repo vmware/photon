@@ -2,8 +2,8 @@
 
 Summary:        The Apache HTTP Server
 Name:           httpd
-Version:        2.4.69
-Release:        2%{?dist}
+Version:        2.4.71
+Release:        1%{?dist}
 URL:            http://httpd.apache.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -193,6 +193,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+* Fri Nov 13 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.4.71-1
+- Upgrade to v2.4.71, contains security fixes
 * Tue Nov 03 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.4.69-2
 - Build for sr-91 and above
 * Mon Oct 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.4.69-1
