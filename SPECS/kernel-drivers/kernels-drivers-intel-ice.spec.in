@@ -14,14 +14,14 @@ Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-%if "%{src_ver}" == "2.6.7"
+%if "%{src_ver}" == "2.7.6"
 Source0: https://github.com/intel/ethernet-linux-ice/releases/download/v%{src_ver}/ice-%{src_ver}.tar.gz
 %else
 Source0: https://sourceforge.net/projects/e1000/files/ice%20stable/%{src_ver}/ice-%{src_ver}.tar.gz
 %endif
 
-%if "%{src_ver}" == "2.6.7"
-Release:        2%{?kernelsubrelease}%{?dist}
+%if "%{src_ver}" == "2.7.6"
+Release:        1%{?kernelsubrelease}%{?dist}
 %endif
 
 %if "%{src_ver}" == "1.14.9"
@@ -96,10 +96,12 @@ find %{buildroot}%{_modulesdir} -name *.ko -type f -print0 | xargs -0 chmod u+x
 %{_mandir}/*
 
 %changelog
-%if "%{src_ver}" == "2.6.7"
-* Wed Nov 04 2026 Ankit Jain <ankit-aj.jain@broadcom.com> %{PKG_VERSION}-2
+%if "%{src_ver}" == "2.7.6"
+* Fri Nov 13 2026 Ankit Jain <ankit-aj.jain@broadcom.com> %{PKG_VERSION}-1
+- Upgrade ice driver to v2.7.6
+* Wed Nov 04 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 2.6.7-2
 - build for sr-91/92
-* Wed Oct 07 2026 Yifeng Sun <yifeng.sun@broadcom.com> %{PKG_VERSION}-1
+* Wed Oct 07 2026 Yifeng Sun <yifeng.sun@broadcom.com> 2.6.7-1
 - Initial addition of ice v2.6.7
 %endif
 
@@ -120,7 +122,7 @@ find %{buildroot}%{_modulesdir} -name *.ko -type f -print0 | xargs -0 chmod u+x
 - Initial addition of ice v1.14.9
 %endif
 
-%if "%{src_ver}" != "1.14.9" && "%{src_ver}" != "2.6.7"
+%if "%{src_ver}" != "1.14.9" && "%{src_ver}" != "2.7.6"
 * Tue Sep 15 2026 Ankit Jain <ankit-aj.jain@broadcom.com> %{PKG_VERSION}-9
 - Release bump
 * Thu Oct 23 2025 Ajay Kaher <ajay.kaher@broadcom.com> %{PKG_VERSION}-8

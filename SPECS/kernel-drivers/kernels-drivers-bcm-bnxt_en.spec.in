@@ -11,13 +11,12 @@ Summary:        Broadcom bnxt_en driver v%{src_ver}
 Name:           linux%{KERNEL_FLAVOUR}-drivers-bcm-bnxt_en
 Version:        %{src_ver}
 Release:        1%{?kernelsubrelease}%{?dist}
-URL:            https://docs.broadcom.com/docs-and-downloads/ethernet-network-adapters/NXE/BRCM_238.1.138.6/bcm_238.1.138.6a.tar.gz
+URL:            https://docs.broadcom.com/docs-and-downloads/ethernet-network-adapters/NXE/BRCM_239.1.170.0/bcm_239.1.170.0a.tar.gz
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-# Note: the tarball packaging is 238.1.138.6a/238.1.138.6 but the driver version is 238.1.138.5.
-Source0: bcm_238.1.138.6a.tar.gz
+Source0: bcm_239.1.170.0a.tar.gz
 Source1: spec_install_post.inc
 Source2: license_bcm-bnxt.txt
 %include %{SOURCE2}
@@ -41,7 +40,7 @@ Requires:       %{kern_pkg_name} =  %{kernel_ver}
 This Linux package contains the Broadcom bnxt_en v%{src_ver} driver.
 
 %prep
-%autosetup -p1 -n bcm_238.1.138.6a
+%autosetup -p1 -n bcm_239.1.170.0a
 tar -zxvf drivers_linux/bnxt_en/bnxt_en-1.10.3-%{src_ver}.tar.gz
 
 %build
@@ -66,5 +65,7 @@ find %{buildroot}%{_modulesdir} -name *.ko -type f -print0 | xargs -0 chmod u+x
 %{_modulesdir}/extra/bnxt_en-%{src_ver}/bnxt_en.ko.xz
 
 %changelog
-* Mon Aug 24 2026 Yifeng Sun <yifeng.sun@broadcom.com> %{src_ver}-1
-- Add new bnxt_en v%{src_ver} driver
+* Fri Nov 13 2026 Ankit Jain <ankit-aj.jain@broadcom.com> %{src_ver}-1
+- Upgrade bnxt_en driver to v%{src_ver}
+* Mon Aug 24 2026 Yifeng Sun <yifeng.sun@broadcom.com> 238.1.138.5-1
+- Add new bnxt_en v238.1.138.5 driver

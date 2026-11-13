@@ -1,14 +1,15 @@
 sources:
-- archive: i40e-2.30.18.tar.gz
-  archive_sha512sum: 57f57ad4b04a11609bf6f09bce6e7950185687426bd5fe2ef328bfb2e06da2f8381b82b1ec35eb3e381a20aafdfda80a56dcaa58493a7f5a75f54d0bafa58605
-  skip_validation: true
+- archive: i40e-2.30.83.tar.gz
+  url: https://github.com/intel/ethernet-linux-i40e/releases/download/v2.30.83/i40e-2.30.83.tar.gz
+  archive_sha512sum: 4438f900e10ab4bf62cc06b1d6f9a9f7d969af4408d39414000bf3abca726d2d2906a14dc04f5a3f8642582d66cd08c2a47a10474c9fdd3469fe1bdab20b78cd
+  skip_validation: false
   spdx:
     package:
-      detailed_description: 'This Linux package contains the Intel i40e v2.30.18 driver. '
-      home_page: https://sourceforge.net/projects/e1000
+      detailed_description: 'This Linux package contains the Intel i40e v2.30.83 driver. '
+      home_page: https://github.com/intel/ethernet-linux-i40e
       license_concluded: (BSD-3-Clause OR GPL-2.0-only) AND (GPL-2.0-only OR MIT) AND BSD-3-Clause AND GPL-2.0-only AND GPL-2.0-or-later
       license_declared: (BSD-3-Clause OR GPL-2.0-only) AND (GPL-2.0-only OR MIT) AND BSD-3-Clause AND GPL-2.0-only AND GPL-2.0-or-later
-      short_summary: Intel i40e driver v2.30.18
+      short_summary: Intel i40e driver v2.30.83
       supplier: 'Organization: Broadcom, Inc.'
 - archive: i40e-2.25.7.tar.gz
   archive_sha512sum: d1a206806be1b2481704a9d928c3d77769ef6f1d94798b8a35258e191a091252c75222b04a85049b52fb06ce68b8bd8543ddcc0e938a6ec75320432d75f71530
@@ -32,16 +33,17 @@ sources:
       license_declared: (GPL-2.0-only OR MIT) AND GPL-2.0-only AND GPL-2.0-or-later AND BSD-3-Clause
       short_summary: Intel i40e driver v2.22.18
       supplier: 'Organization: Broadcom, Inc.'
-- archive: iavf-4.13.16.tar.gz
-  archive_sha512sum: c2043541e82351b58abde59b74a74c5ca09e7dec3aadc3ef103a40c6c1bdc152413d01f8796e123b7a17962855c21bae879f529ee1a1cefaad37f8a65196ddae
-  skip_validation: true
+- archive: iavf-4.13.78.tar.gz
+  url: https://github.com/intel/ethernet-linux-iavf/releases/download/v4.13.78/iavf-4.13.78.tar.gz
+  archive_sha512sum: 6e186cebdc419abaefd118e95766e417bd2d080fa47799099490a2a2080f5c17e145acd5bc408e314a0186ab0826390faa986c92bc8ffb666b92a24f4ce6acbf
+  skip_validation: false
   spdx:
     package:
       detailed_description: 'This Linux package contains the Intel iavf v%{src_ver} driver. '
-      home_page: https://sourceforge.net/projects/e1000
+      home_page: https://github.com/intel/ethernet-linux-iavf
       license_concluded: (BSD-3-Clause OR GPL-2.0-only) AND (GPL-2.0-only OR MIT) AND BSD-3-Clause AND GPL-2.0-only AND GPL-2.0-or-later
       license_declared: (BSD-3-Clause OR GPL-2.0-only) AND (GPL-2.0-only OR MIT) AND BSD-3-Clause AND GPL-2.0-only AND GPL-2.0-or-later
-      short_summary: Intel iavf driver v4.13.16
+      short_summary: Intel iavf driver v4.13.78
       supplier: 'Organization: Broadcom, Inc.'
 - archive: iavf-4.11.1.tar.gz
   archive_sha512sum: 201961b1f4b891368060f321e414d3d28b18a7c7b15bb6ad7c8e517216228bd67cbf68a018d59ce6b38e97cbb620f5ca1d88f829679d15930bc06688f40fa757
@@ -76,16 +78,17 @@ sources:
       license_declared: (BSD-3-Clause OR GPL-2.0-only) AND (GPL-2.0-only OR Linux-OpenIB) AND (GPL-2.0-only OR MIT) AND BSD-3-Clause AND GPL-2.0-only AND GPL-2.0-or-later AND Intel
       short_summary: Intel ice driver v2.3.10
       supplier: 'Organization: Broadcom, Inc.'
-- archive: ice-2.6.7.tar.gz
-  archive_sha512sum: 7df4665c84f9722ece8173f1e725d57d3750aae4fa716194919c223c5265e2b31041e9bd17b6c7dc5ff874df9a88ffecf1f0e2fa87860a5964f4db02c1ae5183
-  skip_validation: true
+- archive: ice-2.7.6.tar.gz
+  url: https://github.com/intel/ethernet-linux-ice/releases/download/v2.7.6/ice-2.7.6.tar.gz
+  archive_sha512sum: c81354d53331ccf48a1ecf553e95fffefa52e373849c14015188d83fec558aa189dd47843da976d8cd9aa7ee210c194db82fd5e1754e37b30b4a0791c9330a5a
+  skip_validation: false
   spdx:
     package:
-      detailed_description: 'This Linux package contains the Intel ice v2.6.7 driver. '
+      detailed_description: 'This Linux package contains the Intel ice v2.7.6 driver. '
       home_page: https://github.com/intel/ethernet-linux-ice
       license_concluded: GPL-2.0-only
       license_declared: GPL-2.0-only
-      short_summary: Intel ice driver v2.6.7
+      short_summary: Intel ice driver v2.7.6
       supplier: 'Organization: Broadcom, Inc.'
 - archive: ice-1.14.9.tar.gz
   archive_sha512sum: 4a7fdc7b451d88ccd1ebcda45f1549407873c8d6fdd82bf549d47ef97acbafe13e5a09f03d3dc1ed22c76fa0486fca7186cfea76ba715a13bc83262f6aee37b3
@@ -109,9 +112,9 @@ sources:
       license_declared: (GPL-2.0-only OR Linux-OpenIB) AND (GPL-2.0-only OR MIT) AND Intel AND BSD-3-Clause AND GPL-2.0-or-later AND GPL-2.0-only
       short_summary: Intel ice driver v1.13.7
       supplier: 'Organization: Broadcom, Inc.'
-- archive: bcm_238.1.138.6a.tar.gz
-  url: https://docs.broadcom.com/docs-and-downloads/ethernet-network-adapters/NXE/BRCM_238.1.138.6/bcm_238.1.138.6a.tar.gz
-  archive_sha512sum: 1e42e041f51b58abb3a2ae04ee06450955022431a2039dde896e9e897f9655536803657cba7c9b9878865c0b0187b35ba2ca4d56eb591550ea90bac55209fa74
+- archive: bcm_239.1.170.0a.tar.gz
+  url: https://docs.broadcom.com/docs-and-downloads/ethernet-network-adapters/NXE/BRCM_239.1.170.0/bcm_239.1.170.0a.tar.gz
+  archive_sha512sum: 56f784e48c5b5cf75b85ce1bb79df797c06c564397ff6c267c8d43a5424298728c363a5f32bc96b0748ca9e36822bb489c7ebd7a966c3c40ec9ad5265f1dc25c
   skip_validation: false
   spdx:
     package:
@@ -119,7 +122,7 @@ sources:
         NetXtreme-E provide the essential software layer to operate Broadcom's
         high-performance 10/25/40/50/100/200 Gigabit Ethernet network interface
         cards (NICs).
-      home_page: https://docs.broadcom.com/docs/NXE_Linux_Installer-238.1.138.6
+      home_page: https://docs.broadcom.com/docs/NXE_Linux_Installer-239.1.170.0
       license_concluded:
       license_declared: GPLv2
       short_summary: The open source linux kernel drivers for Broadcom NetXtreme-E

@@ -14,10 +14,14 @@ Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
+%if "%{src_ver}" == "2.30.83"
+Source0: https://github.com/intel/ethernet-linux-i40e/releases/download/v%{src_ver}/i40e-%{src_ver}.tar.gz
+%else
 Source0: https://sourceforge.net/projects/e1000/files/i40e%20stable/%{src_ver}/i40e-%{src_ver}.tar.gz
+%endif
 
-%if "%{src_ver}" == "2.30.18"
-Release:        2%{?kernelsubrelease}%{?dist}
+%if "%{src_ver}" == "2.30.83"
+Release:        1%{?kernelsubrelease}%{?dist}
 
 Patch0:         i40e-v2.25.7-Add-support-for-gettimex64-interface.patch
 %endif
@@ -100,10 +104,12 @@ find %{buildroot}%{_modulesdir} -name *.ko -type f -print0 | xargs -0 chmod u+x
 %{_mandir}/*
 
 %changelog
-%if "%{src_ver}" == "2.30.18"
-* Tue Sep 01 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> %{PKG_VERSION}-2
+%if "%{src_ver}" == "2.30.83"
+* Fri Nov 13 2026 Ankit Jain <ankit-aj.jain@broadcom.com> %{PKG_VERSION}-1
+- Upgrade i40e driver to v2.30.83
+* Tue Sep 01 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.30.18-2
 - Extend release to 91
-* Fri Aug 07 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> %{PKG_VERSION}-1
+* Fri Aug 07 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.30.18-1
 - Initial addition of i40e v2.30.18
 %endif
 
@@ -126,7 +132,7 @@ find %{buildroot}%{_modulesdir} -name *.ko -type f -print0 | xargs -0 chmod u+x
 - Initial addition of i40e v2.25.7
 %endif
 
-%if "%{src_ver}" != "2.25.7" && "%{src_ver}" != "2.30.18"
+%if "%{src_ver}" != "2.25.7" && "%{src_ver}" != "2.30.83"
 * Tue Sep 15 2026 Ankit Jain <ankit-aj.jain@broadcom.com> %{PKG_VERSION}-10
 - Release bump
 * Mon Nov 03 2025 Kuntal Nayak <kuntal.nayak@broadcom.com> %{PKG_VERSION}-9

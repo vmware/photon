@@ -6,50 +6,64 @@
     ],
     "linux_dep_package": {
         "kernels-drivers-intel-iavf": {
-            "v6.1": {
-                "linux": [
-                    "4.9.5"
+            "4.9.5": {
+                "subrelease_max": 90,
+                "flavours": [
+                    "linux",
+                    "linux-esx"
                 ],
-                "linux-rt": [
-                    "4.11.1"
-                ],
-                "linux-esx": [
-                    "4.9.5"
+                "kernel_versions": [
+                    "v6.1"
                 ]
             },
-            "v6.12": {
-                "linux": [
-                    "4.13.16"
+            "4.11.1": {
+                "subrelease_max": 90,
+                "flavours": [
+                    "linux-rt"
                 ],
-                "linux-rt": [
-                    "4.13.16"
+                "kernel_versions": [
+                    "v6.1"
+                ]
+            },
+            "4.13.78": {
+                "subrelease_min": 91,
+                "flavours": [
+                    "linux",
+                    "linux-esx"
                 ],
-                "linux-esx": [
-                    "4.13.16"
+                "kernel_versions": [
+                    "v6.12"
                 ]
             }
         },
         "kernels-drivers-intel-i40e": {
-            "v6.1": {
-                "linux": [
-                    "2.22.18"
+            "2.22.18": {
+                "subrelease_max": 90,
+                "flavours": [
+                    "linux",
+                    "linux-esx"
                 ],
-                "linux-rt": [
-                    "2.25.7"
-                ],
-                "linux-esx": [
-                    "2.22.18"
+                "kernel_versions": [
+                    "v6.1"
                 ]
             },
-            "v6.12": {
-                "linux": [
-                    "2.30.18"
+            "2.25.7": {
+                "subrelease_max": 90,
+                "flavours": [
+                    "linux-rt"
                 ],
-                "linux-esx": [
-                    "2.30.18"
+                "kernel_versions": [
+                    "v6.1"
+                ]
+            },
+            "2.30.83": {
+                "subrelease_min": 91,
+                "flavours": [
+                    "linux",
+                    "linux-esx"
                 ],
-                "linux-rt": [
-                    "2.30.18"
+                "kernel_versions": [
+                    "v6.12"
                 ]
             }
         },
@@ -73,7 +87,7 @@
                     "v6.1"
                 ]
             },
-            "2.6.7": {
+            "2.7.6": {
                 "subrelease_min": 91,
                 "flavours": [
                     "linux",
@@ -85,33 +99,33 @@
             }
         },
         "kernels-drivers-bcm-bnxt_en": {
-            "v6.12": {
-                "linux-esx": [
-                    "238.1.138.5"
+            "239.1.170.0": {
+                "subrelease_min": 91,
+                "flavours": [
+                    "linux-esx"
+                ],
+                "kernel_versions": [
+                    "v6.12"
                 ]
             }
         },
         "sysdig": {
-            "v6.1": {
-                "linux": [
-                    "0.39.0"
-                ]
-            },
-            "v6.12": {
-                "linux": [
-                    "0.39.0"
+            "0.39.0": {
+                "flavours": [
+                    "linux"
+                ],
+                "kernel_versions": [
+                    "v6.12"
                 ]
             }
         },
         "falco": {
-            "v6.1": {
-                "linux": [
-                    "0.39.2"
-                ]
-            },
-            "v6.12": {
-                "linux": [
-                    "0.39.2"
+            "0.39.2": {
+                "flavours": [
+                    "linux"
+                ],
+                "kernel_versions": [
+                    "v6.12"
                 ]
             }
         }

@@ -14,10 +14,14 @@ Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
+%if "%{src_ver}" == "4.13.78"
+Source0:       https://github.com/intel/ethernet-linux-iavf/releases/download/v%{src_ver}/iavf-%{src_ver}.tar.gz
+%else
 Source0:       https://sourceforge.net/projects/e1000/files/iavf%20stable/%{src_ver}/iavf-%{src_ver}.tar.gz
+%endif
 
-%if "%{src_ver}" == "4.13.16"
-Release:        2%{?kernelsubrelease}%{?dist}
+%if "%{src_ver}" == "4.13.78"
+Release:        1%{?kernelsubrelease}%{?dist}
 
 Patch0:         iavf-v4.11.1-iavf-Makefile-added-alias-for-i40evf.patch
 %endif
@@ -70,11 +74,7 @@ This Linux package contains the Linux kernel doc files including files that
 were left unpackaged from %{kern_pkg_name} in the %{_mandir}.
 
 %prep
-%if "%{src_ver}" == "4.13.16"
-%autosetup -p1 -n ethernet-linux-iavf-%{src_ver}
-%else
 %autosetup -p1 -n iavf-%{src_ver}
-%endif
 
 %build
 make -C src KSRC=%{_modulesdir}/build %{?_smp_mflags}
@@ -105,10 +105,12 @@ find %{buildroot}%{_modulesdir} -name *.ko -type f -print0 | xargs -0 chmod u+x
 %{_mandir}/*
 
 %changelog
-%if "%{src_ver}" == "4.13.16"
-* Tue Sep 01 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> %{PKG_VERSION}-2
+%if "%{src_ver}" == "4.13.78"
+* Fri Nov 13 2026 Ankit Jain <ankit-aj.jain@broadcom.com> %{PKG_VERSION}-1
+- Upgrade iavf driver to v4.13.78
+* Tue Sep 01 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.13.16-2
 - Extend release to 91
-* Wed Oct 08 2025 Ajay Kaher <ajay.kaher@broadcom.com> %{PKG_VERSION}-1
+* Wed Oct 08 2025 Ajay Kaher <ajay.kaher@broadcom.com> 4.13.16-1
 - Initial addition of iavf v4.13.16
 %endif
 
@@ -129,7 +131,7 @@ find %{buildroot}%{_modulesdir} -name *.ko -type f -print0 | xargs -0 chmod u+x
 - Initial addition of iavf v4.11.1
 %endif
 
-%if "%{src_ver}" != "4.11.1" && "%{src_ver}" != "4.13.16"
+%if "%{src_ver}" != "4.11.1" && "%{src_ver}" != "4.13.78"
 * Thu Jan 15 2025 Ankit Jain <ankit-aj.jain@broadcom.com> %{PKG_VERSION}-9
 - Release bump
 * Thu Oct 23 2025 Ajay Kaher <ajay.kaher@broadcom.com> %{PKG_VERSION}-8
