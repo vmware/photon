@@ -1,14 +1,14 @@
 %global build_if %{photon_subrelease} <= 90
-%define njs_ver     0.8.4
+%define njs_ver     0.9.9
 %define nginx_user  %{name}
-%define headers_more_nginx_module_ver 0.37
+%define headers_more_nginx_module_ver 0.39
 %define dyn_modules_dir     %{_sysconfdir}/%{name}/modules
 
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
 Epoch:          1
-Version:        1.26.3
-Release:        2.2.1%{?dist}
+Version:        1.30.6
+Release:        0.0.1%{?dist}
 URL:            http://nginx.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -27,12 +27,6 @@ Source5: license.txt
 %include %{SOURCE5}
 
 Patch0: convert-to-dynamic.patch
-Patch1: CVE-2025-53859.patch
-Patch2: CVE-2026-27654.patch
-Patch3: CVE-2026-32647.patch
-Patch4: CVE-2026-27651.patch
-Patch5: CVE-2026-27784.patch
-Patch6: CVE-2026-1642.patch
 
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
@@ -210,6 +204,10 @@ rm -rf %{buildroot}
 %{dyn_modules_dir}/ngx_stream_ssl_preread_module.so
 
 %changelog
+* Fri Nov 13 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.30.6-0.0.1
+- Upgrade to 1.30.6, fixes CVE-2026-42055 and CVE-2026-90439
+- Upgrade njs to v0.9.9
+- Upgrade headers_more_nginx_module to 0.39
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.26.3-2.2.1
 - Adjusted to build for subrelease 90
 * Wed Apr 08 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.26.3-2.2
