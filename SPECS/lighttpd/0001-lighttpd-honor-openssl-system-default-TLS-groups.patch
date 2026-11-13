@@ -1,4 +1,4 @@
-From a9a0aa27f04cd6246b1bff7753c49c0d88981fde Mon Sep 17 00:00:00 2001
+From 06ade4baba8caa2a5f4f0a4255bfce3bc545f2e4 Mon Sep 17 00:00:00 2001
 From: Srinidhi Rao <srinidhi.rao@broadcom.com>
 Date: Thu, 12 Nov 2026 11:32:05 +0000
 Subject: [PATCH] lighttpd: honor openssl system default TLS groups
@@ -31,10 +31,10 @@ Signed-off-by: Srinidhi Rao <srinidhi.rao@broadcom.com>
  1 file changed, 14 insertions(+)
 
 diff --git a/src/mod_openssl.c b/src/mod_openssl.c
-index 26517ae1..620d7161 100644
+index 90d34f23..493bb6c6 100644
 --- a/src/mod_openssl.c
 +++ b/src/mod_openssl.c
-@@ -3339,6 +3339,20 @@ mod_openssl_ssl_conf_curves(server *srv, plugin_config_socket *s, const buffer *
+@@ -3517,6 +3517,20 @@ mod_openssl_ssl_conf_curves(server *srv, plugin_config_socket *s, const buffer *
          return 1;
    #endif
  

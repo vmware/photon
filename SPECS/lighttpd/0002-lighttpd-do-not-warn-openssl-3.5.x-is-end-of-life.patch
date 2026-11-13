@@ -1,0 +1,40 @@
+From d8a049a34c5e11afee61bb47c7f89cfd0efff68f Mon Sep 17 00:00:00 2001
+From: Srinidhi Rao <srinidhi.rao@broadcom.com>
+Date: Fri, 13 Nov 2026 05:20:12 +0000
+Subject: [PATCH] [TLS] do not warn openssl 3.5.x is end-of-life (fixes #3327)
+
+The openssl end-of-life warning in mod_openssl_set_defaults() exempted
+only OPENSSL_VERSION_NUMBER == 0x30500000L (openssl 3.5.0). Every later
+3.5.x patch release (e.g. 3.5.9, 0x30500090L) is an LTS release still
+supported by openssl.org, yet from 23 Oct 2026 lighttpd logs at startup:
+
+  SSL:openssl library version is outdated and has reached end-of-life.
+
+Exempt the whole openssl 3.5.x series (>= 0x30500000L && < 0x30600000L).
+
+[Srinidhi: Fix given by the lighttpd maintainers in
+ https://redmine.lighttpd.net/issues/3327; not yet committed upstream
+ (origin/master 2ddc5138).]
+
+Signed-off-by: Srinidhi Rao <srinidhi.rao@broadcom.com>
+---
+ src/mod_openssl.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/src/mod_openssl.c b/src/mod_openssl.c
+index 493bb6c6..7f3a1f67 100644
+--- a/src/mod_openssl.c
++++ b/src/mod_openssl.c
+@@ -4468,7 +4468,8 @@ SETDEFAULTS_FUNC(mod_openssl_set_defaults)
+     }
+ 
+   #if OPENSSL_VERSION_NUMBER < 0x40000000L \
+-   && OPENSSL_VERSION_NUMBER != 0x30500000L \
++   && !(OPENSSL_VERSION_NUMBER >= 0x30500000L \
++        && OPENSSL_VERSION_NUMBER < 0x30600000L) \
+    && !defined(BORINGSSL_API_VERSION) \
+    && !defined(LIBRESSL_VERSION_NUMBER)
+   if (log_epoch_secs >= 1792728000) /* 23 Oct 2026 */
+-- 
+2.53.0
+

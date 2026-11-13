@@ -2,8 +2,8 @@
 %define documentroot /srv/www/htdocs
 Summary:        A secure, fast, compliant, and very flexible web server
 Name:           lighttpd
-Version:        1.4.82
-Release:        4%{?dist}
+Version:        1.4.85
+Release:        1%{?dist}
 URL:            https://www.lighttpd.net/
 Group:          Productivity/Networking/Web/Servers
 Vendor:         VMware, Inc.
@@ -19,6 +19,7 @@ Source5: license.txt
 %include %{SOURCE5}
 
 Patch0: 0001-lighttpd-honor-openssl-system-default-TLS-groups.patch
+Patch1: 0002-lighttpd-do-not-warn-openssl-3.5.x-is-end-of-life.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -119,6 +120,9 @@ make %{?_smp_mflags} check
 %{_mandir}/man8/%{name}*8*
 
 %changelog
+* Fri Nov 13 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 1.4.85-1
+- Upgrade to 1.4.85
+- Fix bogus openssl end-of-life warning with openssl 3.5.x
 * Thu Nov 12 2026 Srinidhi Rao <srinidhi.rao@broadcom.com> 1.4.82-4
 - Split lighttpd package for subrelease 92 and above.
 - Honor openssl system default TLS groups, fixes TLS init failure
