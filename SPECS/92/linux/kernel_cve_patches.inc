@@ -52,3 +52,5 @@ Patch3122: 0001-net-ipv6-keep-room-for-the-mac-header-in-dst_dev_ove.patch
 Patch3123: 0001-wifi-mac80211-fix-slab-out-of-bounds-read-in-ieee802.patch
 # Fixes CVE-2026-99122
 Patch3124: 0001-vsock-vmci-validate-packet-source-for-connected-sock.patch
+# Fixes CVE-2026-92500
+Patch3125: 0001-ext4-use-fsdata-to-track-inline-data-write-state-and.patch

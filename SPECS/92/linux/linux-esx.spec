@@ -29,7 +29,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.12.116
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -604,6 +604,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Nov 20 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.116-4
+- Fixes CVE-2026-92500
 * Tue Nov 17 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.116-3
 - Widen aead_request internal_iv to u64 and use atomic magic value
 - FIPS canister plugins: don't compare offsets of pad field

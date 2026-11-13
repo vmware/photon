@@ -1,0 +1,186 @@
+From 02d69f21a73cebe9e09091df09f99a41d9ce1acb Mon Sep 17 00:00:00 2001
+From: Aditya Prakash Srivastava <aditya.ansh182@gmail.com>
+Date: Fri, 3 Jul 2026 04:54:12 +0000
+Subject: [PATCH] ext4: use fsdata to track inline data write state and fix
+ race
+
+commit 7edbb323bab2b2a609016014caafdb651c898249 upstream.
+
+Instead of checking the live inode state (ext4_has_inline_data(inode)
+and ext4_test_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA)) in the
+write_end handlers, use the fsdata parameter of the address space
+operations to explicitly pass down the state in which write_begin
+prepared the write.
+
+A concurrent thread (such as ext4_page_mkwrite()) can convert the
+inline data to an extent between write_begin and write_end. If this
+happens, the write_end handlers would previously miss the inline
+write_end path and fall through to extent-based write_end logic.
+However, since block buffers were never allocated in write_begin,
+this resulted in NULL pointer dereferences or data loss because
+folio_buffers(folio) was NULL.
+
+Define EXT4_WRITE_DATA_INLINE (4) as a bit flag (Bit 2), treating
+fsdata as bitwise flags rather than mutually exclusive enums to keep
+states of the write path independent. Communicate this state via
+fsdata:
+1) ext4_write_begin() and ext4_da_write_begin() set the
+   EXT4_WRITE_DATA_INLINE bit in *fsdata via bitwise OR when an inline
+   write is successfully prepared.
+2) On entry, ext4_write_begin() clears the EXT4_WRITE_DATA_INLINE bit
+   to safely handle VFS retries (where generic_perform_write() bypasses
+   the fsdata initialization on its retry jump).
+3) The write_end handlers perform a bitwise AND to check if the
+   EXT4_WRITE_DATA_INLINE bit is set and invoke the inline write_end
+   helper accordingly.
+
+Furthermore, during a buffered write, ext4_write_inline_data_end()
+acquires the xattr lock after preparing the write. If a concurrent
+page fault (ext4_page_mkwrite()) converts the inline data to an extent
+after the write_end handlers check the state but before
+ext4_write_inline_data_end() acquires the xattr write lock, the
+subsequent check will trigger a kernel panic via
+BUG_ON(!ext4_has_inline_data(inode)).
+
+To keep git history working and bisectability clean, replace the
+BUG_ON check in ext4_write_inline_data_end() with a graceful error-
+handling retry path in this same commit. If the inline data is cleared
+after locking the xattr, we safely release all resources (releasing
+iloc.bh, unlocking/putting the folio, stopping the active journal
+transaction handle) and return 0 (VFS retry) to let the generic write
+path retry the operation safely.
+
+Reported-by: syzbot+0c89d865531d053abb2d@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=0c89d865531d053abb2d
+Fixes: 3fdcfb668fd7 ("ext4: add journalled write support for inline data")
+Suggested-by: Jan Kara <jack@suse.cz>
+Signed-off-by: Aditya Prakash Srivastava <aditya.ansh182@gmail.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Link: https://patch.msgid.link/20260703045414.1768-1-aditya.ansh182@gmail.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+[ Keerthana: adapt ext4_da_write_end() context for v6.12.y: ext4_write_end() still takes
+  a struct file instead of a struct kiocb ]
+Signed-off-by: Keerthana K <keerthana.kalyanasundaram@broadcom.com>
+---
+ fs/ext4/ext4.h   |  1 +
+ fs/ext4/inline.c | 14 +++++++++++++-
+ fs/ext4/inode.c  | 24 +++++++++++++-----------
+ 3 files changed, 27 insertions(+), 12 deletions(-)
+
+diff --git a/fs/ext4/ext4.h b/fs/ext4/ext4.h
+index 3e0c29434ae3..e9dc6ddcc7cb 100644
+--- a/fs/ext4/ext4.h
++++ b/fs/ext4/ext4.h
+@@ -2980,6 +2980,7 @@ int do_journal_get_write_access(handle_t *handle, struct inode *inode,
+ 				struct buffer_head *bh);
+ #define FALL_BACK_TO_NONDELALLOC 1
+ #define CONVERT_INLINE_DATA	 2
++#define EXT4_WRITE_DATA_INLINE	 4
+ 
+ typedef enum {
+ 	EXT4_IGET_NORMAL =	0,
+diff --git a/fs/ext4/inline.c b/fs/ext4/inline.c
+index 54eb10c37637..1fd6f90cb576 100644
+--- a/fs/ext4/inline.c
++++ b/fs/ext4/inline.c
+@@ -788,7 +788,19 @@ int ext4_write_inline_data_end(struct inode *inode, loff_t pos, unsigned len,
+ 			goto out;
+ 		}
+ 		ext4_write_lock_xattr(inode, &no_expand);
+-		BUG_ON(!ext4_has_inline_data(inode));
++		/*
++		 * We could have raced with ext4_page_mkwrite() converting
++		 * the inode and clearing the inline data flag, so we just
++		 * release resources and retry the whole write.
++		 */
++		if (unlikely(!ext4_has_inline_data(inode))) {
++			ext4_write_unlock_xattr(inode, &no_expand);
++			brelse(iloc.bh);
++			folio_unlock(folio);
++			folio_put(folio);
++			ext4_journal_stop(handle);
++			return 0;
++		}
+ 
+ 		/*
+ 		 * ei->i_inline_off may have changed since
+diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
+index 822d81d51f23..35b96fae3083 100644
+--- a/fs/ext4/inode.c
++++ b/fs/ext4/inode.c
+@@ -1154,6 +1154,8 @@ static int ext4_write_begin(struct file *file, struct address_space *mapping,
+ 	if (unlikely(ext4_forced_shutdown(inode->i_sb)))
+ 		return -EIO;
+ 
++	*fsdata = (void *)((unsigned long)*fsdata & ~EXT4_WRITE_DATA_INLINE);
++
+ 	trace_ext4_write_begin(inode, pos, len);
+ 	/*
+ 	 * Reserve one block more for addition to orphan list in case
+@@ -1169,8 +1171,10 @@ static int ext4_write_begin(struct file *file, struct address_space *mapping,
+ 						    foliop);
+ 		if (ret < 0)
+ 			return ret;
+-		if (ret == 1)
++		if (ret == 1) {
++			*fsdata = (void *)((unsigned long)*fsdata | EXT4_WRITE_DATA_INLINE);
+ 			return 0;
++		}
+ 	}
+ 
+ 	/*
+@@ -1299,8 +1303,7 @@ static int ext4_write_end(struct file *file,
+ 
+ 	trace_ext4_write_end(inode, pos, len, copied);
+ 
+-	if (ext4_has_inline_data(inode) &&
+-	    ext4_test_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA))
++	if ((unsigned long)fsdata & EXT4_WRITE_DATA_INLINE)
+ 		return ext4_write_inline_data_end(inode, pos, len, copied,
+ 						  folio);
+ 
+@@ -1410,8 +1413,7 @@ static int ext4_journalled_write_end(struct file *file,
+ 
+ 	BUG_ON(!ext4_handle_valid(handle));
+ 
+-	if (ext4_has_inline_data(inode) &&
+-	    ext4_test_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA))
++	if ((unsigned long)fsdata & EXT4_WRITE_DATA_INLINE)
+ 		return ext4_write_inline_data_end(inode, pos, len, copied,
+ 						  folio);
+ 
+@@ -2949,8 +2951,10 @@ static int ext4_da_write_begin(struct file *file, struct address_space *mapping,
+ 						      foliop, fsdata);
+ 		if (ret < 0)
+ 			return ret;
+-		if (ret == 1)
++		if (ret == 1) {
++			*fsdata = (void *)((unsigned long)*fsdata | EXT4_WRITE_DATA_INLINE);
+ 			return 0;
++		}
+ 	}
+ 
+ retry:
+@@ -3082,17 +3086,15 @@ static int ext4_da_write_end(struct file *file,
+ 			     struct folio *folio, void *fsdata)
+ {
+ 	struct inode *inode = mapping->host;
+-	int write_mode = (int)(unsigned long)fsdata;
++	unsigned long write_mode = (unsigned long)fsdata;
+ 
+-	if (write_mode == FALL_BACK_TO_NONDELALLOC)
++	if (write_mode & FALL_BACK_TO_NONDELALLOC)
+ 		return ext4_write_end(file, mapping, pos,
+ 				      len, copied, folio, fsdata);
+ 
+ 	trace_ext4_da_write_end(inode, pos, len, copied);
+ 
+-	if (write_mode != CONVERT_INLINE_DATA &&
+-	    ext4_test_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA) &&
+-	    ext4_has_inline_data(inode))
++	if (write_mode & EXT4_WRITE_DATA_INLINE)
+ 		return ext4_write_inline_data_end(inode, pos, len, copied,
+ 						  folio);
+ 
