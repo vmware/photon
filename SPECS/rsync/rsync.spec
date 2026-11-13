@@ -1,7 +1,7 @@
 Summary:        Fast incremental file transfer.
 Name:           rsync
 Version:        3.5.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://rsync.samba.org
 Group:          Appication/Internet
 Vendor:         VMware, Inc.
@@ -11,6 +11,9 @@ Source0:        https://download.samba.org/pub/rsync/src/%{name}-%{version}.tar.
 
 Source1: license.txt
 %include %{SOURCE1}
+
+# Fix CVE-2026-119741
+Patch0:         CVE-2026-119741.patch
 
 BuildRequires:  zlib-devel
 BuildRequires:  systemd
@@ -88,6 +91,8 @@ make %{?_smp_mflags} check
 %exclude %dir %{_libdir}/debug
 
 %changelog
+* Fri Nov 13 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 3.5.1-2
+- Fix CVE-2026-119741
 * Tue Nov 03 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 3.5.1-1
 - Update to v3.5.1 to fix multiple CVEs
 * Fri Sep 04 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 3.5.0-1
