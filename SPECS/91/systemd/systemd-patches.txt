@@ -1,0 +1,25 @@
+Patch0: 0001-enoX-uses-instance-number-for-vmware-hv.patch
+Patch1: 0002-Fetch-dns-servers-from-environment.patch
+Patch2: 0003-systemd-do-not-use-ftrivial-auto-var-init-zero.patch
+Patch3: 0004-Remove-unused-default-groups-rules-and-tmpfiles.patch
+Patch4: 0005-default-conf-modifications.patch
+
+# CVE fixes
+
+Patch5: CVE-2026-15059.patch
+Patch6: GHSA-5rm9-cc37-35gq.patch
+Patch7: GHSA-m8q3-73v4-wvg7.patch
+
+# CVE-2026-16742
+Patch8: 0001-homed-fix-verification-of-local-identity-file.patch
+Patch9: 0002-homed-verify-privileged-worker-changes.patch
+
+# GHSA-3jgj-3phh-hx5j, no CVE ID assigned
+Patch10: 0001-core-limit-the-number-of-units-that-can-be-requested.patch
+Patch11: 0002-dbus-limit-the-number-of-env-variables-to-something-.patch
+Patch12: 0003-dbus-manager-limit-the-number-of-states-patterns-per.patch
+Patch13: 0004-resolve-enforce-the-search-domain-limit-earlier.patch
+Patch14: 0005-resolve-limit-the-number-NTAs-to-something-sensible.patch
+Patch15: 0006-sd-bus-store-the-strv-size-when-extending-it.patch
+Patch16: 0007-sd-json-user-record-store-the-strv-size-when-extendi.patch
+Patch17: 0008-sd-json-limit-the-number-of-env-variables-to-somethi.patch

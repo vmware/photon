@@ -5,7 +5,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        257.13
-Release:        6.1%{?dist}
+Release:        6.2%{?dist}
 Summary:        System and Service Manager
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -32,11 +32,8 @@ Source14:       sysusers.generate-pre.sh
 Source15: license.txt
 %include %{SOURCE15}
 
-Patch0: 0001-enoX-uses-instance-number-for-vmware-hv.patch
-Patch1: 0002-Fetch-dns-servers-from-environment.patch
-Patch2: 0003-systemd-do-not-use-ftrivial-auto-var-init-zero.patch
-Patch3: 0004-Remove-unused-default-groups-rules-and-tmpfiles.patch
-Patch4: 0005-default-conf-modifications.patch
+Source16: %{name}-patches.txt
+%include %{SOURCE16}
 
 Conflicts: dracut < 109
 
@@ -671,6 +668,8 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+* Thu Nov 12 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 257.13-6.2
+- Security fixes
 * Thu Nov 05 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 257.13-6.1
 - Sub branch for sr-91 and sr-92
 * Sat Oct 31 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 257.13-6
