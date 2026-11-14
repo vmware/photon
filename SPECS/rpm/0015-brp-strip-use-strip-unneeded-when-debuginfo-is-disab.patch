@@ -1,0 +1,75 @@
+From 330e3059903d4e7652bd62288834e9c40e73cfeb Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Date: Sat, 14 Nov 2026 09:30:07 +0000
+Subject: [PATCH] brp-strip: use --strip-unneeded when debuginfo is disabled
+
+strip -g removes debug sections but leaves .symtab and .strtab in ELF
+binaries. When debuginfo packages are enabled, find-debuginfo runs first
+and does a full strip; brp-strip then only needs -g as a cleanup pass.
+When debuginfo is disabled, find-debuginfo does not run and brp-strip is
+the only stripping step, leaving .symtab behind unnecessarily. For large
+C++ and Go libraries this amounts to several hundred KB per binary.
+
+Pass %{?__debug_package:1}%{!?__debug_package:0} as $2 to brp-strip via
+the %__brp_strip macro in platform.in. This is the same gate RPM uses to
+decide whether to run find-debuginfo, so both scripts agree on the same
+source of truth. When $2 is 0 (or absent, for callers that do not pass
+it), use --strip-unneeded to remove .symtab/.strtab. When $2 is 1,
+keep -g so .symtab remains available for tools like perf without the
+debuginfo package installed.
+
+Signed-off-by: Shreenidhi Shedi <shreenidhi.shedi@broadcom.com>
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+---
+ platform.in       |  2 +-
+ scripts/brp-strip | 14 +++++++++++++-
+ 2 files changed, 14 insertions(+), 2 deletions(-)
+
+diff --git a/platform.in b/platform.in
+index 30ce585b8..d54606c67 100644
+--- a/platform.in
++++ b/platform.in
+@@ -77,7 +77,7 @@
+ # Standard brp-macro naming:
+ # convert all '-' in basename to '_', add two leading underscores.
+ %__brp_compress %{_rpmconfigdir}/brp-compress %{?_prefix}
+-%__brp_strip %{_rpmconfigdir}/brp-strip %{__strip}
++%__brp_strip %{_rpmconfigdir}/brp-strip %{__strip} %{?__debug_package:1}%{!?__debug_package:0}
+ %__brp_strip_comment_note %{_rpmconfigdir}/brp-strip-comment-note %{__strip} %{__objdump}
+ %__brp_strip_static_archive %{_rpmconfigdir}/brp-strip-static-archive %{__strip}
+ %__brp_remove_la_files %{_rpmconfigdir}/brp-remove-la-files
+diff --git a/scripts/brp-strip b/scripts/brp-strip
+index 76b360b8f..c85bb0bd4 100755
+--- a/scripts/brp-strip
++++ b/scripts/brp-strip
+@@ -27,6 +27,18 @@ esac
+ # Ignore all 'no machine' files
+ # Only operate on non-stripped binaries
+ 
++# $2 is 1 when __debug_package is defined (find-debuginfo will run and do a
++# full strip), 0 otherwise. When debuginfo is disabled, brp-strip is the only
++# stripping step, so use --strip-unneeded to also remove .symtab/.strtab.
++# When debuginfo is enabled, keep -g so .symtab remains available for tools
++# like perf without the debuginfo package installed.
++DEBUGINFO_ENABLED=${2:-0}
++if [ "$DEBUGINFO_ENABLED" = "1" ]; then
++  STRIP_FLAGS="-g"
++else
++  STRIP_FLAGS="--strip-unneeded"
++fi
++
+ strip_elf_binaries()
+ {
+   local nlinks="${1}"
+@@ -40,7 +52,7 @@ strip_elf_binaries()
+     xargs -0 -r -P${nprocs} -n${MAX_ARGS} sh -c "file \"\$@\" | \
+     sed -n -e 's/^\(.*\):[ 	]*ELF.*, not stripped.*/\1/p' | \
+     grep -v 'no machine' | \
+-    xargs -I\{\} $STRIP -g \{\}" ARG0
++    xargs -I\{\} $STRIP $STRIP_FLAGS \{\}" ARG0
+ }
+ 
+ # strip all binaries with single link
+-- 
+2.53.0
+

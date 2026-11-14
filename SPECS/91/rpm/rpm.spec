@@ -4,7 +4,7 @@
 Summary:    Package manager
 Name:       rpm
 Version:    4.18.2
-Release:    8.5%{?dist}
+Release:    8.6%{?dist}
 URL:        http://rpm.org
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -32,6 +32,7 @@ Patch7: 0008-fix-division-by-zero-in-elfdeps-RhBug-2299414.patch
 Patch8: 0009-CVE-2026-78367.patch
 Patch9: 0009-add-pager-support-to-rpm-changelog.patch
 Patch10: 0010-Preserve-build-environment-details-in-source-rpm.patch
+Patch11: 0011-brp-strip-use-strip-unneeded-when-debuginfo-is-disab.patch
 
 Requires:   bash
 Requires:   zstd-libs
@@ -349,6 +350,9 @@ rm -rf %{buildroot}
 %{_mandir}/man8/%{name}-plugin-selinux.8.gz
 
 %changelog
+* Sat Nov 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.18.2-8.6
+- brp-strip: use --strip-unneeded when debuginfo is disabled to avoid
+  leaving .symtab/.strtab in ELF binaries
 * Fri Sep 11 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.18.2-8.5
 - Store build env info in src rpm
 * Thu Sep 03 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.18.2-8.4

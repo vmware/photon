@@ -4,7 +4,7 @@
 Summary:    Package manager
 Name:       rpm
 Version:    6.1.0
-Release:    4%{?dist}
+Release:    5%{?dist}
 URL:        http://rpm.org
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -36,6 +36,7 @@ Patch11: 0012-Treat-scriptlet-failures-as-non-fatal-by-default.patch
 Patch12: 0013-CVE-2026-78367.patch
 Patch13: 0013-Preserve-build-environment-details-in-source-rpm.patch
 Patch14: 0014-add-pager-support-to-rpm-changelog.patch
+Patch15: 0015-brp-strip-use-strip-unneeded-when-debuginfo-is-disab.patch
 
 Requires:   bash
 Requires:   zstd-libs
@@ -384,6 +385,9 @@ rm -rf %{buildroot}
 %{_mandir}/man8/%{name}-plugin-unshare.8*
 
 %changelog
+* Sat Nov 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.0-5
+- brp-strip: use --strip-unneeded when debuginfo is disabled to avoid
+  leaving .symtab/.strtab in ELF binaries
 * Fri Oct 30 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.0-4
 - Move unshare plugin to a separate rpm-plugin-unshare subpackage
 - Fixes build failures in unprivileged containers where unshare(2) is not permitted
