@@ -1,7 +1,7 @@
 Summary:        The GStreamer Bad Plug-ins package contains a set a set of plug-ins that aren't up to par compared to the rest
 Name:           gst-plugins-bad
-Version:        1.26.11
-Release:        2%{?dist}
+Version:        1.28.7
+Release:        1%{?dist}
 License:        LGPLv2
 URL:            http://gstreamer.freedesktop.org/
 Group:          Applications/Multimedia
@@ -9,15 +9,9 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://gstreamer.freedesktop.org/src/%{name}/%{name}-%{version}.tar.xz
-%define sha512 %{name}=6a105d1b9f0d51c7c157b259e408b2f23aa44b74f3c60708c8024d7790e2fb2ee65884ae709a9dbb31a84d6b16447b127bc85153a3fe33082c0cc9a73eb950ef
+%define sha512 %{name}=2ae81e1584fa1e4450a039780c22510c67ab6d88fdbec5dccb5407c1256e59834aad83784dadc994c014ed8334ac40de96b5a239a4521b186d1462338328bc25
 
-Patch0: CVE-2026-52718.patch
-Patch1: CVE-2026-52719.patch
-Patch2: CVE-2026-52720.patch
-Patch3: CVE-2026-52721.patch
-Patch4: CVE-2026-52722.patch
-Patch5: CVE-2026-53701.patch
-Patch6: CVE-2026-53702.patch
+Patch0: tensordecoders-g_alloca0-fallback.patch
 
 BuildRequires:  meson >= 1.4.0
 BuildRequires:  cmake
@@ -77,6 +71,9 @@ rm -rf %{buildroot}
 %{_datadir}/gir-1.0
 
 %changelog
+* Mon Nov 09 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.28.7-1
+- Version upgrade to 1.28.7
+- Add g_alloca0 fallback for glib < 2.72
 * Thu Jun 25 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.26.11-2
 - Fix CVE-2026-52718, CVE-2026-52719, CVE-2026-52720, CVE-2026-52721, CVE-2026-52722,
   CVE-2026-53701, CVE-2026-53702

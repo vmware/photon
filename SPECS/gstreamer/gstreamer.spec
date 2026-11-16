@@ -1,6 +1,6 @@
 Summary:        A streaming media framework
 Name:           gstreamer
-Version:        1.26.11
+Version:        1.28.7
 Release:        1%{?dist}
 License:        LGPLv2+
 URL:            http://gstreamer.freedesktop.org/
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://gstreamer.freedesktop.org/src/%{name}/%{name}-%{version}.tar.xz
-%define sha512  gstreamer=46b801aa96a76005ee4cc3016d7d0c45b05641d1b1195c22b8cc6ca6cd7ad77a61c554e251bf37c13e02a8e83e26df0cc60759a6483cece146a25a6c708c6ccc
+%define sha512  gstreamer=b44c59d54230ecce6755c8ed0f6e0c61f1437e865a00fb2d8b3463999a76e59bde8a2836f13f0a9f8a8b68f9b5c7f6ae82d23fbd5184aa17246a7a3839ff1b5a
 
 BuildRequires:  meson >= 1.4.0
 BuildRequires:  cmake
@@ -80,6 +80,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 
 %changelog
+*   Mon Nov 09 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.28.7-1
+-   Version upgrade to 1.28.7
 *   Tue May 12 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.26.11-1
 -   Version upgrade
 -   Fixes CVE-2026-3082, CVE-2026-3084, CVE-2026-3086, CVE-2026-3081 and CVE-2026-2923

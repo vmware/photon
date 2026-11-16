@@ -1,0 +1,26 @@
+From: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
+Subject: [PATCH] tensordecoders: provide g_alloca0 fallback for GLib < 2.72
+
+GStreamer 1.28 uses g_alloca0() in the face detector tensor decoder, but the
+macro only exists since GLib 2.72. Photon 4.0 ships GLib 2.68.4, so the
+plugin fails to link with "undefined reference to `g_alloca0'". Define the
+same macro locally when GLib does not provide it.
+
+---
+diff --git a/gst/tensordecoders/gstfacedetectortensordecoder.c b/gst/tensordecoders/gstfacedetectortensordecoder.c
+index ece5832..ccdedcb 100644
+--- a/gst/tensordecoders/gstfacedetectortensordecoder.c
++++ b/gst/tensordecoders/gstfacedetectortensordecoder.c
+@@ -56,6 +56,12 @@
+ #include <gst/video/video.h>
+ #include <gst/analytics/analytics.h>
+ 
++/* g_alloca0() was only added in GLib 2.72; provide it for older GLib */
++#ifndef g_alloca0
++#include <string.h>
++#define g_alloca0(size) ((size) == 0 ? NULL : memset (g_alloca (size), 0, (size)))
++#endif
++
+ /* Face detection tensor id strings */
+ #define BOXES_TENSOR_ID "ssd-mobilenet-v1-variant-1-out-boxes"
+ #define SCORES_TENSOR_ID "ultra-lightweight-face-detection-rfb-320-v1-variant-1-out-scores"
