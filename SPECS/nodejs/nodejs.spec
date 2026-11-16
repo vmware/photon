@@ -2,8 +2,8 @@
 
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
-Version:        24.22.1
-Release:        3%{?dist}
+Version:        26.12.1
+Release:        1%{?dist}
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -22,6 +22,7 @@ Patch1: CVE-2026-102276.patch
 Patch2: CVE-2026-102278.patch
 
 BuildRequires:  (coreutils or coreutils-selinux)
+BuildRequires:  clang-devel
 BuildRequires:  zlib-devel
 BuildRequires:  zstd-devel
 BuildRequires:  python3-devel
@@ -67,14 +68,12 @@ rm -r deps/v8/third_party/glibc \
        deps/v8/third_party/markupsafe
 
 %build
-# v8 segfaults when Identical Code Folding is enabled
-# - https://github.com/nodejs/node/issues/47865
-export CFLAGS="${CFLAGS} -fno-ipa-icf"
-export CXXFLAGS="${CXXFLAGS} -fno-ipa-icf"
+# Node.js 26 requires GCC >= 13.2 or Clang >= 19.1
+export CC=clang
+export CXX=clang++
 
 %{python3} configure.py \
   --ninja \
-  --enable-lto \
   --prefix=%{_prefix} \
   --libdir=%{_libdir} \
   --shared-nghttp2 \
@@ -117,6 +116,11 @@ done
 %{_docdir}/node/gdbinit
 
 %changelog
+* Mon Nov 16 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 26.12.1-1
+- Upgrade to v26.12.1
+- Build with clang as nodejs 26 requires GCC >= 13.2 or Clang >= 19.1
+- Disable LTO as Photon clang has no LTO-capable linker (lld or LLVMgold)
+- corepack is no longer bundled with nodejs from v25
 * Wed Nov 11 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 24.22.1-3
 - Fix CVE-2026-102276, CVE-2026-102278
 * Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 24.22.1-2
