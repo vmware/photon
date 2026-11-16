@@ -33,7 +33,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        6.1.191
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -586,6 +586,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Nov 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.191-2
+- Fix aarch64 build
 * Mon Nov 02 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.1.191-1
 - Update to version 6.1.191
 - Fix ioprio level validation to reject out-of-range values

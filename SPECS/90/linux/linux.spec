@@ -50,7 +50,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.191
-Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -240,7 +240,6 @@ Patch223: 0003-perf-display-off-cpu-samples.patch
 # Rpi of_configfs patches
 Patch250: 0001-OF-DT-Overlay-configfs-interface.patch
 Patch251: 0002-of-configfs-Use-of_overlay_fdt_apply-API-call.patch
-Patch252: 0003-of-overlay-Correct-symbol-path-fixups.patch
 # arm64 hypervisor detection and kmsg dumper
 Patch253: 6.0-0001-x86-hyper-generalize-hypervisor-type-detection.patch
 Patch254: 6.0-0002-arm64-Generic-hypervisor-type-detection-for-arm64.patch
@@ -706,12 +705,6 @@ cp %{SOURCE53} .config_acvp
 %include %{SOURCE7}
 %endif
 
-# Set/add CONFIG_CROSS_COMPILE= if needed
-if [ %{_host} != %{_build} ]; then
-grep -q CONFIG_CROSS_COMPILE= .config && sed -i '/^CONFIG_CROSS_COMPILE=/c\CONFIG_CROSS_COMPILE="%{_host}-"' .config || \
-  echo 'CONFIG_CROSS_COMPILE="%{_host}-"' >> .config
-fi
-
 %build
 %make_build \
   KBUILD_BUILD_VERSION="1-photon" \
@@ -1001,6 +994,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Mon Nov 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.191-2
+- Fix aarch64 build
 * Mon Nov 02 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.1.191-1
 - Update to version 6.1.191
 - Fix ioprio level validation to reject out-of-range values
