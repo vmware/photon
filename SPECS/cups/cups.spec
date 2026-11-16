@@ -1,6 +1,6 @@
 Summary:        The Common UNIX Printing System
 Name:           cups
-Version:        2.4.18
+Version:        2.4.20
 Release:        1%{?dist}
 URL:            https://openprinting.github.io/cups
 Group:          System Environment/Libraries
@@ -11,6 +11,10 @@ Source0:        https://github.com/OpenPrinting/cups/releases/download/v%{versio
 
 Source1: license.txt
 %include %{SOURCE1}
+
+Patch0:         0001-Fix-destination-enumeration-without-DNS-SD.patch
+Patch1:         0001-Don-t-allow-clients-to-hold-a-job-open-longer-than-t.patch
+Patch2:         0001-Add-JobTicketComments-directive.patch
 
 BuildRequires:  automake
 BuildRequires:  dbus-devel
@@ -98,6 +102,11 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/cups.pc
 
 %changelog
+* Mon Nov 16 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.4.20-1
+- Update to 2.4.20
+- Add upstream patch to fix build without DNS-SD support
+- Add upstream patch to fix CVE-2026-107885
+- Add upstream patch to fix CVE-2026-107655
 * Tue Apr 14 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.4.18-1
 - Update to 2.4.18
 - Fix CVE-2026-27447, CVE-2026-34978, CVE-2026-34979, CVE-2026-34980, CVE-2026-34990, CVE-2026-39314

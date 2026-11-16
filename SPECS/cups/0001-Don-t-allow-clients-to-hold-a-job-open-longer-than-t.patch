@@ -1,0 +1,75 @@
+From 3bb26257e343d2da2bee12bcc1e7a9b283fe4bec Mon Sep 17 00:00:00 2001
+From: Michael R Sweet <msweet@msweet.org>
+Date: Tue, 6 Oct 2026 10:08:41 -0400
+Subject: [PATCH] Don't allow clients to hold a job open longer than the
+ multiple-operation-time-out value (GHSA-hhw5-qqmc-p6rg)
+
+commit 3bb26257e343d2da2bee12bcc1e7a9b283fe4bec upstream.
+Brennan: Backport to 2.4.20; use IPP_SEND_DOCUMENT in cupsdCheckJobs()
+Signed-off-by: Brennan Lamoreaux <brennan.lamoreaux@broadcom.com>
+---
+--- a/scheduler/ipp.c
++++ b/scheduler/ipp.c
+@@ -5277,7 +5277,7 @@
+   if ((job = add_job(con, printer, NULL)) == NULL)
+     return;
+ 
+-  job->pending_timeout = 1;
++  job->pending_timeout = time(NULL) + MultipleOperationTimeout;
+ 
+  /*
+   * Save and log the job...
+--- a/scheduler/job.c
++++ b/scheduler/job.c
+@@ -287,17 +287,19 @@
+ 	* the job so we can start printing...
+ 	*/
+ 
+-        cupsd_client_t	*con;		/* Current client connection */
+-
+-	for (con = (cupsd_client_t *)cupsArrayFirst(Clients);
+-	     con;
+-	     con = (cupsd_client_t *)cupsArrayNext(Clients))
+-	  if (con->request &&
+-	      con->request->request.op.operation_id == IPP_SEND_DOCUMENT)
+-	    break;
+-
+-        if (con)
+-	  continue;
++	if (curtime < job->pending_timeout)
++	{
++	  cupsd_client_t	*con;	/* Current client connection */
++
++	  for (con = (cupsd_client_t *)cupsArrayFirst(Clients); con; con = (cupsd_client_t *)cupsArrayNext(Clients))
++	  {
++	    if (con->request && con->request->request.op.operation_id == IPP_SEND_DOCUMENT)
++	      break;
++	  }
++
++	  if (con)
++	    continue;
++	}
+ 
+         if (cupsdTimeoutJob(job))
+ 	  continue;
+@@ -306,7 +308,9 @@
+ 	cupsdLogJob(job, CUPSD_LOG_ERROR, "Job submission timed out.");
+       }
+       else
++      {
+ 	cupsdSetJobState(job, IPP_JOB_PENDING, CUPSD_JOB_DEFAULT, "Job hold expired.");
++      }
+     }
+ 
+    /*
+--- a/scheduler/job.h
++++ b/scheduler/job.h
+@@ -30,7 +30,7 @@
+ 			priority,	/* Job priority */
+ 			dirty;		/* Do we need to write the "c" file? */
+   ipp_jstate_t		state_value;	/* Cached job-state */
+-  int			pending_timeout;/* Non-zero if the job was created and
++  time_t		pending_timeout;/* Non-zero if the job was created and
+ 					 * waiting on files */
+   char			*username;	/* Printing user */
+   char			*dest;		/* Destination printer or class */
