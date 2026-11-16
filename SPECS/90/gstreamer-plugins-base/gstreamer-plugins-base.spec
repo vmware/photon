@@ -2,8 +2,8 @@
 
 Summary:        GStreamer streaming media framework plug-ins
 Name:           gstreamer-plugins-base
-Version:        1.25.1
-Release:        2.1%{?dist}
+Version:        1.28.7
+Release:        1%{?dist}
 URL:            http://gstreamer.freedesktop.org
 Group:          Applications/Multimedia
 Vendor:         VMware, Inc.
@@ -55,7 +55,11 @@ GStreamer Plugins Base library development and header files.
 
 %prep
 %autosetup -n gst-plugins-base-%{version} -p1
-rm -r NEWS
+# 1.28 asks for meson >= 1.4, subrelease 90 ships meson 1.3.2
+sed -i "s/meson_version *: *'>= 1.4'/meson_version : '>= 1.3'/" meson.build
+# File.full_path() (meson 1.4) is only used to collect documentation sources, which are not built
+find . -name meson.build -exec sed -i 's/doc_sources += s\.full_path()/doc_sources += []/' {} +
+rm release-notes-1.28.md
 
 %build
 %meson \
@@ -96,6 +100,9 @@ rm -rf %{buildroot}
 %{_datadir}/*
 
 %changelog
+*   Mon Nov 09 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.28.7-1
+-   Upgrade to 1.28.7
+-   Build with meson 1.3.2: relax meson_version, skip File.full_path() doc sources
 *   Sat May 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.25.1-2.1
 -   Bump after moving to SPECS/90
 *   Mon Aug 18 2025 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.25.1-2

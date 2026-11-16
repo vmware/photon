@@ -2,8 +2,8 @@
 
 Summary:        A streaming media framework
 Name:           gstreamer
-Version:        1.25.1
-Release:        2.1.1%{?dist}
+Version:        1.28.7
+Release:        1%{?dist}
 URL:            http://gstreamer.freedesktop.org/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -46,6 +46,10 @@ It contains the libraries and header files to create applications
 
 %prep
 %autosetup -n gstreamer-%{version} -p1
+# 1.28 asks for meson >= 1.4, subrelease 90 ships meson 1.3.2
+sed -i "s/meson_version *: *'>= 1.4'/meson_version : '>= 1.3'/" meson.build
+# File.full_path() (meson 1.4) is only used to collect documentation sources, which are not built
+find . -name meson.build -exec sed -i 's/doc_sources += s\.full_path()/doc_sources += []/' {} +
 
 %build
 %meson \
@@ -82,6 +86,9 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 
 %changelog
+* Mon Nov 09 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.28.7-1
+- Upgrade to 1.28.7
+- Build with meson 1.3.2: relax meson_version, skip File.full_path() doc sources
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.25.1-2.1.1
 - Adjusted to build for subrelease 90
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.25.1-2.1

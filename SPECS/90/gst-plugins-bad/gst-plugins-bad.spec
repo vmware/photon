@@ -2,8 +2,8 @@
 
 Summary:        The GStreamer Bad Plug-ins package contains a set a set of plug-ins that aren't up to par compared to the rest
 Name:           gst-plugins-bad
-Version:        1.25.1
-Release:        4.2%{?dist}
+Version:        1.28.7
+Release:        1%{?dist}
 URL:            http://gstreamer.freedesktop.org/
 Group:          Applications/Multimedia
 Vendor:         VMware, Inc.
@@ -15,14 +15,6 @@ Source1: license.txt
 %include %{SOURCE1}
 
 Patch0:  0001-gst-plugins-bad-remove-ext-iqa-directory-compilation.patch
-Patch1:  0002-CVE-2025-3887-1.patch
-Patch2:  0003-CVE-2025-3887-2.patch
-Patch3:  0004-CVE-2026-3082.patch
-Patch4:  0005-CVE-2026-3084.patch
-Patch5:  0006-CVE-2026-2923-1.patch
-Patch6:  0007-CVE-2026-2923-2.patch
-Patch7:  0008-CVE-2026-3081.patch
-Patch8:  0009-CVE-2026-3086.patch
 
 BuildRequires:  meson
 BuildRequires:  cmake
@@ -46,8 +38,12 @@ The GStreamer Bad Plug-ins package contains a set a set of plug-ins that aren't 
 
 %prep
 %autosetup -p1
+# 1.28 asks for meson >= 1.4, subrelease 90 ships meson 1.3.2
+sed -i "s/meson_version *: *'>= 1.4'/meson_version : '>= 1.3'/" meson.build
+# File.full_path() (meson 1.4) is only used to collect documentation sources, which are not built
+find . -name meson.build -exec sed -i 's/doc_sources += s\.full_path()/doc_sources += []/' {} +
 # Remove uncompiled files to handle unintended copyright inclusions
-rm NEWS
+rm release-notes-1.28.md
 rm -r ext/iqa
 
 %build
@@ -85,6 +81,9 @@ rm -rf %{buildroot}
 %{_datadir}/gir-1.0
 
 %changelog
+* Mon Nov 09 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.28.7-1
+- Upgrade to 1.28.7
+- Build with meson 1.3.2: relax meson_version, skip File.full_path() doc sources
 * Fri May 22 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.25.1-4.2
 - Fix CVE-2026-3086, CVE-2026-3081 and CVE-2026-2923
 * Sat May 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.25.1-4.1
