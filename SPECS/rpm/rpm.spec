@@ -4,7 +4,7 @@
 Summary:    Package manager
 Name:       rpm
 Version:    6.1.0
-Release:    5%{?dist}
+Release:    6%{?dist}
 URL:        http://rpm.org
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -37,6 +37,11 @@ Patch12: 0013-CVE-2026-78367.patch
 Patch13: 0013-Preserve-build-environment-details-in-source-rpm.patch
 Patch14: 0014-add-pager-support-to-rpm-changelog.patch
 Patch15: 0015-brp-strip-use-strip-unneeded-when-debuginfo-is-disab.patch
+Patch16: 0016-CVE-2026-84837.patch
+Patch17: 0017-CVE-2026-84838.patch
+Patch18: 0018-CVE-2026-95519.patch
+Patch19: 0019-CVE-2026-95520.patch
+Patch20: 0020-CVE-2026-103242.patch
 
 Requires:   bash
 Requires:   zstd-libs
@@ -385,6 +390,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/%{name}-plugin-unshare.8*
 
 %changelog
+* Mon Nov 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.0-6
+- Security fixes
 * Sat Nov 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.0-5
 - brp-strip: use --strip-unneeded when debuginfo is disabled to avoid
   leaving .symtab/.strtab in ELF binaries

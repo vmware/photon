@@ -4,7 +4,7 @@
 Summary:    Package manager
 Name:       rpm
 Version:    4.18.2
-Release:    8.2.1%{?dist}
+Release:    8.2.2%{?dist}
 URL:        http://rpm.org
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -29,6 +29,11 @@ Patch4: 0005-Fix-a-race-condition-in-brp-strip.patch
 Patch5: 0006-Disable-removing-exec-permission-from-shared-objects.patch
 Patch6: 0007-build-support-findreq-findprov-in-Requires-Provides-.patch
 Patch7: 0008-fix-division-by-zero-in-elfdeps-RhBug-2299414.patch
+Patch8: 0009-CVE-2026-84837.patch
+Patch9: 0010-CVE-2026-84838.patch
+Patch10: 0011-CVE-2026-95519.patch
+Patch11: 0012-CVE-2026-95520.patch
+Patch12: 0013-CVE-2026-103242.patch
 
 Requires:   bash
 Requires:   zstd-libs
@@ -334,6 +339,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/%{name}-plugin-systemd-inhibit.8*
 
 %changelog
+* Fri Nov 06 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.18.2-8.2.2
+- Security fixes
 * Sat May 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.18.2-8.2.1
 - Bump after moving to SPECS/90
 * Thu May 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.18.2-8.2

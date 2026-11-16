@@ -4,7 +4,7 @@
 Summary:    Package manager
 Name:       rpm
 Version:    4.18.2
-Release:    8.6%{?dist}
+Release:    8.7%{?dist}
 URL:        http://rpm.org
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -33,6 +33,11 @@ Patch8: 0009-CVE-2026-78367.patch
 Patch9: 0009-add-pager-support-to-rpm-changelog.patch
 Patch10: 0010-Preserve-build-environment-details-in-source-rpm.patch
 Patch11: 0011-brp-strip-use-strip-unneeded-when-debuginfo-is-disab.patch
+Patch12: 0012-CVE-2026-84837.patch
+Patch13: 0013-CVE-2026-84838.patch
+Patch14: 0014-CVE-2026-95519.patch
+Patch15: 0015-CVE-2026-95520.patch
+Patch16: 0016-CVE-2026-103242.patch
 
 Requires:   bash
 Requires:   zstd-libs
@@ -350,6 +355,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/%{name}-plugin-selinux.8.gz
 
 %changelog
+* Mon Nov 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.18.2-8.7
+- Security fixes
 * Sat Nov 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.18.2-8.6
 - brp-strip: use --strip-unneeded when debuginfo is disabled to avoid
   leaving .symtab/.strtab in ELF binaries
