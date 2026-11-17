@@ -1,6 +1,6 @@
 %define srcname         postgresql
 %global pgmajorversion  14
-%define src_rel         postgres-REL_%{pgmajorversion}_24
+%define src_rel         postgres-REL_%{pgmajorversion}_25
 %global _pgbaseinstdir  %{_usr}/pgsql/%{pgmajorversion}
 %global _pgbindir       %{_pgbaseinstdir}/bin
 %global _pglibdir       %{_pgbaseinstdir}/lib/%{srcname}
@@ -13,7 +13,7 @@
 
 Summary:        PostgreSQL database engine
 Name:           postgresql14
-Version:        14.24
+Version:        14.25
 Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
@@ -22,7 +22,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/postgres/postgres/archive/refs/tags/%{src_rel}.tar.gz
-%define sha512 %{src_rel}=99e687072d7b6c674d37950d829a5c5cc487e0d614d7cdd0ddf6da85a4a51ad5a7adab7a17e6276ed702f7ff8d042825f1f01dba986abf013ffb27ed7c8bae2b
+%define sha512 %{src_rel}=8a0ef07b47b0522f5a014277c8d6f7c5202040182ef216dc3b28038594e007ad56eb893ef60c9ce6ecb99e3bff5abfe4b53b9a0e20eddcc7626cc1f85d9038e6
 
 Source1: %{srcname}.tmpfiles.d
 Source2: %{srcname}.service
@@ -325,6 +325,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/libpgtypes.a
 
 %changelog
+* Tue Nov 17 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 14.25-1
+- Version upgrade, contains security fixes
 * Wed Sep 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 14.24-1
 - Upgrade to v14.24
 * Thu Feb 26 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 14.22-1

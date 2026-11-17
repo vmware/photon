@@ -1,6 +1,6 @@
 %define srcname         postgresql
 %global pgmajorversion  15
-%define src_rel         postgres-REL_%{pgmajorversion}_19
+%define src_rel         postgres-REL_%{pgmajorversion}_20
 %global _pgbaseinstdir  %{_usr}/pgsql/%{pgmajorversion}
 %global _pgbindir       %{_pgbaseinstdir}/bin
 %global _pglibdir       %{_pgbaseinstdir}/lib/%{srcname}
@@ -8,11 +8,11 @@
 %global _pgdatadir      %{_pgbaseinstdir}/share/%{srcname}
 %global _pgdocdir       %{_pgbaseinstdir}/share/doc/%{srcname}
 %define alter_weight    400
-%global service_name %{name}.service
+%global service_name    %{name}.service
 
 Summary:        PostgreSQL database engine
 Name:           postgresql15
-Version:        15.19
+Version:        15.20
 Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
@@ -21,7 +21,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/postgres/postgres/archive/refs/tags/%{src_rel}.tar.gz
-%define sha512 %{src_rel}=e88936cc56b93addae5628d6e8d55db808931d5efc7f9c1c165183a47080c7a69a36c8ad4681fd5c3be016c1a354ef8aad6678004058e16d3014b80dc1b4deb8
+%define sha512 %{src_rel}=5034dbd43d69e9d8bcb69a7d415d29300f0b40f786844ea6f71c565181c1396f83cfc2ca78a3bfc87f4a49ca72d29438c49e405ae923435f895b78abcbfabfb0
 
 Source1: %{srcname}.tmpfiles.d
 Source2: %{srcname}.service
@@ -329,6 +329,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/libpgtypes.a
 
 %changelog
+* Tue Nov 17 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.20-1
+- Version upgrade, contains security fixes
 * Wed Sep 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.19-1
 - Upgrade to v15.19
 * Thu Feb 26 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.17-1
