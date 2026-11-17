@@ -15,7 +15,7 @@ Distribution:   Photon
 
 Source0: https://github.com/pgaudit/pgaudit/archive/refs/tags/%{srcname}-%{version}.tar.gz
 
-Source1: license.txt
+Source1: license-pgaudit16.txt
 %include %{SOURCE1}
 
 BuildRequires: build-essential

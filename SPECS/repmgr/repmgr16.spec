@@ -13,7 +13,7 @@ Distribution:   Photon
 
 Source0: https://repmgr.org/download/%{srcname}-%{version}.tar.gz
 
-Source1: license.txt
+Source1: license-repmgr16.txt
 %include %{SOURCE1}
 
 BuildRequires: cpio

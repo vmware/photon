@@ -15,7 +15,7 @@ Source1: provider_fips.cnf
 
 Source2: provider_base.cnf
 
-Source3: license.txt
+Source3: license-openssl-fips-provider.txt
 %include %{SOURCE3}
 
 Requires: bash

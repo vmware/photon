@@ -18,7 +18,7 @@ Source0: http://ftp.gnu.org/gnu/coreutils/%{srcname}-%{version}.tar.xz
 # make this package to own serial console profile since it utilizes stty tool
 Source1:        serial-console.sh
 
-Source2: license.txt
+Source2: license-coreutils-selinux.txt
 %include %{SOURCE2}
 
 # Patches are taken from:

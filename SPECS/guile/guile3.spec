@@ -11,7 +11,7 @@ Distribution:   Photon
 
 Source0: https://ftp.gnu.org/gnu/guile/guile-%{version}.tar.xz
 
-Source1: license.txt
+Source1: license-guile3.txt
 %include %{SOURCE1}
 
 BuildRequires:  libltdl-devel

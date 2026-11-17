@@ -15,7 +15,7 @@ Distribution:   Photon
 
 Source0: https://github.com/eulerto/wal2json/archive/refs/tags/%{srcname}-%{version}.tar.gz
 
-Source1: license.txt
+Source1: license-wal2json17.txt
 %include %{SOURCE1}
 
 BuildRequires: postgresql%{pgmajorversion}-devel

@@ -17,7 +17,7 @@ Distribution:   Photon
 
 Source0: https://github.com/timescale/timescaledb/archive/refs/tags/%{srcname}-%{version}.tar.gz
 
-Source1: license.txt
+Source1: license-timescaledb18.txt
 %include %{SOURCE1}
 
 BuildRequires: cmake

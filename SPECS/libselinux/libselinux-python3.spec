@@ -11,7 +11,7 @@ Distribution:   Photon
 
 Source0:        https://github.com/SELinuxProject/selinux/releases/download/%{version}/libselinux-%{version}.tar.gz
 
-Source1: license.txt
+Source1: license-libselinux-python3.txt
 %include %{SOURCE1}
 
 Source2: libselinux.patches
