@@ -2,7 +2,7 @@
 
 %define srcname         postgresql
 %global pgmajorversion  14
-%define src_rel         postgres-REL_%{pgmajorversion}_24
+%define src_rel         postgres-REL_%{pgmajorversion}_25
 %global _pgbaseinstdir  %{_usr}/pgsql/%{pgmajorversion}
 %global _pgbindir       %{_pgbaseinstdir}/bin
 %global _pglibdir       %{_pgbaseinstdir}/lib/%{srcname}
@@ -15,8 +15,8 @@
 
 Summary:        PostgreSQL database engine
 Name:           postgresql14
-Version:        14.24
-Release:        1.0.0%{?dist}
+Version:        14.25
+Release:        0.0.1%{?dist}
 URL:            www.postgresql.org
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -749,6 +749,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Tue Nov 17 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 14.25-0.0.1
+- Version upgrade, contains security fixes
 * Wed Sep 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 14.24-1.0.0
 - Upgrade to v14.24
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 14.22-1.1.1

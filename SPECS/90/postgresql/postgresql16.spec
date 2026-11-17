@@ -2,7 +2,7 @@
 
 %define srcname         postgresql
 %global pgmajorversion  16
-%define src_rel         postgres-REL_%{pgmajorversion}_15
+%define src_rel         postgres-REL_%{pgmajorversion}_16
 %global _pgbaseinstdir  %{_usr}/pgsql/%{pgmajorversion}
 %global _pgbindir       %{_pgbaseinstdir}/bin
 %global _pglibdir       %{_pgbaseinstdir}/lib/%{srcname}
@@ -15,7 +15,7 @@
 
 Summary:        PostgreSQL database engine
 Name:           postgresql16
-Version:        16.15
+Version:        16.16
 Release:        0.0.1%{?dist}
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -743,6 +743,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Tue Nov 17 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 16.16-0.0.1
+- Version upgrade, contains security fixes
 * Thu Oct 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 16.15-0.0.1
 - Upgrade to v16.15
 - Build using github tagged source

@@ -2,7 +2,7 @@
 
 %define srcname         postgresql
 %global pgmajorversion  17
-%define src_rel         postgres-REL_%{pgmajorversion}_11
+%define src_rel         postgres-REL_%{pgmajorversion}_12
 %global _pgbaseinstdir  %{_usr}/pgsql/%{pgmajorversion}
 %global _pgbindir       %{_pgbaseinstdir}/bin
 %global _pglibdir       %{_pgbaseinstdir}/lib/%{srcname}
@@ -15,7 +15,7 @@
 
 Summary:        PostgreSQL database engine
 Name:           postgresql17
-Version:        17.11
+Version:        17.12
 Release:        0.0.1%{?dist}
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -748,6 +748,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Tue Nov 17 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 17.12-0.0.1
+- Version upgrade, contains security fixes
 * Thu Oct 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 17.11-0.0.1
 - Upgrade to v17.11
 - Build using github tagged source

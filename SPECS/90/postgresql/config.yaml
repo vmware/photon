@@ -35,9 +35,14 @@ sources:
       short_summary: PostgreSQL database engine
       supplier: 'Organization: Broadcom, Inc.'
 
-- archive: postgres-REL_14_24.tar.gz
-  skip_validation: true
-  archive_sha512sum: 99e687072d7b6c674d37950d829a5c5cc487e0d614d7cdd0ddf6da85a4a51ad5a7adab7a17e6276ed702f7ff8d042825f1f01dba986abf013ffb27ed7c8bae2b
+- archive: postgres-REL_14_25.tar.gz
+  archive_sha512sum: 8a0ef07b47b0522f5a014277c8d6f7c5202040182ef216dc3b28038594e007ad56eb893ef60c9ce6ecb99e3bff5abfe4b53b9a0e20eddcc7626cc1f85d9038e6
+  archive_type: upstream
+  name: postgres-REL_14_25
+  version: '14.25'
+  url: https://github.com/postgres/postgres/archive/refs/tags/REL_14_25.tar.gz
+  repo_url: https://github.com/postgres/postgres.git
+  commit_id: 9adcf5f8847e0f485a390b1d3ea40688068d71bd
   spdx:
     package:
       detailed_description: PostgreSQL is an advanced Object-Relational database management system (DBMS). The base postgresql package contains the client programs that you'll need to access a PostgreSQL DBMS server. These client programs can be located on the same machine as the PostgreSQL server, or on a remote machine that accesses a PostgreSQL server over a network connection. The PostgreSQL server can be found in the postgresql-server sub-package.  If you want to manipulate a PostgreSQL database on a local or remote PostgreSQL server, you need this package. You also need to install this package if you're installing the postgresql-server package.
@@ -47,14 +52,14 @@ sources:
       short_summary: PostgreSQL database engine
       supplier: 'Organization: Broadcom, Inc.'
 
-- archive: postgres-REL_15_19.tar.gz
-  archive_sha512sum: e88936cc56b93addae5628d6e8d55db808931d5efc7f9c1c165183a47080c7a69a36c8ad4681fd5c3be016c1a354ef8aad6678004058e16d3014b80dc1b4deb8
+- archive: postgres-REL_15_20.tar.gz
+  archive_sha512sum: 5034dbd43d69e9d8bcb69a7d415d29300f0b40f786844ea6f71c565181c1396f83cfc2ca78a3bfc87f4a49ca72d29438c49e405ae923435f895b78abcbfabfb0
   archive_type: upstream
-  name: postgres-REL_15_19
-  version: '15.19'
-  url: https://github.com/postgres/postgres/archive/refs/tags/REL_15_19.tar.gz
+  name: postgres-REL_15_20
+  version: '15.20'
+  url: https://github.com/postgres/postgres/archive/refs/tags/REL_15_20.tar.gz
   repo_url: https://github.com/postgres/postgres.git
-  commit_id: 2ff1375b5dd8bf09d8cb0e795974528180fd75ca
+  commit_id: 6a84c5137e820f46f0123276f546eec5b9a56e70
   missing: []
   spdx:
     package:
@@ -65,13 +70,13 @@ sources:
       short_summary: PostgreSQL database engine
       supplier: 'Organization: Broadcom, Inc.'
 
-- archive: postgres-REL_16_15.tar.gz
-  archive_sha512sum: 25119b44c4e1b8642f13b971d8a4be1b119f75a581af3da8b6a4369d03ccc7522b5bb96e9c06ce83ac9914b312264fcedd3b8f8c585743aad3ec630a0eb1addf
-  name: postgres-REL_16_15
-  version: '16.15'
-  url: https://github.com/postgres/postgres/archive/refs/tags/REL_16_15.tar.gz
+- archive: postgres-REL_16_16.tar.gz
+  archive_sha512sum: 3d09e675b2598ba873edf08edb780930e76be90032dc863bdf6ebcbe943edc8cbdc75759aa5cffe5022071bbea2448c414abc2e3f57f6260c9ee89f161f65e22
+  name: postgres-REL_16_16
+  version: '16.16'
+  url: https://github.com/postgres/postgres/archive/refs/tags/REL_16_16.tar.gz
   repo_url: https://github.com/postgres/postgres.git
-  commit_id: 7d3e000c5961a544302072058a1184e9a588837b
+  commit_id: c0534eb02de050ac1035ad7b3ad7c3f02980f153
   archive_type: upstream
   missing: []
   spdx:
@@ -83,14 +88,14 @@ sources:
       short_summary: PostgreSQL database engine
       supplier: 'Organization: Broadcom, Inc.'
 
-- archive: postgres-REL_17_11.tar.gz
-  archive_sha512sum: 8b5cf7463eb4bfeb23278e51391f57ab87fbad2e3e989759938b5adf6500013af5ce9ede890fd1ba5878902c31fef574aa0c8bdb672cc0a2031cc1a5e3bb8032
+- archive: postgres-REL_17_12.tar.gz
+  archive_sha512sum: ce148fed61f66151e7d45040c831872ec2a4093dc0c86b113574f54a1328c053ed88b3fa0043ddba8346264fd207d949d27fb0ba7736060e530ca3b68d7da59d
   archive_type: upstream
-  name: postgres-REL_17_11
-  version: '17.11'
-  url: https://github.com/postgres/postgres/archive/refs/tags/REL_17_11.tar.gz
+  name: postgres-REL_17_12
+  version: '17.12'
+  url: https://github.com/postgres/postgres/archive/refs/tags/REL_17_12.tar.gz
   repo_url: https://github.com/postgres/postgres.git
-  commit_id: 083ac033419f690758508e08c1736089384bbee8
+  commit_id: 702b3dc86d35bcc08c8e23cffa3c4d9fe9d32c85
   missing: []
   spdx:
     package:

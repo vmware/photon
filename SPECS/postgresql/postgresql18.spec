@@ -2,7 +2,7 @@
 
 %define srcname         postgresql
 %global pgmajorversion  18
-%define src_rel         postgres-REL_%{pgmajorversion}_6
+%define src_rel         postgres-REL_%{pgmajorversion}_7
 %global _pgbaseinstdir  %{_usr}/pgsql/%{pgmajorversion}
 %global _pgbindir       %{_pgbaseinstdir}/bin
 %global _pglibdir       %{_pgbaseinstdir}/lib/%{srcname}
@@ -15,8 +15,8 @@
 
 Summary:        PostgreSQL database engine
 Name:           postgresql18
-Version:        18.6
-Release:        3%{?dist}
+Version:        18.7
+Release:        1%{?dist}
 URL:            www.postgresql.org
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -752,6 +752,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Tue Nov 17 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 18.7-1
+- Version upgrade, contains security fixes
 * Wed Nov 04 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 18.6-3
 - Rebuild with icu 79.1
 * Wed Oct 14 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 18.6-2

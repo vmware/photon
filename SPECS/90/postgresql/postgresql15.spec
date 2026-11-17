@@ -2,7 +2,7 @@
 
 %define srcname         postgresql
 %global pgmajorversion  15
-%define src_rel         postgres-REL_%{pgmajorversion}_19
+%define src_rel         postgres-REL_%{pgmajorversion}_20
 %global _pgbaseinstdir  %{_usr}/pgsql/%{pgmajorversion}
 %global _pgbindir       %{_pgbaseinstdir}/bin
 %global _pglibdir       %{_pgbaseinstdir}/lib/%{srcname}
@@ -15,7 +15,7 @@
 
 Summary:        PostgreSQL database engine
 Name:           postgresql15
-Version:        15.19
+Version:        15.20
 Release:        0.0.1%{?dist}
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -746,6 +746,8 @@ rm -rf %{buildroot}/*
 %{_pglibdir}/plpython3.so
 
 %changelog
+* Tue Nov 17 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.20-0.0.1
+- Version upgrade, contains security fixes
 * Thu Oct 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 15.19-0.0.1
 - Upgrade to v15.19
 - Build using github tagged source
