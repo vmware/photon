@@ -10,7 +10,7 @@
 
 Summary:       Apache Kafka is publish-subscribe messaging rethought as a distributed commit log.
 Name:          kafka
-Version:       4.3.1
+Version:       4.3.2
 Release:       1%{?dist}
 Group:         Productivity/Networking/Other
 URL:           http://kafka.apache.org/
@@ -25,7 +25,7 @@ Source2:       %{name}.sysusers
 Source3: license.txt
 %include %{SOURCE3}
 
-#Download https://raw.githubusercontent.com/gradle/gradle/v9.2.1/gradle/wrapper/gradle-wrapper.jar
+# From https://raw.githubusercontent.com/gradle/gradle/v9.2.1/gradle/wrapper/gradle-wrapper.jar
 Source4:    gradle-wrapper-9.2.1-jar.tar.gz
 
 Patch0:     0001-Use-proxy-if-available.patch
@@ -74,26 +74,26 @@ fi
 %install
 export JAVA_HOME=$(echo %{_libdir}/jvm/OpenJDK-17*)
 
-mkdir -p %{buildroot}/%{_prefix}/%{name}/{libs,bin,config} \
-         %{buildroot}/%{_log_dir} \
-         %{buildroot}/%{_data_dir} \
-         %{buildroot}/%{_unitdir} \
-         %{buildroot}/%{_conf_dir}/
+mkdir -p %{buildroot}%{_prefix}/%{name}/{libs,bin,config} \
+         %{buildroot}%{_log_dir} \
+         %{buildroot}%{_data_dir} \
+         %{buildroot}%{_unitdir} \
+         %{buildroot}%{_conf_dir}
 
-mkdir dist
+mkdir -p dist
 tar -xf "core/build/distributions/%{name}_%{_scalaver}-%{version}.tgz" --strip 1 -C "dist"
 
-cp -pr dist/config/* %{buildroot}/%{_prefix}/%{name}/config
+cp -pr dist/config/* %{buildroot}%{_prefix}/%{name}/config
 
-install -p -D -m 644 dist/config/server.properties %{buildroot}/%{_conf_dir}/
-install -p -D -m 644 dist/config/log4j2.yaml %{buildroot}/%{_conf_dir}/
-install -p -D -m 755 dist/bin/*.sh %{buildroot}/%{_prefix}/%{name}/bin
+install -p -D -m 644 dist/config/server.properties %{buildroot}%{_conf_dir}
+install -p -D -m 644 dist/config/log4j2.yaml %{buildroot}%{_conf_dir}
+install -p -D -m 755 dist/bin/*.sh %{buildroot}%{_prefix}/%{name}/bin
 install -p -D -m 755 dist/libs/* %{buildroot}%{_lib_dir}
-install -p -D -m 755 %{S:1} %{buildroot}/%{_unitdir}/
+install -p -D -m 755 %{SOURCE1} %{buildroot}%{_unitdir}
 install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.conf
 
-cat << EOF >> %{buildroot}/%{_conf_dir}/%{name}.env
-LOG_DIR=/var/log/kafka
+cat << EOF >> %{buildroot}%{_conf_dir}/%{name}.env
+LOG_DIR=%{_log_dir}
 EOF
 
 %clean
@@ -130,6 +130,8 @@ fi
 %doc LICENSE
 
 %changelog
+* Tue Nov 17 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.3.2-1
+- Upgrade to v4.3.2
 * Tue Aug 25 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 4.3.1-1
 - Upgrade to v4.3.1
 * Thu Jun 25 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.1.2-4

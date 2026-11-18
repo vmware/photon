@@ -1,4 +1,5 @@
 sources:
+
 - archive: gradle-wrapper-9.2.1-jar.tar.gz
   archive_sha512sum: 49458a59230f9774bec682a99bc5e2f9cb1048ba28f9558a8cb31525580752ada7936294cb4866fd99e5b1e6bce7fbfc4cb97c0b3803066fd0a96841a4fbdb74
   skip_validation: true
@@ -11,15 +12,15 @@ sources:
       license_declared: Apache-2.0
       short_summary: Contains Gradle jar file
       supplier: 'Organization: Broadcom, Inc.'
-- archive: kafka-4.3.1-src.tgz
-  archive_sha512sum: e9d1ed5f47901bf0229a97f464d863ea44dd1af455937fb906dd624e9fcb814c89f76d507253620948adae17922ccbb4304865db2797b24959a2471d1af7c9ef
+
+- archive: kafka-4.3.2-src.tgz
+  archive_sha512sum: cae199d44810a6d1332886f8a4a856b9382dafaa09c159930238ec08c5e7d7a5b33865025010b525fb0898822dc6d5723ea971f4dedd8afb56566dfb07d508f2
   archive_type: upstream
-  skip_validation: false
-  name: kafka-4.3.1-src
-  version: "4.3.1"
+  name: kafka-4.3.2-src
+  version: "4.3.2"
   repo_url: https://github.com/apache/kafka
-  commit_id: 26b251a451ce941d3d7a55e6487bcb7f16b5ad48
-  url: https://dlcdn.apache.org/kafka/4.3.1/kafka-4.3.1-src.tgz
+  commit_id: 0a6c96d3b61167f1141df2032f25f10fd6e118fe
+  url: https://dlcdn.apache.org/kafka/4.3.2/kafka-4.3.2-src.tgz
   spdx:
     package:
       detailed_description: 'Kafka is designed to allow a single cluster to serve
@@ -28,7 +29,7 @@ sources:
         and spread over a cluster of machines to allow data streams larger than the
         capability of any single machine and to allow clusters of co-ordinated consumers.
         Messages are persisted on disk and replicated within the cluster to prevent
-        data loss. '
+        data loss.'
       home_page: http://kafka.apache.org/
       license_concluded: Apache-2.0 AND EPL-2.0 AND (CDDL-1.0 OR GPL-2.0-only WITH
         Classpath-exception-2.0) AND CDDL-1.0 AND CPL-1.0 AND (EPL-2.0 OR GPL-2.0-only
