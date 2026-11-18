@@ -87,9 +87,6 @@ Patch3037: 0001-tls-fix-race-between-async-notify-and-socket-close.patch
 # Fix CVE-2024-26585
 Patch3038: 0001-tls-fix-race-between-tx-work-scheduling-and-socket-c.patch
 
-# Fix CVE-2024-26589
-Patch3039: 0001-bpf-Reject-variable-offset-alu-on-PTR_TO_FLOW_KEYS.patch
-
 # Fix CVE-2022-49444
 Patch3040: 0001-module-fix-e_shstrndx-.sh_size-0-OOB-access.patch
 
@@ -303,9 +300,6 @@ Patch3127: 0001-lib-lzo-lzo1x_compress.c-make-lzogeneric1x_1_compres.patch
 Patch3128: 0002-lib-lzo-lzo1x_compress.c-replace-ternary-operator-wi.patch
 Patch3129: 0003-crypto-lzo-Fix-compression-buffer-overrun.patch
 
-# CVE-2023-53111
-Patch3130: 0001-loop-Fix-use-after-free-issues.patch
-
 # CVE-2025-68379
 Patch3131: 0001-RDMA-rxe-Fix-null-deref-on-srq-rq.queue-after-resize.patch
 
@@ -319,9 +313,6 @@ Patch3134: 0002-mm-memcg-use-READ_ONCE-WRITE_ONCE-to-access-stock-ca.patch
 # Fix CVE-2022-49935
 Patch3135: 0001-dma-buf-dma-resv-check-if-the-new-fence-is-really-la.patch
 Patch3136: 0002-dma-buf-fix-check-in-dma_resv_add_fence.patch
-
-# Fix CVE-2022-49961
-Patch3137: 0001-bpf-Do-mark_chain_precision-for-ARG_CONST_ALLOC_SIZE.patch
 
 # Fix CVE-2025-38527
 Patch3138: 0001-smb-client-fix-use-after-free-in-cifs_oplock_break.patch
@@ -344,10 +335,6 @@ Patch3146: 0002-bnxt_en-Fix-memory-corruption-when-FW-resources-chan.patch
 
 # CVE-2023-53282
 Patch3147: 0001-scsi-lpfc-Fix-use-after-free-KFENCE-violation-during.patch
-
-# CVE-2022-49622
-Patch3150: 0001-netfilter-nf_tables-avoid-skb-access-on-nf_stolen.patch
-Patch3151: 0002-netfilter-nf_tables-fix-crash-when-nf_trace-is-enabl.patch
 
 # CVE-2025-68188
 Patch3152: 0001-tcp-use-dst_dev_rcu-in-tcp_fastopen_active_disable_o.patch
@@ -429,17 +416,8 @@ Patch3188: 0003-bus-fsl-mc-fix-use-after-free-in-driver_override_sho.patch
 Patch3189: 0001-driver-core-generalize-driver_override-in-struct-dev.patch
 Patch3190: 0002-driver-core-platform-use-generic-driver_override-inf.patch
 
-# Fix CVE-2026-31516
-Patch3191: 0001-xfrm-prevent-policy_hthresh.work-from-racing-with-ne.patch
-
-# Fix CVE-2026-31419
-Patch3192: 0001-net-bonding-fix-use-after-free-in-bond_xmit_broadcas.patch
-
 # Fix CVE-2026-23449
 Patch3193: 0001-net-sched-teql-Fix-double-free-in-teql_master_xmit.patch
-
-# Fix CVE-2026-23392
-Patch3194: 0001-netfilter-nf_tables-release-flowtable-after-rcu-grac.patch
 
 # Prerequisite for CVE-2026-31663
 Patch3195: 0001-xfrm-hold-device-only-for-asynchronous-decryption.patch

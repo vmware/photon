@@ -25,7 +25,7 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        5.10.272
+Version:        5.10.274
 Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -37,7 +37,7 @@ Distribution:   Photon
 %define _modulesdir /lib/modules/%{uname_r}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha512 linux=727d3e571406fe735b78db1eba0806665cb4c1dc52f6081ebb6662db258ea3f8202698baaa31e62a83851df6809b86c0a55e907d2bbbd167c49cdf426c8f0907
+%define sha512 linux=a1d78932ed08b2a6000b5ca389f61dfa2b94731d8307f9dba24bf39477c43df34f5308757c6e7163167fb052e41484245a615f0d4283753fe8cb961c170d9b2d
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
 
@@ -184,7 +184,6 @@ Patch100: apparmor-fix-use-after-free-in-sk_peer_label.patch
 # Rpi of_configfs patches
 Patch351: 0001-OF-DT-Overlay-configfs-interface.patch
 Patch352: 0002-of-configfs-Use-of_overlay_fdt_apply-API-call.patch
-Patch353: 0003-of-overlay-Correct-symbol-path-fixups.patch
 
 # Rpi fan driver
 Patch354: 0001-Add-rpi-poe-fan-driver.patch
@@ -870,6 +869,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Wed Nov 18 2026 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.274-1
+- Update to version 5.10.274
 * Tue Oct 27 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 5.10.272-1
 - Update to version 5.10.272
 * Fri Sep 25 2026 Ajay Kaher <ajay.kaher@broadcom.com> 5.10.260-4
