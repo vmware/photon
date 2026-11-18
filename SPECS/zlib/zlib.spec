@@ -3,13 +3,15 @@
 Summary:        Compression and decompression routines
 Name:           zlib
 Version:        1.3.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.zlib.net
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: https://github.com/madler/zlib/archive/v%{version}/%{name}-%{version}.tar.gz
+
+Patch0: CVE-2026-85091.patch
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -69,6 +71,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/zlib.3.gz
 
 %changelog
+* Thu Nov 26 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.3.2-2
+- Patched for CVE-2026-85091
 * Wed Jun 03 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.3.2-1
 - Update to 1.3.2
 * Tue Nov 25 2025 Oliver Kurth <oliver.kurth@broadcom.com> 1.2.13-5
