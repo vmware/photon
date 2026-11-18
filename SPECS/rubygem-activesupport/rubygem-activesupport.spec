@@ -4,8 +4,8 @@
 %global gem_name activesupport
 
 Name: rubygem-activesupport
-Version:        8.1.3
-Release:        2%{?dist}
+Version:        8.1.4.1
+Release:        1%{?dist}
 Summary:        Support libaries for Rails framework.
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -49,6 +49,8 @@ time zones, and testing.
 %{gemdir}
 
 %changelog
+* Wed Nov 18 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 8.1.4.1-1
+- Upgrade to 8.1.4.1 to fix CVE-2026-126080
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 8.1.3-2
 - Extended to build for subrelease 91 and above
 * Thu Apr 02 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 8.1.3-1
