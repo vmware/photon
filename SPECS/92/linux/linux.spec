@@ -80,7 +80,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.12.116
-Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        4%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -93,10 +93,10 @@ Source0:        http://www.kernel.org/pub/linux/kernel/v6.x/linux-%{version}.tar
 Source1:        config_%{_arch}
 Source2:        initramfs.trigger
 
-%define ena_version 2.17.0
+%define ena_version 2.17.4
 Source3:        https://github.com/amzn/amzn-drivers/archive/refs/tags/ena_linux_%{ena_version}.tar.gz
 
-%define efa_version 3.1.0
+%define efa_version 3.4.1
 Source4:        https://github.com/amzn/amzn-drivers/archive/refs/tags/efa_linux_%{efa_version}.tar.gz
 
 # contains pre, postun, filetriggerun tasks
@@ -340,9 +340,6 @@ Patch712: 0012-gre_tap-interface-mss_clamp-support.patch
 Patch713: 0013-rps_cpus-skip-receive-packets-queuing-to-only-housek.patch
 Patch714: 0014-Introduce-xfrm_dst-cache-mechanism-to-reuse-xfrm_dst.patch
 Patch715: 0015-rcutree-Adding-rcu_max_blimit-rcutree-param.patch
-
-# Patches for efa [1400..1409]
-Patch1400: Fix-efa-cmake-to-build-from-local-directory.patch
 
 # Only LKCM/JENT related patches below
 # Jitterentropy support and FIPS compliance
@@ -616,11 +613,6 @@ The kernel fips-canister
 %endif
 
 %autopatch -p1 -m701 -M715
-
-# Patches for efa driver
-pushd ../amzn-drivers-efa_linux_%{efa_version}
-%autopatch -p1 -m1400 -M1400
-popd
 
 # Jitterentropy support and FIPS compliance
 %autopatch -p1 -m10000 -M10000
@@ -1032,6 +1024,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Tue Nov 17 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.116-4
+- Upgrade efa/ena to 3.4.1/2.17.4 version
 * Tue Nov 17 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 6.12.116-3
 - Widen aead_request internal_iv to u64 and use atomic magic value
 - FIPS canister plugins: don't compare offsets of pad field

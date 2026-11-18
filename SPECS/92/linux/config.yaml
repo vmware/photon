@@ -158,9 +158,9 @@ sources:
         systems that rely on high-quality entropy for encryption and other 
         sensitive operations.
       supplier: 'Organization: Broadcom, Inc.'
-- archive: efa_linux_3.1.0.tar.gz
+- archive: efa_linux_3.4.1.tar.gz
   archive_sha512sum: 
-    0407d1cd62652831d557969e741537576ff8aef716d98c2a27e24c38359b27d7ece51f2033d99fbd30fdace89f2c4a2d4fb8756b26e98aeca1a1a3b41f9c13be
+    e64797d0e5064e4e3fc7beca4e3f0ca4708694e9db78e5841939a69a46f209bf19cee12a0016769d27a4561874183afea7c64b750c3f795a58ee954aac4d37ce
   skip_validation: true
   spdx:
     package:
@@ -181,9 +181,9 @@ sources:
       short_summary: The open source linux kernel drivers for devices(EFA) used 
         on AWS platforms.
       supplier: 'Organization: Broadcom, Inc.'
-- archive: ena_linux_2.17.0.tar.gz
+- archive: ena_linux_2.17.4.tar.gz
   archive_sha512sum: 
-    5273dc9f92d554791d02362686c4cfd9898ec60b677d0168b73da369d956b391de4183292c42296bf8f7fa70ae1acb66d78842e9239037caf100a1bc9cd1ebeb
+    6171486481d725d7637baeaca379758dd6300c5dc843260dc259a918accdcb5616333061c313feafb07304f896cce599e99b3b7fda72418f0c4ee675b2edfd60
   skip_validation: true
   spdx:
     package:
