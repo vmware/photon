@@ -1,7 +1,7 @@
 Summary:        Kubernetes Dashboard UI
 Name:           kubernetes-dashboard
 Version:        2.7.0
-Release:        22%{?dist}
+Release:        23%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/kubernetes/dashboard
 Group:          Development/Tools
@@ -20,13 +20,11 @@ BuildRequires:  gcc
 BuildRequires:  glibc-devel
 BuildRequires:  go
 BuildRequires:  linux-api-headers
-BuildRequires:  nodejs
 BuildRequires:  which
 BuildRequires:  ncurses-terminfo
 BuildRequires:  bc
 BuildRequires:  openjdk8
 
-Requires:       nodejs
 Requires: (openjre8 or openjdk11-jre or openjdk17-jre or openjdk21-jre)
 
 %description
@@ -70,6 +68,8 @@ popd
 /opt/k8dashboard/public/*
 
 %changelog
+* Wed Nov 18 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.7.0-23
+- Remove nodejs from BuildRequires and Requires, not needed
 * Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 2.7.0-22
 - Bump version as a part of go upgrade
 * Thu Oct 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.7.0-21
