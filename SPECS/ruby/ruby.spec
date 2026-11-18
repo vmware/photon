@@ -2,7 +2,7 @@
 
 Summary:        Ruby
 Name:           ruby
-Version:        4.0.6
+Version:        4.0.9
 Release:        1%{?dist}
 URL:            https://www.ruby-lang.org/en
 Group:          System Environment/Security
@@ -111,6 +111,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.ruby
 
 %changelog
+* Wed Nov 18 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.0.9-1
+- Upgrade to ruby 4.0.9 to fix CVE-2026-97229
 * Thu Sep 10 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.0.6-1
 - Upgrade to ruby 4.0.6 to fix CVE-2026-42257, CVE-2026-42245, CVE-2026-42246
 - Added patch file for CVE-2026-33210
