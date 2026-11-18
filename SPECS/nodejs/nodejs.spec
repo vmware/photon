@@ -2,7 +2,7 @@
 
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
-Version:        26.12.1
+Version:        26.13.1
 Release:        1%{?dist}
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -14,12 +14,9 @@ Source0: https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.gz
 Source1: license.txt
 %include %{SOURCE1}
 
-# From https://github.com/nodejs/node/pull/66953
-Patch0: respect-openssl-api-level.patch
-
 # Bundled npm brace-expansion 5.0.9 -> 5.0.11 fixes
-Patch1: CVE-2026-102276.patch
-Patch2: CVE-2026-102278.patch
+Patch0: CVE-2026-102276.patch
+Patch1: CVE-2026-102278.patch
 
 BuildRequires:  (coreutils or coreutils-selinux)
 BuildRequires:  clang-devel
@@ -116,6 +113,9 @@ done
 %{_docdir}/node/gdbinit
 
 %changelog
+* Wed Nov 18 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 26.13.1-1
+- Upgrade to v26.13.1 to fix multiple CVEs
+- Drop respect-openssl-api-level.patch, merged upstream
 * Mon Nov 16 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 26.12.1-1
 - Upgrade to v26.12.1
 - Build with clang as nodejs 26 requires GCC >= 13.2 or Clang >= 19.1
