@@ -1,14 +1,14 @@
 %global build_if %{photon_subrelease} <= 90
 Summary:        Wireshark is the world's foremost protocol analyzer
 Name:           wireshark
-Version:        4.6.6
-Release:        1.1%{?dist}
+Version:        4.6.9
+Release:        0.0.1%{?dist}
 URL:            http://www.wireshark.org
 Group:          Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://wireshark.org/download/src/%{name}-%{version}.tar.xz
+Source0:        https://www.wireshark.org/download/src/all-versions/%{name}-%{version}.tar.xz
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -103,6 +103,8 @@ rm -rf %{buildroot}%{_mandir} \
 %{_libdir}/lib*.so
 
 %changelog
+* Wed Nov 18 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 4.6.9-0.0.1
+- Upgrade to v4.6.9; fix multiple CVE
 * Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 4.6.6-1.1
 - Adjusted to build for subrelease 90
 * Mon Jun 01 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 4.6.6-1
