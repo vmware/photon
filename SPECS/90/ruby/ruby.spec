@@ -1,12 +1,9 @@
 %global build_if %{photon_subrelease} <= 90
 
-%define new_rexml_version   3.4.4
-%define old_rexml_version   3.4.0
-
 Summary:        Ruby
 Name:           ruby
-Version:        3.4.7
-Release:        3.1.1%{?dist}
+Version:        3.4.12
+Release:        0.0.1%{?dist}
 URL:            https://www.ruby-lang.org/en
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -15,13 +12,9 @@ Distribution:   Photon
 Source0:        https://cache.ruby-lang.org/pub/ruby/3.4/%{name}-%{version}.tar.gz
 
 Source1:        macros.ruby
-Source2:        rexml-%{new_rexml_version}.tar.gz
 
 Source3: license.txt
 %include %{SOURCE3}
-
-# Fix CVE-2025-58767
-Patch0:         0001-Modify-code-to-upgrade-rexml-3.4.0-to-rexml-3.4.4.patch
 
 BuildRequires:  openssl-devel
 BuildRequires:  ca-certificates
@@ -71,14 +64,6 @@ rm -r test
 %endif
 
 %build
-# Modification to upgrade rexml-3.4.0 to rexml-3.4.4
-rexml_dir=".bundle/gems/rexml-%{old_rexml_version}"
-[ -d "${rexml_dir}" ] && rm -r "${rexml_dir}" || exit 1
-tar -xpf %{SOURCE2} -C .bundle/gems
-
-rm gems/rexml-%{old_rexml_version}.gem
-cp -p .bundle/gems/rexml-%{new_rexml_version}/rexml-%{new_rexml_version}.gem gems/
-
 %configure \
   --enable-shared \
   --docdir=%{_docdir}/%{name}-%{version} \
@@ -123,6 +108,9 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.ruby
 
 %changelog
+* Wed Nov 18 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.4.12-0.0.1
+- Upgrade to ruby 3.4.12 to fix CVE-2026-97229
+- Drop rexml upgrade patch, ruby 3.4.12 already bundles rexml 3.4.4
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.4.7-3.1.1
 - Adjusted to build for subrelease 90
 * Thu Feb 26 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.4.7-3.1
