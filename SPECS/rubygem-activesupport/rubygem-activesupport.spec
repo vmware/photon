@@ -4,7 +4,7 @@
 
 Name: rubygem-activesupport
 Version:        7.1.3.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Support libaries for Rails framework.
 Group:          Development/Languages
 License:        MIT
@@ -21,6 +21,8 @@ Patch0:         0001-Improve-performance-of-NumberToDelimitedConverter.patch
 Patch1:         0001-Fix-SafeBuffer-to-preserve-unsafe-status.patch
 # Fix CVE-2026-33176
 Patch2:         0001-NumberConverter-reject-scientific-notation.patch
+# Fix CVE-2026-126080
+Patch3:         0001-Avoid-dynamic-regexp-in-safe_constantize-LoadError-h.patch
 
 BuildRequires: ruby-devel
 BuildRequires: rubygem-i18n
@@ -60,6 +62,8 @@ time zones, and testing.
 %{gemdir}
 
 %changelog
+*   Wed Nov 18 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 7.1.3.4-3
+-   Fix CVE-2026-126080
 *   Thu Apr 09 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 7.1.3.4-2
 -   Fix CVE-2026-33176, CVE-2026-33170 and CVE-2026-33169
 *   Thu Feb 27 2025 Shivani Agarwal <shivani.agarwal@broadcom.com> 7.1.3.4-1
