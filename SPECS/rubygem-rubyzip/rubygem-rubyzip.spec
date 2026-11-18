@@ -4,8 +4,8 @@
 %define gem_name rubyzip
 
 Name:           rubygem-rubyzip
-Version:        3.2.2
-Release:        2%{?dist}
+Version:        3.7.0
+Release:        1%{?dist}
 Summary:        Ruby library for reading and writing Zip files
 Group:          Applications/Programming
 Vendor:         VMware, Inc.
@@ -45,6 +45,8 @@ rake test
 %{gemdir}
 
 %changelog
+* Wed Nov 18 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.7.0-1
+- Upgrade to 3.7.0
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.2.2-2
 - Extended to build for subrelease 91 and above
 * Mon Jan 19 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.2.2-1
