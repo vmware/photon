@@ -1,0 +1,92 @@
+From 30ee7162d0563522835bd486eca989a037e89860 Mon Sep 17 00:00:00 2001
+From: Shizuo Fujita <fujita@clear-code.com>
+Date: Mon, 28 Sep 2026 11:57:47 +0900
+Subject: [PATCH] buffer: enforce decompression_size_limit on the chunk IO path
+
+Compressable#io_decompress took no size limit, so Chunk#open and
+Chunk#write_to decompressed a compressed chunk without any cap while only
+Chunk#read honored decompression_size_limit. Enforce the limit on the IO
+path as well, and make the chunk open and backup paths robust against the
+resulting error.
+
+[CVE-2026-44160 (follow-up, fixed in fluentd 1.19.4)]
+
+[ Upstream commit 30ee7162d0563522835bd486eca989a037e89860 ]
+https://github.com/fluent/fluentd/pull/5504
+
+Signed-off-by: Shizuo Fujita <fujita@clear-code.com>
+[Shivani: Backported to fluentd-1.15.3. Removed test and CHANGELOG changes]
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
+---
+--- a/lib/fluent/plugin/buffer/file_chunk.rb
++++ b/lib/fluent/plugin/buffer/file_chunk.rb
+@@ -168,9 +168,11 @@ module Fluent
+ 
+         def open(**kwargs, &block)
+           @chunk.seek(0, IO::SEEK_SET)
+-          val = yield @chunk
+-          @chunk.seek(0, IO::SEEK_END) if self.staged?
+-          val
++          begin
++            yield @chunk
++          ensure
++            @chunk.seek(0, IO::SEEK_END) if self.staged?
++          end
+         end
+ 
+         def self.assume_chunk_state(path)
+--- a/lib/fluent/plugin/buffer/file_single_chunk.rb
++++ b/lib/fluent/plugin/buffer/file_single_chunk.rb
+@@ -141,9 +141,11 @@ module Fluent
+ 
+         def open(**kwargs, &block)
+           @chunk.seek(0, IO::SEEK_SET)
+-          val = yield @chunk
+-          @chunk.seek(0, IO::SEEK_END) if self.staged?
+-          val
++          begin
++            yield @chunk
++          ensure
++            @chunk.seek(0, IO::SEEK_END) if self.staged?
++          end
+         end
+ 
+         def self.assume_chunk_state(path)
+--- a/lib/fluent/plugin/compressable.rb
++++ b/lib/fluent/plugin/compressable.rb
+@@ -112,9 +112,15 @@ module Fluent
+       end
+ 
+       def io_decompress(input, output)
++        limit = @decompression_size_limit || DEFAULT_DECOMPRESSION_SIZE_LIMIT
++        size = 0
+         loop do
+           gz = Zlib::GzipReader.new(input)
+           while (v = gz.read(BYTES_TO_READ))
++            size += v.bytesize
++            if size > limit
++              raise SizeLimitError, "Decompressed data exceeds limit of #{limit} bytes"
++            end
+             output.write(v)
+           end
+           unused = gz.unused
+--- a/lib/fluent/plugin/output.rb
++++ b/lib/fluent/plugin/output.rb
+@@ -1286,9 +1286,14 @@ module Fluent
+ 
+           log.warn "bad chunk is moved to #{backup_file}"
+           FileUtils.mkdir_p(backup_dir, mode: system_config.dir_permission || Fluent::DEFAULT_DIR_PERMISSION) unless Dir.exist?(backup_dir)
+-          File.open(backup_file, 'ab', system_config.file_permission || Fluent::DEFAULT_FILE_PERMISSION) { |f|
+-            chunk.write_to(f)
+-          }
++          begin
++            File.open(backup_file, 'ab', system_config.file_permission || Fluent::DEFAULT_FILE_PERMISSION) { |f|
++              chunk.write_to(f)
++            }
++          rescue => e
++            log.warn "failed to back up #{unique_id} chunk. it is thrown away", error: e
++            log.warn_backtrace
++          end
+         end
+         commit_write(chunk.unique_id, secondary: using_secondary, delayed: delayed_commit)
+       end

@@ -1,0 +1,86 @@
+From 0b224aa38bcce23d8b72baddf4ddd126435ee7a7 Mon Sep 17 00:00:00 2001
+From: Shizuo Fujita <fujita@clear-code.com>
+Date: Thu, 25 Jun 2026 16:07:37 +0900
+Subject: [PATCH] out_http: add strict host validation for dynamic endpoints
+
+When the endpoint host is built from placeholders, require the new
+allowed_hosts option and reject hosts not listed in it to prevent SSRF.
+
+[CVE-2026-44161]
+
+[ Upstream commit 0b224aa38bcce23d8b72baddf4ddd126435ee7a7 ]
+https://github.com/fluent/fluentd/pull/5394
+
+Signed-off-by: Shizuo Fujita <fujita@clear-code.com>
+[Shivani: Backported to fluentd-1.15.3. Removed test and CHANGELOG changes]
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
+---
+--- a/lib/fluent/plugin/out_http.rb
++++ b/lib/fluent/plugin/out_http.rb
+@@ -17,6 +17,7 @@
+ require 'net/http'
+ require 'uri'
+ require 'openssl'
++require 'securerandom'
+ require 'fluent/tls'
+ require 'fluent/plugin/output'
+ require 'fluent/plugin_helper/socket'
+@@ -54,6 +55,9 @@
+     desc 'Additional placeholder based headers for HTTP request'
+     config_param :headers_from_placeholders, :hash, default: nil
+ 
++    desc 'Allowed hosts list for dynamic endpoints'
++    config_param :allowed_hosts, :array, default: []
++
+     desc 'The connection open timeout in seconds'
+     config_param :open_timeout, :integer, default: nil
+     desc 'The read timeout in seconds'
+@@ -94,6 +98,11 @@
+       config_param :password, :string, default: nil, secret: true
+     end
+ 
++    # To prevent URI::InvalidURIError, we replace Fluentd placeholders with a dummy string.
++    # We use the ".invalid" TLD (RFC 2606) to ensure it is RFC-compliant for URI parsing,
++    # while guaranteeing it will never conflict with a real-world hostname.
++    REPLACED_ENDPOINT_PLACEHOLDER = "#{SecureRandom.uuid}.invalid".freeze
++
+     def initialize
+       super
+ 
+@@ -110,6 +119,15 @@
+         @retryable_response_codes = [503]
+       end
+ 
++      begin
++        # Replace all Fluentd placeholder syntaxes (${...} or %{...})
++        endpoint = @endpoint.gsub(%r([$%]{[^}]+}), REPLACED_ENDPOINT_PLACEHOLDER)
++        # If @endpoint has placeholder as host name, then, @endpoint_host == REPLACED_ENDPOINT_PLACEHOLDER
++        @endpoint_host = URI.parse(endpoint).host
++      rescue URI::InvalidURIError => e
++        raise Fluent::ConfigError, "Invalid endpoint URI: #{@endpoint} (#{e.message})"
++      end
++
+       @http_opt = setup_http_option
+       @proxy_uri = URI.parse(@proxy) if @proxy
+       @formatter = formatter_create
+@@ -212,7 +230,19 @@
+ 
+     def parse_endpoint(chunk)
+       endpoint = extract_placeholders(@endpoint, chunk)
+-      URI.parse(endpoint)
++      uri = URI.parse(endpoint)
++
++      if @endpoint_host != uri.host
++        if @allowed_hosts.empty?
++          raise Fluent::UnrecoverableError, "allowed_hosts is strictly required when using placeholders in the endpoint host"
++        end
++
++        unless @allowed_hosts.include?(uri.host)
++          raise Fluent::UnrecoverableError, "Not allowed host: #{uri.host}"
++        end
++      end
++
++      uri
+     end
+ 
+     def set_headers(req, chunk)

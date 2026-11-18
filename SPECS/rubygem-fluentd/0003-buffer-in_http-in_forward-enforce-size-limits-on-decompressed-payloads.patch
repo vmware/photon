@@ -1,0 +1,334 @@
+From 2cdbce70a7ddf584360a9a4ac8c12d4ce095961d Mon Sep 17 00:00:00 2001
+From: Shizuo Fujita <fujita@clear-code.com>
+Date: Thu, 25 Jun 2026 16:03:18 +0900
+Subject: [PATCH] buffer, in_http: enforce size limits on decompressed payloads
+
+Enforce a size limit (decompression_size_limit, default 256MB) on
+decompressed gzip/deflate payloads in in_http, in_forward and buffer chunks
+to prevent decompression bomb denial of service.
+
+[CVE-2026-44160]
+
+[ Upstream commit 2cdbce70a7ddf584360a9a4ac8c12d4ce095961d ]
+https://github.com/fluent/fluentd/pull/5393
+
+Signed-off-by: Shizuo Fujita <fujita@clear-code.com>
+[Shivani: Backported to fluentd-1.15.3. Removed test and CHANGELOG changes]
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
+---
+--- a/lib/fluent/event.rb
++++ b/lib/fluent/event.rb
+@@ -268,10 +268,11 @@
+   end
+ 
+   class CompressedMessagePackEventStream < MessagePackEventStream
+-    def initialize(data, cached_unpacker = nil, size = 0, unpacked_times: nil, unpacked_records: nil)
+-      super
++    def initialize(data, cached_unpacker = nil, size = 0, unpacked_times: nil, unpacked_records: nil, decompression_size_limit: Fluent::Plugin::Compressable::DEFAULT_DECOMPRESSION_SIZE_LIMIT)
++      super(data, cached_unpacker, size, unpacked_times: unpacked_times, unpacked_records: unpacked_records)
+       @decompressed_data = nil
+       @compressed_data = data
++      @decompression_size_limit = decompression_size_limit
+     end
+ 
+     def empty?
+--- a/lib/fluent/plugin/buf_file.rb
++++ b/lib/fluent/plugin/buf_file.rb
+@@ -156,7 +156,7 @@
+           end
+ 
+           begin
+-            chunk = Fluent::Plugin::Buffer::FileChunk.new(m, path, mode, compress: @compress) # file chunk resumes contents of metadata
++            chunk = Fluent::Plugin::Buffer::FileChunk.new(m, path, mode, compress: @compress, decompression_size_limit: @decompression_size_limit) # file chunk resumes contents of metadata
+           rescue Fluent::Plugin::Buffer::FileChunk::FileChunkError => e
+             handle_broken_files(path, mode, e)
+             next
+@@ -188,7 +188,7 @@
+       def generate_chunk(metadata)
+         # FileChunk generates real path with unique_id
+         perm = @file_permission || system_config.file_permission
+-        chunk = Fluent::Plugin::Buffer::FileChunk.new(metadata, @path, :create, perm: perm, compress: @compress)
++        chunk = Fluent::Plugin::Buffer::FileChunk.new(metadata, @path, :create, perm: perm, compress: @compress, decompression_size_limit: @decompression_size_limit)
+         log.debug "Created new chunk", chunk_id: dump_unique_id_hex(chunk.unique_id), metadata: metadata
+ 
+         return chunk
+--- a/lib/fluent/plugin/buf_file_single.rb
++++ b/lib/fluent/plugin/buf_file_single.rb
+@@ -176,7 +176,7 @@
+           end
+ 
+           begin
+-            chunk = Fluent::Plugin::Buffer::FileSingleChunk.new(m, path, mode, @key_in_path, compress: @compress)
++            chunk = Fluent::Plugin::Buffer::FileSingleChunk.new(m, path, mode, @key_in_path, compress: @compress, decompression_size_limit: @decompression_size_limit)
+             chunk.restore_size(@chunk_format) if @calc_num_records
+           rescue Fluent::Plugin::Buffer::FileSingleChunk::FileChunkError => e
+             handle_broken_files(path, mode, e)
+@@ -199,7 +199,7 @@
+       def generate_chunk(metadata)
+         # FileChunk generates real path with unique_id
+         perm = @file_permission || system_config.file_permission
+-        chunk = Fluent::Plugin::Buffer::FileSingleChunk.new(metadata, @path, :create, @key_in_path, perm: perm, compress: @compress)
++        chunk = Fluent::Plugin::Buffer::FileSingleChunk.new(metadata, @path, :create, @key_in_path, perm: perm, compress: @compress, decompression_size_limit: @decompression_size_limit)
+ 
+         log.debug "Created new chunk", chunk_id: dump_unique_id_hex(chunk.unique_id), metadata: metadata
+ 
+--- a/lib/fluent/plugin/buf_memory.rb
++++ b/lib/fluent/plugin/buf_memory.rb
+@@ -27,7 +27,7 @@
+       end
+ 
+       def generate_chunk(metadata)
+-        Fluent::Plugin::Buffer::MemoryChunk.new(metadata, compress: @compress)
++        Fluent::Plugin::Buffer::MemoryChunk.new(metadata, compress: @compress, decompression_size_limit: @decompression_size_limit)
+       end
+     end
+   end
+--- a/lib/fluent/plugin/buffer.rb
++++ b/lib/fluent/plugin/buffer.rb
+@@ -66,6 +66,9 @@
+       desc 'Compress buffered data.'
+       config_param :compress, :enum, list: [:text, :gzip], default: :text
+ 
++      desc 'The size limit of the decompressed element.'
++      config_param :decompression_size_limit, :size, default: Compressable::DEFAULT_DECOMPRESSION_SIZE_LIMIT
++
+       Metadata = Struct.new(:timekey, :tag, :variables, :seq) do
+         def initialize(timekey, tag, variables)
+           super(timekey, tag, variables, 0)
+--- a/lib/fluent/plugin/buffer/chunk.rb
++++ b/lib/fluent/plugin/buffer/chunk.rb
+@@ -48,7 +48,7 @@
+ 
+         # TODO: CompressedPackedMessage of forward protocol?
+ 
+-        def initialize(metadata, compress: :text)
++        def initialize(metadata, compress: :text, decompression_size_limit: Compressable::DEFAULT_DECOMPRESSION_SIZE_LIMIT)
+           super()
+           @unique_id = generate_unique_id
+           @metadata = metadata
+@@ -61,6 +61,7 @@
+           @modified_at = Fluent::Clock.real_now
+ 
+           extend Decompressable if compress == :gzip
++          @decompression_size_limit = decompression_size_limit
+         end
+ 
+         attr_reader :unique_id, :metadata, :state
+--- a/lib/fluent/plugin/buffer/file_chunk.rb
++++ b/lib/fluent/plugin/buffer/file_chunk.rb
+@@ -39,8 +39,8 @@
+ 
+         attr_reader :path, :permission
+ 
+-        def initialize(metadata, path, mode, perm: nil, compress: :text)
+-          super(metadata, compress: compress)
++        def initialize(metadata, path, mode, perm: nil, compress: :text, decompression_size_limit: Compressable::DEFAULT_DECOMPRESSION_SIZE_LIMIT)
++          super(metadata, compress: compress, decompression_size_limit: decompression_size_limit)
+           perm ||= Fluent::DEFAULT_FILE_PERMISSION
+           @permission = perm.is_a?(String) ? perm.to_i(8) : perm
+           @bytesize = @size = @adding_bytes = @adding_size = 0
+--- a/lib/fluent/plugin/buffer/file_single_chunk.rb
++++ b/lib/fluent/plugin/buffer/file_single_chunk.rb
+@@ -35,8 +35,8 @@
+ 
+         attr_reader :path, :permission
+ 
+-        def initialize(metadata, path, mode, key, perm: Fluent::DEFAULT_FILE_PERMISSION, compress: :text)
+-          super(metadata, compress: compress)
++        def initialize(metadata, path, mode, key, perm: Fluent::DEFAULT_FILE_PERMISSION, compress: :text, decompression_size_limit: Compressable::DEFAULT_DECOMPRESSION_SIZE_LIMIT)
++          super(metadata, compress: compress, decompression_size_limit: decompression_size_limit)
+           @key = key
+           perm ||= Fluent::DEFAULT_FILE_PERMISSION
+           @permission = perm.is_a?(String) ? perm.to_i(8) : perm
+--- a/lib/fluent/plugin/buffer/memory_chunk.rb
++++ b/lib/fluent/plugin/buffer/memory_chunk.rb
+@@ -20,7 +20,7 @@
+   module Plugin
+     class Buffer
+       class MemoryChunk < Chunk
+-        def initialize(metadata, compress: :text)
++        def initialize(metadata, compress: :text, decompression_size_limit: Compressable::DEFAULT_DECOMPRESSION_SIZE_LIMIT)
+           super
+           @chunk = ''.force_encoding(Encoding::ASCII_8BIT)
+           @chunk_bytes = 0
+--- a/lib/fluent/plugin/compressable.rb
++++ b/lib/fluent/plugin/compressable.rb
+@@ -16,10 +16,63 @@
+ 
+ require 'stringio'
+ require 'zlib'
++require 'fluent/error'
+ 
+ module Fluent
+   module Plugin
+     module Compressable
++      DEFAULT_DECOMPRESSION_SIZE_LIMIT = 256 * 1024 * 1024
++      BYTES_TO_READ = 64 * 1024
++      INFLATE_BYTES_TO_READ = 1024
++
++      class SizeLimitError < Fluent::UnrecoverableError; end
++
++      # Decompress concatenated gzip members, raising SizeLimitError when the
++      # decompressed data exceeds `limit` bytes.
++      def self.decompress_gzip(compressed_data, limit: DEFAULT_DECOMPRESSION_SIZE_LIMIT)
++        io = StringIO.new(compressed_data)
++        out = ''
++        loop do
++          reader = Zlib::GzipReader.new(io)
++          while (chunk = reader.read(BYTES_TO_READ))
++            out << chunk
++            if out.bytesize > limit
++              raise SizeLimitError, "Decompressed data exceeds limit of #{limit} bytes"
++            end
++          end
++
++          unused = reader.unused
++          reader.finish
++          unless unused.nil?
++            adjust = unused.length
++            io.pos -= adjust
++          end
++          break if io.eof?
++        end
++        out
++      end
++
++      def self.decompress_deflate(compressed_data, limit: DEFAULT_DECOMPRESSION_SIZE_LIMIT)
++        io = StringIO.new(compressed_data)
++        out = ''
++        begin
++          zstream = Zlib::Inflate.new
++          while (chunk = io.read(INFLATE_BYTES_TO_READ))
++            out << zstream.inflate(chunk)
++            if out.bytesize > limit
++              raise SizeLimitError, "Decompressed data exceeds limit of #{limit} bytes"
++            end
++          end
++          out << zstream.finish
++          if out.bytesize > limit
++            raise SizeLimitError, "Decompressed data exceeds limit of #{limit} bytes"
++          end
++        ensure
++          zstream&.close
++        end
++        out
++      end
++
+       def compress(data, **kwargs)
+         output_io = kwargs[:output_io]
+         io = output_io || StringIO.new
+@@ -55,30 +108,15 @@
+       private
+ 
+       def string_decompress(compressed_data)
+-        io = StringIO.new(compressed_data)
+-
+-        out = ''
+-        loop do
+-          gz = Zlib::GzipReader.new(io)
+-          out << gz.read
+-          unused = gz.unused
+-          gz.finish
+-
+-          unless unused.nil?
+-            adjust = unused.length
+-            io.pos -= adjust
+-          end
+-          break if io.eof?
+-        end
+-
+-        out
++        Compressable.decompress_gzip(compressed_data, limit: @decompression_size_limit || DEFAULT_DECOMPRESSION_SIZE_LIMIT)
+       end
+ 
+       def io_decompress(input, output)
+         loop do
+           gz = Zlib::GzipReader.new(input)
+-          v = gz.read
+-          output.write(v)
++          while (v = gz.read(BYTES_TO_READ))
++            output.write(v)
++          end
+           unused = gz.unused
+           gz.finish
+ 
+--- a/lib/fluent/plugin/in_forward.rb
++++ b/lib/fluent/plugin/in_forward.rb
+@@ -54,6 +54,8 @@
+     config_param :chunk_size_warn_limit, :size, default: nil
+     desc 'Received chunk is dropped if it is larger than this value.'
+     config_param :chunk_size_limit, :size, default: nil
++    desc 'The size limit of the decompressed element.'
++    config_param :decompression_size_limit, :size, default: 256*1024*1024
+     desc 'Skip an event if incoming event is invalid.'
+     config_param :skip_invalid_event, :bool, default: false
+ 
+@@ -309,8 +311,11 @@
+         # PackedForward
+         option = msg[2]
+         size = (option && option['size']) || 0
+-        es_class = (option && option['compressed'] == 'gzip') ? Fluent::CompressedMessagePackEventStream : Fluent::MessagePackEventStream
+-        es = es_class.new(entries, nil, size.to_i)
++        if option && option['compressed'] == 'gzip'
++          es = Fluent::CompressedMessagePackEventStream.new(entries, nil, size.to_i, decompression_size_limit: @decompression_size_limit)
++        else
++          es = Fluent::MessagePackEventStream.new(entries, nil, size.to_i)
++        end
+         es = check_and_skip_invalid_event(tag, es, conn.remote_host) if @skip_invalid_event
+         if @enable_field_injection
+           es = add_source_info(es, conn)
+--- a/lib/fluent/plugin/in_http.rb
++++ b/lib/fluent/plugin/in_http.rb
+@@ -14,6 +14,7 @@
+ #    limitations under the License.
+ #
+ 
++require 'fluent/plugin/compressable'
+ require 'fluent/plugin/input'
+ require 'fluent/plugin/parser'
+ require 'fluent/event'
+@@ -64,6 +65,8 @@
+     config_param :bind, :string, default: '0.0.0.0'
+     desc 'The size limit of the POSTed element. Default is 32MB.'
+     config_param :body_size_limit, :size, default: 32*1024*1024  # TODO default
++    desc 'The size limit of the decompressed element.'
++    config_param :decompression_size_limit, :size, default: 256*1024*1024  # TODO default
+     desc 'The timeout limit for keeping the connection alive.'
+     config_param :keepalive_timeout, :time, default: 10   # TODO default
+     config_param :backlog, :integer, default: nil
+@@ -288,7 +291,7 @@
+ 
+     def on_server_connect(conn)
+       handler = Handler.new(conn, @km, method(:on_request),
+-                            @body_size_limit, @format_name, log,
++                            @body_size_limit, @decompression_size_limit, @format_name, log,
+                             @cors_allow_origins, @cors_allow_credentials,
+                             @add_query_params)
+ 
+@@ -375,12 +378,13 @@
+     class Handler
+       attr_reader :content_type
+ 
+-      def initialize(io, km, callback, body_size_limit, format_name, log,
++      def initialize(io, km, callback, body_size_limit, decompression_size_limit, format_name, log,
+                      cors_allow_origins, cors_allow_credentials, add_query_params)
+         @io = io
+         @km = km
+         @callback = callback
+         @body_size_limit = body_size_limit
++        @decompression_size_limit = decompression_size_limit
+         @next_close = false
+         @format_name = format_name
+         @log = log
+@@ -549,9 +553,9 @@
+         # For now, we only support 'gzip' and 'deflate'.
+         begin
+           if @content_encoding == 'gzip'.freeze
+-            @body = Zlib::GzipReader.new(StringIO.new(@body)).read
++            @body = Fluent::Plugin::Compressable.decompress_gzip(@body, limit: @decompression_size_limit)
+           elsif @content_encoding == 'deflate'.freeze
+-            @body = Zlib::Inflate.inflate(@body)
++            @body = Fluent::Plugin::Compressable.decompress_deflate(@body, limit: @decompression_size_limit)
+           end
+         rescue
+           @log.warn 'fails to decode payload', error: $!.to_s

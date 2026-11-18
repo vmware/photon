@@ -4,7 +4,7 @@
 
 Name: rubygem-fluentd
 Version:        1.15.3
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        An open source data collector designed to scale and simplify log management
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -13,7 +13,21 @@ License:        Apache 2
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/fluentd-%{version}.gem
 %define sha512  fluentd=74fa46527704b5c455831dd5a076bc395e6633eb599afcfcc1fd1a10581c59b020cd6c7405cfbc1c767c3bbbf39c9f126dccbcffd38974e80590d543009dd42a
+
+# Fix CVE-2026-44024
+Patch0:         0001-output-enforce-strict-path-boundary-validation-for-tag.patch
+# Fix CVE-2026-44025
+Patch1:         0002-in_monitor_agent-change-default-visibility-of-config-retry-debug.patch
+# Fix CVE-2026-44160
+Patch2:         0003-buffer-in_http-in_forward-enforce-size-limits-on-decompressed-payloads.patch
+# Fix CVE-2026-44161
+Patch3:         0004-out_http-add-strict-host-validation-for-dynamic-endpoints.patch
+# Follow-up fixes from fluentd 1.19.4 for CVE-2026-44024 and CVE-2026-44160
+Patch4:         0005-output-fix-incomplete-path-traversal-check-in-extract_placeholder.patch
+Patch5:         0006-buffer-enforce-decompression_size_limit-on-the-chunk-IO-path.patch
+
 BuildRequires:  ruby >= 2.1
+BuildRequires:  ruby-devel
 
 Requires(post): systemd
 Requires(preun): systemd
@@ -46,18 +60,23 @@ Fluentd is an open source data collector designed to scale and simplify log mana
 It can collect, process and ship many kinds of data in near real-time.
 
 %prep
-%autosetup -c -T
+%gem_unpack %{SOURCE0}
+%autopatch -p1
 
 %build
+%gem_build
 
 %install
-gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
+gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{_builddir}/%{gem_name}-%{version}/%{gem_name}-%{version}.gem
 
 %files
 %defattr(-,root,root,-)
 %{gemdir}
 
 %changelog
+*   Wed Nov 18 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.15.3-5
+-   Fix CVE-2026-44024, CVE-2026-44025, CVE-2026-44160 and CVE-2026-44161
+-   Add fluentd 1.19.4 follow-up fixes for CVE-2026-44024 and CVE-2026-44160
 *   Thu Oct 15 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.15.3-4
 -   Bump version as a part of tzinfo-data upgrade
 *   Mon Mar 09 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.15.3-3
