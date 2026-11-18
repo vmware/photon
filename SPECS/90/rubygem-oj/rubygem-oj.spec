@@ -3,8 +3,8 @@
 %global gem_name oj
 
 Name: rubygem-oj
-Version:        3.16.1
-Release:        1.1.1%{?dist}
+Version:        3.17.3
+Release:        0.0.1%{?dist}
 Summary:        The fastest JSON parser and object serializer.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -35,6 +35,8 @@ The fastest JSON parser and object serializer.
 %{gem_base}
 
 %changelog
+* Wed Nov 18 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.17.3-0.0.1
+- Upgrade to 3.17.3 to fix CVE-2026-54592
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.16.1-1.1.1
 - Adjusted to build for subrelease 90
 * Fri Feb 13 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 3.16.1-1.1
