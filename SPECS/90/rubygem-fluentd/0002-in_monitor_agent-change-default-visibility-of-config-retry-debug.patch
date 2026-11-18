@@ -1,0 +1,79 @@
+From 30fbbd74bccc5824b81a04fac197fb531512f106 Mon Sep 17 00:00:00 2001
+From: Shizuo Fujita <fujita@clear-code.com>
+Date: Thu, 25 Jun 2026 15:56:32 +0900
+Subject: [PATCH] in_monitor_agent: change default visibility of config, retry, and debug info
+
+Do not expose plugin config, retry and debug information by default, and
+stop honoring the with_config/with_retry/debug/with_ivars query parameters
+unless explicitly enabled through include_config, include_retry and the new
+include_debug_info options.
+
+[CVE-2026-44025]
+
+[ Upstream commit 30fbbd74bccc5824b81a04fac197fb531512f106 ]
+https://github.com/fluent/fluentd/pull/5392
+
+Signed-off-by: Shizuo Fujita <fujita@clear-code.com>
+[Shivani: Backported to fluentd-1.18.0. Removed test and CHANGELOG changes]
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
+---
+--- a/lib/fluent/plugin/in_monitor_agent.rb
++++ b/lib/fluent/plugin/in_monitor_agent.rb
+@@ -39,9 +39,11 @@ module Fluent::Plugin
+     desc 'Determine the rate to emit internal metrics as events.'
+     config_param :emit_interval, :time, default: 60
+     desc 'Determine whether to include the config information.'
+-    config_param :include_config, :bool, default: true
++    config_param :include_config, :bool, default: false
+     desc 'Determine whether to include the retry information.'
+-    config_param :include_retry, :bool, default: true
++    config_param :include_retry, :bool, default: false
++    desc 'Determine whether to include the debug information.'
++    config_param :include_debug_info, :bool, default: false
+ 
+     class APIHandler
+       def initialize(agent)
+@@ -155,28 +157,23 @@ module Fluent::Plugin
+           qs.merge!(CGI.parse(req.query_string))
+         end
+ 
+-        # if ?debug=1 is set, set :with_debug_info for get_monitor_info
+-        # and :pretty_json for render_json_error
+-        opts = { query: qs }
+-        if qs['debug'.freeze].first
+-          opts[:with_debug_info] = true
+-          opts[:pretty_json] = true
+-        end
+-
+-        if ivars = qs['with_ivars'.freeze].first
+-          opts[:ivars] = ivars.split(',')
+-        end
++        opts = {
++          query: qs,
++          with_config: @agent.include_config,
++          with_retry: @agent.include_retry
++        }
+ 
+-        if with_config = qs['with_config'.freeze].first
+-          opts[:with_config] = Fluent::Config.bool_value(with_config)
+-        else
+-          opts[:with_config] = @agent.include_config
+-        end
++        if @agent.include_debug_info
++          # if ?debug=1 is set, set :with_debug_info for get_monitor_info
++          # and :pretty_json for render_json_error
++          if qs['debug'.freeze].first
++            opts[:with_debug_info] = true
++            opts[:pretty_json] = true
++          end
+ 
+-        if with_retry = qs['with_retry'.freeze].first
+-          opts[:with_retry] = Fluent::Config.bool_value(with_retry)
+-        else
+-          opts[:with_retry] = @agent.include_retry
++          if ivars = qs['with_ivars'.freeze].first
++            opts[:ivars] = ivars.split(',')
++          end
+         end
+ 
+         opts

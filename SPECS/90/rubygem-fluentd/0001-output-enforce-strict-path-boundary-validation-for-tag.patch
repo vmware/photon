@@ -1,0 +1,71 @@
+From dc9a48f781c075aeccc45d51f545e4da2a714205 Mon Sep 17 00:00:00 2001
+From: Shizuo Fujita <fujita@clear-code.com>
+Date: Thu, 25 Jun 2026 15:48:43 +0900
+Subject: [PATCH] output: enforce strict path boundary validation for tag
+
+Tags containing relative parent directory patterns (../) or absolute paths
+were expanded by extract_placeholders without validation, which could lead
+to file creation or access outside the intended base directories (e.g. with
+out_file). Validate the ${tag} value and chunk key values before substitution.
+
+[CVE-2026-44024]
+
+[ Upstream commit dc9a48f781c075aeccc45d51f545e4da2a714205 ]
+https://github.com/fluent/fluentd/pull/5391
+
+Signed-off-by: Shizuo Fujita <fujita@clear-code.com>
+[Shivani: Backported to fluentd-1.18.0. Removed test and CHANGELOG changes]
+Signed-off-by: Shivani Agarwal <shivani.agarwal@broadcom.com>
+---
+--- a/lib/fluent/plugin/output.rb
++++ b/lib/fluent/plugin/output.rb
+@@ -44,6 +44,8 @@ module Fluent
+       CHUNK_KEY_PLACEHOLDER_PATTERN = /\$\{([-_.@$a-zA-Z0-9]+)\}/
+       CHUNK_TAG_PLACEHOLDER_PATTERN = /\$\{(tag(?:\[-?\d+\])?)\}/
+       CHUNK_ID_PLACEHOLDER_PATTERN = /\$\{chunk_id\}/
++      INVALID_PATH_COMPONENT_PATTERN = %r{\.\.[/\\]|^[/\\]}
++      PARENT_DIRECTORY_PATTERN = %r{\.\.[/\\]}
+ 
+       CHUNKING_FIELD_WARN_NUM = 4
+ 
+@@ -822,9 +824,17 @@ module Fluent
+           # ${tag}, ${tag[0]}, ${tag[1]}, ... , ${tag[-2]}, ${tag[-1]}
+           if @chunk_key_tag
+             if str.include?('${tag}')
++              if metadata.tag.match?(INVALID_PATH_COMPONENT_PATTERN)
++                raise Fluent::UnrecoverableError, "Invalid path component detected in tag: #{metadata.tag}"
++              end
++
+               rvalue = rvalue.gsub('${tag}', metadata.tag)
+             end
+             if CHUNK_TAG_PLACEHOLDER_PATTERN.match?(str)
++              if metadata.tag.match?(INVALID_PATH_COMPONENT_PATTERN)
++                raise Fluent::UnrecoverableError, "Invalid path component detected in tag: #{metadata.tag}"
++              end
++
+               hash = {}
+               tag_parts = metadata.tag.split('.')
+               tag_parts.each_with_index do |part, i|
+@@ -855,10 +865,21 @@ module Fluent
+             end
+ 
+             rvalue = rvalue.gsub(CHUNK_KEY_PLACEHOLDER_PATTERN) do |matched|
+-              hash.fetch(matched) do
++              replace = hash.fetch(matched) do
+                 log.warn "chunk key placeholder '#{matched[2..-2]}' not replaced. template:#{str}"
+                 ''
+               end
++              if replace.to_s.match?(INVALID_PATH_COMPONENT_PATTERN)
++                raise Fluent::UnrecoverableError, "Invalid path component detected in #{matched}: #{replace}"
++              end
++
++              replace
++            end
++            # Check if the number of parent directory components (../) has increased due to variable substitution
++            if rvalue.match?(PARENT_DIRECTORY_PATTERN)
++              if rvalue.scan(PARENT_DIRECTORY_PATTERN).size > str.scan(PARENT_DIRECTORY_PATTERN).size
++                raise Fluent::UnrecoverableError, "Invalid path component detected, replaced to: #{rvalue}"
++              end
+             end
+           end
+ 

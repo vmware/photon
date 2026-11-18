@@ -5,7 +5,7 @@
 
 Name:           rubygem-fluentd
 Version:        1.18.0
-Release:        1.1.2%{?dist}
+Release:        1.1.3%{?dist}
 Summary:        An open source data collector designed to scale and simplify log management
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -16,6 +16,18 @@ Source0:        https://rubygems.org/downloads/fluentd-%{version}.gem
 
 Source1: license.txt
 %include %{SOURCE1}
+
+# Fix CVE-2026-44024
+Patch0:         0001-output-enforce-strict-path-boundary-validation-for-tag.patch
+# Fix CVE-2026-44025
+Patch1:         0002-in_monitor_agent-change-default-visibility-of-config-retry-debug.patch
+# Fix CVE-2026-44160
+Patch2:         0003-buffer-in_http-in_forward-enforce-size-limits-on-decompressed-payloads.patch
+# Fix CVE-2026-44161
+Patch3:         0004-out_http-add-strict-host-validation-for-dynamic-endpoints.patch
+# Follow-up fixes from fluentd 1.19.4 for CVE-2026-44024 and CVE-2026-44160
+Patch4:         0005-output-fix-incomplete-path-traversal-check-in-extract_placeholder.patch
+Patch5:         0006-buffer-enforce-decompression_size_limit-on-the-chunk-IO-path.patch
 
 BuildRequires: ruby-devel
 BuildRequires: rubygem-webrick
@@ -60,6 +72,7 @@ It can collect, process and ship many kinds of data in near real-time.
 
 %prep
 %gem_unpack %{SOURCE0}
+%autopatch -p1
 
 %build
 %gem_build
@@ -72,6 +85,9 @@ It can collect, process and ship many kinds of data in near real-time.
 %{gemdir}
 
 %changelog
+* Wed Nov 18 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.18.0-1.1.3
+- Fix CVE-2026-44024, CVE-2026-44025, CVE-2026-44160 and CVE-2026-44161
+- Include the 1.19.4 follow-up fixes for CVE-2026-44024 and CVE-2026-44160
 * Wed Oct 14 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 1.18.0-1.1.2
 - Bump release for rubygem-tzinfo-data upgrade
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.18.0-1.1.1
