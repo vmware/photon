@@ -1,12 +1,12 @@
 sources:
-- archive: msgpack-1.8.4.gem
+- archive: msgpack-1.8.7.gem
   archive_type: upstream
-  archive_sha512sum: 0bb69099d0c9748fe2a861d973a2b478a4ef02e8300ba56a1f957201d855db87acf6b73d37145989445df5fa4aea74b9fa927eeb6a7e7c0b88d2f9c7848a79e8
-  name: rubygem-msgpack-1.8.4
-  version: "1.8.4"
-  url: https://rubygems.org/downloads/msgpack-1.8.4.gem
+  archive_sha512sum: 88a8e3338015db2d4572829d61fb30906829bb78c888853931ee34f19630f2fcd41b61713b5cae6041e74c0ebb08ee8b4fb808f4a3acef8599ef64d61e10cf07
+  name: rubygem-msgpack-1.8.7
+  version: "1.8.7"
+  url: https://rubygems.org/downloads/msgpack-1.8.7.gem
   repo_url: https://github.com/msgpack/msgpack-ruby
-  commit_id: 42378b091b0936d27bc9649da366e90798345fe6
+  commit_id: 2c6a131c54f08eba17600b155c473630ef675499
   skip_list: []
   missing: ['bench', 'bin', 'doclib', 'Gemfile', '.github', '.gitignore', 'msgpack.org.md', 'Rakefile', '.rubocop.yml', 'spec']
   skip_validation: false
@@ -15,7 +15,7 @@ sources:
       detailed_description: 'MessagePack is a binary-based efficient object serialization
         library. It enables to exchange structured objects between many languages
         like JSON. But unlike JSON, it is very fast and small. '
-      home_page: https://rubygems.org/gems/msgpack/versions/1.8.4
+      home_page: https://rubygems.org/gems/msgpack/versions/1.8.7
       license_concluded: Apache-2.0
       license_declared: Apache-2.0
       short_summary: A binary-based efficient object serialization library
