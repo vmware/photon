@@ -3,7 +3,7 @@
 Summary:        Kubernetes Dashboard UI
 Name:           kubernetes-dashboard
 Version:        2.7.0
-Release:        26.2.3%{?dist}
+Release:        26.2.4%{?dist}
 URL:            https://github.com/kubernetes/dashboard
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -22,7 +22,6 @@ BuildRequires:  git
 BuildRequires:  glibc-devel
 BuildRequires:  go
 BuildRequires:  linux-api-headers
-BuildRequires:  nodejs
 BuildRequires:  openjdk11
 BuildRequires:  which
 BuildRequires:  ncurses-terminfo
@@ -30,7 +29,6 @@ BuildRequires:  bc
 BuildRequires:  openjdk11
 
 Requires:       jre >= 11.0
-Requires:       nodejs
 
 %description
 Kubernetes Dashboard UI.
@@ -73,6 +71,8 @@ cp -pr ./dist/amd64/locale_conf.json ./dist/amd64/public \
 /opt/k8dashboard/public/*
 
 %changelog
+* Wed Nov 18 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.7.0-26.2.4
+- Drop unused nodejs BuildRequires and Requires
 * Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 2.7.0-26.2.3
 - Bump version as a part of go upgrade
 * Thu Oct 08 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 2.7.0-26.2.2
