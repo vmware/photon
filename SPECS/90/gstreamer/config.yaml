@@ -1,11 +1,11 @@
 sources:
-- archive: gstreamer-1.28.7.tar.xz
-  archive_sha512sum: b44c59d54230ecce6755c8ed0f6e0c61f1437e865a00fb2d8b3463999a76e59bde8a2836f13f0a9f8a8b68f9b5c7f6ae82d23fbd5184aa17246a7a3839ff1b5a
+- archive: gstreamer-1.28.9.tar.xz
+  archive_sha512sum: 64bb8511f46b0c937f138fa7c432784c78d543fe648311c1acf367634af8cdfa5d6592a6b41c93197e78a64f858c15af0b61b03727802a2b52b87a928cef5aed
   skip_validation: true
   license_manual_review:
   - file_paths:
-    - gstreamer-1.28.7/release-notes-1.28.md
-    sha256sum: 405b94f8d6a969e9d44cff42c9e7fa33268da744add659cbfbc871066be76164
+    - gstreamer-1.28.9/release-notes-1.28.md
+    sha256sum: b17b5f62cd98594b538f005e5bd0fd59f9aaf8ad62a021278ffff87c23548b1a
     spdx_exp: ''
   spdx:
     package:

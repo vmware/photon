@@ -2,7 +2,7 @@
 
 Summary:        The GStreamer Bad Plug-ins package contains a set a set of plug-ins that aren't up to par compared to the rest
 Name:           gst-plugins-bad
-Version:        1.28.7
+Version:        1.28.9
 Release:        1%{?dist}
 URL:            http://gstreamer.freedesktop.org/
 Group:          Applications/Multimedia
@@ -81,6 +81,8 @@ rm -rf %{buildroot}
 %{_datadir}/gir-1.0
 
 %changelog
+* Wed Nov 18 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.28.9-1
+- Upgrade to 1.28.9
 * Mon Nov 09 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.28.7-1
 - Upgrade to 1.28.7
 - Build with meson 1.3.2: relax meson_version, skip File.full_path() doc sources

@@ -2,7 +2,7 @@
 
 Summary:        A streaming media framework
 Name:           gstreamer
-Version:        1.28.7
+Version:        1.28.9
 Release:        1%{?dist}
 URL:            http://gstreamer.freedesktop.org/
 Group:          System Environment/Libraries
@@ -86,6 +86,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 
 %changelog
+* Wed Nov 18 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.28.9-1
+- Upgrade to 1.28.9
 * Mon Nov 09 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.28.7-1
 - Upgrade to 1.28.7
 - Build with meson 1.3.2: relax meson_version, skip File.full_path() doc sources

@@ -1,6 +1,6 @@
 sources:
-- archive: gst-plugins-bad-1.28.7.tar.xz
-  archive_sha512sum: 2ae81e1584fa1e4450a039780c22510c67ab6d88fdbec5dccb5407c1256e59834aad83784dadc994c014ed8334ac40de96b5a239a4521b186d1462338328bc25
+- archive: gst-plugins-bad-1.28.9.tar.xz
+  archive_sha512sum: 12e4be3c29c143b0f2f0dc36a0ea6bc0998ecdb8e801346bd452066e48dc1d9f11d4d1bd4c2cf52538c348d7c5ac1e676165fb7abb706ef319c92aebf78e78a5
   skip_validation: true
   spdx:
     package:
