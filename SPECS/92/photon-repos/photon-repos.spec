@@ -4,7 +4,7 @@
 Summary:        Photon repo files, gpg keys
 Name:           photon-repos
 Version:        5.0
-Release:        11.1%{?dist}
+Release:        11.2%{?dist}
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon/
 Vendor:         VMware, Inc.
@@ -15,18 +15,18 @@ BuildArch:      noarch
 Source1:        VMWARE-RPM-GPG-KEY
 Source2:        VMWARE-RPM-GPG-KEY-4096
 Source3:        photon.repo
-Source4:        photon-updates.repo
-Source5:        photon-iso.repo
-Source6:        photon-debuginfo.repo
-Source7:        photon-release.repo
-Source8:        photon-srpms.repo
-Source9:        photon-extras.repo
-Source10:       photon-snapshot.repo
-Source11:       migrate-repo-url.inc
-Source12:       license.txt
+Source4:        photon-iso.repo
+Source5:        photon-debuginfo.repo
+Source6:        photon-release.repo
+Source7:        photon-srpms.repo
+Source8:        photon-extras.repo
+Source9:        photon-snapshot.repo
 
+Source10: migrate-repo-url.inc
+%include %{SOURCE10}
+
+Source11: license.txt
 %include %{SOURCE11}
-%include %{SOURCE12}
 
 Requires:       photon-release
 Provides:       photon-repos
@@ -48,18 +48,21 @@ Photon repo files and gpg keys
 
 %install
 install -d -m 755 %{buildroot}%{_sysconfdir}/yum.repos.d
-install -m 644 %{SOURCE3} %{buildroot}%{_sysconfdir}/yum.repos.d
-install -m 644 %{SOURCE4} %{buildroot}%{_sysconfdir}/yum.repos.d
-install -m 644 %{SOURCE5} %{buildroot}%{_sysconfdir}/yum.repos.d
-install -m 644 %{SOURCE6} %{buildroot}%{_sysconfdir}/yum.repos.d
-install -m 644 %{SOURCE7} %{buildroot}%{_sysconfdir}/yum.repos.d
-install -m 644 %{SOURCE8} %{buildroot}%{_sysconfdir}/yum.repos.d
-install -m 644 %{SOURCE9} %{buildroot}%{_sysconfdir}/yum.repos.d
-install -m 644 %{SOURCE10} %{buildroot}%{_sysconfdir}/yum.repos.d
+install -D -m 644 \
+  %{SOURCE3} \
+  %{SOURCE4} \
+  %{SOURCE5} \
+  %{SOURCE6} \
+  %{SOURCE7} \
+  %{SOURCE8} \
+  %{SOURCE9} \
+  -t %{buildroot}%{_sysconfdir}/yum.repos.d/
 
 install -d -m 755 %{buildroot}%{_sysconfdir}/pki/rpm-gpg
-install -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/pki/rpm-gpg
-install -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/pki/rpm-gpg
+install -D -m 644 \
+  %{SOURCE1} \
+  %{SOURCE2} \
+  -t %{buildroot}%{_sysconfdir}/pki/rpm-gpg/
 
 # Set subrelease and updatenumber tdnf variable
 mkdir -p %{buildroot}%{_sysconfdir}/tdnf/vars
@@ -81,13 +84,14 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/yum.repos.d/photon-debuginfo.repo
 %config(noreplace) %{_sysconfdir}/yum.repos.d/photon-iso.repo
 %config(noreplace) %{_sysconfdir}/yum.repos.d/photon.repo
-%config(noreplace) %{_sysconfdir}/yum.repos.d/photon-updates.repo
 %config(noreplace) %{_sysconfdir}/yum.repos.d/photon-release.repo
 %config(noreplace) %{_sysconfdir}/yum.repos.d/photon-srpms.repo
 %config(noreplace) %{_sysconfdir}/yum.repos.d/photon-extras.repo
 %config(noreplace) %{_sysconfdir}/yum.repos.d/photon-snapshot.repo
 
 %changelog
+*   Thu Nov 19 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 5.0-11.2
+-   Remove photon-updates repo
 *   Wed Nov 11 2026 Michelle Wang <michelle.wang@broadcom.com> 5.0-11.1
 -   Split photon-repos for 92 and 93
 *   Mon Jun 01 2026 Bo Gan <bo.gan@broadcom.com> 5.0-11
