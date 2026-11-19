@@ -6,7 +6,7 @@
 Summary:        Usermode tools for VMware virts
 Name:           open-vm-tools
 Version:        13.1.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -45,7 +45,7 @@ BuildRequires: systemd-devel
 BuildRequires: rpcgen
 BuildRequires: libtirpc-devel
 
-Requires: hostname
+Requires: (hostname or net-tools)
 Requires: fuse3
 Requires: libmspack
 Requires: openssl
@@ -270,6 +270,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/vmtoolsd
 
 %changelog
+* Thu Nov 19 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 13.1.0-5
+- Revert: net-tools removal
 * Wed Nov 04 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 13.1.0-4
 - Drop optional requirement on net-tools
 * Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 13.1.0-3

@@ -9,7 +9,7 @@
 
 Name:           cloud-init
 Version:        26.2
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 URL:            http://launchpad.net/cloud-init
@@ -69,7 +69,7 @@ BuildRequires: shadow
 BuildRequires: python3-passlib
 %endif
 
-Requires: hostname
+Requires: (hostname or net-tools)
 Requires: shadow
 Requires: iproute2
 Requires: systemd
@@ -166,6 +166,8 @@ rm -rf %{buildroot}
 %{_mandir}/man1/*
 
 %changelog
+* Thu Nov 19 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 26.2-8
+- Revert: net-tools removal
 * Wed Nov 04 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 26.2-7
 - Drop optional requirement on net-tools
 * Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 26.2-6

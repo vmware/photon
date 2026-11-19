@@ -1,9 +1,7 @@
-%global build_if %{photon_subrelease} <= 90
-
 Summary:    Networking Tools
 Name:       net-tools
 Version:    2.10
-Release:    3%{?dist}
+Release:    4%{?dist}
 URL:        https://github.com/ecki/net-tools
 Group:      System Environment/Base
 Vendor:     VMware, Inc.
@@ -57,6 +55,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 
 %changelog
+* Thu Nov 19 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.10-4
+- Revert: net-tools removal
 * Tue May 26 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 2.10-3
 - Move back all 5.0 releases
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.10-2.1.1
