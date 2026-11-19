@@ -1,0 +1,21 @@
+sources:
+- archive: toybox-0.8.9.tar.gz
+  archive_sha512sum: 73a3ec2a0d69b1566e1663e94b2bc7764b9f93e53978725f036f066837ab2769033e8bf17d5550e565656781cacf27d93960dd611ffed5425fa006d1d3104351
+  skip_validation: true
+  spdx:
+    package:
+      detailed_description: 'Toybox combines common Linux command line utilities together
+        into a single BSD-licensed executable that''s simple, small, fast, reasonably
+        standards-compliant, and powerful enough to turn Android into a development
+        environment. '
+      home_page: http://landley.net/toybox
+      license_concluded: CC0-1.0 AND 0BSD AND GPL-3.0-only AND LGPL-2.0-or-later AND
+        (BSD-3-Clause OR GPL-1.0-or-later) AND BSD-2-Clause AND Apache-2.0 AND GPL-2.0-or-later
+        AND Unlicense AND BSD-3-Clause AND GPL-2.0-only AND GPL-2.0-or-later WITH
+        Bison-exception-1.24
+      license_declared: CC0-1.0 AND 0BSD AND GPL-3.0-only AND LGPL-2.0-or-later AND
+        (BSD-3-Clause OR GPL-1.0-or-later) AND BSD-2-Clause AND Apache-2.0 AND GPL-2.0-or-later
+        AND Unlicense AND BSD-3-Clause AND GPL-2.0-only AND GPL-2.0-or-later WITH
+        Bison-exception-1.24
+      short_summary: Common Linux command line utilities in a single executable
+      supplier: 'Organization: Broadcom, Inc.'
