@@ -21,17 +21,17 @@ sources:
         AND GPL-3.0-only AND GPL-3.0-or-later AND ISC AND MIT AND MPL-2.0 AND Unlicense
       short_summary: A new network stack based on gVisor.
       supplier: 'Organization: Broadcom, Inc.'
-- archive: podman-5.8.5.tar.gz
-  archive_sha512sum: 76b590691b0df0a2c635f367113f0be46ea78f9c034b511dd4e8cb842635171f63972c9b2f856f0312c7f754b10c5de169045db73a61030384aaa5f1c0e04e3d
+- archive: podman-5.8.10.tar.gz
+  archive_sha512sum: dc07a9843a9d4bcf97d45afb34d31385a8ed9e19fffd0a67c27db2c8a816cce5c4014824a77a49a7e5f33aaa952fd2d3980bc8f4be65b83a8baf4c6955e16480
   archive_type: upstream
-  version: 5.8.5
-  name: podman-5.8.5
-  url: https://github.com/containers/podman/archive/refs/tags/v5.8.5.tar.gz
+  version: 5.8.10
+  name: podman-5.8.10
+  url: https://github.com/containers/podman/archive/refs/tags/v5.8.10.tar.gz
   repo_url: https://github.com/containers/podman
-  commit_id: 6d48b6f12f793176f3f6bc808b5a440984c14eb2
+  commit_id: eacf7fc89d8980899f687f53f657ae40e2597954
   license_manual_review:
   - file_paths:
-    - podman-5.8.5-build/podman-5.8.5/docs/source/markdown/podman-info.1.md
+    - podman-5.8.10-build/podman-5.8.10/docs/source/markdown/podman-info.1.md
     sha256sum: bc97c6642c89a4ebe1ed699e8ec70a82233c8d5f038d765d79cc24a8bfd75b1d
     spdx_exp: Apache-2.0
   spdx:
