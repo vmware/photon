@@ -5,7 +5,7 @@
 Summary:        SQLite DBI Driver
 Name:           perl-DBD-SQLite
 Version:        1.76
-Release:        1.1.1%{?dist}
+Release:        1.1.2%{?dist}
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/DBD-SQLite/
 Source0:        https://cpan.metacpan.org/authors/id/I/IS/ISHIGAKI/DBD-SQLite-%{version}.tar.gz
@@ -57,6 +57,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+* Thu Nov 19 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.76-1.1.2
+- Bump release as part of sqlite upgrade to 3.54.1
 * Mon Mar 30 2026 Dweep Advani <dweep.advani@broadcom.com> 1.76-1.1.1
 - Bump up for SPECS/90
 * Wed Jun 11 2025 Dweep Advani <dweep.advani@broadcom.com> 1.76-1

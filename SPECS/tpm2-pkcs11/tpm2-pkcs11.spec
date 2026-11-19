@@ -3,7 +3,7 @@
 Summary:        OSS implementation of the TCG TPM2 Software Stack (TSS2)
 Name:           tpm2-pkcs11
 Version:        1.8.0
-Release:        11%{?dist}
+Release:        12%{?dist}
 URL:            https://github.com/tpm2-software/tpm2-pkcs11
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -107,6 +107,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Thu Nov 19 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.8.0-12
+- Bump release as part of sqlite upgrade to 3.54.1
 * Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.8.0-11
 - extend release to 91
 * Wed Jun 03 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.8.0-10

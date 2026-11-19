@@ -7,7 +7,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        3.6.6
-Release:        0.1%{?buildtag}%{?dist}
+Release:        0.2%{?buildtag}%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/vmware/%{name}
@@ -258,6 +258,8 @@ rm -f %{_var}/cache/%{name}/cached-updateinfo.txt
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Thu Nov 19 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.6.6-0.2
+- Bump release as part of sqlite upgrade to 3.54.1
 * Sat Nov 07 2026 Oliver Kurth <oliver.kurth@broadcom.com> 3.6.6-0.1
 - update to 3.6.6
 * Tue May 26 2026 Oliver Kurth <oliver.kurth@broadcom.com> 3.6.5-1.1

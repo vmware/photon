@@ -1,7 +1,7 @@
 Summary:        Security client
 Name:           nss
 Version:        3.78
-Release:        14%{?dist}
+Release:        15%{?dist}
 URL:            https://firefox-source-docs.mozilla.org/security/nss/index.html
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -148,6 +148,8 @@ sudo -u test ./all.sh && userdel test -r -f
 %{_libdir}/libsoftokn3.chk
 
 %changelog
+* Thu Nov 19 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.78-15
+- Bump release as part of sqlite upgrade to 3.54.1
 * Tue Oct 20 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 3.78-14
 - Update built-in root store (certdata.txt) to upstream NSS tip, drops
 - eMudhra emSign Root CA - C1, C3 and G3

@@ -3,7 +3,7 @@
 Summary:        Daemon to ban hosts that cause multiple authentication errors
 Name:           fail2ban
 Version:        1.0.2
-Release:        6.1.1%{?dist}
+Release:        6.1.2%{?dist}
 Group:          Productivity/Networking/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -204,6 +204,8 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/%{name}/jail.d/00-%{name}-systemd.conf
 
 %changelog
+* Thu Nov 19 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.0.2-6.1.2
+- Bump release as part of sqlite upgrade to 3.54.1
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.0.2-6.1.1
 - Adjusted to build for subrelease 90
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 1.0.2-6.1

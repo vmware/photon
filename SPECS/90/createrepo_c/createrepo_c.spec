@@ -3,7 +3,7 @@
 Summary:        Creates a common metadata repository
 Name:           createrepo_c
 Version:        0.20.1
-Release:        9.1.1%{?dist}
+Release:        9.1.2%{?dist}
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -103,6 +103,8 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Thu Nov 19 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.20.1-9.1.2
+- Bump release as part of sqlite upgrade to 3.54.1
 * Mon May 11 2026 Alexey Makhalov <alexey.makhalov@broadcom.com> 0.20.1-9.1.1
 - Move to /90
 * Wed Mar 18 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 0.20.1-9.1

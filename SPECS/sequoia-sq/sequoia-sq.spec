@@ -9,7 +9,7 @@
 Summary:    Command-line frontends for Sequoia
 Name:       sequoia-sq
 Version:    1.5.0
-Release:    1%{?dist}
+Release:    2%{?dist}
 URL:        https://crates.io/crates/sequoia-sq
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -103,5 +103,7 @@ sudo -u sq-test env \
 %config(noreplace) %attr(0644,root,root) %{_sysconfdir}/crypto-policies/back-ends/sequoia.config
 
 %changelog
+* Thu Nov 19 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.5.0-2
+- Bump release as part of sqlite upgrade to 3.54.1
 * Mon Oct 26 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 1.5.0-1
 - Initial version.

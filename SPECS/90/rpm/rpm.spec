@@ -4,7 +4,7 @@
 Summary:    Package manager
 Name:       rpm
 Version:    4.18.2
-Release:    8.2.2%{?dist}
+Release:    8.2.3%{?dist}
 URL:        http://rpm.org
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -339,6 +339,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/%{name}-plugin-systemd-inhibit.8*
 
 %changelog
+* Thu Nov 19 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 4.18.2-8.2.3
+- Bump release as part of sqlite upgrade to 3.54.1
 * Fri Nov 06 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.18.2-8.2.2
 - Security fixes
 * Sat May 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.18.2-8.2.1

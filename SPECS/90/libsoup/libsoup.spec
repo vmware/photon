@@ -3,7 +3,7 @@
 Summary:         libsoup HTTP client/server library
 Name:            libsoup
 Version:         3.6.5
-Release:         3.1.2%{?dist}
+Release:         3.1.3%{?dist}
 URL:             http://wiki.gnome.org/LibSoup
 Group:           System Environment/Development
 Vendor:          VMware, Inc.
@@ -109,6 +109,8 @@ These are the additional language files of libsoup.
 %{_datadir}/locale/*
 
 %changelog
+* Thu Nov 19 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.6.5-3.1.3
+- Bump release as part of sqlite upgrade to 3.54.1
 * Fri May 15 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 3.6.5-3.1.2
 - Bump after gnutls upgrade
 * Thu May 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.6.5-3.1.1

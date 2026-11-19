@@ -6,7 +6,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.11.15
-Release:        1.1.2%{?dist}
+Release:        1.1.3%{?dist}
 URL:            http://www.python.org
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
@@ -310,6 +310,8 @@ rm -rf %{buildroot}/*
 %{_rpmmacrodir}/macros.python
 
 %changelog
+* Thu Nov 19 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.11.15-1.1.3
+- Bump release as part of sqlite upgrade to 3.54.1
 * Fri Aug 07 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 3.11.15-1.1.2
 - Use updated python3-pip whl with CVE-2026-3219 fix
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.11.15-1.1.1

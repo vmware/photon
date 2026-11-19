@@ -3,7 +3,7 @@
 Summary:          NFS client utils
 Name:             nfs-utils
 Version:          2.9.1
-Release:          5%{?dist}
+Release:          6%{?dist}
 URL:              http://sourceforge.net/projects/nfs
 Group:            Applications/Nfs-utils-client
 Vendor:           VMware, Inc.
@@ -194,6 +194,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/rpcgen
 
 %changelog
+* Thu Nov 19 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.9.1-6
+- Bump release as part of sqlite upgrade to 3.54.1
 * Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.9.1-5
 - extend release to 91
 * Thu Aug 06 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 2.9.1-4

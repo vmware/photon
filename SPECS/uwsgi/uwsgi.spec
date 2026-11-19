@@ -3,7 +3,7 @@
 Summary:        Application Container Server for Networked/Clustered Web Applications
 Name:           uwsgi
 Version:        2.0.31
-Release:        4%{?dist}
+Release:        5%{?dist}
 Group:          Productivity/Networking/Web/Servers
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -235,6 +235,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/uwsgidecorators.py*
 
 %changelog
+* Thu Nov 19 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.0.31-5
+- Bump release as part of sqlite upgrade to 3.54.1
 * Mon Jun 08 2026 Bo Gan <bo.gan@broadcom.com> 2.0.31-4
 - Migrate from pcre to pcre2
 * Wed Jun 03 2026 Harinadh Dommaraju <Harinadh.Dommaraju@broadcom.com> 2.0.31-3

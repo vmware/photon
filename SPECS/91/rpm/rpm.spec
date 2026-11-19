@@ -4,7 +4,7 @@
 Summary:    Package manager
 Name:       rpm
 Version:    4.18.2
-Release:    8.7%{?dist}
+Release:    8.8%{?dist}
 URL:        http://rpm.org
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -355,6 +355,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/%{name}-plugin-selinux.8.gz
 
 %changelog
+* Thu Nov 19 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 4.18.2-8.8
+- Bump release as part of sqlite upgrade to 3.54.1
 * Mon Nov 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.18.2-8.7
 - Security fixes
 * Sat Nov 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 4.18.2-8.6

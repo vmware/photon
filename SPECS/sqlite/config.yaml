@@ -1,13 +1,13 @@
 sources:
-- archive: sqlite-version-3.43.2.tar.gz
+- archive: sqlite-version-3.54.1.tar.gz
   archive_sha512sum: 
-    6ebaf92931e77d239b59ca4e8f349a5dbe18a00341143727d244d5d55e711d24cd80094d8f03e07af0fb4f8dafbf9f9db178abb20f25c9c220e8beac21ba5719
+    1e83df5575df56b5ed79fea7e1c21550ee50c849bde6081d73d0fe2132039f9e88a325d6d9559047b0d4d463f3060c047b27fbb5f686b42d6785b5fbc375e5a6
   archive_type: upstream
-  name: sqlite-version-3.43.2
-  version: 3.43.2
-  url: https://github.com/sqlite/sqlite/archive/refs/tags/version-3.43.2.tar.gz
+  name: sqlite-version-3.54.1
+  version: 3.54.1
+  url: https://github.com/sqlite/sqlite/archive/refs/tags/version-3.54.1.tar.gz
   repo_url: https://github.com/sqlite/sqlite.git
-  commit_id: 43fa051ec7c5a7d89e1f5f541a5cd34d53e07422
+  commit_id: 57520227c95396ce39ba6ecaac8d475b78dd3964
   skip_list: []
   missing: []
   spdx:
@@ -16,14 +16,10 @@ sources:
         comprise the www.sqlite.org website including all of the SQL Syntax and 
         the C/C++ interface specs and other miscellaneous documentation.
       home_page: http://www.sqlite.org
-      license_concluded: BSD-2-Clause AND FSFAP AND FSFUL AND FSFULLR AND 
-        FSFULLRWD AND GPL-2.0-or-later WITH Libtool-exception AND 
-        GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND MIT AND NCSA 
-        AND NTP AND X11 AND blessing
-      license_declared: BSD-2-Clause AND FSFAP AND FSFUL AND FSFULLR AND 
-        FSFULLRWD AND GPL-2.0-or-later WITH Libtool-exception AND 
-        GPL-3.0-or-later WITH Autoconf-exception-generic-3.0 AND MIT AND NCSA 
-        AND NTP AND X11 AND blessing
+      license_concluded: BSD-2-Clause-Views AND BSD-3-Clause AND 
+        GPL-3.0-or-later AND MIT AND NCSA AND blessing
+      license_declared: BSD-2-Clause-Views AND BSD-3-Clause AND GPL-3.0-or-later
+        AND MIT AND NCSA AND blessing
       short_summary: A portable, high level programming interface to various 
         calling conventions
       supplier: 'Organization: Broadcom, Inc.'

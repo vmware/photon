@@ -4,7 +4,7 @@
 Summary:    Package manager
 Name:       rpm
 Version:    6.1.0
-Release:    6%{?dist}
+Release:    7%{?dist}
 URL:        http://rpm.org
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -390,6 +390,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/%{name}-plugin-unshare.8*
 
 %changelog
+* Thu Nov 19 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 6.1.0-7
+- Bump release as part of sqlite upgrade to 3.54.1
 * Mon Nov 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.0-6
 - Security fixes
 * Sat Nov 14 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.0-5

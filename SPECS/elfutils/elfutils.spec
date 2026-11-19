@@ -4,7 +4,7 @@
 Summary:        A collection of utilities and DSOs to handle compiled objects
 Name:           elfutils
 Version:        0.189
-Release:        11%{?dist}
+Release:        12%{?dist}
 Group:          Development/Tools
 URL:            https://sourceware.org/elfutils
 Vendor:         VMware, Inc.
@@ -237,6 +237,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/debuginfod*.8*
 
 %changelog
+* Thu Nov 19 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 0.189-12
+- Bump release as part of sqlite upgrade to 3.54.1
 * Tue May 19 2026 Brennan Lamoreaux <brennan.lamoreaux@broadcom.com> 0.189-11
 - Split debuginfod and debuginfod-devel into subpackages to break dependency loop with gnutls
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 0.189-10

@@ -3,7 +3,7 @@
 Summary:        The Apache Subversion control system
 Name:           subversion
 Version:        1.14.2
-Release:        15.1.1%{?dist}
+Release:        15.1.2%{?dist}
 URL:            http://subversion.apache.org
 Group:          Utilities/System
 Vendor:         VMware, Inc.
@@ -106,6 +106,8 @@ userdel test -r -f
 %exclude %{_libdir}/perl5/*/*/perllocal.pod
 
 %changelog
+* Thu Nov 19 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 1.14.2-15.1.2
+- Bump release as part of sqlite upgrade to 3.54.1
 * Mon Mar 23 2026 Dweep Advani <dweep.advani@broadcom.com> 1.14.2-15.1.1
 - Bump up for SPECS/90
 * Wed Oct 15 2025 Dweep Advani <dweep.advani@broadcom.com> 1.14.2-15

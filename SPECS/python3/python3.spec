@@ -6,7 +6,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.14.10
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.python.org
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
@@ -317,6 +317,8 @@ rm -rf %{buildroot}/*
 %{_rpmconfigdir}/python_ghost_pyc.sh
 
 %changelog
+* Mon Nov 23 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.14.10-3
+- Bump release as part of sqlite upgrade to 3.54.1
 * Fri Nov 20 2026 Mukul Sikka <mukul.sikka@broadcom.com> 3.14.10-2
 - Patched for CVE-2026-103995, CVE-2026-116566, CVE-2026-19552
 * Wed Nov 11 2026 Prashant Singh Chauhan <prashant.singh-chauhan@broadcom.com> 3.14.10-1

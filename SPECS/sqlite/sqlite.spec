@@ -1,7 +1,7 @@
 Summary:        A portable, high level programming interface to various calling conventions
 Name:           sqlite
-Version:        3.43.2
-Release:        7%{?dist}
+Version:        3.54.1
+Release:        1%{?dist}
 URL:            http://www.sqlite.org
 Group:          System Environment/GeneralLibraries
 Vendor:         VMware, Inc.
@@ -11,12 +11,6 @@ Source0: https://github.com/sqlite/sqlite/archive/refs/tags/%{name}-version-%{ve
 
 Source1: license.txt
 %include %{SOURCE1}
-
-Patch0: CVE-2025-29088.patch
-Patch1: CVE-2025-6965.patch
-Patch2: CVE-2025-7709.patch
-Patch3: CVE-2025-70873.patch
-Patch4: CVE-2026-11822-CVE-2026-11824.patch
 
 BuildRequires:  tcl
 
@@ -63,7 +57,8 @@ export CFLAGS="%{optflags} \
 
 %configure \
   --disable-static \
-  --disable-tcl
+  --disable-tcl \
+  --soname=legacy
 
 %make_build
 
@@ -75,7 +70,8 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 
 %if 0%{?with_check}
 %check
-make %{?_smp_mflags} check
+# upstream test suite needs the tcl extension, which is disabled in this build
+[ "$(./sqlite3 :memory: 'select sqlite_version();')" = "%{version}" ]
 %endif
 
 %post libs
@@ -103,6 +99,10 @@ rm -rf %{buildroot}/*
 %{_libdir}/libsqlite3.so.*
 
 %changelog
+* Thu Nov 19 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.54.1-1
+- Upgrade to v3.54.1, includes the fixes of the dropped CVE patches
+- Build with --soname=legacy to keep libsqlite3.so.0
+- %check: replace the missing make check target with a version smoke test
 * Thu Jun 18 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 3.43.2-7
 - Fix CVE-2026-11822 CVE-2026-11824
 * Wed Mar 18 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 3.43.2-6
