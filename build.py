@@ -1570,11 +1570,10 @@ def initialize_constants():
         constants.setPackageRepoPath(repo_path)
 
     snapshot_url = ""
-    # TODO: remove 92 default after adding photon-mainline key in 5.0 build-config.json
-    # Use snapshots only for releaseases other than mainline versions
-    phMainlineVer = configdict["photon-build-param"].get("photon-mainline")
     subrelease = constants.subreleaseVersion
-    if subrelease != phMainlineVer:
+    # Skip snapshot enforcement while bootstrapping new subrelease
+    # Or for development purposes
+    if int(os.environ.get("SKIP_SNAPSHOT", 0)) == 0:
         snapshot_url = configdict["photon-build-param"].get("package-repo-snapshot-file-url")
         if snapshot_url:
             if os.path.isfile(snapshot_url) or url_validator(snapshot_url):
@@ -1586,7 +1585,7 @@ def initialize_constants():
         assert snapshot_url
         print(f"Using snapshot: {snapshot_url}")
     else:
-        print(f"Skipping snapshot for {phMainlineVer} builds ...")
+        print("Skipping snapshot enforcement ...")
 
     bootstrap_repo_path = configdict["photon-build-param"].get("bootstrap-repo-path")
     if bootstrap_repo_path:
