@@ -1,11 +1,11 @@
 sources:
-- archive: pyasn1-0.6.4.tar.gz
-  archive_sha512sum: 93dc22d377dd83056f0d28e8b113aee3b158e321428068c0b408e64625e2b5ea2821edb5005809ee57d4dabcc66839d66898d3fbcdfe62ade5e0e43e269939c4
-  version: 0.6.4
-  name: pyasn1-0.6.4
-  url: https://github.com/pyasn1/pyasn1/archive/refs/tags/v0.6.4.tar.gz
+- archive: pyasn1-0.6.5.tar.gz
+  archive_sha512sum: ef684fe1a14d1dc11da9c4626c648fd36886accc730d6d44d4ffc213489070f8f2945f727170ef762000ef897a1cc6e29c47dbc7f3027db783c5b44f5615a113
+  version: 0.6.5
+  name: pyasn1-0.6.5
+  url: https://github.com/pyasn1/pyasn1/archive/refs/tags/v0.6.5.tar.gz
   repo_url: https://github.com/pyasn1/pyasn1
-  commit_id: 72e4803405816c371ed3b2cb4be181c47f038406
+  commit_id: 5d1673657b729fb580467e2cf4875856bbca5e59
   archive_type: upstream
   skip_list: []
   missing: [.bandit.yml, devel-requirements.txt, .readthedocs.yaml, requirements.txt,
