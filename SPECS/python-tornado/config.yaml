@@ -1,11 +1,11 @@
 sources:
-- archive: tornado-6.5.10.tar.gz
-  archive_sha512sum: 82dc31f4538dd231cd003dc189fdf3abd5988decd6c7e7ea7e5ed083d97c62cef8c1a3604956cddad61e6eb3cb4db9b029fb8b68cd668d469ba426d0685f55f5
+- archive: tornado-6.6.1.tar.gz
+  archive_sha512sum: 3642296ba92022d87380765708a38839ec55c4042ee2b362afe685561a30f8af26cb30ce7d77a4d8bddba8bb3cee8f25c378c69a8ac133fc1a26c1c4605d45a5
   archive_type: upstream
-  name: tornado-6.5.10
-  url: https://github.com/tornadoweb/tornado/archive/refs/tags/v6.5.10.tar.gz
+  name: tornado-6.6.1
+  url: https://github.com/tornadoweb/tornado/archive/refs/tags/v6.6.1.tar.gz
   repo_url: https://github.com/tornadoweb/tornado
-  commit_id: 143a06bad00bc49ee00dbf61c0b63cc3d23a52a7
+  commit_id: c1adc39faea87d87d99421529aa06cdd3d39f660
   skip_list: []
   missing: []
   spdx:
