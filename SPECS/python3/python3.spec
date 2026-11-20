@@ -6,7 +6,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.14.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.python.org
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
@@ -32,6 +32,9 @@ Source6: macros.bytecompile.python
 Patch0: 0001-Disallow-md5-usage-when-usedforsecurity-is-set-and-op.patch
 Patch1: 0001-ssl-Add-system-wide-compatibility-option-for-X.509-v.patch
 Patch2: CVE-2026-119170.patch
+Patch3: CVE-2026-103995.patch
+Patch4: CVE-2026-116566.patch
+Patch5: CVE-2026-19552.patch
 
 BuildRequires: pkg-config >= 0.28
 BuildRequires: bzip2-devel
@@ -314,6 +317,8 @@ rm -rf %{buildroot}/*
 %{_rpmconfigdir}/python_ghost_pyc.sh
 
 %changelog
+* Fri Nov 20 2026 Mukul Sikka <mukul.sikka@broadcom.com> 3.14.10-2
+- Patched for CVE-2026-103995, CVE-2026-116566, CVE-2026-19552
 * Wed Nov 11 2026 Prashant Singh Chauhan <prashant.singh-chauhan@broadcom.com> 3.14.10-1
 - Upgrade to 3.14.10, Fix CVE-2026-119170
 * Wed Nov 04 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 3.14.8-2
