@@ -4,8 +4,8 @@
 
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
-Version:        1.26.3
-Release:        4%{?dist}
+Version:        1.30.4
+Release:        1%{?dist}
 License:        BSD-2-Clause
 URL:            http://nginx.org
 Group:          Applications/System
@@ -13,7 +13,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://nginx.org/download/nginx-%{version}.tar.gz
-%define sha512 %{name}=cd780e495796bf7413e54a6730d11d55127b0ca6563acf5c75eb2698f62cddbbf5ba61820c57b2316c0bb789fcfd17f98a27a84b525ed50f304d1b1043ffa05d
+%define sha512 %{name}=48c21de65fa188137a4088d02c28e2533a7164040bf19281637e025012e6d03afcacb0ee15463a107685a2a221037f24ce15fc89c46b6f7a36b94443d3993bf1
 
 Source1: https://github.com/nginx/njs/archive/refs/tags/%{name}-njs-%{njs_ver}.tar.gz
 %define sha512 %{name}-njs=c6d70167ba91305ff859fcbb389662eb7654074845349599d00586d87aa8b086308d154fe3be2ea773ddd015ae5b04e4fba40ec82d1c461d1a3a10c23a2fb7b4
@@ -22,17 +22,6 @@ Source2: https://github.com/openresty/headers-more-nginx-module/archive/refs/tag
 %define sha512 headers-more-nginx-module=0cc2fffe506194d439e3669644d41b7943e2c3cffa3483eb70b92067930b358d506a14646eff8362b191a11c624db29f6b53d830876929dcb4ce1c9d7b2bc40d
 
 Source3: %{name}.service
-
-Patch0: CVE-2025-53859.patch
-Patch1: CVE-2026-27654.patch
-Patch2: CVE-2026-32647.patch
-Patch3: CVE-2026-27651.patch
-Patch4: CVE-2026-27784.patch
-Patch5: CVE-2026-1642.patch
-Patch6: CVE-2026-28753.patch
-Patch7: CVE-2026-42945-1.patch
-Patch8: CVE-2026-42945-2.patch
-Patch9: CVE-2026-9256.patch
 
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
@@ -134,6 +123,13 @@ getent passwd %{nginx_user} > /dev/null || \
 %{_var}/log/%{name}
 
 %changelog
+* Wed Aug 19 2026 Mosherfist <java.entwickler@outlook.de> 1.30.4-1
+- Update to version 1.30.4 to fix CVE-2026-42533 (heap buffer overflow
+  in map directive with regex)
+- Drop CVE-2025-53859, CVE-2026-27654, CVE-2026-32647, CVE-2026-27651,
+  CVE-2026-27784, CVE-2026-1642, CVE-2026-28753, CVE-2026-42945-1,
+  CVE-2026-42945-2 and CVE-2026-9256 patches, all fixed upstream in
+  1.30.4
 * Wed Jun 17 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.26.3-4
 - Fix CVE-2026-42945, CVE-2026-9256
 * Tue Jun 16 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.26.3-3
