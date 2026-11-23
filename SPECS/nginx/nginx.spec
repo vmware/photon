@@ -7,7 +7,7 @@
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
 Epoch:          1
-Version:        1.30.6
+Version:        1.30.7
 Release:        1%{?dist}
 URL:            http://nginx.org
 Group:          Applications/System
@@ -203,6 +203,8 @@ rm -rf %{buildroot}
 %{dyn_modules_dir}/ngx_stream_ssl_preread_module.so
 
 %changelog
+* Mon Nov 23 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.30.7-1
+- Upgrade to 1.30.7; fix multiple CVEs
 * Thu Oct 15 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.30.6-1
 - Upgrade to 1.30.6; fixes CVE-2026-90439
 * Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.30.4-2
