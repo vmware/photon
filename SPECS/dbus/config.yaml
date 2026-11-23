@@ -1,17 +1,17 @@
 sources:
-- archive: dbus-1.16.2.tar.xz
-  archive_sha512sum: 5c26f52d85984bb9ae1dde8d7e73921eacbdf020a61ff15f00a4c240cb38a121553ee04bd66e62b28425ff9bc50f4f5e15135166573ac0888332a01a0db1faa2
+- archive: dbus-1.16.4.tar.xz
+  archive_sha512sum: edcd1102184e4a81da905a7a554531bcba74d4e037240c27b3cf1af8ed308df6ae6182fd8af0c98894c56b6d24100787893d6a86e430f4077c23c8a3a5f530a2
   archive_type: upstream
-  name: dbus-1.16.2
-  version: 1.16.2
-  url: https://dbus.freedesktop.org/releases/dbus/dbus-1.16.2.tar.xz
+  name: dbus-1.16.4
+  version: 1.16.4
+  url: https://dbus.freedesktop.org/releases/dbus/dbus-1.16.4.tar.xz
   repo_url: https://gitlab.freedesktop.org/dbus/dbus
-  commit_id: 958bf9db2100553bcd2fe2a854e1ebb42e886054
+  commit_id: 5a5d900180296686a7604b04a0185b034a073b15
   skip_list: []
   missing: []
   spdx:
     package:
-      detailed_description: 'The dbus package contains dbus. '
+      detailed_description: 'The dbus package contains dbus.'
       home_page: http://www.freedesktop.org/wiki/Software/dbus
       license_concluded: (AFL-2.0 OR GPL-2.0-or-later) AND (AFL-2.1 OR GPL-2.0-or-later)
         AND MIT AND AFL-2.0 AND FSFULLR AND TCL AND GPL-2.0-or-later WITH Libtool-exception
