@@ -2,14 +2,14 @@
 
 Summary:        opentype text shaping engine
 Name:           harfbuzz
-Version:        14.2.1
-Release:        2%{?dist}
+Version:        15.2.0
+Release:        1%{?dist}
 URL:            https://github.com/harfbuzz/harfbuzz
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/harfbuzz/harfbuzz/releases/download/%{version}/%{name}-%{version}.tar.gz
+Source0:        https://github.com/harfbuzz/harfbuzz/releases/download/%{version}/%{name}-%{version}.tar.xz
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -82,6 +82,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/gir-1.0/HarfBuzz-0.0.gir
 
 %changelog
+* Mon Nov 23 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 15.2.0-1
+- Upgrade to 15.2.0 to fix CVE-2026-113679
 * Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 14.2.1-2
 - Extend to build for 91 and above
 * Mon Jul 20 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 14.2.1-1

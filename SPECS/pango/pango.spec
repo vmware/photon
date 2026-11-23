@@ -3,7 +3,7 @@
 Summary:        library for laying out and rendering of text.
 Name:           pango
 Version:        1.50.11
-Release:        12%{?dist}
+Release:        13%{?dist}
 URL:            http://pango.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -90,6 +90,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Mon Nov 23 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 1.50.11-13
+- Bump version as a part of harfbuzz upgrade
 * Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 1.50.11-12
 - Extend to build for 91 and above
 * Mon Jul 20 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.50.11-11

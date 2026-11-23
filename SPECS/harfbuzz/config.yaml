@@ -1,12 +1,12 @@
 sources:
-- archive: harfbuzz-14.2.1.tar.gz
+- archive: harfbuzz-15.2.0.tar.xz
   archive_type: upstream
-  archive_sha512sum: b7642a81eb021bf96cf8c91c5ebdde7f4fdfd40c76db722f00cf001125f4b81b954d08485774d2b23318d49b1e954fa0189ba8f10db56d148f33f9d90891d0cb
-  version: 14.2.1
-  name: harfbuzz-14.2.1
-  url: https://github.com/harfbuzz/harfbuzz/archive/refs/tags/14.2.1.tar.gz
+  archive_sha512sum: 8fc95eef4bd90768532f481f0ec9a0a90a7f1fefecb28965ec4f9f1018df0c175403cc7e9fa2ae0626123c8b0193414b4d31f7ce5628cb073b3ee00c780074ff
+  version: 15.2.0
+  name: harfbuzz-15.2.0
+  url: https://github.com/harfbuzz/harfbuzz/releases/download/15.2.0/harfbuzz-15.2.0.tar.xz
   repo_url: https://github.com/harfbuzz/harfbuzz
-  commit_id: 56feae4035bdd48f62ba2b8d8c16232d4d89b3a4
+  commit_id: ed51d202cfd0c29372d3ee056eb0dc715688a410
   skip_list: []
   missing: []
   skip_validation: false
