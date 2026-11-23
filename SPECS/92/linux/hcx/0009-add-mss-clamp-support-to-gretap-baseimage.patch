@@ -22,7 +22,7 @@ Signed-off-by: Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com>
  include/uapi/linux/if_tunnel.h |   1 +
  net/ipv4/ip_gre.c              | 170 +++++++++++++++++++++++++++++++++
  net/ipv4/ip_tunnel.c           |   1 +
- 4 files changed, 173 insertions(+)
+ 4 files changed, 173 insertions(+), 0 deletions(-)
 
 diff --git a/include/net/ip_tunnels.h b/include/net/ip_tunnels.h
 index b1bb100c326c..f10d53125943 100644
@@ -57,13 +57,13 @@ index 9667f2774025..65bb3e41bb1f 100644
  #include <net/erspan.h>
  #include <net/inet_dscp.h>
 +#include <net/tcp.h>  /* for TCPOLEN_MSS */
- 
+
  /*
     Problems & solutions
 @@ -103,6 +104,34 @@
     Alexey Kuznetsov.
   */
- 
+
 +#ifdef CONFIG_SYSCTL
 +#include <linux/sysctl.h>
 +static struct ctl_table_header *gre_sysctl_header;
@@ -95,23 +95,23 @@ index 9667f2774025..65bb3e41bb1f 100644
  static bool log_ecn_error = true;
  module_param(log_ecn_error, bool, 0644);
  MODULE_PARM_DESC(log_ecn_error, "Log packets received with corrupted ECN");
-@@ -689,6 +718,12 @@ static netdev_tx_t ipgre_xmit(struct sk_buff *skb,
- 					      tunnel->parms.o_flags)))
+@@ -688,6 +717,12 @@ static netdev_tx_t ipgre_xmit(struct sk_buff *skb,
+ 	if (gre_handle_offloads(skb, test_bit(IP_TUNNEL_CSUM_BIT, flags)))
  		goto free_skb;
- 
+
 +	if (gre_mss_clamp) {
 +		if ((tunnel->parms.mss_clamp != 0) &&
 +		     gre_tap_mss_clamp(skb, tunnel->parms.mss_clamp))
 +			goto free_skb;
 +	}
 +
- 	__gre_xmit(skb, dev, tnl_params, skb->protocol);
+ 	__gre_xmit(skb, dev, tnl_params, skb->protocol, flags);
  	return NETDEV_TX_OK;
- 
-@@ -753,6 +788,126 @@ static netdev_tx_t erspan_xmit(struct sk_buff *skb,
+
+@@ -755,6 +790,126 @@ static netdev_tx_t erspan_xmit(struct sk_buff *skb,
  	return NETDEV_TX_OK;
  }
- 
+
 +/*
 + * Nasty hack to clamp mss of tcp packets.
 + * Normal way to do this would be via iptables, but
@@ -235,17 +235,17 @@ index 9667f2774025..65bb3e41bb1f 100644
  static netdev_tx_t gre_tap_xmit(struct sk_buff *skb,
  				struct net_device *dev)
  {
-@@ -1229,6 +1384,9 @@ static int ipgre_netlink_parms(struct net_device *dev,
+@@ -1241,6 +1396,9 @@ static int ipgre_netlink_parms(struct net_device *dev,
  		t->ignore_df = !!nla_get_u8(data[IFLA_GRE_IGNORE_DF]);
  	}
- 
+
 +	if (data[IFLA_GRE_MSS_CLAMP])
 +		parms->mss_clamp = nla_get_u16(data[IFLA_GRE_MSS_CLAMP]);
 +
  	if (data[IFLA_GRE_FWMARK])
  		*fwmark = nla_get_u32(data[IFLA_GRE_FWMARK]);
- 
-@@ -1530,6 +1688,8 @@ static size_t ipgre_get_size(const struct net_device *dev)
+
+@@ -1560,6 +1718,8 @@ static size_t ipgre_get_size(const struct net_device *dev)
  		nla_total_size(1) +
  		/* IFLA_GRE_ERSPAN_HWID */
  		nla_total_size(2) +
@@ -253,36 +253,36 @@ index 9667f2774025..65bb3e41bb1f 100644
 +		nla_total_size(2) +
  		0;
  }
- 
-@@ -1575,6 +1735,9 @@ static int ipgre_fill_info(struct sk_buff *skb, const struct net_device *dev)
+
+@@ -1608,6 +1768,9 @@ static int ipgre_fill_info(struct sk_buff *skb, const struct net_device *dev)
  			goto nla_put_failure;
  	}
- 
+
 +	if (nla_put_u16(skb, IFLA_GRE_MSS_CLAMP, p->mss_clamp))
 +		goto nla_put_failure;
 +
  	return 0;
- 
+
  nla_put_failure:
-@@ -1644,6 +1807,7 @@ static const struct nla_policy ipgre_policy[IFLA_GRE_MAX + 1] = {
+@@ -1674,6 +1837,7 @@ static const struct nla_policy ipgre_policy[IFLA_GRE_MAX + 1] = {
  	[IFLA_GRE_ERSPAN_VER]	= { .type = NLA_U8 },
  	[IFLA_GRE_ERSPAN_DIR]	= { .type = NLA_U8 },
  	[IFLA_GRE_ERSPAN_HWID]	= { .type = NLA_U16 },
 +	[IFLA_GRE_MSS_CLAMP]    = { .type = NLA_U16 },
  };
- 
+
  static struct rtnl_link_ops ipgre_link_ops __read_mostly = {
-@@ -1810,6 +1974,9 @@ static int __init ipgre_init(void)
+@@ -1840,6 +2004,9 @@ static int __init ipgre_init(void)
  	err = rtnl_link_register(&erspan_link_ops);
  	if (err < 0)
  		goto erspan_link_failed;
 +#ifdef CONFIG_SYSCTL
 +	gre_sysctl_init();
 +#endif
- 
+
  	return 0;
- 
-@@ -1821,6 +1988,9 @@ static int __init ipgre_init(void)
+
+@@ -1851,6 +2018,9 @@ static int __init ipgre_init(void)
  	gre_del_protocol(&ipgre_protocol, GREPROTO_CISCO);
  add_proto_failed:
  	unregister_pernet_device(&erspan_net_ops);

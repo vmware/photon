@@ -79,8 +79,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        6.12.116
-Release:        5%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Version:        6.12.119
+Release:        1%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -1024,6 +1024,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+* Mon Nov 23 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.12.119-1
+- Update to version 6.12.119
 * Fri Nov 20 2026 Keerthana K <keerthana.kalyanasundaram@broadcom.com> 6.12.116-5
 - Fixes CVE-2026-92500
 * Tue Nov 17 2026 Ankit Jain <ankit-aj.jain@broadcom.com> 6.12.116-4

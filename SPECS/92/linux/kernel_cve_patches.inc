@@ -5,9 +5,6 @@
 # Fix CVE-2017-1000252
 Patch3000: KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 
-# Fixes CVE-2026-31589, CVE-2026-43414, CVE-2026-43465, CVE-2026-53224, CVE-2026-53246, CVE-2026-53260
-Patch3005: 0001-mm-call-free_folio-directly-in-folio_.patch
-Patch3019: 0002-ALSA-usb-audio-Use-the-right-limit-for-PCM-OOB-check.patch
 # Fixes CVE-2025-40158, CVE-2025-68745, CVE-2026-63872, CVE-2026-64076, CVE-2026-64077
 Patch3020: 0001-esp-fix-page-frag-reference-leak-on-skb_to_sgvec-failure.patch
 # Fixes CVE-2026-52988, CVE-2026-52991, CVE-2026-53089, CVE-2026-53091
@@ -33,24 +30,15 @@ Patch3074: 0002-fbdev-serialize-mode-sysfs-access-with-lock_fb_info.patch
 Patch3093: 0001-netfilter-nf_tables-avoid-false-positive-lockdep-flowtables.patch
 Patch3094: 0002-netfilter-nf_tables-avoid-false-positive-lockdep-basechain.patch
 Patch3096: 0004-netfilter-nf_tables-add-hook-transactions-for-device.patch
-Patch3100: 0001-ext4-validate-readdir-offset-before-accessing-dirent.patch
 Patch3102: 0001-net-mlx5-LAG-Fix-off-by-one-in-single-FDB-error-rol.patch
-Patch3106: 0002-nfsd-use-test_and_clear_bit-for-somebody_reclaimed-to.patch
 # Fixes CVE-2026-72355, CVE-2026-80670, CVE-2026-89637
 Patch3107: 0001-perf-stat-Bounds-check-CPU-index-in-topology-aggrega.patch
 Patch3108: 0001-smb-client-fix-UAF-and-buffer-leak-in-cifs_check_tra.patch
 Patch3109: 0002-perf-stat-Introduce-perf_env__get_cpu_topology-to-gu.patch
 Patch3110: 0003-perf-tools-Use-perf_env__get_cpu_topology-in-machine.patch
 Patch3113: 0002-ceph-fix-use-after-free-in-check_new_map-after-early.patch
-# Fixes CVE-2026-80668
-Patch3116: 0001-netfilter-conntrack-check-NULL-when-retrieving-ct-ex.patch
-Patch3119: 0004-netfilter-nf_conntrack_expect-add-and-use-nf_ct_expe.patch
-Patch3120: 0005-netfilter-nf_conntrack_expect-bail-out-on-insert-dea.patch
-Patch3121: 0006-netfilter-nf_conntrack_expect-consolidate-check-for-.patch
 # Fixes CVE-2026-98570, CVE-2026-98810
 Patch3122: 0001-net-ipv6-keep-room-for-the-mac-header-in-dst_dev_ove.patch
 Patch3123: 0001-wifi-mac80211-fix-slab-out-of-bounds-read-in-ieee802.patch
-# Fixes CVE-2026-99122
-Patch3124: 0001-vsock-vmci-validate-packet-source-for-connected-sock.patch
 # Fixes CVE-2026-92500
 Patch3125: 0001-ext4-use-fsdata-to-track-inline-data-write-state-and.patch

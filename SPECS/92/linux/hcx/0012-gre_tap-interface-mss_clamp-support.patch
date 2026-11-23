@@ -22,7 +22,7 @@ index 017206296736..8a75d9cf0a14 100644
 +			goto free_skb;
 +	}
 +
- 	__gre_xmit(skb, dev, &tunnel->parms.iph, htons(ETH_P_TEB));
+ 	__gre_xmit(skb, dev, &tunnel->parms.iph, htons(ETH_P_TEB), flags);
  	return NETDEV_TX_OK;
  
 -- 
