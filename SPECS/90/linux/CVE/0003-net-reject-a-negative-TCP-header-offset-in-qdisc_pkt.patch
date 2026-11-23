@@ -1,0 +1,56 @@
+From ec7305abe692773723e6767f48f97b5dd3e7c07c Mon Sep 17 00:00:00 2001
+From: Alexei Starovoitov <ast@kernel.org>
+Date: Sun, 1 Nov 2026 19:44:33 +0000
+Subject: [PATCH] net: reject a negative TCP header offset in qdisc_pkt_len_segs_init()
+
+[ Upstream commit 35d2d6e5ac0d22428b2a0216061f3330c095393c ]
+
+qdisc_pkt_len_segs_init() stores skb_transport_offset(), or the inner
+offset, in the unsigned hdr_len. A header in front of skb->data gives a
+negative offset. For an offset a little below zero, pskb_may_pull() gets a
+small length and succeeds. Then a 64-bit kernel reads the TCP header far
+after the skb and can crash. Further below zero pskb_may_pull() fails.
+
+Commit 28a57fb2c5df ("net: iptunnel: fix stale transport header during
+tunnel decapsulation") fixed one source of such offsets. Other code that
+removes bytes from the front of a packet can leave the same stale header.
+
+Return SKB_DROP_REASON_SKB_BAD_GSO for a negative offset in the TCP branch.
+SKB_GSO_UDP_L4 and the other GSO types read no header and still get a wrong
+qdisc_pkt_len(). On a 64-bit kernel only packets that cause the read after
+the skb today get a new result. Then __dev_queue_xmit() drops them and
+returns -EINVAL, but sch_handle_ingress() ignores the result. Their content
+can be valid. Thus the code that leaves the header stale needs its own fix.
+
+Fixes: 7fb4c1967011 ("net: pull headers in qdisc_pkt_len_segs_init()")
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Reviewed-by: Eric Dumazet <edumazet@kernel.org>
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+CC: stable@vger.kernel.org
+Link: https://patch.msgid.link/20261101194433.2637113-1-alexei.starovoitov@gmail.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[ Ajay Kaher: Modified to apply on v6.1 ]
+Signed-off-by: Ajay Kaher <ajay.kaher@broadcom.com>
+---
+ net/core/dev.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 7250e8f2c6c3..038b547b8e14 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -3885,7 +3885,9 @@ static enum skb_drop_reason qdisc_pkt_len_init(struct sk_buff *skb)
+ 	if (likely(shinfo->gso_type & (SKB_GSO_TCPV4 | SKB_GSO_TCPV6))) {
+ 		const struct tcphdr *th;
+ 
+-		if (!pskb_may_pull(skb, hdr_len + sizeof(struct tcphdr)))
++		/* A header in front of skb->data gives a negative offset. */
++		if ((int)hdr_len < 0 ||
++		    !pskb_may_pull(skb, hdr_len + sizeof(struct tcphdr)))
+ 			return SKB_DROP_REASON_SKB_BAD_GSO;
+ 
+ 		th = (const struct tcphdr *)(skb->data + hdr_len);
+-- 
+2.53.0
+

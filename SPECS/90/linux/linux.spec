@@ -50,7 +50,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        6.1.191
-Release:        2%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
+Release:        3%{?acvp_build:.acvp}%{?kat_build:.kat}%{?dist}
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
@@ -994,6 +994,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_datadir}/bash-completion/completions/bpftool
 
 %changelog
+* Thu Nov 26 2026 Ajay Kaher <ajay.kaher@broadcom.com> 6.1.191-3
+- Fixes CVE-2026-53091, CVE-2026-53120, CVE-2026-98034, CVE-2026-98103
 * Mon Nov 16 2026 Shreenidhi Shedi <shreenidhi.shedi@broadcom.com> 6.1.191-2
 - Fix aarch64 build
 * Mon Nov 02 2026 Gerrit Photon <svc.photon-ci@broadcom.com> 6.1.191-1

@@ -1,0 +1,61 @@
+From 255536fb5f52a62b846e67bf07b0e5707c639f9d Mon Sep 17 00:00:00 2001
+From: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Date: Fri, 4 Sep 2026 12:41:56 +0200
+Subject: [PATCH] bpf: Mark NULL kptr stores precise
+
+[ Upstream commit ecdc5043794c9184aa8e6c814603899479c46b35 ]
+
+check_map_kptr_access() permits a scalar store into an untrusted kptr
+field only when the register is known to contain zero. Unlike other
+verifier checks whose outcome depends on a scalar value, it does not mark
+that register precise.
+
+A state checkpoint reached with an imprecise zero can therefore prune a
+second path that reaches the store with an arbitrary nonzero scalar. The
+program can write attacker-controlled bits into the kptr field and load
+them back as a PTR_TO_BTF_ID.
+
+Call mark_chain_precision() before accepting a known-zero register. This
+forces state equivalence to compare its scalar range and makes the verifier
+visit and reject a path carrying a nonzero value.
+
+Fixes: 61df10c7799e ("bpf: Allow storing unreferenced kptr in map")
+Reported-by: Nicholas Carlini <npc@anthropic.com>
+Suggested-by: Nicholas Carlini <npc@anthropic.com>
+Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Acked-by: Eduard Zingerman <eddyz87@gmail.com>
+Link: https://lore.kernel.org/r/20260904104203.345917-6-memxor@gmail.com
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+[ Ajay Kaher: Modified to apply on v6.1 - use off_desc instead of kptr_field,
+  as v6.1 lacks aa3496accc41 ("bpf: Refactor kptr_off_tab into btf_record") ]
+Signed-off-by: Ajay Kaher <ajay.kaher@broadcom.com>
+---
+ kernel/bpf/verifier.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index ac11058ed654..33c12700f078 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -4237,8 +4237,15 @@ static int check_map_kptr_access(struct bpf_verifier_env *env, u32 regno,
+ 		val_reg->id = ++env->id_gen;
+ 	} else if (class == BPF_STX) {
+ 		val_reg = reg_state(env, value_regno);
+-		if (!register_is_null(val_reg) &&
+-		    map_kptr_match_type(env, off_desc, val_reg, value_regno))
++		if (register_is_null(val_reg)) {
++			/*
++			 * This store is valid only because the scalar is known to be
++			 * zero. Mark it precise so another scalar cannot be pruned
++			 * against this state.
++			 */
++			return mark_chain_precision(env, value_regno);
++		}
++		if (map_kptr_match_type(env, off_desc, val_reg, value_regno))
+ 			return -EACCES;
+ 	} else if (class == BPF_ST) {
+ 		if (insn->imm) {
+-- 
+2.53.0
+

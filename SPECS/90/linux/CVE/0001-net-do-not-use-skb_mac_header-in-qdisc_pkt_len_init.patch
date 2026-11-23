@@ -1,0 +1,59 @@
+From d28a40b8adbf13e7b5cebdaa60c247c31112f289 Mon Sep 17 00:00:00 2001
+From: Eric Dumazet <edumazet@google.com>
+Date: Tue, 21 Mar 2023 16:45:17 +0000
+Subject: [PATCH] net: do not use skb_mac_header() in qdisc_pkt_len_init()
+
+commit f5fca219ad4548bc45f0221f9857ad22cb8136a1 upstream.
+
+We want to remove our use of skb_mac_header() in tx paths,
+eg remove skb_reset_mac_header() from __dev_queue_xmit().
+
+Idea is that ndo_start_xmit() can get the mac header
+simply looking at skb->data.
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+[ Ajay Kaher: Modified to apply on v6.1 ]
+Signed-off-by: Ajay Kaher <ajay.kaher@broadcom.com>
+---
+ net/core/dev.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 7c0d0905dd31..3f0b13cee2d3 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -3867,25 +3867,25 @@ static void qdisc_pkt_len_init(struct sk_buff *skb)
+ 	 * we add to pkt_len the headers size of all segments
+ 	 */
+ 	if (shinfo->gso_size && skb_transport_header_was_set(skb)) {
+-		unsigned int hdr_len;
+ 		u16 gso_segs = shinfo->gso_segs;
++		unsigned int hdr_len;
+ 
+ 		/* mac layer + network layer */
+-		hdr_len = skb_transport_header(skb) - skb_mac_header(skb);
++		hdr_len = skb_transport_offset(skb);
+ 
+ 		/* + transport layer */
+ 		if (likely(shinfo->gso_type & (SKB_GSO_TCPV4 | SKB_GSO_TCPV6))) {
+ 			const struct tcphdr *th;
+ 			struct tcphdr _tcphdr;
+ 
+-			th = skb_header_pointer(skb, skb_transport_offset(skb),
++			th = skb_header_pointer(skb, hdr_len,
+ 						sizeof(_tcphdr), &_tcphdr);
+ 			if (likely(th))
+ 				hdr_len += __tcp_hdrlen(th);
+ 		} else if (shinfo->gso_type & SKB_GSO_UDP_L4) {
+ 			struct udphdr _udphdr;
+ 
+-			if (skb_header_pointer(skb, skb_transport_offset(skb),
++			if (skb_header_pointer(skb, hdr_len,
+ 					       sizeof(_udphdr), &_udphdr))
+ 				hdr_len += sizeof(struct udphdr);
+ 		}
+-- 
+2.53.0
+

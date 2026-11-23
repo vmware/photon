@@ -105,3 +105,10 @@ Patch3124: 0001-netfilter-conntrack-check-NULL-when-retrieving-ct-ex.patch
 Patch3128: 0004-netfilter-nf_conntrack_expect-add-and-use-nf_ct_expe.patch
 Patch3129: 0005-netfilter-nf_conntrack_expect-bail-out-on-insert-dea.patch
 Patch3130: 0006-netfilter-nf_conntrack_expect-consolidate-check-for-.patch
+# Fixes CVE-2026-53091, CVE-2026-53120, CVE-2026-98034, CVE-2026-98103
+Patch3131: 0001-PCI-use-generic-driver_override-infrastructure.patch
+Patch3132: 0001-bpf-Mark-NULL-kptr-stores-precise.patch
+Patch3133: 0001-igmp-convert-struct-ip_sf_list-to-RCU.patch
+Patch3134: 0001-net-do-not-use-skb_mac_header-in-qdisc_pkt_len_init.patch
+Patch3135: 0002-net-pull-headers-in-qdisc_pkt_len_segs_init.patch
+Patch3136: 0003-net-reject-a-negative-TCP-header-offset-in-qdisc_pkt.patch
