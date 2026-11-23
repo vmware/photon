@@ -1,7 +1,7 @@
 Summary:        Sudo
 Name:           sudo
 Version:        1.9.15p5
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            https://www.sudo.ws/
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -22,6 +22,8 @@ Requires:       shadow
 Patch0:         sudo-CVE-2025-32462.patch
 Patch1:         sudo-CVE-2025-32463.patch
 Patch2:         sudo-CVE-2026-35535.patch
+Patch3:         sudo-CVE-2026-82474.patch
+Patch4:         sudo-CVE-2026-96512.patch
 
 %description
 The Sudo package allows a system administrator to give certain users (or groups of users)
@@ -114,6 +116,8 @@ rm -rf %{buildroot}/*
 %exclude %{_prefix}/libexec/sudo/*.la
 
 %changelog
+* Mon Nov 23 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.9.15p5-7
+- Patched for CVE-2026-82474 and CVE-2026-96512
 * Thu Apr 09 2026 Mukul Sikka <mukul.sikka@broadcom.com> 1.9.15p5-6
 - Fix for CVE-2026-35535
 * Sat Jun 28 2025 Mukul Sikka <mukul.sikka@broadcom.com> 1.9.15p5-5
