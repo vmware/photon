@@ -5,7 +5,7 @@
 Summary:        Next generation system logger facilty
 Name:           syslog-ng
 Version:        4.3.1
-Release:        14%{?dist}
+Release:        15%{?dist}
 URL:            https://syslog-ng.org/
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
@@ -223,6 +223,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*
 
 %changelog
+* Mon Nov 23 2026 Mukul Sikka <mukul.sikka@broadcom.com> 4.3.1-15
+- Bump release as part of python3-oauthlib upgrade to 4.0.1
 * Tue Sep 22 2026 Prashant S Chauhan <prashant.singh-chauhan@broadcom.com> 4.3.1-14
 - Remove stale python3-six dependency
 * Thu Jun 25 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 4.3.1-13

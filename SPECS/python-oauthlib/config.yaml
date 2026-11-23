@@ -1,7 +1,13 @@
 sources:
-- archive: oauthlib-3.2.2.tar.gz
-  archive_sha512sum: c147b96e0ab0d1a8845f525e80831cfd04495134dd1f17fd95eac62f3a95c91e6dca9d38e34206537d77f3c12dd5b553252239318ba39546979c350e96536b8b
-  skip_validation: true
+- archive: oauthlib-4.0.1.tar.gz
+  archive_sha512sum: 0763adb7862b38ee22644bfdc721f8a76aa7eedfdf0d78b223a19ad4705b0e53f6c30bcf573be93a46b9c5acd52b78564f26b6b72950777a2e3cf4879aaf540a
+  archive_type: upstream
+  name: oauthlib-4.0.1
+  version: 4.0.1
+  url: https://github.com/oauthlib/oauthlib/archive/refs/tags/v4.0.1.tar.gz
+  repo_url: https://github.com/oauthlib/oauthlib.git
+  commit_id: 6e3aa05af92978755939a18cb4dd655ced156c1e
+  skip_validation: false
   spdx:
     package:
       detailed_description: 'OAuthLib is a generic utility which implements the logic
