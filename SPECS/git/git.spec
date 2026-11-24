@@ -2,14 +2,14 @@
 
 Summary:        Fast distributed version control system
 Name:           git
-Version:        2.53.0
-Release:        2%{?dist}
+Version:        2.56.1
+Release:        1%{?dist}
 URL:            http://git-scm.com
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: https://www.kernel.org/pub/software/scm/git/git-2.53.0.tar.gz
+Source0: https://www.kernel.org/pub/software/scm/git/git-2.56.1.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
@@ -66,10 +66,10 @@ and git bash completion files.
     CXXFLAGS="%{optflags}" \
     --libexec=%{_libexecdir} \
     --with-gitconfig=/etc/gitconfig
-make %{?_smp_mflags} CFLAGS="%{optflags}" CXXFLAGS="%{optflags}"
+make %{?_smp_mflags} CFLAGS="%{optflags}" CXXFLAGS="%{optflags}" NO_RUST=1
 
 %install
-%make_install DESTDIR=%{buildroot} %{?_smp_mflags}
+%make_install DESTDIR=%{buildroot} NO_RUST=1 %{?_smp_mflags}
 install -vdm 755 %{buildroot}%{_datadir}/bash-completion/completions
 install -m 0644 contrib/completion/git-completion.bash %{buildroot}%{_datadir}/bash-completion/completions/git
 %find_lang %{name}
@@ -140,6 +140,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+* Tue Nov 24 2026 Mukul Sikka <mukul.sikka@broadcom.com> 2.56.1-1
+- Upgrade to 2.56.1
 * Fri May 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 2.53.0-2
 - Extended to build for subrelease 91 and above
 * Fri Apr 10 2026 Guruswamy Basavaiah <guruswamy.basavaiah@broadcom.com> 2.53.0-1
