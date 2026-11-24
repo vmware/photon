@@ -4,7 +4,7 @@
 
 Summary:        Nokogiri is an HTML, XML, SAX, and Reader parser.
 Name:           rubygem-nokogiri
-Version:        1.19.4
+Version:        1.19.7
 Release:        0.0.1%{?dist}
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -44,6 +44,8 @@ rm -rf %{buildroot}/*
 %{gem_base}
 
 %changelog
+* Tue Nov 24 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.19.7-0.0.1
+- Upgrade to 1.19.7 to Fix CVE-2026-126062, CVE-2026-126063, CVE-2026-126064
 * Fri Oct 09 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.19.4-0.0.1
 - Upgrade to 1.19.4
 * Thu May 21 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.18.8-2.1.2
