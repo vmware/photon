@@ -1,19 +1,23 @@
 Summary:        Libraries for Transport Independent RPC
 Name:           libtirpc
-Version:        1.3.3
-Release:        4%{?dist}
+Version:        1.3.8
+Release:        1%{?dist}
 Group:          System Environment/Libraries
-URL:            http://nfsv4.bullopensource.org/
+URL:            https://github.com/linux-nfs/libtirpc/
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0: http://downloads.sourceforge.net/project/libtirpc/libtirpc/0.3.2/%{name}-%{version}.tar.bz2
+Source0:  %{name}-%{version}.tar.gz
 
 Source1: license.txt
 %include %{SOURCE1}
 
 BuildRequires:  krb5-devel
 BuildRequires:  e2fsprogs-devel
+BuildRequires:  autoconf
+BuildRequires:  automake
+BuildRequires:  libtool
+BuildRequires:  pkg-config
 
 Requires:       krb5
 
@@ -38,9 +42,10 @@ Requires:       krb5-devel
 This package includes header files and libraries necessary for developing programs which use the tirpc library.
 
 %prep
-%autosetup -p1
+%autosetup -p1 -n %{name}-%{name}-1-3-8
 
 %build
+autoreconf -fiv
 %configure
 sed '/stdlib.h/a#include <stdint.h>' -i src/xdr_sizeof.c
 
@@ -71,6 +76,8 @@ sed '/stdlib.h/a#include <stdint.h>' -i src/xdr_sizeof.c
 %{_libdir}/*.a
 
 %changelog
+* Tue Nov 24 2026 Shivani Agarwal <shivani.agarwal@broadcom.com> 1.3.8-1
+- Upgrade to v1.3.8 to fix CVE-2026-85231, CVE-2026-85977
 * Wed Dec 11 2024 Mukul Sikka <mukul.sikka@broadcom.com> 1.3.3-4
 - Release bump for SRP compliance
 * Fri Jul 28 2023 Srish Srinivasan <ssrish@vmware.com> 1.3.3-3

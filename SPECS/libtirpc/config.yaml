@@ -1,7 +1,15 @@
 sources:
-- archive: libtirpc-1.3.3.tar.bz2
-  archive_sha512sum: df0781a74ff9ded2d3c4f5eb7e05496b9f58eac8060c02c68331dc14c4a00304dcd19f46836f5756fe0d9d27095fd463d42dd696fcdff891516711b7d63deabe
-  skip_validation: true
+- archive: libtirpc-1.3.8.tar.gz
+  archive_sha512sum: eab70f963edcabba3762e745105ed6726427651a3fd890b1ced10f8281e16ab5c6b9d221c2c6a175eb6be95082caae5cd3ce63f7eafc7d2a609d9eac99e04cf5
+  name: libtirpc-libtirpc-1-3-8
+  archive_type: upstream
+  skip_validation: false
+  url: https://github.com/linux-nfs/libtirpc/archive/refs/tags/libtirpc-1-3-8.tar.gz
+  repo_url: https://github.com/linux-nfs/libtirpc
+  commit_id: b2a58e4ac15dd5f45952210ef466e9fd88dda553
+  skip_list: []
+  missing:
+  - .git
   spdx:
     package:
       detailed_description: 'This package contains SunLib''s implementation of transport-independent
