@@ -1,7 +1,7 @@
 %global build_if %{photon_subrelease} >= 91
 
 %define erlang_minver       27.0
-%define erlang_maxver       28.0
+%define erlang_maxver       29.0
 %define _rabbitmq_user      rabbitmq
 %define _rabbitmq_group     rabbitmq
 %define _rabbit_libdir      %{_libdir}/rabbitmq
@@ -22,11 +22,11 @@
 # 4.2.x is a required intermediate hop. Enable all stable feature flags before
 # each hop (4.1.x -> 4.2.x, then 4.2.x -> 4.3.x).
 # This package is being upgraded one hop at a time: 4.1.x -> 4.2.x here, then
-# 4.2.x -> 4.3.x in a follow-up change.
+# 4.2.x -> 4.4.x
 
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
-Version:       4.2.9
+Version:       4.4.1
 Release:       1%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
@@ -164,6 +164,8 @@ rm -rf %{buildroot}
 %{_datadir}/bash-completion/completions/rabbitmqctl-autocomplete.sh
 
 %changelog
+* Wed Nov 25 2026 Harinadh Dommaraju <harinadh.dommaraju@broadcom.com> 4.4.1-1
+- Upgrade to v4.4.1 (latest release in the 4.4.x series)
 * Wed Aug 26 2026 Harinadh Dommaraju <harinadh.dommaraju@broadcom.com> 4.2.9-1
 - Upgrade to v4.2.9 (latest release in the 4.2.x series)
 - Intermediate hop toward 4.3.x; upstream requires 4.1.x -> 4.2.x -> 4.3.x in place
