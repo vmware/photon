@@ -2,8 +2,8 @@
 
 Name:          erlang
 Summary:       erlang
-Version:       27.3.4.13
-Release:       1.0.1%{?dist}
+Version:       27.3.4.19
+Release:       0.0.1%{?dist}
 Group:         Development/Languages
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -48,6 +48,8 @@ export CFLAGS="-Wno-error=implicit-function-declaration -O2 -g"
 %exclude %dir %{_libdir}/debug
 
 %changelog
+* Wed Nov 25 2026 Mukul Sikka <mukul.sikka@broadcom.com> 27.3.4.19-0.0.1
+- Upgrade to 27.3.4.19
 * Sat Aug 15 2026 Vamsi Krishna Brahmajosyula <vamsi-krishna.brahmajosyula@broadcom.com> 27.3.4.13-1.0.1
 - Restrict to build for subrelease 90 and below
 * Tue Jun 16 2026 Mukul Sikka <mukul.sikka@broadcom.com> 27.3.4.13-1
