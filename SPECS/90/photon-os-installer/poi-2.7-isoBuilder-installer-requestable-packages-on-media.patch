@@ -1,0 +1,51 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Daniel Casota <dcasota@gmail.com>
+Date: Thu, 8 Oct 2026 00:00:00 +0000
+Subject: [PATCH] isoBuilder: put installer-requestable packages on the
+ media
+
+Two gaps in how the download list is built.
+
+1. The STIG menu offers "Apply STIG hardening", which makes the installer
+   request KS_STIG_PACKAGES at install time. Those names were never added to
+   the ISO's own RPMS/, so on an ISO where downloadPkgs() resolves a closure
+   rather than copying a given rpm list, the packages were not there and the
+   install failed with "Error(1011) : No matching packages".
+   Use stigenable.KS_STIG_PACKAGES rather than restating the names in a
+   package list file.
+
+2. Packages named via --initrd-pkgs never reached this list either. Only the
+   list file was parsed, so a package requested on the command line could
+   not be installed into the initrd from the ISO's own RPMS/.
+
+Both extend self.pkg_list only, so they land in the ISO's RPMS/ and the
+initrd does not grow.
+
+Port of the photon-os-installer 2.8 and 2.9 change to v2.7, whose
+downloadPkgs() builds the list the same way; the import is placed in
+v2.7's plain-import block.
+---
+ photon_installer/isoBuilder.py | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/photon_installer/isoBuilder.py b/photon_installer/isoBuilder.py
+index 1f11cca..5107570 100755
+--- a/photon_installer/isoBuilder.py
++++ b/photon_installer/isoBuilder.py
+@@ -11,6 +11,7 @@ import json
+ import os
+ import platform
+ import shutil
++import stigenable
+ import tempfile
+ import yaml
+ 
+@@ -201,6 +202,8 @@ class IsoBuilder(object):
+         # Add installer initrd and custom packages to package list..
+         self.addPkgsToList(self.initrd_pkg_list_file)
+         self.addPkgsToList(self.packageslist_file)
++        self.pkg_list.extend(stigenable.KS_STIG_PACKAGES)
++        self.pkg_list.extend(self.initrd_pkgs)
+ 
+         linux_flavors = [
+             "linux",
